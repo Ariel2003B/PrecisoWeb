@@ -13367,3 +13367,20 @@ section#contact form#contactForm :-ms-input-placeholder {
     margin: 5px; /* Separación menor */
   }
 }
+
+
+/* .col-md-4 {
+  border: 2px solid #ff0000; /* Borde rojo 
+  border-radius: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+} */
+
+/* body {
+  background: #ffff url('../assets/img/nieve2.gif') repeat center center;
+} */
+
+#portfolio {
+  background: url('../assets/img/nieve2.gif') repeat center center;
+}
