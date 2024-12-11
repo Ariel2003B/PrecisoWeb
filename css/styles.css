@@ -13384,3 +13384,32 @@ section#contact form#contactForm :-ms-input-placeholder {
 #portfolio {
   background: url('../assets/img/nieve2.gif') repeat center center;
 }
+
+
+.contador {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+  color: #333; /* Color del texto */
+  padding: 10px 20px; /* Espaciado interno */
+  border: 2px solid #ff6f00; /* Borde naranja */
+  border-radius: 8px; /* Bordes redondeados */
+  font-family: 'Arial', sans-serif; /* Fuente */
+  font-size: 14px; /* Tamaño de texto */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+  z-index: 1000; /* Encima de otros elementos */
+  animation: fadeIn 1s ease-in-out; /* Animación de entrada */
+}
+
+/* Animación para el contador */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}

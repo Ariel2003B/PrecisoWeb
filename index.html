@@ -32,6 +32,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                    
+                    <li class="nav-item"><a class="nav-link" href="ClientsAccess.html">Acceso clientes</a></li>
                     <li class="nav-item"><a class="nav-link" href="#services">Servicios</a></li>
                     <!-- <li class="nav-item"><a class="nav-link" href="#portfolio">Plataforma</a></li> -->
                     <li class="nav-item"><a class="nav-link" href="#portfolio">Planes</a></li>
@@ -40,12 +42,28 @@
 
                     <li class="nav-item"><a class="nav-link" href="policyandprivacy.html">Política de privacidad</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-
+                    <!-- <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li> -->
+                    <!-- <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Nuestras plataformas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="http://www.precisogps.online/" target="_blank">Rastrea tu
+                                    vehiculo</a></li>
+                            <li><a class="dropdown-item" href="http://157.245.141.38:4020/login" target="_blank">Minutos
+                                    caidos</a></li>
+                            <li><a class="dropdown-item" href="https://nimbus.wialon.com/login"
+                                    target="_blank">Nimbus</a></li>
+                            <li><a class="dropdown-item" href="http://157.230.189.65:5030/login" target="_blank">Caja
+                                    común</a></li>
+                        </ul>
+                    </li> -->
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <!-- Masthead-->
     <!-- <header class="masthead">
@@ -299,7 +317,7 @@
             </div>
         </div>
     </section>
-    
+
 
     <!-- Team-->
     <!-- <section class="page-section bg-light" id="team">
@@ -608,6 +626,33 @@
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
     <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Evita que el evento de clic cierre el menú colapsable
+                });
+            });
+        });
+
+    </script>
+
+
 </body>
 
 </html>
+<div id="contador-visitas" class="contador">
+    Cargando visitantes...
+</div>
+
+<script>
+    fetch('contador.php')
+        .then(response => response.text())
+        .then(visitas => {
+            document.getElementById('contador-visitas').innerText = `Tú eres el visitante número ${visitas} de Preciso GPS`;
+        })
+        .catch(error => {
+            console.error('Error al cargar el contador de visitas:', error);
+        });
+</script>
