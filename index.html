@@ -635,7 +635,7 @@
     fetch('contador.php')
         .then(response => response.text())
         .then(visitas => {
-            document.getElementById('contador-visitas').innerText = `Tú eres el visitante número ${visitas} de Preciso GPS`;
+            document.getElementById('contador-visitas').innerText = `Tú eres el visitante número ${visitas} de PrecisoGPS`;
         })
         .catch(error => {
             console.error('Error al cargar el contador de visitas:', error);
