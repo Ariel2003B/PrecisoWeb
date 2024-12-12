@@ -13485,13 +13485,11 @@ section#contact form#contactForm :-ms-input-placeholder {
   padding: 10px;
   border: 1px solid #ccc;
 }
-
 #modalSecretaria .list-group-item a {
   text-decoration: none;
   color: #007bff;
   font-weight: bold;
 }
-
 #modalSecretaria .list-group-item a:hover {
   color: #0056b3;
   text-decoration: underline;
