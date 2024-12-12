@@ -3308,6 +3308,27 @@ fieldset:disabled .btn {
   --bs-btn-disabled-border-color: #FFEF00;
 }
 
+
+.btn-contador {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #005298;
+  --bs-btn-border-color: #005298;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #00358E;
+  --bs-btn-hover-border-color: #00358E;
+  --bs-btn-focus-shadow-rgb: 255, 208, 38;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #00358E;
+  --bs-btn-active-border-color: #00358E;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #005298;
+  --bs-btn-disabled-border-color: #005298;
+}
+
+
+
+
+
 .btn-secondary {
   --bs-btn-color: #fff;
   --bs-btn-bg: #6c757d;

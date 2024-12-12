@@ -93,8 +93,12 @@
             <p class="masthead-subheading">Supervisa tus vehículos en tiempo real y asegura un control total en
                 cualquier lugar y momento.</p>
             <h1 class="masthead-heading">PROTECCIÓN Y MONITOREO CONSTANTE</h1>
-            <a class="btn btn-primary btn-xl text-uppercase" href="#services">CONOCE NUESTROS PLANES</a>
+            <a id="contador-visitas" class="btn btn-contador btn-xl text-uppercase" href="#">Cargando visitantes...</a>
         </div>
+
+        <!-- <div id="contador-visitas" class="contador">
+            
+        </div> -->
     </header>
     <section class="page-section" id="services">
         <div class="container">
@@ -642,9 +646,7 @@
 </body>
 
 </html>
-<div id="contador-visitas" class="contador">
-    Cargando visitantes...
-</div>
+
 
 <script>
     fetch('contador.php')
