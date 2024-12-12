@@ -3324,10 +3324,21 @@ fieldset:disabled .btn {
   --bs-btn-disabled-bg: #005298;
   --bs-btn-disabled-border-color: #005298;
 }
-
-
-
-
+.btn-clients {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #28a745;
+  --bs-btn-border-color: #28a745;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #1b7630;
+  --bs-btn-hover-border-color: #1b7630;
+  --bs-btn-focus-shadow-rgb: 255, 208, 38;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #28a745;
+  --bs-btn-active-border-color: #28a745;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #28a745;
+  --bs-btn-disabled-border-color: #28a745;
+}
 
 .btn-secondary {
   --bs-btn-color: #fff;
@@ -13434,3 +13445,55 @@ section#contact form#contactForm :-ms-input-placeholder {
       transform: translateY(0);
   }
 }
+
+
+.modal-secretaria .modal-body {
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-secretaria #filtroModal {
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.modal-secretaria .list-group-item a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.modal-secretaria .list-group-item a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+#modalSecretaria .modal-body {
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#modalSecretaria #filtroModal {
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+#modalSecretaria .list-group-item a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+#modalSecretaria .list-group-item a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
