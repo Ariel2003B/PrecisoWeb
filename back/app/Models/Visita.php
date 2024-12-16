@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Visita
  * 
  * @property int $id
- * @property int $contador
+ * @property int|null $contador
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *

@@ -46,10 +46,10 @@
                     <li class="nav-item"><a class="nav-link @yield('ActivarPV')" href="{{route('home.privacidad')}}">Política
                             de privacidad</a></li>
                     @if (Auth::check())
-                        <li class="nav-item"><a class="nav-link @yield('Session')" href="">Cerrar
+                        <li class="nav-item"><a class="nav-link @yield('SessionEnd')" href="">Cerrar
                                 sesion</a></li>
                     @else
-                        <li class="nav-item"><a class="nav-link @yield('ActivarPxsk')" href="">Iniciar
+                        <li class="nav-item"><a class="nav-link @yield('ActivarLogin')" href="{{route ('login.form')}}">Iniciar
                                 sesion</a></li>
                     @endif
                 </ul>
