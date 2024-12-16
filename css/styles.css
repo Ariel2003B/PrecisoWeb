@@ -13494,4 +13494,72 @@ section#contact form#contactForm :-ms-input-placeholder {
   color: #0056b3;
   text-decoration: underline;
 }
+/* Contenedor principal del dropdown */
+.dropdown-custom {
+  position: relative;
+  display: inline-block;
+  text-align: center; /* Centra el texto si es necesario */
+  margin: 0; /* Elimina márgenes adicionales */
+  padding: 0;
+}
 
+/* Enlace principal (Gestionar) */
+.dropdown-toggle-custom {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 15px; /* Espaciado uniforme */
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.dropdown-toggle-custom:hover {
+  color: #00aaff; /* Color al pasar el mouse */
+}
+
+/* Menú desplegable */
+.dropdown-menu-custom {
+  display: none;
+  position: absolute;
+  top: 100%; /* Coloca el dropdown justo debajo del enlace */
+  left: 0; /* Elimina cualquier desplazamiento hacia la izquierda */
+  background-color: rgba(51, 51, 51, 0.9); /* Fondo oscuro semi-transparente */
+  min-width: 200px; /* Ancho mínimo */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ligera */
+  z-index: 1000;
+  margin: 0; /* Elimina márgenes */
+  padding: 0; /* Elimina padding */
+  list-style: none; /* Elimina los puntos de la lista */
+}
+
+/* Elementos dentro del menú */
+.dropdown-menu-custom li {
+  margin: 0; /* Elimina márgenes */
+  padding: 0; /* Elimina padding */
+}
+
+.dropdown-menu-custom a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px; /* Espaciado uniforme */
+  display: block;
+  text-align: left; /* Alinea el texto a la izquierda */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-menu-custom a:hover {
+  background-color: #005298; /* Azul oscuro */
+  color: #fff;
+}
+
+/* Mostrar el menú al pasar el mouse */
+.dropdown-custom:hover .dropdown-menu-custom {
+  display: block;
+}
+
+/* Línea separadora para el último elemento */
+.dropdown-menu-custom .logout-item {
+  border-top: 1px solid #555; /* Línea separadora */
+  margin-top: 5px; /* Espacio superior */
+  padding-top: 10px; /* Ajuste del padding */
+}
