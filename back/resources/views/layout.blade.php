@@ -24,7 +24,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
         <div class="container">
-            <a class="" href="{{route('home.inicio')}}">
+            <a class="" href="{{ route('home.inicio') }}">
                 <img src="{{ asset('img/PrecisNavidad.png') }}" alt="Preciso GPS" />
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
@@ -34,22 +34,67 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
-                    <li class="nav-item"><a class="nav-link @yield('ActivarAccessC')" href="{{route('home.accesoCliente')}}">Acceso
+                    <li class="nav-item"><a class="nav-link @yield('ActivarAccessC')"
+                            href="{{ route('home.accesoCliente') }}">Acceso
                             clientes</a></li>
-                    <li class="nav-item"><a class="nav-link @yield('ActivarServicios')" href="{{route('home.servicios')}}">Servicios</a>
+                    <li class="nav-item"><a class="nav-link @yield('ActivarServicios')"
+                            href="{{ route('home.servicios') }}">Servicios</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link @yield('ActivarPlanes')" href="{{route('home.planes')}}">Planes</a>
+                    <li class="nav-item"><a class="nav-link @yield('ActivarPlanes')"
+                            href="{{ route('home.planes') }}">Planes</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link @yield('ActivarNosotros')" href="{{route('home.nosotros')}}">Nosotros</a></li>
-                    {{-- <li class="nav-item"><a class="nav-link @yield('ActivarContactanos')" href="index.html#contact">Contactanos</a> --}}
+                    <li class="nav-item"><a class="nav-link @yield('ActivarNosotros')"
+                            href="{{ route('home.nosotros') }}">Nosotros</a></li>
                     </li>
-                    <li class="nav-item"><a class="nav-link @yield('ActivarPV')" href="{{route('home.privacidad')}}">Política
+
+                    <li class="nav-item"><a class="nav-link @yield('ActivarPV')"
+                            href="{{ route('home.privacidad') }}">Política
                             de privacidad</a></li>
                     @if (Auth::check())
-                        <li class="nav-item"><a class="nav-link @yield('SessionEnd')" href="">Cerrar
-                                sesion</a></li>
+                        <li class="nav-item dropdown-custom">
+                            <a href="#" class="nav-link dropdown-toggle-custom">{{ Auth::user()->NOMBRE }}
+                                {{ Auth::user()->APELLIDO }}
+                            <i class="fas fa-chevron-down"></i>
+                            </a>
+
+                            <ul class="dropdown-menu-custom">
+                                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
+                                    <li><a href="">Usuarios</a></li>
+                                @endif
+                                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
+                                    <li><a href="">Simcards</a></li>
+                                @endif
+                                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'VEHICULOS'))
+                                    <li><a href="">Vehículos</a></li>
+                                @endif
+                                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PERFILES'))
+                                    <li><a href="">Perfiles</a></li>
+                                @endif
+
+
+
+                                <li><a class="logout-item" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar
+                                        sesión</a>
+                                </li>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                </form>
+                            </ul>
+                        </li>
+
+                        {{-- 
+                        <li class="nav-item">
+                            <a class="nav-link @yield('SessionEnd')" href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Cerrar sesión
+                            </a>
+
+                        </li> --}}
                     @else
-                        <li class="nav-item"><a class="nav-link @yield('ActivarLogin')" href="{{route ('login.form')}}">Iniciar
+                        <li class="nav-item"><a class="nav-link @yield('ActivarLogin')"
+                                href="{{ route('login.form') }}">Iniciar
                                 sesion</a></li>
                     @endif
                 </ul>

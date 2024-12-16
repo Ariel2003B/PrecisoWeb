@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $TIPO
  * @property string|null $PLACA
  * @property string|null $ESTADO
+ * 
+ * @property Collection|SIMCARD[] $s_i_m_c_a_r_d_s
  *
  * @package App\Models
  */
@@ -29,4 +32,9 @@ class VEHICULO extends Model
 		'PLACA',
 		'ESTADO'
 	];
+
+	public function s_i_m_c_a_r_d_s()
+	{
+		return $this->hasMany(SIMCARD::class, 'VEH_ID');
+	}
 }

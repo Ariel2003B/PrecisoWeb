@@ -19,3 +19,5 @@ Route::get('/obtener-visitas', [VisitasController::class, 'obtenerVisitas']);
 Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login.form');
 // Procesar el login
 Route::post('/login', [AuthLoginController::class, 'login'])->name('login');
+// Cerrar sesion
+Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
