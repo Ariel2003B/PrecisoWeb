@@ -75,18 +75,20 @@
             </div>
             <br>
             <br>
-            @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">REPOSICIÓN DE CHIPS</h4>
-                        <a class="btn btn-success" href="http://www.miclaro.com.ec/ivrdigital" target="_blank">Visitar
-                            página</a>
+            @if (Auth::check())
+                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">REPOSICIÓN DE CHIPS</h4>
+                            <a class="btn btn-success" href="http://www.miclaro.com.ec/ivrdigital" target="_blank">Visitar
+                                página</a>
+                        </div>
                     </div>
-                </div>
+                @endif
             @endif
         </div>
     </section>
