@@ -75,18 +75,19 @@
             </div>
             <br>
             <br>
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <span class="fa-stack fa-4x">
-                        <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                        <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <h4 class="my-3">REPOSICIÓN DE CHIPS</h4>
-                    <a class="btn btn-success" href="http://www.miclaro.com.ec/ivrdigital" target="_blank">Visitar
-                        página</a>
+            @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">REPOSICIÓN DE CHIPS</h4>
+                        <a class="btn btn-success" href="http://www.miclaro.com.ec/ivrdigital" target="_blank">Visitar
+                            página</a>
+                    </div>
                 </div>
-            </div>
-
+            @endif
         </div>
     </section>
 
@@ -96,7 +97,7 @@
             <div class="modal-content">
                 <!-- Botón para cerrar -->
                 <div class="close-modal" data-bs-dismiss="modal">
-                    <img src="{{asset('img/close-icon.svg')}}" alt="Close modal" />
+                    <img src="{{ asset('img/close-icon.svg') }}" alt="Close modal" />
                 </div>
                 <!-- Contenido del modal -->
                 <div class="container">
