@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthLoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\VisitasController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,6 @@ Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login
 Route::post('/login', [AuthLoginController::class, 'login'])->name('login');
 // Cerrar sesion
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
+
+//rutas segun perfiles 
+Route::resource('perfil', PerfilController::class);

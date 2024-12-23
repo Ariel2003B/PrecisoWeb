@@ -52,10 +52,9 @@
                             de privacidad</a></li>
                     @if (Auth::check())
                         <li class="nav-item dropdown-custom">
-                            <a href="#" class="nav-link dropdown-toggle-custom">{{ Auth::user()->NOMBRE }}
-                                {{ Auth::user()->APELLIDO }}
-                            <i class="fas fa-chevron-down"></i>
-                            </a>
+                            <button class="dropdown-toggle-custom">
+                                {{ Auth::user()->NOMBRE }} {{ Auth::user()->APELLIDO }}
+                            </button>
 
                             <ul class="dropdown-menu-custom">
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
@@ -70,9 +69,6 @@
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PERFILES'))
                                     <li><a href="">Perfiles</a></li>
                                 @endif
-
-
-
                                 <li><a class="logout-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar
                                         sesión</a>
@@ -160,6 +156,26 @@
                 console.error('Error al cargar el contador de visitas:', error);
             });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toggleButton = document.querySelector(".dropdown-toggle-custom");
+            const dropdownMenu = document.querySelector(".dropdown-menu-custom");
+
+            // Agregar un evento click al botón principal
+            toggleButton.addEventListener("click", function(e) {
+                e.preventDefault(); // Evita redireccionamientos si es un enlace
+                dropdownMenu.classList.toggle("show");
+            });
+
+            // Cerrar el menú si se hace clic fuera del dropdown
+            document.addEventListener("click", function(e) {
+                if (!toggleButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove("show");
+                }
+            });
+        }); 
+    </script>
+
 </body>
 
 </html>

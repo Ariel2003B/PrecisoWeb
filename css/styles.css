@@ -3324,6 +3324,7 @@ fieldset:disabled .btn {
   --bs-btn-disabled-bg: #005298;
   --bs-btn-disabled-border-color: #005298;
 }
+
 .btn-clients {
   --bs-btn-color: #fff;
   --bs-btn-bg: #28a745;
@@ -13318,21 +13319,28 @@ section#contact form#contactForm :-ms-input-placeholder {
 /* Estilo de controles prev y next */
 #logoCarousel .carousel-control-prev,
 #logoCarousel .carousel-control-next {
-  width: 50px; /* Tamaño ajustado */
+  width: 50px;
+  /* Tamaño ajustado */
   height: 50px;
-  background-color: rgba(0, 82, 152, 0.1); /* Color con transparencia */
-  border-radius: 50%; /* Botones redondeados */
+  background-color: rgba(0, 82, 152, 0.1);
+  /* Color con transparencia */
+  border-radius: 50%;
+  /* Botones redondeados */
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 50%; /* Centrado vertical */
-  transform: translateY(-50%); /* Ajuste para centrar perfectamente */
-  z-index: 10; /* Asegura que estén sobre las imágenes */
+  top: 50%;
+  /* Centrado vertical */
+  transform: translateY(-50%);
+  /* Ajuste para centrar perfectamente */
+  z-index: 10;
+  /* Asegura que estén sobre las imágenes */
 }
 
 #logoCarousel .carousel-control-prev {
-  left: -20px; /* Posición más cerca del carrusel para dispositivos pequeños */
+  left: -20px;
+  /* Posición más cerca del carrusel para dispositivos pequeños */
 }
 
 #logoCarousel .carousel-control-next {
@@ -13343,51 +13351,70 @@ section#contact form#contactForm :-ms-input-placeholder {
 #logoCarousel .carousel-control-next-icon {
   width: 20px;
   height: 20px;
-  background-size: 100%; /* Tamaño del ícono */
-  filter: invert(1); /* Cambia el ícono a blanco para contraste */
+  background-size: 100%;
+  /* Tamaño del ícono */
+  filter: invert(1);
+  /* Cambia el ícono a blanco para contraste */
 }
 
 /* Estilo de las imágenes dentro del carrusel */
 .carousel-inner img {
-  width: auto; /* Mantener proporciones */
-  max-height: 150px; /* Altura máxima */
-  object-fit: contain; /* Ajustar imagen sin deformarse */
-  margin: 0 auto; /* Centrarlas */
-  border-radius: 10px; /* Esquinas redondeadas */
-  background-color: #f8f8f8; /* Fondo neutral */
-  padding: 10px; /* Espaciado interno */
-  transition: transform 0.2s ease; /* Transición para efecto */
+  width: auto;
+  /* Mantener proporciones */
+  max-height: 150px;
+  /* Altura máxima */
+  object-fit: contain;
+  /* Ajustar imagen sin deformarse */
+  margin: 0 auto;
+  /* Centrarlas */
+  border-radius: 10px;
+  /* Esquinas redondeadas */
+  background-color: #f8f8f8;
+  /* Fondo neutral */
+  padding: 10px;
+  /* Espaciado interno */
+  transition: transform 0.2s ease;
+  /* Transición para efecto */
 }
 
 /* Sombra y efecto hover para imágenes */
 .carousel-inner img:hover {
-  transform: scale(1.05); /* Aumentar ligeramente en hover */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra más destacada */
+  transform: scale(1.05);
+  /* Aumentar ligeramente en hover */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  /* Sombra más destacada */
 }
 
 /* Ajustes responsivos para dispositivos pequeños */
 @media (max-width: 768px) {
+
   #logoCarousel .carousel-control-prev,
   #logoCarousel .carousel-control-next {
-    width: 40px; /* Controles más pequeños */
+    width: 40px;
+    /* Controles más pequeños */
     height: 40px;
   }
 
   .carousel-inner img {
-    max-height: 100px; /* Altura máxima menor para pantallas pequeñas */
-    padding: 5px; /* Menos espaciado interno */
+    max-height: 100px;
+    /* Altura máxima menor para pantallas pequeñas */
+    padding: 5px;
+    /* Menos espaciado interno */
   }
 }
 
 @media (max-width: 576px) {
+
   #logoCarousel .carousel-control-prev,
   #logoCarousel .carousel-control-next {
-    width: 30px; /* Aún más pequeños */
+    width: 30px;
+    /* Aún más pequeños */
     height: 30px;
   }
 
   #logoCarousel .carousel-control-prev {
-    left: -15px; /* Ajustar posición de controles */
+    left: -15px;
+    /* Ajustar posición de controles */
   }
 
   #logoCarousel .carousel-control-next {
@@ -13395,8 +13422,10 @@ section#contact form#contactForm :-ms-input-placeholder {
   }
 
   .carousel-inner img {
-    max-height: 80px; /* Reducir aún más para pantallas muy pequeñas */
-    margin: 5px; /* Separación menor */
+    max-height: 80px;
+    /* Reducir aún más para pantallas muy pequeñas */
+    margin: 5px;
+    /* Separación menor */
   }
 }
 
@@ -13422,27 +13451,38 @@ section#contact form#contactForm :-ms-input-placeholder {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
-  color: #333; /* Color del texto */
-  padding: 10px 20px; /* Espaciado interno */
-  border: 2px solid #ff6f00; /* Borde naranja */
-  border-radius: 8px; /* Bordes redondeados */
-  font-family: 'Arial', sans-serif; /* Fuente */
-  font-size: 14px; /* Tamaño de texto */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
-  z-index: 1000; /* Encima de otros elementos */
-  animation: fadeIn 1s ease-in-out; /* Animación de entrada */
+  background: rgba(255, 255, 255, 0.9);
+  /* Fondo blanco semitransparente */
+  color: #333;
+  /* Color del texto */
+  padding: 10px 20px;
+  /* Espaciado interno */
+  border: 2px solid #ff6f00;
+  /* Borde naranja */
+  border-radius: 8px;
+  /* Bordes redondeados */
+  font-family: 'Arial', sans-serif;
+  /* Fuente */
+  font-size: 14px;
+  /* Tamaño de texto */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  /* Sombra */
+  z-index: 1000;
+  /* Encima de otros elementos */
+  animation: fadeIn 1s ease-in-out;
+  /* Animación de entrada */
 }
 
 /* Animación para el contador */
 @keyframes fadeIn {
   from {
-      opacity: 0;
-      transform: translateY(10px);
+    opacity: 0;
+    transform: translateY(10px);
   }
+
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -13485,6 +13525,7 @@ section#contact form#contactForm :-ms-input-placeholder {
   padding: 10px;
   border: 1px solid #ccc;
 }
+
 #modalSecretaria .list-group-item a {
   text-decoration: none;
   color: #007bff;
@@ -13495,62 +13536,59 @@ section#contact form#contactForm :-ms-input-placeholder {
   color: #0056b3;
   text-decoration: underline;
 }
+
 /* Contenedor principal del dropdown */
 .dropdown-custom {
   position: relative;
   display: inline-block;
-  text-align: center; /* Centra el texto si es necesario */
-  margin: 0; /* Elimina márgenes adicionales */
-  padding: 0;
+  vertical-align: middle; /* Alinea con otros elementos */
 }
 
-/* Enlace principal (Gestionar) */
+/* Enlace principal (Admin Master) */
 .dropdown-toggle-custom {
   text-decoration: none;
   color: white;
   font-weight: bold;
-  padding: 10px 15px; /* Espaciado uniforme */
-  transition: color 0.3s ease, background-color 0.3s ease;
+  padding: 10px 15px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: inline-block;
+  line-height: 1.5;
+  font-family: 'Montserrat', sans-serif; /* Asegúrate de que sea la misma fuente */
+  font-size: 14px; /* Ajusta al tamaño de letra del navbar */
 }
 
 .dropdown-toggle-custom:hover {
-  color: #00aaff; /* Color al pasar el mouse */
+  color: #FFEF00;
+}
+/* Flecha indicadora para el desplegable */
+.dropdown-toggle-custom::after {
+  content: " ▼"; /* Flecha hacia abajo */
+  font-size: 12px;
+  color: white;
+  margin-left: 5px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.dropdown-custom:hover .dropdown-toggle-custom::after {
+  transform: rotate(180deg); /* Rota la flecha al desplegar */
 }
 
 /* Menú desplegable */
 .dropdown-menu-custom {
-  display: none;
+  display: none; /* Oculto por defecto */
   position: absolute;
-  top: 100%; /* Coloca el dropdown justo debajo del enlace */
-  left: 0; /* Elimina cualquier desplazamiento hacia la izquierda */
-  background-color: rgba(51, 51, 51, 0.9); /* Fondo oscuro semi-transparente */
-  min-width: 200px; /* Ancho mínimo */
+  top: calc(100% + 5px); /* Justo debajo del botón */
+  left: 0;
+  background-color: rgba(51, 51, 51, 0.95); /* Fondo oscuro semi-transparente */
   border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ligera */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ligera */
+  min-width: 200px; /* Ancho mínimo */
   z-index: 1000;
-  margin: 0; /* Elimina márgenes */
-  padding: 0; /* Elimina padding */
-  list-style: none; /* Elimina los puntos de la lista */
-}
-
-/* Elementos dentro del menú */
-.dropdown-menu-custom li {
-  margin: 0; /* Elimina márgenes */
-  padding: 0; /* Elimina padding */
-}
-
-.dropdown-menu-custom a {
-  color: white;
-  text-decoration: none;
-  padding: 10px 15px; /* Espaciado uniforme */
-  display: block;
-  text-align: left; /* Alinea el texto a la izquierda */
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dropdown-menu-custom a:hover {
-  background-color: #005298; /* Azul oscuro */
-  color: #fff;
+  padding: 0;
+  margin: 0;
 }
 
 /* Mostrar el menú al pasar el mouse */
@@ -13558,9 +13596,51 @@ section#contact form#contactForm :-ms-input-placeholder {
   display: block;
 }
 
-/* Línea separadora para el último elemento */
-.dropdown-menu-custom .logout-item {
-  border-top: 1px solid #555; /* Línea separadora */
-  margin-top: 5px; /* Espacio superior */
-  padding-top: 10px; /* Ajuste del padding */
+/* Elementos dentro del menú */
+.dropdown-menu-custom li {
+  list-style: none;
+}
+
+.dropdown-menu-custom a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  display: block;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Montserrat', sans-serif; /* Misma fuente */
+  font-size: 14px; /* Misma fuente y tamaño */
+}
+
+
+.dropdown-menu-custom a:hover {
+  background-color: #005298;
+  color: #fff;
+}
+
+/* Línea separadora para cerrar sesión */
+.dropdown-menu-custom .divider {
+  height: 1px;
+  background-color: #555; /* Línea divisoria */
+  margin: 5px 0;
+}
+
+/* Corrección de alineación del dropdown en el menú */
+.nav-item {
+  display: inline-block;
+  vertical-align: middle; /* Alineación uniforme */
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .dropdown-custom {
+    width: 100%;
+  }
+  .dropdown-toggle-custom {
+    width: 100%;
+    text-align: left;
+  }
+  .dropdown-menu-custom {
+    width: 100%;
+    border-radius: 0;
+  }
 }

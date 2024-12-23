@@ -28,6 +28,7 @@ class AuthLoginController extends Controller
                     'DESCRIPCION' => 'USUARIOS',
                     'ESTADO' => 'A'
                 ]);
+                
                 $permisoSimcards = PERMISO::create([
                     'DESCRIPCION' => 'SIMCARDS',
                     'ESTADO' => 'A'
@@ -37,7 +38,10 @@ class AuthLoginController extends Controller
                     'DESCRIPCION' => 'VEHICULOS',
                     'ESTADO' => 'A'
                 ]);
-
+                $permisoVehiculos = PERMISO::create([
+                    'DESCRIPCION' => 'PERFILES',
+                    'ESTADO' => 'A'
+                ]);
                 // Asociar permisos al perfil administrador
                 PERFILPERMISO::create([
                     'PER_ID' => $perfil->PER_ID,
