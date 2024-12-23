@@ -58,16 +58,16 @@
 
                             <ul class="dropdown-menu-custom">
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
-                                    <li><a href="">Usuarios</a></li>
+                                    <li><a href="{{route('usuario.index')}}">Usuarios</a></li>
                                 @endif
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                                    <li><a href="">Simcards</a></li>
+                                    <li><a href="{{route('simcards.index')}}">Simcards</a></li>
                                 @endif
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'VEHICULOS'))
-                                    <li><a href="">Vehículos</a></li>
+                                    <li><a href="{{route('vehiculos.index')}}">Vehículos</a></li>
                                 @endif
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PERFILES'))
-                                    <li><a href="">Perfiles</a></li>
+                                    <li><a href="{{route('perfil.index')}}">Perfiles</a></li>
                                 @endif
                                 <li><a class="logout-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar

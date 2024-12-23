@@ -3,6 +3,9 @@
 use App\Http\Controllers\AuthLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\SimCardController;
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\VisitasController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +27,9 @@ Route::post('/login', [AuthLoginController::class, 'login'])->name('login');
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
 //rutas segun perfiles 
-Route::resource('perfil', PerfilController::class);
+Route::middleware(['auth'])->group(function () {
+    Route::resource('perfil', PerfilController::class);
+    Route::resource('usuario', UsuarioController::class);
+    Route::resource('vehiculos', VehiculoController::class);
+    Route::resource('simcards', SimCardController::class);
+});

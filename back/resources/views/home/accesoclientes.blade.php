@@ -7,7 +7,6 @@
     <br>
     <br>
     <br>
-    <!-- Política de Privacidad -->
     <section class="page-section" id="">
         <div class="container">
             <div class="text-center">
