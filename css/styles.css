@@ -13541,7 +13541,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 .dropdown-custom {
   position: relative;
   display: inline-block;
-  vertical-align: middle; /* Alinea con otros elementos */
+  vertical-align: middle;
+  /* Alinea con otros elementos */
 }
 
 /* Enlace principal (Admin Master) */
@@ -13556,16 +13557,20 @@ section#contact form#contactForm :-ms-input-placeholder {
   transition: color 0.3s ease;
   display: inline-block;
   line-height: 1.5;
-  font-family: 'Montserrat', sans-serif; /* Asegúrate de que sea la misma fuente */
-  font-size: 14px; /* Ajusta al tamaño de letra del navbar */
+  font-family: 'Montserrat', sans-serif;
+  /* Asegúrate de que sea la misma fuente */
+  font-size: 14px;
+  /* Ajusta al tamaño de letra del navbar */
 }
 
 .dropdown-toggle-custom:hover {
   color: #FFEF00;
 }
+
 /* Flecha indicadora para el desplegable */
 .dropdown-toggle-custom::after {
-  content: " ▼"; /* Flecha hacia abajo */
+  content: " ▼";
+  /* Flecha hacia abajo */
   font-size: 12px;
   color: white;
   margin-left: 5px;
@@ -13573,19 +13578,26 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 
 .dropdown-custom:hover .dropdown-toggle-custom::after {
-  transform: rotate(180deg); /* Rota la flecha al desplegar */
+  transform: rotate(180deg);
+  /* Rota la flecha al desplegar */
 }
 
 /* Menú desplegable */
 .dropdown-menu-custom {
-  display: none; /* Oculto por defecto */
+  display: none;
+  /* Oculto por defecto */
   position: absolute;
-  top: calc(100% + 5px); /* Justo debajo del botón */
+  top: calc(100% + 5px);
+  /* Justo debajo del botón */
   left: 0;
-  background-color: rgba(51, 51, 51, 0.95); /* Fondo oscuro semi-transparente */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ligera */
-  min-width: 200px; /* Ancho mínimo */
+  background-color: rgba(51, 51, 51, 0.95);
+  /* Fondo oscuro semi-transparente */
+  border-radius: 8px;
+  /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  /* Sombra ligera */
+  min-width: 200px;
+  /* Ancho mínimo */
   z-index: 1000;
   padding: 0;
   margin: 0;
@@ -13607,8 +13619,10 @@ section#contact form#contactForm :-ms-input-placeholder {
   padding: 10px 15px;
   display: block;
   transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: 'Montserrat', sans-serif; /* Misma fuente */
-  font-size: 14px; /* Misma fuente y tamaño */
+  font-family: 'Montserrat', sans-serif;
+  /* Misma fuente */
+  font-size: 14px;
+  /* Misma fuente y tamaño */
 }
 
 
@@ -13620,14 +13634,16 @@ section#contact form#contactForm :-ms-input-placeholder {
 /* Línea separadora para cerrar sesión */
 .dropdown-menu-custom .divider {
   height: 1px;
-  background-color: #555; /* Línea divisoria */
+  background-color: #555;
+  /* Línea divisoria */
   margin: 5px 0;
 }
 
 /* Corrección de alineación del dropdown en el menú */
 .nav-item {
   display: inline-block;
-  vertical-align: middle; /* Alineación uniforme */
+  vertical-align: middle;
+  /* Alineación uniforme */
 }
 
 /* Ajustes responsivos */
@@ -13635,10 +13651,12 @@ section#contact form#contactForm :-ms-input-placeholder {
   .dropdown-custom {
     width: 100%;
   }
+
   .dropdown-toggle-custom {
     width: 100%;
     text-align: left;
   }
+
   .dropdown-menu-custom {
     width: 100%;
     border-radius: 0;
@@ -13646,32 +13664,48 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 
 .pagination .page-item .page-link {
-  color: #fff; /* Cambiar color del texto */
-  background-color: #005298; /* Fondo azul */
-  border-color: #005298; /* Bordes */
+  color: #fff;
+  /* Cambiar color del texto */
+  background-color: #005298;
+  /* Fondo azul */
+  border-color: #005298;
+  /* Bordes */
   transition: all 0.3s ease;
 }
 
 .pagination .page-item .page-link:hover {
-  background-color: #00358E; /* Fondo más oscuro al pasar el mouse */
+  background-color: #00358E;
+  /* Fondo más oscuro al pasar el mouse */
   border-color: #00358E;
 }
 
 .pagination .page-item.active .page-link {
-  background-color: #FF0000; 
+  background-color: #FF0000;
   border-color: #FF0000;
 }
+
 /* Estilo para los modales */
-#modalPequeno, #modalClaro, #modalWialon {
-  z-index: 1050; /* Mantiene el modal encima de otros elementos */
-  min-width: 250px; /* Ancho mínimo */
-  max-width: 300px; /* Ancho máximo */
-  padding: 5px; /* Espaciado interno */
-  border: 1px solid #ccc; /* Borde ligero */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
-  background-color: #fff; /* Fondo blanco */
-  position: absolute; /* Posiciona en relación con el documento */
+#modalPequeno,
+#modalClaro,
+#modalWialon {
+  z-index: 1050;
+  /* Mantiene el modal encima de otros elementos */
+  min-width: 250px;
+  /* Ancho mínimo */
+  max-width: 300px;
+  /* Ancho máximo */
+  padding: 5px;
+  /* Espaciado interno */
+  border: 1px solid #ccc;
+  /* Borde ligero */
+  border-radius: 8px;
+  /* Bordes redondeados */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  /* Sombra para destacar */
+  background-color: #fff;
+  /* Fondo blanco */
+  position: absolute;
+  /* Posiciona en relación con el documento */
 }
 
 /* Botón de cierre para los modales */
@@ -13706,7 +13740,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 #modalClaro div a,
 #modalWialon div a {
   text-align: center;
-  color: #007bff; /* Azul para los enlaces */
+  color: #007bff;
+  /* Azul para los enlaces */
   text-decoration: none;
   font-size: 1rem;
   margin: 5px 0;
@@ -13716,7 +13751,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 #modalClaro div a:hover,
 #modalWialon div a:hover {
   text-decoration: underline;
-  color: #0056b3; /* Azul más oscuro al pasar por encima */
+  color: #0056b3;
+  /* Azul más oscuro al pasar por encima */
 }
 
 /* Contenedor del contenido dentro de los modales */
@@ -13727,6 +13763,7 @@ section#contact form#contactForm :-ms-input-placeholder {
   flex-direction: column;
   align-items: center;
 }
+
 /* Fondo del modal */
 .modal-navidad {
   position: fixed;
@@ -13734,7 +13771,8 @@ section#contact form#contactForm :-ms-input-placeholder {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8); /* Fondo oscuro transparente */
+  background: rgba(0, 0, 0, 0.8);
+  /* Fondo oscuro transparente */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13743,13 +13781,16 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 /* Contenedor del modal */
 .modal-content-navidad {
-  background: linear-gradient(135deg, #005298, #ff0000); /* Fondo llamativo */
+  background: linear-gradient(135deg, #005298, #ff0000);
+  /* Fondo con colores de la empresa */
   border-radius: 20px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  width: 90%; /* Tamaño por defecto */
-  max-width: 400px; /* Tamaño máximo */
+  width: 80%;
+  /* Ajustado para ser más pequeño */
+  max-width: 300px;
+  /* Reducido el tamaño máximo */
   text-align: center;
-  padding: 20px;
+  padding: 15px;
   position: relative;
   overflow: hidden;
 }
@@ -13757,8 +13798,10 @@ section#contact form#contactForm :-ms-input-placeholder {
 /* Estilos responsivos */
 @media (min-width: 768px) {
   .modal-content-navidad {
-    width: 50%; /* Reduce el ancho en pantallas grandes */
-    max-width: 600px; /* Tamaño máximo para navegadores grandes */
+    width: 50%;
+    /* Menor ancho en pantallas grandes */
+    max-width: 400px;
+    /* Tamaño máximo adecuado */
   }
 }
 
@@ -13769,34 +13812,50 @@ section#contact form#contactForm :-ms-input-placeholder {
   align-items: center;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3); /* Separador translúcido */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  /* Separador translúcido */
 }
 
 /* Logo en la esquina superior izquierda */
 .logo-navidad {
-  max-width: 60px;
+  max-width: 50px;
   height: auto;
-}
-
-/* Botón de cierre */
-.close-navidad {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: #fff;
-  cursor: pointer;
-}
-
-.close-navidad:hover {
-  color: #ffef00; /* Amarillo llamativo */
+  margin-bottom: 10px;
+  /* Espacio entre el logo y el contenido */
 }
 
 /* Imagen decorativa */
 .imagen-navidad {
-  max-width: 100%;
+  max-width: 90%;
   height: auto;
   margin: 0 auto;
   display: block;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Texto del modal */
+.modal-body-navidad {
+  font-family: 'Roboto', sans-serif;
+}
+
+.mensaje-navidad {
+  font-size: 0.9rem;
+  /* Texto más pequeño */
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.modal-body-navidad h4 {
+  font-size: 1.2rem;
+  /* Ajustado para ser más pequeño */
+  font-weight: bold;
+  color: #ffef00;
+  /* Amarillo navideño */
+  text-transform: uppercase;
+}
+
+.modal-body-navidad p {
+  font-size: 0.9rem;
+  margin: 5px 0;
 }
