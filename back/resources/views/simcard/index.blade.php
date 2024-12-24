@@ -31,8 +31,9 @@
                     <th>Codigo plan</th>
                     <th>ICC</th>
                     <th>Número</th>
-                    <th>Asignacion</th>
                     <th>Grupo</th>
+                    <th>Asignacion</th>
+                   
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -47,8 +48,9 @@
                         <td>{{ $simcard->TIPOPLAN }}</td>
                         <td>{{ $simcard->ICC }}</td>
                         <td>{{ $simcard->NUMEROTELEFONO }}</td>
-                        <td>{{ $simcard->v_e_h_i_c_u_l_o->PLACA ?? 'Sin Asignar' }}</td>
                         <td>{{ $simcard->v_e_h_i_c_u_l_o->TIPO ?? 'Sin Asignar' }}</td>
+                        <td>{{ $simcard->v_e_h_i_c_u_l_o->PLACA ?? 'Sin Asignar' }}</td>
+                        
                         <td>{{ $simcard->ESTADO }}</td>
                         <td>
                             <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
