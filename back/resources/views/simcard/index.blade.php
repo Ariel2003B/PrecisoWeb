@@ -15,28 +15,41 @@
                 </button>
             </div>
         </div>
-
+        <form action="{{ route('simcards.bulkUpload') }}" method="POST" enctype="multipart/form-data" class="mb-4">
+            @csrf
+            <label for="csv_file" class="form-label">Migracion masiva:</label>
+            <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required>
+            <button type="submit" class="btn btn-success mt-2">Cargar Datos</button>
+        </form>
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Número</th>
+                    <th>RUC</th>
                     <th>Propietario</th>
+                    <th>Cuenta</th>
                     <th>Plan</th>
+                    <th>Codigo plan</th>
                     <th>ICC</th>
-                    <th>Vehículo</th>
+                    <th>Número</th>
+                    <th>Grupo</th>
+                    <th>Asignacion</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($simcards as $simcard)
                     <tr>
-                        <td>{{ $simcard->ID_SIM }}</td>
-                        <td>{{ $simcard->NUMEROTELEFONO }}</td>
+                        <td>{{ $simcard->RUC }}</td>
                         <td>{{ $simcard->PROPIETARIO }}</td>
+                        <td>{{ $simcard->CUENTA }}</td>
+                        <td>{{ $simcard->PLAN }}</td>
                         <td>{{ $simcard->TIPOPLAN }}</td>
                         <td>{{ $simcard->ICC }}</td>
+                        <td>{{ $simcard->NUMEROTELEFONO }}</td>
                         <td>{{ $simcard->v_e_h_i_c_u_l_o->PLACA ?? 'Sin Asignar' }}</td>
+                        <td>{{ $simcard->v_e_h_i_c_u_l_o->TIPO ?? 'Sin Asignar' }}</td>
+                        <td>{{ $simcard->ESTADO }}</td>
                         <td>
                             <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
                                 class="btn btn-contador btn-sm">Editar</a>

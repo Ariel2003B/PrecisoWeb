@@ -56,7 +56,6 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
-
         // Filtro en vivo para la tabla de Vehículos
         document.getElementById('filtro').addEventListener('input', function() {
             const filtro = this.value.toLowerCase();

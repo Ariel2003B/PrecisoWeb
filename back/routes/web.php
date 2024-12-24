@@ -32,4 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('usuario', UsuarioController::class);
     Route::resource('vehiculos', VehiculoController::class);
     Route::resource('simcards', SimCardController::class);
+    Route::post('/simcards/bulk-upload', [SimCardController::class, 'bulkUpload'])->name('simcards.bulkUpload');
+
 });

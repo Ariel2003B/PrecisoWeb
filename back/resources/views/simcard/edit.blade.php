@@ -9,18 +9,24 @@
             @csrf
             @method('PUT')
             <div class="mb-3">
+                <label for="PROPIETARIO" class="form-label">PROPIETARIO</label>
+                <select name="PROPIETARIO" id="PROPIETARIO" class="form-control">
+                    <option value="PRECISOGPS S.A.S." {{ $simcard->PROPIETARIO === 'PRECISOGPS S.A.S.' ? 'selected' : '' }}>
+                        PRECISOGPS S.A.S.
+                    </option>
+                    <option value="VARGAS REINOSO CESAR GIOVANNY" {{ $simcard->PROPIETARIO === 'VARGAS REINOSO CESAR GIOVANNY' ? 'selected' : '' }}>
+                        VARGAS REINOSO CESAR GIOVANNY
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
                 <label for="RUC" class="form-label">RUC</label>
                 <select name="RUC" id="RUC" class="form-control">
                     <option value="1793212253001" {{ $simcard->RUC === '1793212253001' ? 'selected' : '' }}>
                         1793212253001
                     </option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="PROPIETARIO" class="form-label">PROPIETARIO</label>
-                <select name="PROPIETARIO" id="PROPIETARIO" class="form-control">
-                    <option value="PRECISOGPS S.A.S." {{ $simcard->PROPIETARIO === 'PRECISOGPS S.A.S.' ? 'selected' : '' }}>
-                        PRECISOGPS S.A.S.
+                    <option value="1716024474001" {{ $simcard->RUC === '1716024474001' ? 'selected' : '' }}>
+                        1716024474001
                     </option>
                 </select>
             </div>
@@ -45,7 +51,7 @@
                     value="{{ old('ICC', $simcard->ICC) }}" placeholder="Ingrese el ICC">
             </div>
             <div class="mb-3">
-                <label for="VEH_ID" class="form-label">Vehículo Asignado</label>
+                <label for="VEH_ID" class="form-label">Unidad Asignada</label>
                 <select name="VEH_ID" id="VEH_ID" class="form-select">
                     <option value="">Sin Asignar</option>
                     @foreach ($vehiculos as $vehiculo)
@@ -56,13 +62,12 @@
                     @endforeach
                 </select>
             </div>
-            <div class="mb-3">
+            <div class="mb-3">  
                 <label for="ESTADO" class="form-label">Estado</label>
                 <select name="ESTADO" id="ESTADO" class="form-select" required>
                     <option value="AC" {{ $simcard->ESTADO === 'AC' ? 'selected' : '' }}>Activo</option>
                     <option value="IN" {{ $simcard->ESTADO === 'IN' ? 'selected' : '' }}>Inactivo</option>
                     <option value="LI" {{ $simcard->ESTADO === 'LI' ? 'selected' : '' }}>Libre</option>
-                    <option value="AS" {{ $simcard->ESTADO === 'AS' ? 'selected' : '' }}>Asignado</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-success">Guardar Cambios</button>
