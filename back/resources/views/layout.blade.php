@@ -187,7 +187,8 @@
                     <b>Todo detalle unido al amor y confianza hacen una gran navidad.</b>
                     Esta fecha nos permite agradecer su fidelidad y nos inspira a dar lo mejor de nosotros cada día. En
                     el 2025,
-                    <b>ratificamos nuestro compromiso de mejora continua e innovación,</b> seguiremos acompañando su ruta de
+                    <b>ratificamos nuestro compromiso de mejora continua e innovación,</b> seguiremos acompañando su
+                    ruta de
                     viaje y
                     esperamos que la carretera de su vida esté llena de logros, éxitos y felicidad.
                 </p>
@@ -196,12 +197,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
     <script>
         // Mostrar el modal automáticamente al cargar la página
         window.addEventListener('DOMContentLoaded', () => {
@@ -209,24 +204,21 @@
             modal.style.display = 'flex';
         });
 
-        // Función para cerrar el modal
-        function cerrarModalNavidad() {
-            const modal = document.getElementById('modalNavidad');
+        function mostrarModal() {
+            const modal = document.querySelector('.modal-navidad');
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            const modal = document.querySelector('.modal-navidad');
             modal.style.display = 'none';
         }
 
-        // Detecta tecla "Esc" para cerrar el modal
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                cerrarModalNavidad();
-            }
-        });
-
-        // Cierra el modal si se hace clic fuera del contenido
-        document.addEventListener('click', (event) => {
-            const modal = document.getElementById('modalNavidad');
-            if (modal.style.display === 'flex' && !event.target.closest('.modal-content-navidad')) {
-                cerrarModalNavidad();
+        // Cierra el modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            const modal = document.querySelector('.modal-navidad');
+            if (event.target === modal) {
+                cerrarModal();
             }
         });
     </script>
