@@ -13743,7 +13743,7 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 /* Contenedor del modal */
 .modal-content-navidad {
-  background: #006400; /* Verde navideño */
+  background: #008f39; /* Verde navideño */
   border-radius: 20px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   width: 90%;
@@ -13766,7 +13766,7 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 /* Logo en la esquina superior izquierda */
 .logo-navidad {
-  max-width: 120px; /* Más pequeño */
+  max-width: 140px; /* Más pequeño */
   height: auto;
   margin-right: auto; /* Alinea el logo a la izquierda */
 }
@@ -13807,7 +13807,7 @@ section#contact form#contactForm :-ms-input-placeholder {
 .modal-body-navidad h4 {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #b32428; /* Rojo navideño */
+  color: #FF0000; /* Rojo navideño */
   text-transform: uppercase;
 }
 
