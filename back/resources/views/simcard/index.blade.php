@@ -31,8 +31,8 @@
                     <th>Codigo plan</th>
                     <th>ICC</th>
                     <th>Número</th>
-                    <th>Grupo</th>
                     <th>Asignacion</th>
+                    <th>Grupo</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
