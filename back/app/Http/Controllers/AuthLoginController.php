@@ -91,7 +91,7 @@ class AuthLoginController extends Controller
             // Iniciar sesión manualmente
             Auth::login($user);
 
-            return redirect()->route('home.inicio')->with('success', 'Inicio de sesión exitoso.');
+            return redirect()->route('home.accesoCliente')->with('success', 'Inicio de sesión exitoso.');
         }
 
         return redirect()->route('login.form')->with('error', 'Correo o contraseña incorrectos.');

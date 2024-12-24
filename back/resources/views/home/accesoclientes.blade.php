@@ -7,12 +7,8 @@
     <br>
     <br>
     <br>
-    <section class="page-section" id="">
+    <section class="page-section py-5" id="">
         <div class="container">
-            <div class="text-center">
-                <h2 class="section-heading text-uppercase">Nuestras plataformas</h2>
-                <h3 class="section-subheading text-muted">Encuentra la plataforma de tu preferencia.</h3>
-            </div>
             <div class="row text-center">
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
@@ -68,29 +64,170 @@
                         <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                         <i class="fas fa-folder-open fa-stack-1x fa-inverse"></i>
                     </span>
-                    <h4 class="my-3">SECRETARIA DE MOVILIDAD OPERADORAS</h4>
+                    <h4 class="my-3">SECRETARIA DE MOVILIDAD</h4>
                     <a class="btn btn-success" data-bs-toggle="modal" href="#modalSecretaria">Encuentra tu CIA</a>
                 </div>
             </div>
             <br>
             <br>
-            @if (Auth::check())
-                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                    <div class="row text-center">
-                        <div class="col-md-4">
-                            <span class="fa-stack fa-4x">
-                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
-                            </span>
-                            <h4 class="my-3">REPOSICIÓN DE CHIPS</h4>
-                            <a class="btn btn-success" href="http://www.miclaro.com.ec/ivrdigital" target="_blank">Visitar
-                                página</a>
-                        </div>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                        <i class="fa-brands fa-google-drive fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="my-3">GOOGLE DRIVE</h4>
+                    <a class="btn btn-success" target="_blank"
+                        href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&followup=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&ifkv=AeZLP9-5DeLhxmOumIzRqjg75tnu7ARb-PJ4kJqAKXsKbT118fIevNTIhcCodd5k_VTr3SGo09e4gw&osid=1&passive=1209600&service=wise&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S958401757%3A1735063661397253&ddm=1">Visitar
+                        página</a>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                        <i class="fa-solid fa-car-side fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="my-3">E-DRIVERS</h4>
+                    <a class="btn btn-success" href="http://159.223.161.160:3020/forms" target="_blank">Visitar página</a>
+                </div>
+                @if (!Auth::check())
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-user-circle fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">AREA TECNICOS</h4>
+                        <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                     </div>
                 @endif
+            </div>
+            <br>
+            <br>
+            @if (Auth::check())
+                <div class="row text-center">
+                    <!-- Sección CLARO -->
+                    <div class="col-md-4 text-center">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">CLARO</h4>
+                        <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
+                    </div>
+
+                    <!-- Modal para CLARO -->
+                    <div id="modalClaro" class="position-absolute bg-white border rounded shadow p-3 text-center"
+                        style="display: none;">
+                        <p class="text-center mb-3 fw-bold">Selecciona una opción para CLARO:</p>
+                        <div>
+                            <!-- Imagen con enlace -->
+                            <a href="http://www.miclaro.com.ec/ivrdigital" target="_blank">
+                                <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
+                                    alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 150px;">
+                            </a>
+                            <p><a href="http://www.miclaro.com.ec/ivrdigital" target="_blank"
+                                    class="text-primary">Reposicion de chips</a></p>
+                            <!-- Otra Imagen con enlace -->
+                            <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
+                                <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
+                                    alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 150px;">
+                            </a>
+                            <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank"
+                                    class="text-primary">Factuacion CLARO</a></p>
+                        </div>
+                    </div>
+                    <!-- Sección WIALON -->
+                    <div class="col-md-4 text-center">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">WIALON</h4>
+                        <button class="btn btn-success" onclick="mostrarModalWialon(event)">Opciones</button>
+                    </div>
+
+                    <!-- Modal para WIALON -->
+                    <div id="modalWialon" class="position-absolute bg-white border rounded shadow p-3 text-center"
+                        style="display: none;">
+                        <p class="text-center mb-3 fw-bold">Selecciona una opción para WIALON:</p>
+                        <div>
+                            <!-- Imagen con enlace -->
+                            <a href="https://cms.wialon.us" target="_blank">
+                                <img src="{{ asset('img/toolsimg/pngegg.png') }}" alt="Imagen WIALON 1"
+                                    class="img-fluid mb-2" style="max-width: 150px;">
+                            </a>
+                            <p><a href="https://cms.wialon.us" target="_blank" class="text-primary">CMS WIALON</a></p>
+                            <!-- Otra Imagen con enlace -->
+                            <a href="https://my.wialon.com/es/login" target="_blank">
+                                <img src="{{ asset('img/toolsimg/pngegg.png') }}" alt="Imagen WIALON 2"
+                                    class="img-fluid mb-2" style="max-width: 150px;">
+                            </a>
+                            <p><a href="https://my.wialon.com/es/login" target="_blank" class="text-primary">Pagos
+                                    WIALON</a></p>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
     </section>
+    <script>
+        function mostrarModalClaro(event) {
+            const modal = document.getElementById('modalClaro');
+            const button = event.target;
+
+            // Obtiene la posición del botón
+            const rect = button.getBoundingClientRect();
+            const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
+            const offsetY = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Posiciona el modal cerca del botón
+            modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
+            modal.style.left = `${rect.left + offsetX}px`;
+
+            // Muestra el modal
+            modal.style.display = 'block';
+        }
+
+        function mostrarModalWialon(event) {
+            const modal = document.getElementById('modalWialon');
+            const button = event.target;
+
+            // Obtiene la posición del botón
+            const rect = button.getBoundingClientRect();
+            const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
+            const offsetY = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Posiciona el modal cerca del botón
+            modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
+            modal.style.left = `${rect.left + offsetX}px`;
+
+            // Muestra el modal
+            modal.style.display = 'block';
+        }
+
+        function cerrarModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+
+        // Detecta clic fuera del modal para cerrarlo
+        document.addEventListener('click', (event) => {
+            ['modalClaro', 'modalWialon'].forEach((modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal.style.display === 'block' && !modal.contains(event.target) && !event.target
+                    .closest('.btn-success')) {
+                    cerrarModal(modalId);
+                }
+            });
+        });
+
+        // Detecta tecla "Esc" para cerrar los modales
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                ['modalClaro', 'modalWialon'].forEach(cerrarModal);
+            }
+        });
+    </script>
+
 
     <div class="portfolio-modal modal fade modal-secretaria" id="modalSecretaria" tabindex="-1" role="dialog"
         aria-hidden="true">
@@ -107,7 +244,8 @@
                             <div class="modal-body text-center">
                                 <!-- Título -->
                                 <h2 class="text-uppercase mb-3">Secretaría de Movilidad</h2>
-                                <p class="text-muted mb-4">Lista de operadoras. Usa el filtro para encontrar fácilmente.</p>
+                                <p class="text-muted mb-4">Lista de operadoras. Usa el filtro para encontrar fácilmente.
+                                </p>
                                 <!-- Campo de filtro -->
                                 <input id="filtroModal" type="text" class="form-control mb-3"
                                     placeholder="Filtrar operadoras...">

@@ -35,8 +35,7 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
                     <li class="nav-item"><a class="nav-link @yield('ActivarAccessC')"
-                            href="{{ route('home.accesoCliente') }}">Acceso
-                            clientes</a></li>
+                            href="{{ route('home.accesoCliente') }}">Plataformas</a></li>
                     <li class="nav-item"><a class="nav-link @yield('ActivarServicios')"
                             href="{{ route('home.servicios') }}">Servicios</a>
                     </li>
@@ -58,16 +57,16 @@
 
                             <ul class="dropdown-menu-custom">
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
-                                    <li><a href="{{route('usuario.index')}}">Usuarios</a></li>
+                                    <li><a href="{{ route('usuario.index') }}">Usuarios</a></li>
                                 @endif
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                                    <li><a href="{{route('simcards.index')}}">Simcards</a></li>
+                                    <li><a href="{{ route('simcards.index') }}">Simcards</a></li>
                                 @endif
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'VEHICULOS'))
-                                    <li><a href="{{route('vehiculos.index')}}">Vehículos</a></li>
+                                    <li><a href="{{ route('vehiculos.index') }}">Vehículos</a></li>
                                 @endif
                                 @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PERFILES'))
-                                    <li><a href="{{route('perfil.index')}}">Perfiles</a></li>
+                                    <li><a href="{{ route('perfil.index') }}">Perfiles</a></li>
                                 @endif
                                 <li><a class="logout-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar
@@ -89,9 +88,9 @@
 
                         </li> --}}
                     @else
-                        <li class="nav-item"><a class="nav-link @yield('ActivarLogin')"
+                        {{-- <li class="nav-item"><a class="nav-link @yield('ActivarLogin')"
                                 href="{{ route('login.form') }}">Iniciar
-                                sesion</a></li>
+                                sesion</a></li> --}}
                     @endif
                 </ul>
             </div>
@@ -173,8 +172,68 @@
                     dropdownMenu.classList.remove("show");
                 }
             });
-        }); 
+        });
     </script>
+
+    <div class="modal-navidad">
+        <div class="modal-content-navidad">
+            <div class="modal-header-navidad">
+                <img src="{{ asset('img/Precisogps.png') }}" alt="Logo PrecisoGPS" class="logo-navidad">
+                <button class="close-navidad" onclick="cerrarModal()">×</button>
+            </div>
+            <div class="modal-body-navidad">
+                <img src="{{ asset('img/MariKari.jpg') }}" alt="Imagen navideña" class="imagen-navidad">
+                <p class="mensaje-navidad">
+                    <b>Todo detalle unido al amor y confianza hacen una gran navidad.</b>
+                    Esta fecha nos permite agradecer su fidelidad y nos inspira a dar lo mejor de nosotros cada día. En
+                    el 2025,
+                    <b>ratificamos nuestro compromiso de mejora continua e innovación,</b> seguiremos acompañando su ruta de
+                    viaje y
+                    esperamos que la carretera de su vida esté llena de logros, éxitos y felicidad.
+                </p>
+                <h4>FELIZ NAVIDAD</h4>
+                <p>PrecisoGPS<br>Justo en el Punto</p>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <script>
+        // Mostrar el modal automáticamente al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('modalNavidad');
+            modal.style.display = 'flex';
+        });
+
+        // Función para cerrar el modal
+        function cerrarModalNavidad() {
+            const modal = document.getElementById('modalNavidad');
+            modal.style.display = 'none';
+        }
+
+        // Detecta tecla "Esc" para cerrar el modal
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                cerrarModalNavidad();
+            }
+        });
+
+        // Cierra el modal si se hace clic fuera del contenido
+        document.addEventListener('click', (event) => {
+            const modal = document.getElementById('modalNavidad');
+            if (modal.style.display === 'flex' && !event.target.closest('.modal-content-navidad')) {
+                cerrarModalNavidad();
+            }
+        });
+    </script>
+
+
+
+
 
 </body>
 

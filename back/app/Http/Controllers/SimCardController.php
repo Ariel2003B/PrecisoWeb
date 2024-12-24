@@ -8,12 +8,6 @@ use Illuminate\Http\Request;
 
 class SimCardController extends Controller
 {
-    // public function index()
-    // {
-    //     $simcards = SIMCARD::with('v_e_h_i_c_u_l_o')->paginate(40);
-    //     return view('simcard.index', compact('simcards'));
-
-    // }
     public function index(Request $request)
     {
         $query = SIMCARD::with('v_e_h_i_c_u_l_o');
@@ -29,7 +23,8 @@ class SimCardController extends Controller
                     ->orWhere('PLAN', 'like', "%$search%")
                     ->orWhere('TIPOPLAN', 'like', "%$search%")
                     ->orWhere('ICC', 'like', "%$search%")
-                    ->orWhere('NUMEROTELEFONO', 'like', "%$search%");
+                    ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
+                    ->orWhere('ESTADO','like',"%$search%");
 
                 // Manejar el caso de "Sin Asignar"
                 if (strtolower($search) === 'sin asignar' || strtolower($search) === 'asignar' || strtolower($search) === 'sin') {
@@ -44,7 +39,7 @@ class SimCardController extends Controller
         }
 
         // Paginar los resultados
-        $simcards = $query->paginate(10);
+        $simcards = $query->paginate(20);
 
         // Retornar la vista con los resultados
         return view('simcard.index', compact('simcards'));
@@ -116,29 +111,29 @@ class SimCardController extends Controller
     {
         $file = $request->file('csv_file');
         $csvData = file_get_contents($file);
-
+    
         // Procesa las filas con el delimitador ";"
         $rows = array_map(function ($row) {
             return str_getcsv($row, ';'); // Especifica ";" como delimitador
         }, explode("\n", $csvData));
-
+    
         // Extrae y limpia el encabezado
         $header = array_shift($rows);
         $header = array_map(function ($value) {
             return trim(str_replace(' ', '_', $value)); // Reemplaza espacios por "_"
         }, $header);
-
+    
         foreach ($rows as $row) {
             // Verifica si la fila tiene la misma cantidad de columnas que el encabezado
             if (count($row) !== count($header)) {
                 continue; // Salta filas con columnas incompletas
             }
-
+    
             $data = array_combine($header, $row);
-
+    
             // Limpia y valida los datos necesarios
             $data['ICC'] = isset($data['ICC']) ? trim($data['ICC'], "'") : null;
-
+    
             $ruc = isset($data['PROPIETARIO'])
                 ? ($data['PROPIETARIO'] === 'PRECISOGPS S.A.S.'
                     ? '1793212253001'
@@ -146,27 +141,27 @@ class SimCardController extends Controller
                         ? '1716024474001'
                         : ($data['RUC'] ?? null)))
                 : null;
-
-            // Determina el estado en función de las condiciones dadas
-            if (empty($data['PLACA']) && !empty($data['TIPO_VEHICULO'])) {
-                $estado = 'L'; // Placa vacía pero Tipo Vehículo lleno
-            } elseif (empty($data['TIPO_VEHICULO']) && empty($data['PLACA'])) {
-                $estado = 'L'; // Ambos vacíos
-            } elseif (!empty($data['TIPO_VEHICULO']) && !empty($data['PLACA'])) {
-                $estado = stripos($data['TIPO_VEHICULO'], 'INACTIVA') !== false ? 'I' : 'A'; // Placa y Tipo Vehículo llenos
-            } else {
-                $estado = 'L'; // Valor por defecto
+    
+            // Determina el estado en función de los datos del CSV
+            $estado = isset($data['ESTADO'])
+                ? strtoupper($data['ESTADO']) // Convertir a mayúsculas para evitar problemas
+                : 'LIBRE'; // Estado por defecto si está vacío o no presente
+    
+            // Validación adicional para asegurar que el estado sea válido
+            if (!in_array($estado, ['ACTIVA', 'LIBRE', 'INACTIVA'])) {
+                $estado = 'LIBRE'; // Estado por defecto para valores inválidos
             }
-
-            // Crear el vehículo si tiene datos completos y el estado es diferente de 'LI'
+    
+            // Crear el vehículo solo si el estado no es 'INACTIVA' y tiene datos completos
             $vehiculoId = null;
-            if (!empty($data['TIPO_VEHICULO']) && !empty($data['PLACA']) && $estado !== 'L') {
+            if ($estado !== 'INACTIVA' && !empty($data['TIPO_VEHICULO']) && !empty($data['PLACA'])) {
                 $vehiculo = VEHICULO::firstOrCreate(
                     ['PLACA' => $data['PLACA']],
-                    ['TIPO' => $data['TIPO_VEHICULO']]
+                    ['TIPO' => $data['TIPO_VEHICULO'], 'ESTADO' => ($estado === 'ACTIVA' ? 'A' : 'I')]
                 );
                 $vehiculoId = $vehiculo->VEH_ID;
             }
+    
             // Crea la SIM Card solo si los datos clave están presentes
             if (!empty($data['NUMERO_TELEFONO']) && !empty($data['PROPIETARIO'])) {
                 SIMCARD::create([
@@ -182,10 +177,10 @@ class SimCardController extends Controller
                 ]);
             }
         }
-
+    
         return redirect()->route('simcards.index')->with('success', 'Datos cargados exitosamente.');
     }
-
+    
 
     public function update(Request $request, SIMCARD $simcard)
     {

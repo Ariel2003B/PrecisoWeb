@@ -25,7 +25,6 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>RUC</th>
                     <th>Propietario</th>
                     <th>Cuenta</th>
                     <th>Plan</th>
@@ -41,7 +40,6 @@
             <tbody>
                 @foreach ($simcards as $simcard)
                     <tr>
-                        <td>{{ $simcard->RUC }}</td>
                         <td>{{ $simcard->PROPIETARIO }}</td>
                         <td>{{ $simcard->CUENTA }}</td>
                         <td>{{ $simcard->PLAN }}</td>

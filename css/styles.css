@@ -13661,3 +13661,158 @@ section#contact form#contactForm :-ms-input-placeholder {
   background-color: #FF0000; 
   border-color: #FF0000;
 }
+/* Estilo para los modales */
+#modalPequeno, #modalClaro, #modalWialon {
+  z-index: 1050; /* Mantiene el modal encima de otros elementos */
+  min-width: 250px; /* Ancho mínimo */
+  max-width: 300px; /* Ancho máximo */
+  padding: 5px; /* Espaciado interno */
+  border: 1px solid #ccc; /* Borde ligero */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
+  background-color: #fff; /* Fondo blanco */
+  position: absolute; /* Posiciona en relación con el documento */
+}
+
+/* Botón de cierre para los modales */
+#modalPequeno .btn-close,
+#modalClaro .btn-close,
+#modalWialon .btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+#modalPequeno .btn-close:hover,
+#modalClaro .btn-close:hover,
+#modalWialon .btn-close:hover {
+  color: red;
+}
+
+/* Espaciado para los enlaces e imágenes dentro de los modales */
+#modalPequeno div img,
+#modalClaro div img,
+#modalWialon div img {
+  max-width: 150px;
+  margin: 10px auto;
+  display: block;
+}
+
+#modalPequeno div a,
+#modalClaro div a,
+#modalWialon div a {
+  text-align: center;
+  color: #007bff; /* Azul para los enlaces */
+  text-decoration: none;
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+#modalPequeno div a:hover,
+#modalClaro div a:hover,
+#modalWialon div a:hover {
+  text-decoration: underline;
+  color: #0056b3; /* Azul más oscuro al pasar por encima */
+}
+
+/* Contenedor del contenido dentro de los modales */
+#modalPequeno div,
+#modalClaro div,
+#modalWialon div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Fondo del modal */
+.modal-navidad {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Fondo oscuro transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* Contenedor del modal */
+.modal-content-navidad {
+  background: #006400; /* Verde navideño */
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cabecera del modal */
+.modal-header-navidad {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #fff; /* Separador entre el header y el cuerpo */
+}
+
+/* Logo en la esquina superior izquierda */
+.logo-navidad {
+  max-width: 120px; /* Más pequeño */
+  height: auto;
+  margin-right: auto; /* Alinea el logo a la izquierda */
+}
+
+/* Botón de cierre */
+.close-navidad {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff; /* Blanco */
+  cursor: pointer;
+}
+
+.close-navidad:hover {
+  color: #FF0000; /* Rojo navideño */
+}
+
+/* Imagen decorativa */
+.imagen-navidad {
+  max-width: 80%; /* Imagen más pequeña */
+  height: auto;
+  margin-bottom: 15px;
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Texto del modal */
+.modal-body-navidad {
+  font-family: 'Roboto', sans-serif;
+  color: #fff; /* Texto en blanco */
+}
+
+.mensaje-navidad {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-body-navidad h4 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #b32428; /* Rojo navideño */
+  text-transform: uppercase;
+}
+
+.modal-body-navidad p {
+  font-size: 1rem;
+  margin: 5px 0;
+  color: #fff; /* Texto en blanco */
+}
