@@ -53,12 +53,6 @@
                         <td>
                             <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
                                 class="btn btn-contador btn-sm">Editar</a>
-                            <form action="{{ route('simcards.destroy', $simcard->ID_SIM) }}" method="POST"
-                                class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                            </form>
                         </td>
                     </tr>
                 @endforeach
