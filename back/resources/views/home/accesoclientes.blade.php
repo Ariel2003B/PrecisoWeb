@@ -166,67 +166,68 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    function mostrarModalClaro(event) {
+                        const modal = document.getElementById('modalClaro');
+                        const button = event.target;
+
+                        // Obtiene la posición del botón
+                        const rect = button.getBoundingClientRect();
+                        const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
+                        const offsetY = window.pageYOffset || document.documentElement.scrollTop;
+
+                        // Posiciona el modal cerca del botón
+                        modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
+                        modal.style.left = `${rect.left + offsetX}px`;
+
+                        // Muestra el modal
+                        modal.style.display = 'block';
+                    }
+
+                    function mostrarModalWialon(event) {
+                        const modal = document.getElementById('modalWialon');
+                        const button = event.target;
+
+                        // Obtiene la posición del botón
+                        const rect = button.getBoundingClientRect();
+                        const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
+                        const offsetY = window.pageYOffset || document.documentElement.scrollTop;
+
+                        // Posiciona el modal cerca del botón
+                        modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
+                        modal.style.left = `${rect.left + offsetX}px`;
+
+                        // Muestra el modal
+                        modal.style.display = 'block';
+                    }
+
+                    function cerrarModal(modalId) {
+                        const modal = document.getElementById(modalId);
+                        modal.style.display = 'none';
+                    }
+
+                    // Detecta clic fuera del modal para cerrarlo
+                    document.addEventListener('click', (event) => {
+                        ['modalClaro', 'modalWialon'].forEach((modalId) => {
+                            const modal = document.getElementById(modalId);
+                            if (modal.style.display === 'block' && !modal.contains(event.target) && !event.target
+                                .closest('.btn-success')) {
+                                cerrarModal(modalId);
+                            }
+                        });
+                    });
+
+                    // Detecta tecla "Esc" para cerrar los modales
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') {
+                            ['modalClaro', 'modalWialon'].forEach(cerrarModal);
+                        }
+                    });
+                </script>
             @endif
         </div>
     </section>
-    <script>
-        function mostrarModalClaro(event) {
-            const modal = document.getElementById('modalClaro');
-            const button = event.target;
 
-            // Obtiene la posición del botón
-            const rect = button.getBoundingClientRect();
-            const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
-            const offsetY = window.pageYOffset || document.documentElement.scrollTop;
-
-            // Posiciona el modal cerca del botón
-            modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
-            modal.style.left = `${rect.left + offsetX}px`;
-
-            // Muestra el modal
-            modal.style.display = 'block';
-        }
-
-        function mostrarModalWialon(event) {
-            const modal = document.getElementById('modalWialon');
-            const button = event.target;
-
-            // Obtiene la posición del botón
-            const rect = button.getBoundingClientRect();
-            const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
-            const offsetY = window.pageYOffset || document.documentElement.scrollTop;
-
-            // Posiciona el modal cerca del botón
-            modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
-            modal.style.left = `${rect.left + offsetX}px`;
-
-            // Muestra el modal
-            modal.style.display = 'block';
-        }
-
-        function cerrarModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'none';
-        }
-
-        // Detecta clic fuera del modal para cerrarlo
-        document.addEventListener('click', (event) => {
-            ['modalClaro', 'modalWialon'].forEach((modalId) => {
-                const modal = document.getElementById(modalId);
-                if (modal.style.display === 'block' && !modal.contains(event.target) && !event.target
-                    .closest('.btn-success')) {
-                    cerrarModal(modalId);
-                }
-            });
-        });
-
-        // Detecta tecla "Esc" para cerrar los modales
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                ['modalClaro', 'modalWialon'].forEach(cerrarModal);
-            }
-        });
-    </script>
 
 
     <div class="portfolio-modal modal fade modal-secretaria" id="modalSecretaria" tabindex="-1" role="dialog"
