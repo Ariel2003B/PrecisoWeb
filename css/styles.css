@@ -13818,7 +13818,7 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 /* Logo en la esquina superior izquierda */
 .logo-navidad {
-  max-width: 50px;
+  max-width: 120px;
   height: auto;
   margin-bottom: 10px;
   /* Espacio entre el logo y el contenido */
