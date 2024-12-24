@@ -21,17 +21,26 @@ class SimCardController extends Controller
         // Aplicar filtro de búsqueda
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where('RUC', 'like', "%$search%")
-                ->orWhere('PROPIETARIO', 'like', "%$search%")
-                ->orWhere('CUENTA', 'like', "%$search%")
-                ->orWhere('PLAN', 'like', "%$search%")
-                ->orWhere('TIPOPLAN', 'like', "%$search%")
-                ->orWhere('ICC', 'like', "%$search%")
-                ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
-                ->orWhereHas('v_e_h_i_c_u_l_o', function ($q) use ($search) {
-                    $q->where('TIPO', 'like', "%$search%")
-                        ->orWhere('PLACA', 'like', "%$search%");
-                });
+
+            $query->where(function ($q) use ($search) {
+                $q->where('RUC', 'like', "%$search%")
+                    ->orWhere('PROPIETARIO', 'like', "%$search%")
+                    ->orWhere('CUENTA', 'like', "%$search%")
+                    ->orWhere('PLAN', 'like', "%$search%")
+                    ->orWhere('TIPOPLAN', 'like', "%$search%")
+                    ->orWhere('ICC', 'like', "%$search%")
+                    ->orWhere('NUMEROTELEFONO', 'like', "%$search%");
+
+                // Manejar el caso de "Sin Asignar"
+                if (strtolower($search) === 'sin asignar' || strtolower($search) === 'asignar' || strtolower($search) === 'sin') {
+                    $q->orWhereNull('VEH_ID'); // Ajusta 'v_e_h_i_c_u_l_o_id' al nombre correcto de tu clave foránea
+                } else {
+                    $q->orWhereHas('v_e_h_i_c_u_l_o', function ($query) use ($search) {
+                        $query->where('TIPO', 'like', "%$search%")
+                            ->orWhere('PLACA', 'like', "%$search%");
+                    });
+                }
+            });
         }
 
         // Paginar los resultados
@@ -40,6 +49,7 @@ class SimCardController extends Controller
         // Retornar la vista con los resultados
         return view('simcard.index', compact('simcards'));
     }
+
 
 
     public function create()

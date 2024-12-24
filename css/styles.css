@@ -13658,6 +13658,6 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 
 .pagination .page-item.active .page-link {
-  background-color: #FF0000; /* Fondo naranja para el elemento activo */
+  background-color: #FF0000; 
   border-color: #FF0000;
 }
