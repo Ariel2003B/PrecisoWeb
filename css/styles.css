@@ -13644,3 +13644,20 @@ section#contact form#contactForm :-ms-input-placeholder {
     border-radius: 0;
   }
 }
+
+.pagination .page-item .page-link {
+  color: #fff; /* Cambiar color del texto */
+  background-color: #005298; /* Fondo azul */
+  border-color: #005298; /* Bordes */
+  transition: all 0.3s ease;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #00358E; /* Fondo más oscuro al pasar el mouse */
+  border-color: #00358E;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #FF0000; /* Fondo naranja para el elemento activo */
+  border-color: #FF0000;
+}

@@ -8,11 +8,39 @@ use Illuminate\Http\Request;
 
 class SimCardController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     $simcards = SIMCARD::with('v_e_h_i_c_u_l_o')->paginate(40);
+    //     return view('simcard.index', compact('simcards'));
+
+    // }
+    public function index(Request $request)
     {
-        $simcards = SIMCARD::with('v_e_h_i_c_u_l_o')->get();
+        $query = SIMCARD::with('v_e_h_i_c_u_l_o');
+
+        // Aplicar filtro de búsqueda
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('RUC', 'like', "%$search%")
+                ->orWhere('PROPIETARIO', 'like', "%$search%")
+                ->orWhere('CUENTA', 'like', "%$search%")
+                ->orWhere('PLAN', 'like', "%$search%")
+                ->orWhere('TIPOPLAN', 'like', "%$search%")
+                ->orWhere('ICC', 'like', "%$search%")
+                ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
+                ->orWhereHas('v_e_h_i_c_u_l_o', function ($q) use ($search) {
+                    $q->where('TIPO', 'like', "%$search%")
+                        ->orWhere('PLACA', 'like', "%$search%");
+                });
+        }
+
+        // Paginar los resultados
+        $simcards = $query->paginate(10);
+
+        // Retornar la vista con los resultados
         return view('simcard.index', compact('simcards'));
     }
+
 
     public function create()
     {

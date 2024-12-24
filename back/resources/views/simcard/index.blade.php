@@ -7,13 +7,14 @@
         <h1 class="text-center mb-4">Lista de SIM Cards</h1>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a href="{{ route('simcards.create') }}" class="btn btn-contador">Agregar SIM Card</a>
-            <div class="input-group" style="max-width: 400px;">
-                <input type="text" id="filtro" class="form-control" placeholder="Filtrar SIM Cards...">
-                <button class="btn btn-contador" type="button" data-bs-toggle="tooltip" data-bs-placement="top"
+            <form action="{{ route('simcards.index') }}" method="GET" class="input-group" style="max-width: 400px;">
+                <input type="text" name="search" id="filtro" class="form-control" placeholder="Filtrar SIM Cards..."
+                    value="{{ request('search') }}">
+                <button class="btn btn-contador" type="submit" data-bs-toggle="tooltip" data-bs-placement="top"
                     title="Puedes buscar por cualquier dato visible en la tabla, como Número, Propietario, Plan, ICC o Vehículo.">
-                    ?
+                    Buscar
                 </button>
-            </div>
+            </form>
         </div>
         <form action="{{ route('simcards.bulkUpload') }}" method="POST" enctype="multipart/form-data" class="mb-4">
             @csrf
@@ -33,7 +34,6 @@
                     <th>Número</th>
                     <th>Grupo</th>
                     <th>Asignacion</th>
-                   
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -50,7 +50,6 @@
                         <td>{{ $simcard->NUMEROTELEFONO }}</td>
                         <td>{{ $simcard->v_e_h_i_c_u_l_o->TIPO ?? 'Sin Asignar' }}</td>
                         <td>{{ $simcard->v_e_h_i_c_u_l_o->PLACA ?? 'Sin Asignar' }}</td>
-                        
                         <td>{{ $simcard->ESTADO }}</td>
                         <td>
                             <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
@@ -60,24 +59,19 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Paginación de SIM Cards" class="shadow-sm p-3 mb-5 bg-body rounded">
+                {{ $simcards->appends(request()->query())->links() }}
+            </nav>
+        </div>
     </section>
+
     <script>
         // Habilitar tooltip para el botón de ayuda
         document.addEventListener('DOMContentLoaded', function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        });
-
-        // Filtro en vivo para la tabla de Vehículos
-        document.getElementById('filtro').addEventListener('input', function() {
-            const filtro = this.value.toLowerCase();
-            const filas = document.querySelectorAll('table tbody tr');
-
-            filas.forEach(fila => {
-                const textoFila = fila.textContent.toLowerCase();
-                fila.style.display = textoFila.includes(filtro) ? '' : 'none';
             });
         });
     </script>
