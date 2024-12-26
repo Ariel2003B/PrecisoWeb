@@ -158,6 +158,16 @@
                             href="https://sso.godaddy.com/?realm=idp&app=cart&path=%2Fcheckoutapi%2Fv1%2Fredirects%2Flogin">Visitar
                             pagina</a>
                     </div>
+                    <div class="col-md-4 text-center">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-file-invoice fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">SISTEMA CONTABLE</h4>
+                        <a class="btn btn-success" target="_blank"
+                            href="https://fws.com.ec">Visitar
+                            pagina</a>
+                    </div>
                     @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
@@ -180,13 +190,6 @@
                                 pagina</a>
                         </div>
                     @endif
-
-
-
-
-
-
-
                     <!-- Modal para WIALON -->
                     <div id="modalWialon"
                         class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"

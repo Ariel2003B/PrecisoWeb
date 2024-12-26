@@ -7,6 +7,7 @@ use App\Http\Controllers\SimCardController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\VisitasController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'inicio'])->name('home.inicio');
@@ -28,10 +29,17 @@ Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('perfil', PerfilController::class);
-    Route::resource('usuario', UsuarioController::class);
+    Route::middleware(['auth', 'role:USUARIOS'])->group(function () {
+        Route::resource('usuario', UsuarioController::class);
+    });
+    Route::middleware(['auth', 'role:SIMCARDS'])->group(function () {
+        Route::resource('simcards', SimCardController::class);
+        Route::post('/simcards/bulk-upload', [SimCardController::class, 'bulkUpload'])->name('simcards.bulkUpload');
+    });
+    Route::middleware(['auth', 'role:PERFILES'])->group(function () {
+        Route::resource('perfil', PerfilController::class);
+    });
     Route::resource('vehiculos', VehiculoController::class);
-    Route::resource('simcards', SimCardController::class);
-    Route::post('/simcards/bulk-upload', [SimCardController::class, 'bulkUpload'])->name('simcards.bulkUpload');
+
 
 });
