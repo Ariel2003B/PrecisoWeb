@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'inicio'])->name('home.inicio');
 Route::get('/privacidad', [HomeController::class, 'privacidad'])->name('home.privacidad');
-Route::get('/accesoCliente', [HomeController::class, 'accesoCliente'])->name('home.accesoCliente');
+Route::get('/plataformas', [HomeController::class, 'plataformas'])->name('home.plataformas');
 Route::get('/servicios', [HomeController::class, 'servicios'])->name('home.servicios');
 Route::get('/planes', [HomeController::class, 'planes'])->name('home.planes');
 Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('home.nosotros');

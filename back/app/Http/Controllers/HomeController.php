@@ -15,9 +15,9 @@ class HomeController extends Controller
     {
         return view('home.privacy');
     }
-    public function accesoCliente()
+    public function plataformas()
     {
-        return view('home.accesoclientes');
+        return view('home.plataformas');
     }
     public function servicios()
     {

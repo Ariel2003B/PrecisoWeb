@@ -35,7 +35,7 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
                     <li class="nav-item"><a class="nav-link @yield('ActivarAccessC')"
-                            href="{{ route('home.accesoCliente') }}">Plataformas</a></li>
+                            href="{{ route('home.plataformas') }}">Plataformas</a></li>
                     <li class="nav-item"><a class="nav-link @yield('ActivarServicios')"
                             href="{{ route('home.servicios') }}">Servicios</a>
                     </li>
@@ -66,19 +66,6 @@
                                 </form>
                             </ul>
                         </li>
-
-                        {{-- 
-                        <li class="nav-item">
-                            <a class="nav-link @yield('SessionEnd')" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                Cerrar sesión
-                            </a>
-
-                        </li> --}}
-                    @else
-                        {{-- <li class="nav-item"><a class="nav-link @yield('ActivarLogin')"
-                                href="{{ route('login.form') }}">Iniciar
-                                sesion</a></li> --}}
                     @endif
                 </ul>
             </div>
