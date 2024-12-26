@@ -13859,3 +13859,20 @@ section#contact form#contactForm :-ms-input-placeholder {
   font-size: 0.9rem;
   margin: 5px 0;
 }
+
+
+.table thead th {
+  background-color: #005298; /* Color azul de tu empresa */
+  color: white;
+}
+.table tbody tr:hover {
+  background-color: #f5f5f5; /* Color de fondo al hacer hover */
+}
+.btn-outline-primary {
+  border-color: #005298;
+  color: #005298;
+}
+.btn-outline-primary:hover {
+  background-color: #005298;
+  color: white;
+}

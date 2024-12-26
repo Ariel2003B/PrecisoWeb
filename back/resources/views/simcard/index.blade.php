@@ -37,41 +37,62 @@
                 </button>
             </form>
         </div>
-        <table class="table table-striped">
-            <thead>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Propietario</th>
+                <th scope="col">Cuenta</th>
+                <th scope="col">Plan</th>
+                <th scope="col">Código Plan</th>
+                <th scope="col">ICC</th>
+                <th scope="col">Número</th>
+                <th scope="col">Grupo</th>
+                <th scope="col">Asignación</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($simcards as $simcard)
                 <tr>
-                    <th>Propietario</th>
-                    <th>Cuenta</th>
-                    <th>Plan</th>
-                    <th>Codigo plan</th>
-                    <th>ICC</th>
-                    <th>Número</th>
-                    <th>Grupo</th>
-                    <th>Asignacion</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
+                    <td>{{ $simcard->PROPIETARIO }}</td>
+                    <td>{{ $simcard->CUENTA }}</td>
+                    <td>{{ $simcard->PLAN }}</td>
+                    <td>{{ $simcard->TIPOPLAN }}</td>
+                    <td>{{ $simcard->ICC }}</td>
+                    <td>{{ $simcard->NUMEROTELEFONO }}</td>
+                    <td>
+                        <span class="badge bg-secondary">
+                            {{ $simcard->GRUPO ?? 'Sin Asignar' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">
+                            {{ $simcard->ASIGNACION ?? 'Sin Asignar' }}
+                        </span>
+                    </td>
+                    <td>
+                        @if ($simcard->ESTADO === 'ACTIVA')
+                            <span class="badge bg-success">Activa</span>
+                        @elseif ($simcard->ESTADO === 'INACTIVA')
+                            <span class="badge bg-danger">Inactiva</span>
+                        @elseif ($simcard->ESTADO === 'LIBRE')
+                            <span class="badge bg-warning">Libre</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}" 
+                            class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($simcards as $simcard)
-                    <tr>
-                        <td>{{ $simcard->PROPIETARIO }}</td>
-                        <td>{{ $simcard->CUENTA }}</td>
-                        <td>{{ $simcard->PLAN }}</td>
-                        <td>{{ $simcard->TIPOPLAN }}</td>
-                        <td>{{ $simcard->ICC }}</td>
-                        <td>{{ $simcard->NUMEROTELEFONO }}</td>
-                        <td>{{ $simcard->GRUPO ?? 'Sin Asignar' }}</td>
-                        <td>{{ $simcard->ASIGNACION ?? 'Sin Asignar' }}</td>
-                        <td>{{ $simcard->ESTADO }}</td>
-                        <td>
-                            <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
-                                class="btn btn-contador btn-sm">Editar</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
         <div class="d-flex justify-content-center mt-4">
             <nav aria-label="Paginación de SIM Cards" class="shadow-sm p-3 mb-5 bg-body rounded">
                 {{ $simcards->appends(request()->query())->links() }}
