@@ -15,15 +15,9 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="RUC" class="form-label">RUC</label>
-                <select name="RUC" id="RUC" class="form-control">
-                    <option value="1793212253001">
-                        1793212253001
-                    </option>
-                    <option value="1716024474001">
-                        1716024474001
-                    </option>
-                </select>
+                <label for="CUENTA" class="form-label">Cuenta</label>
+                <input type="text" name="CUENTA" id="CUENTA" class="form-control" maxlength="10"
+                    value="{{ old('CUENTA') }}" placeholder="Ingrese la cuenta de la SIM" required>
             </div>
             <div class="mb-3">
                 <label for="NUMEROTELEFONO" class="form-label">Número de Teléfono</label>
@@ -46,36 +40,40 @@
                     value="{{ old('ICC') }}" placeholder="Ingrese el ICC">
             </div>
             <div class="mb-3">
-                <label for="TIPO" class="form-label">Grupo</label>
-                <input type="text" name="TIPO" id="TIPO" class="form-control" maxlength="255"
-                    value="{{ old('TIPO') }}" placeholder="Ingrese el tipo de vehículo">
+                <label for="GRUPO" class="form-label">Grupo</label>
+                <input type="text" name="GRUPO" id="GRUPO" class="form-control" maxlength="255"
+                    value="{{ old('GRUPO') }}" placeholder="Ingrese el grupo Ej: COMERCIALES, SIRENA, PRECISO GPS, etc.">
             </div>
             <div class="mb-3">
-                <label for="PLACA" class="form-label">Unidad</label>
-                <input type="text" name="PLACA" id="PLACA" class="form-control" maxlength="7"
-                    value="{{ old('PLACA') }}" placeholder="Ingrese la unidad">
+                <label for="ASIGNACION" class="form-label">Asignacion</label>
+                <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control" maxlength="7"
+                    value="{{ old('ASIGNACION') }}"
+                    placeholder="Ingrese la asignacion Ej: ABC1234 (01/2345), JUAN PEREZ, etc.">
             </div>
             <div class="mb-3">
                 <label for="ESTADO" class="form-label">Estado</label>
                 <select name="ESTADO" id="ESTADO" class="form-select" required>
-                    <option value="AC">Activo</option>
-                    <option value="IN">Inactivo</option>
-                    <option value="LI">Libre</option>
+                    <option value="ACTIVA">Activo</option>
+                    <option value="INACTIVA">Inactivo</option>
+                    <option value="LIBRE">Libre</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-success">Guardar</button>
             <a href="{{ route('simcards.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>
+        <br>
+        <br>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </section>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 @endsection
 
 @section('jsCode', 'js/scriptNavBar.js')

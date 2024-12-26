@@ -145,6 +145,9 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'ASIGNACION' => [
+            'unique_prefix' => 'El prefijo ya está en uso para un registro con estado ACTIVA o LIBRE.',
+        ],
     ],
 
     /*

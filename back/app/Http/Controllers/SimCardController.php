@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SIMCARD;
 use App\Models\VEHICULO;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class SimCardController extends Controller
 {
@@ -17,26 +19,26 @@ class SimCardController extends Controller
             $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
-                $q->where('RUC', 'like', "%$search%")
-                    ->orWhere('PROPIETARIO', 'like', "%$search%")
+                $q->Where('PROPIETARIO', 'like', "%$search%")
                     ->orWhere('CUENTA', 'like', "%$search%")
                     ->orWhere('PLAN', 'like', "%$search%")
                     ->orWhere('TIPOPLAN', 'like', "%$search%")
                     ->orWhere('ICC', 'like', "%$search%")
                     ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
-                    ->orWhere('ESTADO','like',"%$search%");
+                    ->orWhere('ESTADO', 'like', "%$search%")
+                    ->orWhere('GRUPO', 'like', "%$search%")
+                    ->orWhere('ASIGNACION', 'like', "%$search%");
 
                 // Manejar el caso de "Sin Asignar"
                 if (strtolower($search) === 'sin asignar' || strtolower($search) === 'asignar' || strtolower($search) === 'sin') {
-                    $q->orWhereNull('VEH_ID'); // Ajusta 'v_e_h_i_c_u_l_o_id' al nombre correcto de tu clave foránea
-                } else {
-                    $q->orWhereHas('v_e_h_i_c_u_l_o', function ($query) use ($search) {
-                        $query->where('TIPO', 'like', "%$search%")
-                            ->orWhere('PLACA', 'like', "%$search%");
-                    });
+                    $q->whereNull('GRUPO')
+                        ->orWhereNull('ASIGNACION');
                 }
             });
         }
+
+        // Ordenar los resultados del más reciente al más antiguo
+        $query->orderBy('ID_SIM', 'desc');
 
         // Paginar los resultados
         $simcards = $query->paginate(20);
@@ -47,49 +49,55 @@ class SimCardController extends Controller
 
 
 
+
     public function create()
     {
-        $vehiculos = VEHICULO::whereDoesntHave('s_i_m_c_a_r_d_s')->get();
-
-        return view('simcard.create', compact('vehiculos'));
+        return view('simcard.create');
     }
 
 
     public function store(Request $request)
     {
-        // Validar los datos del formulario
         $request->validate([
             'PROPIETARIO' => 'required|string|max:255',
             'NUMEROTELEFONO' => 'required|string|max:10|unique:SIMCARD,NUMEROTELEFONO',
             'TIPOPLAN' => 'required|string|max:255',
             'PLAN' => 'nullable|string|max:255',
-            'ICC' => 'nullable|string|max:255',
+            'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
             'ESTADO' => 'required|string|max:2',
-            'TIPO' => 'nullable|string|max:255', // Validación para el tipo de vehículo
-            'PLACA' => 'nullable|string|max:7|unique:VEHICULO,PLACA', // Validación para la placa
-        ]);
-        // Insertar el vehículo si se proporcionan los datos
-        $vehiculoId = null;
-        if ($request->filled('TIPO') && $request->filled('PLACA')) {
-            $vehiculo = VEHICULO::create([
-                'TIPO' => $request->TIPO,
-                'PLACA' => $request->PLACA,
-            ]);
-            $vehiculoId = $vehiculo->VEH_ID;
-        } elseif ($request->filled('VEH_ID')) {
-            $vehiculoId = $request->VEH_ID; // Asignar vehículo existente si está seleccionado
-        }
+            'GRUPO' => 'nullable|string|max:255',
+            'ASIGNACION' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    // Obtén los primeros 4 caracteres de la columna ASIGNACION
+                    $prefix = substr($value, 0, 6);
 
-        // Crear la SIM Card
+                    // Comprueba si ya existe un registro con este prefijo y ESTADO "ACTIVA" o "LIBRE"
+                    $exists = DB::table('SIMCARD')
+                        ->where(function ($query) {
+                        $query->where('ESTADO', 'ACTIVA')
+                            ->orWhere('ESTADO', 'LIBRE');
+                    })
+                        ->where('ASIGNACION', 'LIKE', $prefix . '%')
+                        ->exists();
+
+                    if ($exists) {
+                        $fail("El prefijo '$prefix' ya está en uso para un registro con estado ACTIVA o LIBRE en ASIGNACION.");
+                    }
+                },
+            ],
+        ]);
         SIMCARD::create([
-            'RUC' => $request->RUC,
+            'CUENTA' => $request->CUENTA,
             'PROPIETARIO' => $request->PROPIETARIO,
             'NUMEROTELEFONO' => $request->NUMEROTELEFONO,
             'TIPOPLAN' => $request->TIPOPLAN,
             'PLAN' => $request->PLAN,
             'ICC' => $request->ICC,
             'ESTADO' => $request->ESTADO,
-            'VEH_ID' => $vehiculoId, // Asignar el ID del vehículo creado o existente
+            'ASIGINACION' => $request->ASIGNACION,
+            'GRUPO' => $request->GRUPO
         ]);
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
@@ -99,106 +107,158 @@ class SimCardController extends Controller
 
     public function edit(SIMCARD $simcard)
     {
-        // Obtener vehículos no asignados o incluir el vehículo actualmente asignado a esta SIM card
-        $vehiculos = VEHICULO::whereDoesntHave('s_i_m_c_a_r_d_s')
-            ->orWhere('VEH_ID', $simcard->VEH_ID)
-            ->get();
-
-        return view('simcard.edit', compact('simcard', 'vehiculos'));
+        return view('simcard.edit', compact('simcard'));
     }
 
     public function bulkUpload(Request $request)
     {
         $file = $request->file('csv_file');
         $csvData = file_get_contents($file);
-    
-        // Procesa las filas con el delimitador ";"
+
+        // Procesar las filas con el delimitador ";"
         $rows = array_map(function ($row) {
             return str_getcsv($row, ';'); // Especifica ";" como delimitador
         }, explode("\n", $csvData));
-    
-        // Extrae y limpia el encabezado
+
+        // Extraer y limpiar el encabezado
         $header = array_shift($rows);
         $header = array_map(function ($value) {
             return trim(str_replace(' ', '_', $value)); // Reemplaza espacios por "_"
         }, $header);
-    
-        foreach ($rows as $row) {
-            // Verifica si la fila tiene la misma cantidad de columnas que el encabezado
+
+        // Validar encabezado esperado
+        $expectedHeaders = ['PROPIETARIO', 'CUENTA', 'PLAN', 'TIPO_PLAN', 'ICC', 'NUMERO_TELEFONO', 'TIPO_VEHICULO', 'PLACA', 'ESTADO'];
+        if ($header !== $expectedHeaders) {
+            return redirect()->back()->withErrors(['El formato del archivo CSV no es válido. Verifica los encabezados y vuelve a intentarlo.']);
+        }
+
+        $errors = [];
+        $created = 0;
+
+        foreach ($rows as $index => $row) {
+            // Verificar si la fila está vacía
+            if (count(array_filter($row)) === 0) {
+                continue; // Ignora filas completamente vacías
+            }
+
+            // Verificar si la fila tiene la misma cantidad de columnas que el encabezado
             if (count($row) !== count($header)) {
-                continue; // Salta filas con columnas incompletas
+                $errors[] = "La fila " . ($index + 2) . " tiene un número incorrecto de columnas.";
+                continue;
             }
-    
+
             $data = array_combine($header, $row);
-    
-            // Limpia y valida los datos necesarios
+
+            // Limpiar los datos y verificar formato
+            $data = array_map('trim', $data);
             $data['ICC'] = isset($data['ICC']) ? trim($data['ICC'], "'") : null;
-    
-            $ruc = isset($data['PROPIETARIO'])
-                ? ($data['PROPIETARIO'] === 'PRECISOGPS S.A.S.'
-                    ? '1793212253001'
-                    : ($data['PROPIETARIO'] === 'VARGAS REINOSO CESAR GIOVANNY'
-                        ? '1716024474001'
-                        : ($data['RUC'] ?? null)))
-                : null;
-    
-            // Determina el estado en función de los datos del CSV
-            $estado = isset($data['ESTADO'])
-                ? strtoupper($data['ESTADO']) // Convertir a mayúsculas para evitar problemas
-                : 'LIBRE'; // Estado por defecto si está vacío o no presente
-    
-            // Validación adicional para asegurar que el estado sea válido
-            if (!in_array($estado, ['ACTIVA', 'LIBRE', 'INACTIVA'])) {
-                $estado = 'LIBRE'; // Estado por defecto para valores inválidos
+
+            // Validar campos obligatorios
+            if (empty($data['NUMERO_TELEFONO']) || empty($data['PROPIETARIO'])) {
+                $errors[] = "La fila " . ($index + 2) . " no contiene un número de teléfono o propietario válido.";
+                continue;
             }
-    
-            // Crear el vehículo solo si el estado no es 'INACTIVA' y tiene datos completos
-            $vehiculoId = null;
-            if ($estado !== 'INACTIVA' && !empty($data['TIPO_VEHICULO']) && !empty($data['PLACA'])) {
-                $vehiculo = VEHICULO::firstOrCreate(
-                    ['PLACA' => $data['PLACA']],
-                    ['TIPO' => $data['TIPO_VEHICULO'], 'ESTADO' => ($estado === 'ACTIVA' ? 'A' : 'I')]
-                );
-                $vehiculoId = $vehiculo->VEH_ID;
+
+            // Validar unicidad de ICC
+            if (!empty($data['ICC']) && SIMCARD::where('ICC', $data['ICC'])->exists()) {
+                $errors[] = "El ICC en la fila " . ($index + 2) . " ya existe.";
+                continue;
             }
-    
-            // Crea la SIM Card solo si los datos clave están presentes
-            if (!empty($data['NUMERO_TELEFONO']) && !empty($data['PROPIETARIO'])) {
+
+            // Validar unicidad de NUMERO_TELEFONO
+            if (SIMCARD::where('NUMEROTELEFONO', $data['NUMERO_TELEFONO'])->exists()) {
+                $errors[] = "El número de teléfono en la fila " . ($index + 2) . " ya existe.";
+                continue;
+            }
+
+            // Validar unicidad de los primeros 4 caracteres de ASIGNACION si el estado es ACTIVA o LIBRE
+            if (!empty($data['PLACA']) && in_array(strtoupper($data['ESTADO']), ['ACTIVA', 'LIBRE'])) {
+                $firstSixChars = substr($data['PLACA'], 0, 6);
+                $asignacionExists = SIMCARD::where('ESTADO', '!=', 'INACTIVA')
+                    ->where('ASIGNACION', 'like', "$firstSixChars%")
+                    ->exists();
+
+                if ($asignacionExists) {
+                    $errors[] = "La ASIGNACION en la fila " . ($index + 2) . " tiene los primeros 6 caracteres duplicados para estado 'ACTIVA' o 'LIBRE'.";
+                    continue;
+                }
+            }
+
+            // Crear el registro de SIM Card
+            try {
                 SIMCARD::create([
-                    'RUC' => $ruc,
+                    'RUC' => $data['PROPIETARIO'] === 'PRECISOGPS S.A.S.' ? '1793212253001' : null,
                     'PROPIETARIO' => $data['PROPIETARIO'],
                     'NUMEROTELEFONO' => $data['NUMERO_TELEFONO'],
                     'TIPOPLAN' => $data['TIPO_PLAN'],
                     'PLAN' => $data['PLAN'] ?? null,
                     'ICC' => $data['ICC'],
-                    'CUENTA' => $data['CUENTA'] ?? null, // Nuevo campo CUENTA
-                    'ESTADO' => $estado,
-                    'VEH_ID' => $vehiculoId,
+                    'CUENTA' => $data['CUENTA'] ?? null,
+                    'ESTADO' => strtoupper($data['ESTADO']) ?: 'LIBRE',
+                    'GRUPO' => !empty($data['TIPO_VEHICULO']) ? $data['TIPO_VEHICULO'] : null,
+                    'ASIGNACION' => !empty($data['PLACA']) ? $data['PLACA'] : null,
                 ]);
+
+                $created++;
+            } catch (\Exception $e) {
+                $errors[] = "Ocurrió un error al procesar la fila " . ($index + 2) . ": " . $e->getMessage();
             }
         }
-    
-        return redirect()->route('simcards.index')->with('success', 'Datos cargados exitosamente.');
+
+        // Retornar mensaje de éxito o errores
+        if (!empty($errors)) {
+            return redirect()->back()->withErrors($errors)->with('success', "Se crearon $created registros correctamente.");
+        }
+
+        return redirect()->route('simcards.index')->with('success', "Todos los datos se cargaron correctamente. Total registros: $created.");
     }
-    
+
+
+
+
 
     public function update(Request $request, SIMCARD $simcard)
     {
         $request->validate([
-            'RUC' => 'nullable|string|max:13',
             'PROPIETARIO' => 'required|string|max:255',
             'NUMEROTELEFONO' => 'required|string|max:10|unique:SIMCARD,NUMEROTELEFONO,' . $simcard->ID_SIM . ',ID_SIM',
             'TIPOPLAN' => 'required|string|max:255',
             'PLAN' => 'nullable|string|max:255',
-            'ICC' => 'nullable|string|max:255',
-            'ESTADO' => 'required|string|max:2',
-            'VEH_ID' => 'nullable|exists:VEHICULO,VEH_ID',
+            'ICC' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('SIMCARD', 'ICC')->ignore($simcard->ID_SIM, 'ID_SIM'),
+            ],
+            'ESTADO' => 'required|string',
+            'ASIGNACION' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) use ($request, $simcard) {
+                    if ($value) {
+                        // Extraer los primeros 4 caracteres
+                        $prefix = substr($value, 0, 6);
+
+                        // Verificar si existen registros con el mismo prefijo y estado 'ACTIVO' o 'LIBRE'
+                        $exists = SIMCARD::where('ASIGNACION', 'like', $prefix . '%')
+                            ->whereIn('ESTADO', ['ACTIVA', 'LIBRE'])
+                            ->where('ID_SIM', '<>', $simcard->ID_SIM) // Ignorar el registro actual
+                            ->exists();
+
+                        if ($exists) {
+                            $fail("El prefijo '$prefix' de la asignación ya existe en otro registro con estado 'ACTIVO' o 'LIBRE'.");
+                        }
+                    }
+                }
+            ],
         ]);
 
+        // Actualizar los datos del registro
         $simcard->update($request->all());
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');
     }
+
 
     public function destroy(SIMCARD $simcard)
     {

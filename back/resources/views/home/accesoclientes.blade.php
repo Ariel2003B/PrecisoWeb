@@ -1,5 +1,5 @@
 @extends('layout')
-@section('Titulo', 'Acceso a clientes')
+@section('Titulo', 'Plataformas')
 @section('ActivarAccessC', 'active')
 @section('content')
     <br>
@@ -35,11 +35,6 @@
                     <a class="btn btn-success" href="http://157.245.141.38:4020/login" target="_blank">Visitar
                         página</a>
                 </div>
-            </div>
-            <br>
-            <br>
-
-            <div class="row text-center">
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
                         <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -67,10 +62,7 @@
                     <h4 class="my-3">SECRETARIA DE MOVILIDAD</h4>
                     <a class="btn btn-success" data-bs-toggle="modal" href="#modalSecretaria">Encuentra tu CIA</a>
                 </div>
-            </div>
-            <br>
-            <br>
-            <div class="row text-center">
+
                 <div class="col-md-4">
                     <span class="fa-stack fa-4x">
                         <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -98,132 +90,190 @@
                         <h4 class="my-3">AREA TECNICOS</h4>
                         <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                     </div>
-                @endif
-            </div>
-            <br>
-            <br>
-            @if (Auth::check())
-                <div class="row text-center">
-                    <!-- Sección CLARO -->
+                @else
                     <div class="col-md-4 text-center">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                             <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">CLARO</h4>
+                        <h4 class="my-3">SIMCARDS</h4>
                         <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
                     </div>
-
                     <!-- Modal para CLARO -->
-                    <div id="modalClaro" class="position-absolute bg-white border rounded shadow p-3 text-center"
+                    <div id="modalClaro"
+                        class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
                         style="display: none;">
-                        <p class="text-center mb-3 fw-bold">Selecciona una opción para CLARO:</p>
+                        <p class="text-center mb-3 fw-bold">Selecciona una opción para SIMCARDS:</p>
                         <div>
                             <!-- Imagen con enlace -->
                             <a href="http://www.miclaro.com.ec/ivrdigital" target="_blank">
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
-                                    alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 150px;">
+                                    alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
                             <p><a href="http://www.miclaro.com.ec/ivrdigital" target="_blank"
                                     class="text-primary">Reposicion de chips</a></p>
                             <!-- Otra Imagen con enlace -->
                             <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
-                                    alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 150px;">
+                                    alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
                             <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank"
                                     class="text-primary">Factuacion CLARO</a></p>
+                            @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
+                                <a href="{{ route('simcards.index') }}">
+                                    <img src="{{ asset('img/logoPreciso.jpg') }}" alt="Imagen Claro 2"
+                                        class="img-fluid mb-2" style="max-width: 90px;">
+                                </a>
+                                <p><a href="{{ route('simcards.index') }}" class="text-primary">Gestionar Simcards</a></p>
+                            @endif
                         </div>
                     </div>
+                @endif
+                @if (Auth::check())
                     <!-- Sección WIALON -->
                     <div class="col-md-4 text-center">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                            <i class="fa-solid fa-location-crosshairs fa-stack-1x fa-inverse"></i>
                         </span>
                         <h4 class="my-3">WIALON</h4>
                         <button class="btn btn-success" onclick="mostrarModalWialon(event)">Opciones</button>
                     </div>
+                    <div class="col-md-4 text-center">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-cloud fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">DIGITAL OCEAN</h4>
+                        <a class="btn btn-success" target="_blank" href="https://cloud.digitalocean.com/login">Visitar
+                            pagina</a>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                            <i class="fas fa-computer fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">GODADDY</h4>
+                        <a class="btn btn-success" target="_blank"
+                            href="https://sso.godaddy.com/?realm=idp&app=cart&path=%2Fcheckoutapi%2Fv1%2Fredirects%2Flogin">Visitar
+                            pagina</a>
+                    </div>
+                    @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-users fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE USUARIOS</h4>
+                            <a class="btn btn-success" href="{{ route('usuario.index') }}">Visitar
+                                pagina</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PERFILES'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE PERFILES</h4>
+                            <a class="btn btn-success" href="{{ route('perfil.index') }}">Visitar
+                                pagina</a>
+                        </div>
+                    @endif
+
+
+
+
+
+
 
                     <!-- Modal para WIALON -->
-                    <div id="modalWialon" class="position-absolute bg-white border rounded shadow p-3 text-center"
+                    <div id="modalWialon"
+                        class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
                         style="display: none;">
                         <p class="text-center mb-3 fw-bold">Selecciona una opción para WIALON:</p>
                         <div>
                             <!-- Imagen con enlace -->
                             <a href="https://cms.wialon.us" target="_blank">
-                                <img src="{{ asset('img/toolsimg/pngegg.png') }}" alt="Imagen WIALON 1"
-                                    class="img-fluid mb-2" style="max-width: 150px;">
+                                <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
+                                    alt="Imagen WIALON 1" class="img-fluid mb-2" style="max-width: 80px;">
                             </a>
                             <p><a href="https://cms.wialon.us" target="_blank" class="text-primary">CMS WIALON</a></p>
                             <!-- Otra Imagen con enlace -->
                             <a href="https://my.wialon.com/es/login" target="_blank">
-                                <img src="{{ asset('img/toolsimg/pngegg.png') }}" alt="Imagen WIALON 2"
-                                    class="img-fluid mb-2" style="max-width: 150px;">
+                                <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
+                                    alt="Imagen WIALON 2" class="img-fluid mb-2" style="max-width: 80px;">
                             </a>
                             <p><a href="https://my.wialon.com/es/login" target="_blank" class="text-primary">Pagos
                                     WIALON</a></p>
                         </div>
                     </div>
-                </div>
-                <script>
-                    function mostrarModalClaro(event) {
-                        const modal = document.getElementById('modalClaro');
-                        const button = event.target;
+            </div>
+            <script>
+                // Almacena el modal actualmente abierto
+                let modalAbierto = null;
 
-                        // Obtiene la posición del botón
-                        const rect = button.getBoundingClientRect();
-                        const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
-                        const offsetY = window.pageYOffset || document.documentElement.scrollTop;
-
-                        // Posiciona el modal cerca del botón
-                        modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
-                        modal.style.left = `${rect.left + offsetX}px`;
-
-                        // Muestra el modal
-                        modal.style.display = 'block';
-                    }
-
-                    function mostrarModalWialon(event) {
-                        const modal = document.getElementById('modalWialon');
-                        const button = event.target;
-
-                        // Obtiene la posición del botón
-                        const rect = button.getBoundingClientRect();
-                        const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
-                        const offsetY = window.pageYOffset || document.documentElement.scrollTop;
-
-                        // Posiciona el modal cerca del botón
-                        modal.style.top = `${rect.top + offsetY - modal.offsetHeight - 550}px`;
-                        modal.style.left = `${rect.left + offsetX}px`;
-
-                        // Muestra el modal
-                        modal.style.display = 'block';
-                    }
-
-                    function cerrarModal(modalId) {
-                        const modal = document.getElementById(modalId);
+                // Función para cerrar todos los modales
+                function cerrarTodosLosModales() {
+                    const modales = document.querySelectorAll('.custom-modal');
+                    modales.forEach((modal) => {
                         modal.style.display = 'none';
+                    });
+                    modalAbierto = null; // Resetea la referencia del modal abierto
+                }
+
+                // Mostrar un modal específico
+                function mostrarModal(event, modalId, offsetTop) {
+                    const modal = document.getElementById(modalId);
+
+                    // Si el modal ya está abierto, cierra todos los modales
+                    if (modalAbierto === modal) {
+                        cerrarTodosLosModales();
+                        return;
                     }
 
-                    // Detecta clic fuera del modal para cerrarlo
-                    document.addEventListener('click', (event) => {
-                        ['modalClaro', 'modalWialon'].forEach((modalId) => {
-                            const modal = document.getElementById(modalId);
-                            if (modal.style.display === 'block' && !modal.contains(event.target) && !event.target
-                                .closest('.btn-success')) {
-                                cerrarModal(modalId);
-                            }
-                        });
-                    });
+                    cerrarTodosLosModales(); // Cierra cualquier modal abierto
 
-                    // Detecta tecla "Esc" para cerrar los modales
-                    document.addEventListener('keydown', (event) => {
-                        if (event.key === 'Escape') {
-                            ['modalClaro', 'modalWialon'].forEach(cerrarModal);
-                        }
-                    });
-                </script>
+                    const button = event.target;
+
+                    // Obtiene la posición del botón
+                    const rect = button.getBoundingClientRect();
+                    const offsetX = window.pageXOffset || document.documentElement.scrollLeft;
+                    const offsetY = window.pageYOffset || document.documentElement.scrollTop;
+
+                    // Posiciona el modal cerca del botón
+                    modal.style.top = `${rect.top + offsetY - modal.offsetHeight + offsetTop}px`;
+                    modal.style.left = `${rect.left + offsetX}px`;
+
+                    // Muestra el modal
+                    modal.style.display = 'block';
+                    modalAbierto = modal; // Actualiza la referencia al modal abierto
+                }
+
+                // Detecta clic fuera de cualquier modal para cerrarlo
+                document.addEventListener('click', (event) => {
+                    if (modalAbierto && !modalAbierto.contains(event.target) && !event.target.closest('.btn-success')) {
+                        cerrarTodosLosModales();
+                    }
+                });
+
+                // Detecta tecla "Esc" para cerrar cualquier modal
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        cerrarTodosLosModales();
+                    }
+                });
+
+                // Función para mostrar el modal de Claro
+                function mostrarModalClaro(event) {
+                    mostrarModal(event, 'modalClaro', -480);
+                }
+
+                // Función para mostrar el modal de Wialon
+                function mostrarModalWialon(event) {
+                    mostrarModal(event, 'modalWialon', -420);
+                }
+            </script>
             @endif
         </div>
     </section>
