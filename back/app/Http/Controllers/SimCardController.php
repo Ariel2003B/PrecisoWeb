@@ -237,7 +237,7 @@ class SimCardController extends Controller
                 function ($attribute, $value, $fail) use ($request, $simcard) {
                     if ($value) {
                         // Extraer los primeros 4 caracteres
-                        $prefix = substr($value, 0, 6);
+                        $prefix = substr($value, 0, 7);
 
                         // Verificar si existen registros con el mismo prefijo y estado 'ACTIVO' o 'LIBRE'
                         $exists = SIMCARD::where('ASIGNACION', 'like', $prefix . '%')
