@@ -13,13 +13,18 @@ class SimCardController extends Controller
     public function index(Request $request)
     {
         $query = SIMCARD::with('v_e_h_i_c_u_l_o');
-
-        // Aplicar filtro de búsqueda
+    
+        // Obtener opciones únicas para los desplegables
+        $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
+        $planes = SIMCARD::select('PLAN')->distinct()->pluck('PLAN');
+        $tiposPlan = SIMCARD::select('TIPOPLAN')->distinct()->pluck('TIPOPLAN');
+    
+        // Aplicar filtro de búsqueda existente
         if ($request->filled('search')) {
             $search = $request->input('search');
-
+    
             $query->where(function ($q) use ($search) {
-                $q->Where('PROPIETARIO', 'like', "%$search%")
+                $q->where('PROPIETARIO', 'like', "%$search%")
                     ->orWhere('CUENTA', 'like', "%$search%")
                     ->orWhere('PLAN', 'like', "%$search%")
                     ->orWhere('TIPOPLAN', 'like', "%$search%")
@@ -29,24 +34,30 @@ class SimCardController extends Controller
                     ->orWhere('GRUPO', 'like', "%$search%")
                     ->orWhere('ASIGNACION', 'like', "%$search%")
                     ->orWhere('EQUIPO', 'like', "%$search%");
-
-                // Manejar el caso de "Sin Asignar"
-                if (strtolower($search) === 'sin asignar' || strtolower($search) === 'asignar' || strtolower($search) === 'sin') {
-                    $q->whereNull('GRUPO')
-                        ->orWhereNull('ASIGNACION');
-                }
             });
         }
-
+    
+        // Aplicar filtros adicionales desde los dropdowns
+        if ($request->filled('CUENTA')) {
+            $query->where('CUENTA', $request->input('CUENTA'));
+        }
+        if ($request->filled('PLAN')) {
+            $query->where('PLAN', $request->input('PLAN'));
+        }
+        if ($request->filled('TIPOPLAN')) {
+            $query->where('TIPOPLAN', $request->input('TIPOPLAN'));
+        }
+    
         // Ordenar los resultados del más reciente al más antiguo
         $query->orderBy('ID_SIM', 'desc');
-
+    
         // Paginar los resultados
         $simcards = $query->paginate(20);
-
-        // Retornar la vista con los resultados
-        return view('simcard.index', compact('simcards'));
+    
+        // Retornar la vista con los resultados y las opciones de filtro
+        return view('simcard.index', compact('simcards', 'cuentas', 'planes', 'tiposPlan'));
     }
+    
 
 
 
