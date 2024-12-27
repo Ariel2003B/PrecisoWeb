@@ -64,6 +64,7 @@
             <table class="table table-bordered table-hover table-striped align-middle text-center">
                 <thead class="table-dark">
                     <tr>
+                        <th scope="col">N</th>
                         <th scope="col">Propietario</th>
                         <th scope="col">Cuenta</th>
                         <th scope="col">Plan</th>
@@ -78,8 +79,12 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $secuencial = $simcards->firstItem(); // Número inicial según la paginación
+                    @endphp
                     @foreach ($simcards as $simcard)
                         <tr>
+                            <td>{{ $secuencial++ }}</td>
                             <td>{{ $simcard->PROPIETARIO }}</td>
                             <td>{{ $simcard->CUENTA }}</td>
                             <td>{{ $simcard->PLAN }}</td>
@@ -97,7 +102,6 @@
                                     {{ $simcard->ASIGNACION ?? 'Sin Asignar' }}
                                 </span>
                             </td>
-
                             <td>
                                 @if ($simcard->ESTADO === 'ACTIVA')
                                     <span class="badge bg-success">Activa</span>
@@ -118,6 +122,7 @@
                 </tbody>
             </table>
         </div>
+        
 
         <div class="d-flex justify-content-center mt-4">
             <nav aria-label="Paginación de SIM Cards" class="shadow-sm p-3 mb-5 bg-body rounded">
