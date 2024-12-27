@@ -56,6 +56,54 @@ class SimCardController extends Controller
     }
 
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'PROPIETARIO' => 'required|string|max:255',
+    //         'NUMEROTELEFONO' => 'required|string|max:10|unique:SIMCARD,NUMEROTELEFONO',
+    //         'TIPOPLAN' => 'required|string|max:255',
+    //         'PLAN' => 'nullable|string|max:255',
+    //         'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
+    //         'ESTADO' => 'required|string',
+    //         'GRUPO' => 'nullable|string|max:255',
+    //         'ASIGNACION' => [
+    //             'nullable',
+    //             'string',
+    //             function ($attribute, $value, $fail) {
+    //                 // Obtén los primeros 4 caracteres de la columna ASIGNACION
+    //                 $prefix = substr($value, 0, 7);
+
+    //                 // Comprueba si ya existe un registro con este prefijo y ESTADO "ACTIVA" o "LIBRE"
+    //                 $exists = DB::table('SIMCARD')
+    //                     ->where(function ($query) {
+    //                     $query->where('ESTADO', 'ACTIVA')
+    //                         ->orWhere('ESTADO', 'LIBRE');
+    //                 })
+    //                     ->where('ASIGNACION', 'LIKE', $prefix . '%')
+    //                     ->exists();
+
+    //                 if ($exists) {
+    //                     $fail("El prefijo '$prefix' ya está en uso para un registro con estado ACTIVA o LIBRE en ASIGNACION.");
+    //                 }
+    //             },
+    //         ],
+    //     ]);
+    //     SIMCARD::create([
+    //         'CUENTA' => $request->CUENTA,
+    //         'PROPIETARIO' => $request->PROPIETARIO,
+    //         'NUMEROTELEFONO' => $request->NUMEROTELEFONO,
+    //         'TIPOPLAN' => $request->TIPOPLAN,
+    //         'PLAN' => $request->PLAN,
+    //         'ICC' => $request->ICC,
+    //         'ESTADO' => $request->ESTADO,
+    //         'ASIGINACION' => $request->ASIGNACION,
+    //         'GRUPO' => $request->GRUPO
+    //     ]);
+
+    //     return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
+    // }
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -66,28 +114,28 @@ class SimCardController extends Controller
             'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
             'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
+            'EQUIPO' => 'required|string|in:GPS,MODEM', // Validar que solo permita GPS o MODEM
             'ASIGNACION' => [
                 'nullable',
                 'string',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
+
+
                     // Obtén los primeros 4 caracteres de la columna ASIGNACION
                     $prefix = substr($value, 0, 7);
-
-                    // Comprueba si ya existe un registro con este prefijo y ESTADO "ACTIVA" o "LIBRE"
+                    // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
                     $exists = DB::table('SIMCARD')
-                        ->where(function ($query) {
-                        $query->where('ESTADO', 'ACTIVA')
-                            ->orWhere('ESTADO', 'LIBRE');
-                    })
                         ->where('ASIGNACION', 'LIKE', $prefix . '%')
+                        ->where('EQUIPO', $request->EQUIPO)
                         ->exists();
 
                     if ($exists) {
-                        $fail("El prefijo '$prefix' ya está en uso para un registro con estado ACTIVA o LIBRE en ASIGNACION.");
+                        $fail("La combinación de asignación '$prefix' y equipo '{$request->EQUIPO}' ya existe.");
                     }
                 },
             ],
         ]);
+
         SIMCARD::create([
             'CUENTA' => $request->CUENTA,
             'PROPIETARIO' => $request->PROPIETARIO,
@@ -96,12 +144,14 @@ class SimCardController extends Controller
             'PLAN' => $request->PLAN,
             'ICC' => $request->ICC,
             'ESTADO' => $request->ESTADO,
-            'ASIGINACION' => $request->ASIGNACION,
-            'GRUPO' => $request->GRUPO
+            'ASIGNACION' => $request->ASIGNACION,
+            'GRUPO' => $request->GRUPO,
+            'EQUIPO' => $request->EQUIPO, // Agregar el campo EQUIPO
         ]);
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
     }
+
 
 
 
@@ -231,34 +281,47 @@ class SimCardController extends Controller
                 Rule::unique('SIMCARD', 'ICC')->ignore($simcard->ID_SIM, 'ID_SIM'),
             ],
             'ESTADO' => 'required|string',
+            'GRUPO' => 'nullable|string|max:255',
+            'EQUIPO' => 'required|string|in:GPS,MODEM', // Validar que solo permita GPS o MODEM
             'ASIGNACION' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) use ($request, $simcard) {
                     if ($value) {
-                        // Extraer los primeros 4 caracteres
+                        // Extraer los primeros 7 caracteres de ASIGNACION
                         $prefix = substr($value, 0, 7);
-
-                        // Verificar si existen registros con el mismo prefijo y estado 'ACTIVO' o 'LIBRE'
-                        $exists = SIMCARD::where('ASIGNACION', 'like', $prefix . '%')
-                            ->whereIn('ESTADO', ['ACTIVA', 'LIBRE'])
+    
+                        // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
+                        $exists = SIMCARD::where('ASIGNACION', 'LIKE', $prefix . '%')
+                            ->where('EQUIPO', $request->EQUIPO)
                             ->where('ID_SIM', '<>', $simcard->ID_SIM) // Ignorar el registro actual
                             ->exists();
-
+    
                         if ($exists) {
-                            $fail("El prefijo '$prefix' de la asignación ya existe en otro registro con estado 'ACTIVO' o 'LIBRE'.");
+                            $fail("La combinación de asignación '$prefix' y equipo '{$request->EQUIPO}' ya existe en otro registro.");
                         }
                     }
-                }
+                },
             ],
         ]);
-
+    
         // Actualizar los datos del registro
-        $simcard->update($request->all());
-
+        $simcard->update([
+            'CUENTA' => $request->CUENTA,
+            'PROPIETARIO' => $request->PROPIETARIO,
+            'NUMEROTELEFONO' => $request->NUMEROTELEFONO,
+            'TIPOPLAN' => $request->TIPOPLAN,
+            'PLAN' => $request->PLAN,
+            'ICC' => $request->ICC,
+            'ESTADO' => $request->ESTADO,
+            'ASIGNACION' => $request->ASIGNACION,
+            'GRUPO' => $request->GRUPO,
+            'EQUIPO' => $request->EQUIPO, // Asegurar que se actualice el campo EQUIPO
+        ]);
+    
         return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');
     }
-
+    
 
     public function destroy(SIMCARD $simcard)
     {

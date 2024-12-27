@@ -51,6 +51,13 @@
                     placeholder="Ingrese la asignacion Ej: ABC1234 (01/2345), JUAN PEREZ, etc.">
             </div>
             <div class="mb-3">
+                <label for="EQUIPO" class="form-label">Equipo</label>
+                <select name="EQUIPO" id="EQUIPO" class="form-select" required>
+                    <option value="GPS">GPS</option>
+                    <option value="MODEM">MODEM</option>
+                </select>
+            </div>
+            <div class="mb-3">
                 <label for="ESTADO" class="form-label">Estado</label>
                 <select name="ESTADO" id="ESTADO" class="form-select" required>
                     <option value="ACTIVA">Activo</option>
