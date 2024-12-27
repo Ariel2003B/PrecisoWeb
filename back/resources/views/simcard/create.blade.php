@@ -46,7 +46,7 @@
             </div>
             <div class="mb-3">
                 <label for="ASIGNACION" class="form-label">Asignacion</label>
-                <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control" maxlength="7"
+                <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control" maxlength="25"
                     value="{{ old('ASIGNACION') }}"
                     placeholder="Ingrese la asignacion Ej: ABC1234 (01/2345), JUAN PEREZ, etc.">
             </div>

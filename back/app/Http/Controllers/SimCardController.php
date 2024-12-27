@@ -64,14 +64,14 @@ class SimCardController extends Controller
             'TIPOPLAN' => 'required|string|max:255',
             'PLAN' => 'nullable|string|max:255',
             'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
-            'ESTADO' => 'required|string|max:2',
+            'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
             'ASIGNACION' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     // Obtén los primeros 4 caracteres de la columna ASIGNACION
-                    $prefix = substr($value, 0, 6);
+                    $prefix = substr($value, 0, 7);
 
                     // Comprueba si ya existe un registro con este prefijo y ESTADO "ACTIVA" o "LIBRE"
                     $exists = DB::table('SIMCARD')
@@ -173,7 +173,7 @@ class SimCardController extends Controller
 
             // Validar unicidad de los primeros 4 caracteres de ASIGNACION si el estado es ACTIVA o LIBRE
             if (!empty($data['PLACA']) && in_array(strtoupper($data['ESTADO']), ['ACTIVA', 'LIBRE'])) {
-                $firstSixChars = substr($data['PLACA'], 0, 6);
+                $firstSixChars = substr($data['PLACA'], 0, 7);
                 $asignacionExists = SIMCARD::where('ESTADO', '!=', 'INACTIVA')
                     ->where('ASIGNACION', 'like', "$firstSixChars%")
                     ->exists();
