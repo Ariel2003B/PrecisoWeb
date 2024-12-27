@@ -47,9 +47,9 @@
                 <th scope="col">Código Plan</th>
                 <th scope="col">ICC</th>
                 <th scope="col">Número</th>
+                <th scope="col">Equipo</th>
                 <th scope="col">Grupo</th>
                 <th scope="col">Asignación</th>
-                <th scope="col">Equipo</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Acciones</th>
             </tr>
@@ -63,6 +63,7 @@
                     <td>{{ $simcard->TIPOPLAN }}</td>
                     <td>{{ $simcard->ICC }}</td>
                     <td>{{ $simcard->NUMEROTELEFONO }}</td>
+                    <td>{{$simcard->EQUIPO}}</td>
                     <td>
                         <span class="badge bg-secondary">
                             {{ $simcard->GRUPO ?? 'Sin Asignar' }}
@@ -73,7 +74,7 @@
                             {{ $simcard->ASIGNACION ?? 'Sin Asignar' }}
                         </span>
                     </td>
-                    <td>{{$simcard->EQUIPO}}</td>
+                    
                     <td>
                         @if ($simcard->ESTADO === 'ACTIVA')
                             <span class="badge bg-success">Activa</span>

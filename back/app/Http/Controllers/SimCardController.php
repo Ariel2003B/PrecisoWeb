@@ -27,7 +27,8 @@ class SimCardController extends Controller
                     ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
                     ->orWhere('ESTADO', 'like', "%$search%")
                     ->orWhere('GRUPO', 'like', "%$search%")
-                    ->orWhere('ASIGNACION', 'like', "%$search%");
+                    ->orWhere('ASIGNACION', 'like', "%$search%")
+                    ->orWhere('EQUIPO', 'like', "%$search%");
 
                 // Manejar el caso de "Sin Asignar"
                 if (strtolower($search) === 'sin asignar' || strtolower($search) === 'asignar' || strtolower($search) === 'sin') {
