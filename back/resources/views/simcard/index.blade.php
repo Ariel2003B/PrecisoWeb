@@ -28,17 +28,17 @@
         </form>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <!-- Botón para agregar una nueva SIM Card -->
-            <a href="{{ route('simcards.create') }}" class="btn btn-contador">Agregar SIM Card</a>
+            <a href="{{ route('simcards.create') }}" class="btn btn-success">Agregar SIM Card</a>
 
             <!-- Filtros -->
             <form action="{{ route('simcards.index') }}" method="GET" class="d-flex flex-wrap gap-2 align-items-center">
                 <!-- Filtro de búsqueda existente -->
                 <input type="text" name="search" id="filtro" class="form-control me-2"
-                    placeholder="Filtrar SIM Cards..." value="{{ request('search') }}" style="max-width: 300px;">
+                    placeholder="Busqueda avanzada..." value="{{ request('search') }}" style="max-width: 300px;">
 
                 <!-- Filtro por Cuenta -->
                 <select name="CUENTA" id="CUENTA" class="form-select me-2" style="max-width: 200px;">
-                    <option value="">-- Seleccione Cuenta --</option>
+                    <option value="">Todas las cuentas</option>
                     @foreach ($cuentas as $cuenta)
                         <option value="{{ $cuenta }}" {{ request('CUENTA') == $cuenta ? 'selected' : '' }}>
                             {{ $cuenta }}
@@ -48,7 +48,7 @@
 
                 <!-- Filtro por Plan -->
                 <select name="PLAN" id="PLAN" class="form-select me-2" style="max-width: 200px;">
-                    <option value="">-- Seleccione Plan --</option>
+                    <option value="">Todos los planes</option>
                     @foreach ($planes as $plan)
                         <option value="{{ $plan }}" {{ request('PLAN') == $plan ? 'selected' : '' }}>
                             {{ $plan }}

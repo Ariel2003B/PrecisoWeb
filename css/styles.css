@@ -13536,13 +13536,11 @@ section#contact form#contactForm :-ms-input-placeholder {
   color: #0056b3;
   text-decoration: underline;
 }
-
 /* Contenedor principal del dropdown */
 .dropdown-custom {
   position: relative;
   display: inline-block;
-  vertical-align: middle;
-  /* Alinea con otros elementos */
+  vertical-align: middle; /* Alinea con otros elementos */
 }
 
 /* Enlace principal (Admin Master) */
@@ -13557,10 +13555,8 @@ section#contact form#contactForm :-ms-input-placeholder {
   transition: color 0.3s ease;
   display: inline-block;
   line-height: 1.5;
-  font-family: 'Montserrat', sans-serif;
-  /* Asegúrate de que sea la misma fuente */
-  font-size: 14px;
-  /* Ajusta al tamaño de letra del navbar */
+  font-family: 'Montserrat', sans-serif; /* Asegúrate de que sea la misma fuente */
+  font-size: 14px; /* Ajusta al tamaño de letra del navbar */
 }
 
 .dropdown-toggle-custom:hover {
@@ -13569,8 +13565,7 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 /* Flecha indicadora para el desplegable */
 .dropdown-toggle-custom::after {
-  content: " ▼";
-  /* Flecha hacia abajo */
+  content: " ▼"; /* Flecha hacia abajo */
   font-size: 12px;
   color: white;
   margin-left: 5px;
@@ -13578,34 +13573,31 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 
 .dropdown-custom:hover .dropdown-toggle-custom::after {
-  transform: rotate(180deg);
-  /* Rota la flecha al desplegar */
+  transform: rotate(180deg); /* Rota la flecha al desplegar */
 }
 
 /* Menú desplegable */
 .dropdown-menu-custom {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
   /* Oculto por defecto */
   position: absolute;
-  top: calc(100% + 5px);
-  /* Justo debajo del botón */
+  top: calc(100% + 5px); /* Justo debajo del botón */
   left: 0;
-  background-color: rgba(51, 51, 51, 0.95);
-  /* Fondo oscuro semi-transparente */
-  border-radius: 8px;
-  /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  /* Sombra ligera */
-  min-width: 200px;
-  /* Ancho mínimo */
+  background-color: rgba(51, 51, 51, 0.95); /* Fondo oscuro semi-transparente */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ligera */
+  min-width: 200px; /* Ancho mínimo */
   z-index: 1000;
   padding: 0;
   margin: 0;
+  transition: opacity 0.5s ease, visibility 0.5s ease; /* Transiciones suaves */
 }
 
 /* Mostrar el menú al pasar el mouse */
 .dropdown-custom:hover .dropdown-menu-custom {
-  display: block;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Elementos dentro del menú */
@@ -13619,12 +13611,9 @@ section#contact form#contactForm :-ms-input-placeholder {
   padding: 10px 15px;
   display: block;
   transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
-  /* Misma fuente */
-  font-size: 14px;
-  /* Misma fuente y tamaño */
+  font-family: 'Montserrat', sans-serif; /* Misma fuente */
+  font-size: 14px; /* Misma fuente y tamaño */
 }
-
 
 .dropdown-menu-custom a:hover {
   background-color: #005298;
@@ -13634,16 +13623,14 @@ section#contact form#contactForm :-ms-input-placeholder {
 /* Línea separadora para cerrar sesión */
 .dropdown-menu-custom .divider {
   height: 1px;
-  background-color: #555;
-  /* Línea divisoria */
+  background-color: #555; /* Línea divisoria */
   margin: 5px 0;
 }
 
 /* Corrección de alineación del dropdown en el menú */
 .nav-item {
   display: inline-block;
-  vertical-align: middle;
-  /* Alineación uniforme */
+  vertical-align: middle; /* Alineación uniforme */
 }
 
 /* Ajustes responsivos */
