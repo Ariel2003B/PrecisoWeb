@@ -11,11 +11,11 @@ class SimcardApiController extends Controller
     {
         // Crear la consulta base con relaciones
         $query = SIMCARD::without('v_e_h_i_c_u_l_o');
-    
+
         // Aplicar filtro de búsqueda
         if ($request->filled('search')) {
             $search = $request->input('search');
-    
+
             $query->where(function ($q) use ($search) {
                 $q->where('PROPIETARIO', 'like', "%$search%")
                     ->orWhere('CUENTA', 'like', "%$search%")
@@ -25,8 +25,9 @@ class SimcardApiController extends Controller
                     ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
                     ->orWhere('ESTADO', 'like', "%$search%")
                     ->orWhere('GRUPO', 'like', "%$search%")
-                    ->orWhere('ASIGNACION', 'like', "%$search%");
-    
+                    ->orWhere('ASIGNACION', 'like', "%$search%")
+                ;
+
                 // Manejar el caso de "Sin Asignar"
                 if (strtolower($search) === 'sin asignar' || strtolower($search) === 'asignar' || strtolower($search) === 'sin') {
                     $q->whereNull('GRUPO')
@@ -34,20 +35,17 @@ class SimcardApiController extends Controller
                 }
             });
         }
-    
+
         // Ordenar los resultados
         $query->orderBy('ID_SIM', 'desc');
-    
+
         // Obtener todos los registros sin paginación
         $simcards = $query->get();
-    
+
         // Retornar los datos en formato JSON
-        return response()->json([
-            'success' => true,
-            'data' => $simcards,
-        ]);
+        return response()->json($simcards);
     }
-    
+
 
 
     /**
