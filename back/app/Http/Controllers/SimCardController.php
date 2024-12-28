@@ -33,7 +33,8 @@ class SimCardController extends Controller
                     ->orWhere('ESTADO', 'like', "%$search%")
                     ->orWhere('GRUPO', 'like', "%$search%")
                     ->orWhere('ASIGNACION', 'like', "%$search%")
-                    ->orWhere('EQUIPO', 'like', "%$search%");
+                    ->orWhere('EQUIPO', 'like', "%$search%")
+                    ->orWhere('IMEI', 'like', "%$search%");
             });
         }
     
@@ -126,28 +127,30 @@ class SimCardController extends Controller
             'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
             'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
-            'EQUIPO' => 'required|string|in:GPS,MODEM', // Validar que solo permita GPS o MODEM
+            'EQUIPO' => 'nullable|string|in:GPS,MODEM', // EQUIPO ahora puede ser nulo
             'ASIGNACION' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) use ($request) {
-
-
-                    // Obtén los primeros 4 caracteres de la columna ASIGNACION
-                    $prefix = substr($value, 0, 7);
-                    // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
-                    $exists = DB::table('SIMCARD')
-                        ->where('ASIGNACION', 'LIKE', $prefix . '%')
-                        ->where('EQUIPO', $request->EQUIPO)
-                        ->exists();
-
-                    if ($exists) {
-                        $fail("La combinación de asignación '$prefix' y equipo '{$request->EQUIPO}' ya existe.");
+                    // Aplicar validación solo si ASIGNACION y EQUIPO tienen datos
+                    if (!empty($value) && !empty($request->EQUIPO)) {
+                        // Obtén los primeros 7 caracteres de la columna ASIGNACION
+                        $prefix = substr($value, 0, 7);
+    
+                        // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
+                        $exists = DB::table('SIMCARD')
+                            ->where('ASIGNACION', 'LIKE', $prefix . '%')
+                            ->where('EQUIPO', $request->EQUIPO)
+                            ->exists();
+    
+                        if ($exists) {
+                            $fail("La combinación de asignación '$prefix' y equipo '{$request->EQUIPO}' ya existe.");
+                        }
                     }
                 },
             ],
         ]);
-
+    
         SIMCARD::create([
             'CUENTA' => $request->CUENTA,
             'PROPIETARIO' => $request->PROPIETARIO,
@@ -158,11 +161,12 @@ class SimCardController extends Controller
             'ESTADO' => $request->ESTADO,
             'ASIGNACION' => $request->ASIGNACION,
             'GRUPO' => $request->GRUPO,
-            'EQUIPO' => $request->EQUIPO, // Agregar el campo EQUIPO
+            'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo
         ]);
-
+    
         return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
     }
+    
 
 
 
@@ -294,12 +298,13 @@ class SimCardController extends Controller
             ],
             'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
-            'EQUIPO' => 'required|string|in:GPS,MODEM', // Validar que solo permita GPS o MODEM
+            'EQUIPO' => 'nullable|string|in:GPS,MODEM', // EQUIPO ahora puede ser nulo
             'ASIGNACION' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) use ($request, $simcard) {
-                    if ($value) {
+                    // Validar solo si ASIGNACION y EQUIPO tienen valores
+                    if (!empty($value) && !empty($request->EQUIPO)) {
                         // Extraer los primeros 7 caracteres de ASIGNACION
                         $prefix = substr($value, 0, 7);
     
@@ -328,11 +333,13 @@ class SimCardController extends Controller
             'ESTADO' => $request->ESTADO,
             'ASIGNACION' => $request->ASIGNACION,
             'GRUPO' => $request->GRUPO,
-            'EQUIPO' => $request->EQUIPO, // Asegurar que se actualice el campo EQUIPO
+            'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo y se actualiza
+            'IMEI' =>$request->IMEI,
         ]);
     
         return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');
     }
+    
     
 
     public function destroy(SIMCARD $simcard)

@@ -69,10 +69,16 @@
             </div>
             <div class="mb-3">
                 <label for="EQUIPO" class="form-label">Equipo</label>
-                <select name="EQUIPO" id="EQUIPO" class="form-select" required>
+                <select name="EQUIPO" id="EQUIPO" class="form-select">
+                    <option value="">Sin asignar</option>
                     <option value="GPS" {{ $simcard->EQUIPO === 'GPS' ? 'selected' : '' }}>GPS</option>
                     <option value="MODEM" {{ $simcard->EQUIPO === 'MODEM' ? 'selected' : '' }}>MODEM</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label for="IMEI" class="form-label">Asignacion</label>
+                <input type="text" name="IMEI" id="IMEI" class="form-control"
+                    value="{{ old('IMEI', $simcard->IMEI) }}" placeholder="Ingrese el IMEI del equipo">
             </div>
             <div class="mb-3">
                 <label for="ESTADO" class="form-label">Estado</label>

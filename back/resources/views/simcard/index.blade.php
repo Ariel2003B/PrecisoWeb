@@ -26,18 +26,18 @@
             <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required>
             <button type="submit" class="btn btn-success mt-2">Cargar Datos</button>
         </form>
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="filtros-simcards-container mb-3">
             <!-- Botón para agregar una nueva SIM Card -->
-            <a href="{{ route('simcards.create') }}" class="btn btn-success">Agregar SIM Card</a>
+            <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
 
             <!-- Filtros -->
-            <form action="{{ route('simcards.index') }}" method="GET" class="d-flex flex-wrap gap-2 align-items-center">
+            <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                 <!-- Filtro de búsqueda existente -->
-                <input type="text" name="search" id="filtro" class="form-control me-2"
-                    placeholder="Busqueda avanzada..." value="{{ request('search') }}" style="max-width: 300px;">
+                <input type="text" name="search" id="filtro" class="filtros-simcards-input"
+                    placeholder="Busqueda avanzada..." value="{{ request('search') }}">
 
                 <!-- Filtro por Cuenta -->
-                <select name="CUENTA" id="CUENTA" class="form-select me-2" style="max-width: 200px;">
+                <select name="CUENTA" id="CUENTA" class="filtros-simcards-select">
                     <option value="">Todas las cuentas</option>
                     @foreach ($cuentas as $cuenta)
                         <option value="{{ $cuenta }}" {{ request('CUENTA') == $cuenta ? 'selected' : '' }}>
@@ -47,7 +47,7 @@
                 </select>
 
                 <!-- Filtro por Plan -->
-                <select name="PLAN" id="PLAN" class="form-select me-2" style="max-width: 200px;">
+                <select name="PLAN" id="PLAN" class="filtros-simcards-select">
                     <option value="">Todos los planes</option>
                     @foreach ($planes as $plan)
                         <option value="{{ $plan }}" {{ request('PLAN') == $plan ? 'selected' : '' }}>
@@ -55,8 +55,9 @@
                         </option>
                     @endforeach
                 </select>
+
                 <!-- Botón de búsqueda -->
-                <button class="btn btn-contador" type="submit">Buscar</button>
+                <button class="btn btn btn-contador mt-2" type="submit">Buscar</button>
             </form>
         </div>
 
@@ -65,13 +66,13 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">N</th>
-                        <th scope="col">Propietario</th>
                         <th scope="col">Cuenta</th>
                         <th scope="col">Plan</th>
                         <th scope="col">Código Plan</th>
                         <th scope="col">ICC</th>
                         <th scope="col">Número</th>
                         <th scope="col">Equipo</th>
+                        <th scope="col">Imei</th>
                         <th scope="col">Grupo</th>
                         <th scope="col">Asignación</th>
                         <th scope="col">Estado</th>
@@ -85,13 +86,13 @@
                     @foreach ($simcards as $simcard)
                         <tr>
                             <td>{{ $secuencial++ }}</td>
-                            <td>{{ $simcard->PROPIETARIO }}</td>
                             <td>{{ $simcard->CUENTA }}</td>
                             <td>{{ $simcard->PLAN }}</td>
                             <td>{{ $simcard->TIPOPLAN }}</td>
                             <td>{{ $simcard->ICC }}</td>
                             <td>{{ $simcard->NUMEROTELEFONO }}</td>
                             <td>{{ $simcard->EQUIPO }}</td>
+                            <td>{{ $simcard->IMEI }}</td>
                             <td>
                                 <span class="badge bg-secondary">
                                     {{ $simcard->GRUPO ?? 'Sin Asignar' }}
@@ -122,7 +123,7 @@
                 </tbody>
             </table>
         </div>
-        
+
 
         <div class="d-flex justify-content-center mt-4">
             <nav aria-label="Paginación de SIM Cards" class="shadow-sm p-3 mb-5 bg-body rounded">

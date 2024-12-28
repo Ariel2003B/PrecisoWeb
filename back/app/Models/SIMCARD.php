@@ -50,6 +50,7 @@ class SIMCARD extends Model
 		'GRUPO',
 		'ASIGNACION',
 		'EQUIPO',
+		'IMEI',
 		'VEH_ID'
 
 	];

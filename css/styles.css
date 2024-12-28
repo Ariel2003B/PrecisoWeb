@@ -13536,11 +13536,13 @@ section#contact form#contactForm :-ms-input-placeholder {
   color: #0056b3;
   text-decoration: underline;
 }
+
 /* Contenedor principal del dropdown */
 .dropdown-custom {
   position: relative;
   display: inline-block;
-  vertical-align: middle; /* Alinea con otros elementos */
+  vertical-align: middle;
+  /* Alinea con otros elementos */
 }
 
 /* Enlace principal (Admin Master) */
@@ -13555,8 +13557,10 @@ section#contact form#contactForm :-ms-input-placeholder {
   transition: color 0.3s ease;
   display: inline-block;
   line-height: 1.5;
-  font-family: 'Montserrat', sans-serif; /* Asegúrate de que sea la misma fuente */
-  font-size: 14px; /* Ajusta al tamaño de letra del navbar */
+  font-family: 'Montserrat', sans-serif;
+  /* Asegúrate de que sea la misma fuente */
+  font-size: 14px;
+  /* Ajusta al tamaño de letra del navbar */
 }
 
 .dropdown-toggle-custom:hover {
@@ -13565,7 +13569,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 /* Flecha indicadora para el desplegable */
 .dropdown-toggle-custom::after {
-  content: " ▼"; /* Flecha hacia abajo */
+  content: " ▼";
+  /* Flecha hacia abajo */
   font-size: 12px;
   color: white;
   margin-left: 5px;
@@ -13573,7 +13578,8 @@ section#contact form#contactForm :-ms-input-placeholder {
 }
 
 .dropdown-custom:hover .dropdown-toggle-custom::after {
-  transform: rotate(180deg); /* Rota la flecha al desplegar */
+  transform: rotate(180deg);
+  /* Rota la flecha al desplegar */
 }
 
 /* Menú desplegable */
@@ -13582,16 +13588,22 @@ section#contact form#contactForm :-ms-input-placeholder {
   visibility: hidden;
   /* Oculto por defecto */
   position: absolute;
-  top: calc(100% + 5px); /* Justo debajo del botón */
+  top: calc(100% + 5px);
+  /* Justo debajo del botón */
   left: 0;
-  background-color: rgba(51, 51, 51, 0.95); /* Fondo oscuro semi-transparente */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra ligera */
-  min-width: 200px; /* Ancho mínimo */
+  background-color: rgba(51, 51, 51, 0.95);
+  /* Fondo oscuro semi-transparente */
+  border-radius: 8px;
+  /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  /* Sombra ligera */
+  min-width: 200px;
+  /* Ancho mínimo */
   z-index: 1000;
   padding: 0;
   margin: 0;
-  transition: opacity 0.5s ease, visibility 0.5s ease; /* Transiciones suaves */
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  /* Transiciones suaves */
 }
 
 /* Mostrar el menú al pasar el mouse */
@@ -13611,8 +13623,10 @@ section#contact form#contactForm :-ms-input-placeholder {
   padding: 10px 15px;
   display: block;
   transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: 'Montserrat', sans-serif; /* Misma fuente */
-  font-size: 14px; /* Misma fuente y tamaño */
+  font-family: 'Montserrat', sans-serif;
+  /* Misma fuente */
+  font-size: 14px;
+  /* Misma fuente y tamaño */
 }
 
 .dropdown-menu-custom a:hover {
@@ -13623,14 +13637,16 @@ section#contact form#contactForm :-ms-input-placeholder {
 /* Línea separadora para cerrar sesión */
 .dropdown-menu-custom .divider {
   height: 1px;
-  background-color: #555; /* Línea divisoria */
+  background-color: #555;
+  /* Línea divisoria */
   margin: 5px 0;
 }
 
 /* Corrección de alineación del dropdown en el menú */
 .nav-item {
   display: inline-block;
-  vertical-align: middle; /* Alineación uniforme */
+  vertical-align: middle;
+  /* Alineación uniforme */
 }
 
 /* Ajustes responsivos */
@@ -13849,17 +13865,78 @@ section#contact form#contactForm :-ms-input-placeholder {
 
 
 .table thead th {
-  background-color: #005298; /* Color azul de tu empresa */
+  background-color: #005298;
+  /* Color azul de tu empresa */
   color: white;
 }
+
 .table tbody tr:hover {
-  background-color: #f5f5f5; /* Color de fondo al hacer hover */
+  background-color: #f5f5f5;
+  /* Color de fondo al hacer hover */
 }
+
 .btn-outline-primary {
   border-color: #005298;
   color: #005298;
 }
+
 .btn-outline-primary:hover {
   background-color: #005298;
   color: white;
+}
+
+
+
+/* Contenedor principal de filtros */
+.filtros-simcards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+
+
+/* Formulario de filtros */
+.filtros-simcards-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* Input de búsqueda */
+.filtros-simcards-input {
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  max-width: 250px;
+}
+
+/* Selectores de filtros */
+.filtros-simcards-select {
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  max-width: 180px;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .filtros-simcards-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtros-simcards-input,
+  .filtros-simcards-select,
+  .btn-buscar-sim,
+  .btn-agregar-sim {
+    max-width: 100%;
+    margin: 0;
+  }
 }

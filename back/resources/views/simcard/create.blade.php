@@ -52,10 +52,16 @@
             </div>
             <div class="mb-3">
                 <label for="EQUIPO" class="form-label">Equipo</label>
-                <select name="EQUIPO" id="EQUIPO" class="form-select" required>
+                <select name="EQUIPO" id="EQUIPO" class="form-select">
+                    <option value="">Sin asignar</option>
                     <option value="GPS">GPS</option>
                     <option value="MODEM">MODEM</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label for="IMEI" class="form-label">Imei</label>
+                <input type="text" name="IMEI" id="IMEI" class="form-control" value="{{ old('IMEI') }}"
+                    placeholder="Ingrese el IMEI del equipo">
             </div>
             <div class="mb-3">
                 <label for="ESTADO" class="form-label">Estado</label>
