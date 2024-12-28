@@ -76,7 +76,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="IMEI" class="form-label">Asignacion</label>
+                <label for="IMEI" class="form-label">Imei</label>
                 <input type="text" name="IMEI" id="IMEI" class="form-control"
                     value="{{ old('IMEI', $simcard->IMEI) }}" placeholder="Ingrese el IMEI del equipo">
             </div>
