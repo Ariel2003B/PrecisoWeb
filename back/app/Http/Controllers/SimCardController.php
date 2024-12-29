@@ -126,7 +126,7 @@ class SimCardController extends Controller
             'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
             'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
-            'EQUIPO' => 'nullable|string|in:GPS,MODEM', // EQUIPO ahora puede ser nulo
+            'EQUIPO' => 'nullable|string|in:GPS,MODEM,LECTOR DE QR,COMPUTADOR ABORDO,MOVIL', // EQUIPO ahora puede ser nulo
             'ASIGNACION' => [
                 'nullable',
                 'string',
@@ -297,7 +297,7 @@ class SimCardController extends Controller
             ],
             'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
-            'EQUIPO' => 'nullable|string|in:GPS,MODEM', // EQUIPO ahora puede ser nulo
+            'EQUIPO' => 'nullable|string|in:GPS,MODEM,LECTOR DE QR,COMPUTADOR ABORDO,MOVIL', // EQUIPO ahora puede ser nulo
             'ASIGNACION' => [
                 'nullable',
                 'string',

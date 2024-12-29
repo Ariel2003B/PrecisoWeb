@@ -73,6 +73,11 @@
                     <option value="">Sin asignar</option>
                     <option value="GPS" {{ $simcard->EQUIPO === 'GPS' ? 'selected' : '' }}>GPS</option>
                     <option value="MODEM" {{ $simcard->EQUIPO === 'MODEM' ? 'selected' : '' }}>MODEM</option>
+                    <option value="MOVIL" {{$simcard->EQUIPO === 'MOVIL'? 'selected':''}}>MOVIL</option>
+                    <option value="COMPUTADOR ABORDO" {{$simcard->EQUIPO === 'COMPUTADOR ABORDO'? 'selected':''}}>COMPUTADOR ABORDO</option>
+                    <option value="LECTOR DE QR" {{$simcard->EQUIPO === 'LECTOR DE QR'? 'selected':''}}>LECTOR DE QR</option>
+
+
                 </select>
             </div>
             <div class="mb-3">

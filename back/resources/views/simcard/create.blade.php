@@ -56,6 +56,10 @@
                     <option value="">Sin asignar</option>
                     <option value="GPS">GPS</option>
                     <option value="MODEM">MODEM</option>
+                    <option value="MOVIL">MOVIL</option>
+                    <option value="COMPUTADOR ABORDO">COMPUTADOR ABORDO</option>
+                    <option value="LECTOR DE QR">LECTOR DE QR</option>
+
                 </select>
             </div>
             <div class="mb-3">
