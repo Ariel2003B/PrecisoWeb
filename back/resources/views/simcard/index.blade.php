@@ -106,8 +106,8 @@
                             <td>
                                 @if ($simcard->ESTADO === 'ACTIVA')
                                     <span class="badge bg-success">Activa</span>
-                                @elseif ($simcard->ESTADO === 'INACTIVA')
-                                    <span class="badge bg-danger">Inactiva</span>
+                                @elseif ($simcard->ESTADO === 'ELIMINADA')
+                                    <span class="badge bg-danger">Eliminada</span>
                                 @elseif ($simcard->ESTADO === 'LIBRE')
                                     <span class="badge bg-warning">Libre</span>
                                 @endif
