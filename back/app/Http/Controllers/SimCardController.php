@@ -13,19 +13,18 @@ class SimCardController extends Controller
     public function index(Request $request)
     {
         $query = SIMCARD::with('v_e_h_i_c_u_l_o');
-    
+
         // Obtener opciones únicas para los desplegables
         $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
         $planes = SIMCARD::select('PLAN')->distinct()->pluck('PLAN');
         $tiposPlan = SIMCARD::select('TIPOPLAN')->distinct()->pluck('TIPOPLAN');
-    
+
         // Aplicar filtro de búsqueda existente
         if ($request->filled('search')) {
             $search = $request->input('search');
-    
+
             $query->where(function ($q) use ($search) {
-                $q->where('PROPIETARIO', 'like', "%$search%")
-                    ->orWhere('CUENTA', 'like', "%$search%")
+                $q->Where('CUENTA', 'like', "%$search%")
                     ->orWhere('PLAN', 'like', "%$search%")
                     ->orWhere('TIPOPLAN', 'like', "%$search%")
                     ->orWhere('ICC', 'like', "%$search%")
@@ -37,7 +36,7 @@ class SimCardController extends Controller
                     ->orWhere('IMEI', 'like', "%$search%");
             });
         }
-    
+
         // Aplicar filtros adicionales desde los dropdowns
         if ($request->filled('CUENTA')) {
             $query->where('CUENTA', $request->input('CUENTA'));
@@ -48,17 +47,17 @@ class SimCardController extends Controller
         if ($request->filled('TIPOPLAN')) {
             $query->where('TIPOPLAN', $request->input('TIPOPLAN'));
         }
-    
+
         // Ordenar los resultados del más reciente al más antiguo
         $query->orderBy('ID_SIM', 'desc');
-    
+
         // Paginar los resultados
         $simcards = $query->paginate(20);
-    
+
         // Retornar la vista con los resultados y las opciones de filtro
         return view('simcard.index', compact('simcards', 'cuentas', 'planes', 'tiposPlan'));
     }
-    
+
 
 
 
@@ -136,13 +135,13 @@ class SimCardController extends Controller
                     if (!empty($value) && !empty($request->EQUIPO)) {
                         // Obtén los primeros 7 caracteres de la columna ASIGNACION
                         $prefix = substr($value, 0, 7);
-    
+
                         // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
                         $exists = DB::table('SIMCARD')
                             ->where('ASIGNACION', 'LIKE', $prefix . '%')
                             ->where('EQUIPO', $request->EQUIPO)
                             ->exists();
-    
+
                         if ($exists) {
                             $fail("La combinación de asignación '$prefix' y equipo '{$request->EQUIPO}' ya existe.");
                         }
@@ -150,7 +149,7 @@ class SimCardController extends Controller
                 },
             ],
         ]);
-    
+
         SIMCARD::create([
             'CUENTA' => $request->CUENTA,
             'PROPIETARIO' => $request->PROPIETARIO,
@@ -163,10 +162,10 @@ class SimCardController extends Controller
             'GRUPO' => $request->GRUPO,
             'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo
         ]);
-    
+
         return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
     }
-    
+
 
 
 
@@ -307,13 +306,13 @@ class SimCardController extends Controller
                     if (!empty($value) && !empty($request->EQUIPO)) {
                         // Extraer los primeros 7 caracteres de ASIGNACION
                         $prefix = substr($value, 0, 7);
-    
+
                         // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
                         $exists = SIMCARD::where('ASIGNACION', 'LIKE', $prefix . '%')
                             ->where('EQUIPO', $request->EQUIPO)
                             ->where('ID_SIM', '<>', $simcard->ID_SIM) // Ignorar el registro actual
                             ->exists();
-    
+
                         if ($exists) {
                             $fail("La combinación de asignación '$prefix' y equipo '{$request->EQUIPO}' ya existe en otro registro.");
                         }
@@ -321,7 +320,7 @@ class SimCardController extends Controller
                 },
             ],
         ]);
-    
+
         // Actualizar los datos del registro
         $simcard->update([
             'CUENTA' => $request->CUENTA,
@@ -334,13 +333,13 @@ class SimCardController extends Controller
             'ASIGNACION' => $request->ASIGNACION,
             'GRUPO' => $request->GRUPO,
             'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo y se actualiza
-            'IMEI' =>$request->IMEI,
+            'IMEI' => $request->IMEI,
         ]);
-    
+
         return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');
     }
-    
-    
+
+
 
     public function destroy(SIMCARD $simcard)
     {
