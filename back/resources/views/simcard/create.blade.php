@@ -71,7 +71,7 @@
                 <label for="ESTADO" class="form-label">Estado</label>
                 <select name="ESTADO" id="ESTADO" class="form-select" required>
                     <option value="ACTIVA">Activo</option>
-                    <option value="INACTIVA">Inactivo</option>
+                    <option value="ELIMINADA">Eliminada</option>
                     <option value="LIBRE">Libre</option>
                 </select>
             </div>

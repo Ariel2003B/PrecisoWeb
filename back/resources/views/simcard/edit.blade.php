@@ -89,7 +89,7 @@
                 <label for="ESTADO" class="form-label">Estado</label>
                 <select name="ESTADO" id="ESTADO" class="form-select" required>
                     <option value="ACTIVA" {{ $simcard->ESTADO === 'ACTIVA' ? 'selected' : '' }}>Activa</option>
-                    <option value="INACTIVA" {{ $simcard->ESTADO === 'INACTIVA' ? 'selected' : '' }}>Inactiva</option>
+                    <option value="INACTIVA" {{ $simcard->ESTADO === 'ELIMINADA' ? 'selected' : '' }}>Eliminada</option>
                     <option value="LIBRE" {{ $simcard->ESTADO === 'LIBRE' ? 'selected' : '' }}>Libre</option>
                 </select>
             </div>

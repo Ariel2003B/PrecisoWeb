@@ -239,7 +239,7 @@ class SimCardController extends Controller
             // Validar unicidad de los primeros 4 caracteres de ASIGNACION si el estado es ACTIVA o LIBRE
             if (!empty($data['PLACA']) && in_array(strtoupper($data['ESTADO']), ['ACTIVA', 'LIBRE'])) {
                 $firstSixChars = substr($data['PLACA'], 0, 7);
-                $asignacionExists = SIMCARD::where('ESTADO', '!=', 'INACTIVA')
+                $asignacionExists = SIMCARD::where('ESTADO', '!=', 'ELIMINADA')
                     ->where('ASIGNACION', 'like', "$firstSixChars%")
                     ->exists();
 
