@@ -6,6 +6,7 @@ use App\Models\SIMCARD;
 use App\Models\VEHICULO;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 
 class SimCardController extends Controller
@@ -60,6 +61,72 @@ class SimCardController extends Controller
 
 
 
+
+    public function fetchWialonData(Request $request)
+    {
+        $asignacion = $request->input('asignacion');
+
+        if (!$asignacion) {
+            return response()->json(['error' => 'Asignación no proporcionada'], 400);
+        }
+
+        // Autenticación y búsqueda en Wialon en una sola URL
+        $token = 'a21e2472955b1cb0847730f34edcf3e8E1E1FA550AEDE0FF779FF697EA72831E24B0F2F8';
+        $url = "https://hst-api.wialon.com/wialon/ajax.html?svc=token/login&params=" . urlencode(json_encode(['token' => $token]));
+
+        // Obtener el SID
+        $authResponse = Http::get($url);
+
+        if ($authResponse->failed()) {
+            return response()->json(['error' => 'Error al autenticar con Wialon'], 500);
+        }
+
+        $sid = $authResponse->json('eid');
+
+        if (!$sid) {
+            return response()->json(['error' => 'SID no encontrado en la respuesta'], 500);
+        }
+
+        // Construir la URL para buscar datos en Wialon
+        $searchUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
+            'spec' => [
+                'itemsType' => 'avl_unit',
+                'propName' => 'sys_name',
+                'propValueMask' => $asignacion,
+                'sortType' => 'sys_name',
+            ],
+            'force' => 1,
+            'flags' => 4611686018427387903,
+            'from' => 0,
+            'to' => 0,
+        ])) . "&sid=" . $sid;
+
+        // Realizar la búsqueda
+        $searchResponse = Http::get($searchUrl);
+
+        if ($searchResponse->failed()) {
+            return response()->json(['error' => 'Error al buscar datos en Wialon'], 500);
+        }
+
+        $data = $searchResponse->json('items');
+
+        if (empty($data)) {
+            return response()->json(['error' => 'No se encontraron datos en Wialon'], 404);
+        }
+
+        $item = $data[0];
+
+        // Extraer los datos necesarios
+        $icc = isset($item['prms']['iccid']['v']) ? rtrim($item['prms']['iccid']['v'], 'F') : null;
+        $imei = isset($item['uid']) ? rtrim($item['uid'], 'F') : null;
+        $telefono = isset($item['ph']) ? substr($item['ph'], 4) : null;
+
+        return response()->json([
+            'icc' => $icc,
+            'imei' => $imei,
+            'telefono' => $telefono,
+        ]);
+    }
 
 
     public function create()

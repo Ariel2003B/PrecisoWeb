@@ -5,6 +5,7 @@
 // $db = 'dbPrecisoPruebas';
 // $user = 'root';
 // $password = 'Ariel2003B';
+// Configuración de la base de datos
 $host = '132.148.176.238';
 $db = 'dbPrecisoGps';
 $user = 'precisogps';
@@ -18,13 +19,13 @@ try {
 }
 
 // Ruta del archivo CSV
-$csvFile = 'Migracion3.csv';
+$csvFile = 'domingoMigration.csv';
 
 if (!file_exists($csvFile)) {
     die("El archivo CSV no existe.");
 }
 
-// Preparar la consulta SQL para actualizar datos
+// Preparar las consultas SQL
 $sqlUpdate = "UPDATE SIMCARD SET
     PROPIETARIO = :PROPIETARIO,
     CUENTA = :CUENTA,
@@ -34,10 +35,14 @@ $sqlUpdate = "UPDATE SIMCARD SET
 WHERE ICC = :ICC";
 $stmtUpdate = $pdo->prepare($sqlUpdate);
 
+$sqlInsert = "INSERT INTO SIMCARD (PROPIETARIO, CUENTA, NUMEROTELEFONO, PLAN, TIPOPLAN, ICC, ESTADO)
+VALUES (:PROPIETARIO, :CUENTA, :NUMEROTELEFONO, :PLAN, :TIPOPLAN, :ICC, 'LIBRE')";
+$stmtInsert = $pdo->prepare($sqlInsert);
+
 // Leer el archivo CSV
 $totalRegistros = 0;
 $registrosActualizados = 0;
-$registrosNoEncontrados = 0;
+$registrosInsertados = 0;
 
 if (($handle = fopen($csvFile, 'r')) !== false) {
     // Omitir la primera línea (encabezados)
@@ -54,23 +59,31 @@ if (($handle = fopen($csvFile, 'r')) !== false) {
         $descripcionPlan = !empty($data[4]) ? $data[4] : null;
         $simcard = !empty($data[5]) ? str_replace("'", "", $data[5]) : null;
 
-        // Intentar actualizar el registro
-        $stmtUpdate->bindParam(':PROPIETARIO', $propietario);
-        $stmtUpdate->bindParam(':CUENTA', $cuenta);
-        $stmtUpdate->bindParam(':NUMEROTELEFONO', $telefono);
-        $stmtUpdate->bindParam(':PLAN', $descripcionPlan);
-        $stmtUpdate->bindParam(':TIPOPLAN', $plan);
-        $stmtUpdate->bindParam(':ICC', $simcard);
-
         try {
+            // Intentar actualizar el registro
+            $stmtUpdate->bindParam(':PROPIETARIO', $propietario);
+            $stmtUpdate->bindParam(':CUENTA', $cuenta);
+            $stmtUpdate->bindParam(':NUMEROTELEFONO', $telefono);
+            $stmtUpdate->bindParam(':PLAN', $descripcionPlan);
+            $stmtUpdate->bindParam(':TIPOPLAN', $plan);
+            $stmtUpdate->bindParam(':ICC', $simcard);
             $stmtUpdate->execute();
+
             if ($stmtUpdate->rowCount() > 0) {
                 $registrosActualizados++;
             } else {
-                $registrosNoEncontrados++;
+                // Si no se encuentra, insertar como nuevo
+                $stmtInsert->bindParam(':PROPIETARIO', $propietario);
+                $stmtInsert->bindParam(':CUENTA', $cuenta);
+                $stmtInsert->bindParam(':NUMEROTELEFONO', $telefono);
+                $stmtInsert->bindParam(':PLAN', $descripcionPlan);
+                $stmtInsert->bindParam(':TIPOPLAN', $plan);
+                $stmtInsert->bindParam(':ICC', $simcard);
+                $stmtInsert->execute();
+                $registrosInsertados++;
             }
         } catch (PDOException $e) {
-            echo "Error al actualizar fila: " . $e->getMessage() . "\n";
+            echo "Error al procesar fila: " . $e->getMessage() . "\n";
         }
     }
 
@@ -79,7 +92,7 @@ if (($handle = fopen($csvFile, 'r')) !== false) {
     // Mostrar el resumen
     echo "Total de registros procesados: $totalRegistros\n";
     echo "Registros actualizados: $registrosActualizados\n";
-    echo "Registros no encontrados: $registrosNoEncontrados\n";
+    echo "Registros insertados: $registrosInsertados\n";
 } else {
     echo "No se pudo abrir el archivo CSV.";
 }
