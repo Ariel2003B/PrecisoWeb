@@ -6,7 +6,7 @@
 // $db = 'dbPrecisoPruebas';
 // $user = 'root';
 // $password = 'Ariel2003B';
-$host = '127.0.0.1';
+$host = '132.148.176.238';
 $db = 'dbPrecisoGps';
 $user = 'precisogps';
 $password = 'Preciso2024!';
@@ -90,11 +90,13 @@ foreach ($itemsData['items'] as $item) {
 
     if ($exists > 0) {
         // Paso 4: Actualizar el registro con el ICC
-        $sqlUpdate = "UPDATE SIMCARD SET ASIGNACION = :ASIGNACION, IMEI = :IMEI WHERE ICC = :ICC";
+        $sqlUpdate = "UPDATE SIMCARD SET ASIGNACION = :ASIGNACION, IMEI = :IMEI, EQUIPO = :EQUIPO WHERE ICC = :ICC";
+        $estado='GPS';
         $stmtUpdate = $pdo->prepare($sqlUpdate);
         $stmtUpdate->bindParam(':ICC', $icc);
         $stmtUpdate->bindParam(':IMEI', $imei);
         $stmtUpdate->bindParam(':ASIGNACION', $nm);
+        $stmtUpdate->bindParam(':EQUIPO', $estado);
 
         try {
             $stmtUpdate->execute();
