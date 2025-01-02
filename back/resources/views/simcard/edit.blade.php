@@ -69,8 +69,10 @@
                     <option value="GPS" {{ $simcard->EQUIPO === 'GPS' ? 'selected' : '' }}>GPS</option>
                     <option value="MODEM" {{ $simcard->EQUIPO === 'MODEM' ? 'selected' : '' }}>MODEM</option>
                     <option value="MOVIL" {{ $simcard->EQUIPO === 'MOVIL' ? 'selected' : '' }}>MOVIL</option>
-                    <option value="COMPUTADOR ABORDO" {{ $simcard->EQUIPO === 'COMPUTADOR ABORDO' ? 'selected' : '' }}>COMPUTADOR ABORDO</option>
-                    <option value="LECTOR DE QR" {{ $simcard->EQUIPO === 'LECTOR DE QR' ? 'selected' : '' }}>LECTOR DE QR</option>
+                    <option value="COMPUTADOR ABORDO" {{ $simcard->EQUIPO === 'COMPUTADOR ABORDO' ? 'selected' : '' }}>
+                        COMPUTADOR ABORDO</option>
+                    <option value="LECTOR DE QR" {{ $simcard->EQUIPO === 'LECTOR DE QR' ? 'selected' : '' }}>LECTOR DE QR
+                    </option>
                 </select>
             </div>
             <div class="mb-3">
@@ -93,73 +95,81 @@
         </form>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const form = document.getElementById('editSimCardForm');
                 const estadoInicial = "{{ $simcard->ESTADO }}";
                 const equipoSelect = document.getElementById('EQUIPO');
-        
+
                 // Bloquear automáticamente campos al cargar según el estado inicial
                 aplicarEstadoInicial(estadoInicial);
-        
+
                 // Detectar cambios en los radio buttons
-                form.addEventListener('change', function (e) {
+                form.addEventListener('change', function(e) {
                     if (e.target.name === 'ESTADO') {
                         handleEstadoChange(e.target.value);
                     }
                 });
-        
+
                 // Validar antes de enviar el formulario
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function(e) {
                     const estado = document.querySelector('input[name="ESTADO"]:checked').value;
                     if (estado === 'ACTIVA') {
-                        const camposRequeridos = ['PROPIETARIO', 'CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN', 'ICC', 'EQUIPO'];
+                        const camposRequeridos = ['PROPIETARIO', 'CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
+                            'ICC', 'EQUIPO', 'IMEI'
+                        ];
                         const incompletos = camposRequeridos.some(campo => {
                             const input = document.getElementById(campo);
                             return !input || !input.value.trim();
                         });
-        
+
                         if (incompletos) {
                             e.preventDefault();
-                            alert("Todos los campos requeridos deben estar completos para establecer el estado como ACTIVA.");
+                            alert(
+                                "Todos los campos requeridos deben estar completos para establecer el estado como ACTIVA.");
                         }
                     }
-                    if(estado==='LIBRE'){
-                        const camposRequeridos = ['PROPIETARIO', 'CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN', 'ICC'];
+                    if (estado === 'LIBRE') {
+                        const camposRequeridos = ['PROPIETARIO', 'CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
+                            'ICC'
+                        ];
                         const incompletos = camposRequeridos.some(campo => {
                             const input = document.getElementById(campo);
                             return !input || !input.value.trim();
                         });
-        
+
                         if (incompletos) {
                             e.preventDefault();
-                            alert("Todos los campos requeridos deben estar completos para establecer el estado como LIBRE.");
+                            alert(
+                                "Todos los campos requeridos deben estar completos para establecer el estado como LIBRE.");
                         }
                     }
                 });
 
 
-        
+
                 // Función para aplicar el estado inicial
                 function aplicarEstadoInicial(estado) {
                     const camposParaBloquear = {
                         ELIMINADA: ['ICC', 'GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO'],
                         LIBRE: ['GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO']
                     };
-        
+
                     if (estado === 'ELIMINADA' || estado === 'LIBRE') {
                         bloquearCampos(camposParaBloquear[estado]);
                     }
                 }
-        
+
                 // Función para manejar cambios de estado
                 function handleEstadoChange(estado) {
                     const camposParaLimpiar = {
                         ELIMINADA: ['ICC', 'GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO'],
                         LIBRE: ['GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO']
                     };
-        
+
                     if (estado === 'ELIMINADA' || estado === 'LIBRE') {
-                        if (confirm(`Se eliminarán los campos ${camposParaLimpiar[estado].join(', ')}. ¿Desea continuar?`)) {
+                        if (confirm(
+                                `Se eliminarán los campos ${camposParaLimpiar[estado].join(', ')}. ¿Desea continuar?`
+                                )) {
                             limpiarCampos(camposParaLimpiar[estado]);
                             bloquearCampos(camposParaLimpiar[estado]);
                         } else {
@@ -169,7 +179,7 @@
                         activarTodosLosCampos();
                     }
                 }
-        
+
                 // Bloquear campos
                 function bloquearCampos(campos) {
                     campos.forEach(campo => {
@@ -179,13 +189,13 @@
                             input.style.backgroundColor = '#e9ecef';
                         }
                     });
-        
+
                     // Bloquear el select de EQUIPO
                     if (campos.includes('EQUIPO')) {
                         equipoSelect.setAttribute('disabled', true);
                         equipoSelect.style.backgroundColor = '#e9ecef';
                     }
-        
+
                     // Asegurarse de no bloquear ICC en LIBRE
                     const estado = document.querySelector('input[name="ESTADO"]:checked').value;
                     if (estado === 'LIBRE') {
@@ -196,7 +206,7 @@
                         }
                     }
                 }
-        
+
                 // Activar todos los campos
                 function activarTodosLosCampos() {
                     const inputs = form.querySelectorAll('input, select');
@@ -206,7 +216,7 @@
                         input.style.backgroundColor = '';
                     });
                 }
-        
+
                 // Limpiar campos
                 function limpiarCampos(campos) {
                     campos.forEach(campo => {
@@ -214,7 +224,7 @@
                         if (input) input.value = '';
                     });
                 }
-        
+
                 // Revertir al estado anterior si se cancela una acción
                 function revertirEstado() {
                     const estadoAnterior = "{{ $simcard->ESTADO }}";
@@ -222,8 +232,8 @@
                 }
             });
         </script>
-        
-        
+
+
 
         @if ($errors->any())
             <div class="alert alert-danger">
