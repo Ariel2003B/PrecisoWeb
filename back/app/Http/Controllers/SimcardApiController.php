@@ -17,8 +17,7 @@ class SimcardApiController extends Controller
             $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
-                $q->where('PROPIETARIO', 'like', "%$search%")
-                    ->orWhere('CUENTA', 'like', "%$search%")
+                $q->where('CUENTA', 'like', "%$search%")
                     ->orWhere('PLAN', 'like', "%$search%")
                     ->orWhere('TIPOPLAN', 'like', "%$search%")
                     ->orWhere('ICC', 'like', "%$search%")
