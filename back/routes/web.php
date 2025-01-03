@@ -40,5 +40,5 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('perfil', PerfilController::class);
     });
     Route::resource('vehiculos', VehiculoController::class);
-    Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');
+    Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');   
 });

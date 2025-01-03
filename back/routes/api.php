@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::resource('/simcards', SimcardApiController::class);
+Route::get('/simcards?search={id}',[SimcardApiController::class,'show']);
 
 
 
