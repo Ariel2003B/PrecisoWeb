@@ -72,7 +72,7 @@ class SimcardApiController extends Controller
     
         $query = SIMCARD::without('v_e_h_i_c_u_l_o');
         $query->where(function ($q) use ($id) {
-            $q->Where('CUENTA', 'like', "%$id%")
+            $q->where('CUENTA', 'like', "%$id%")
                 ->orWhere('PLAN', 'like', "%$id%")
                 ->orWhere('TIPOPLAN', 'like', "%$id%")
                 ->orWhere('ICC', 'like', "%$id%")
