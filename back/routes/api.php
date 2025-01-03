@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::get('/simcardsApi', [SimcardApiController::class, 'index']);
+Route::resource('/simcards', SimcardApiController::class);
 
 
 

@@ -67,7 +67,38 @@ class SimcardApiController extends Controller
      */
     public function show($id)
     {
-        //
+
+        $query = SIMCARD::without('v_e_h_i_c_u_l_o');
+        $query->where(function ($q) use ($id) {
+            $q->Where('CUENTA', 'like', "%$id%")
+                ->orWhere('PLAN', 'like', "%$id%")
+                ->orWhere('TIPOPLAN', 'like', "%$id%")
+                ->orWhere('ICC', 'like', "%$id%")
+                ->orWhere('NUMEROTELEFONO', 'like', "%$id%")
+                ->orWhere('ESTADO', 'like', "%$id%")
+                ->orWhere('GRUPO', 'like', "%$id%")
+                ->orWhere('ASIGNACION', 'like', "%$id%")
+                ->orWhere('IMEI', 'like', "%$id%")
+            ;
+
+            // Manejar el caso de "Sin Asignar"
+            if (strtolower($id) === 'sin asignar' || strtolower($id) === 'asignar' || strtolower($id) === 'sin') {
+                $q->whereNull('GRUPO')
+                    ->orWhereNull('ASIGNACION');
+            }
+        });
+
+
+        // Ordenar los resultados
+        $query->orderBy('ID_SIM', 'desc');
+
+        // Obtener todos los registros sin paginación
+        $simcards = $query->get();
+        if ($simcards->count() > 0) {
+            // Retornar los datos en formato JSON
+            return response()->json($simcards);
+        }
+        return response()->json(['Error'=>'No hay datos']);
     }
 
     /**
