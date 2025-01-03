@@ -110,8 +110,58 @@ class SimcardApiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Validar los datos del JSON
+        $request->validate([
+            'CUENTA' => 'required|string|max:500',
+            'NUMEROTELEFONO' => 'required|string|max:10',
+            'TIPOPLAN' => 'required|string|max:500',
+            'PLAN' => 'nullable|string|max:500',
+            'ICC' => 'nullable|string|max:100',
+            'GRUPO' => 'nullable|string|max:1000',
+            'ASIGNACION' => 'nullable|string|max:500',
+            'EQUIPO' => 'nullable|string|max:1000',
+            'IMEI' => 'nullable|string|max:1000',
+            'ESTADO' => 'required|in:ACTIVA,ELIMINADA,LIBRE',
+        ]);
+    
+        // Buscar la SIMCARD por ID
+        $simcard = SIMCARD::find($id);
+    
+        if (!$simcard) {
+            return response()->json(['error' => 'SIMCARD no encontrada'], 404);
+        }
+        // Actualizar los datos
+        $simcard->CUENTA = $request->input('CUENTA');
+        $simcard->NUMEROTELEFONO = $request->input('NUMEROTELEFONO');
+        $simcard->TIPOPLAN = $request->input('TIPOPLAN');
+        $simcard->PLAN = $request->input('PLAN');
+        $simcard->ICC = $request->input('ICC');
+        $simcard->GRUPO = $request->input('GRUPO');
+        $simcard->ASIGNACION = $request->input('ASIGNACION');
+        $simcard->EQUIPO = $request->input('EQUIPO');
+        $simcard->IMEI = $request->input('IMEI');
+        $simcard->ESTADO = $request->input('ESTADO');
+    
+        // Si el estado es "ELIMINADA" o "LIBRE", limpiar campos específicos
+        if ($simcard->ESTADO === 'ELIMINADA') {
+            $simcard->ICC = null;
+            $simcard->GRUPO = null;
+            $simcard->ASIGNACION = null;
+            $simcard->EQUIPO = null;
+            $simcard->IMEI = null;
+        } elseif ($simcard->ESTADO === 'LIBRE') {
+            $simcard->GRUPO = null;
+            $simcard->ASIGNACION = null;
+            $simcard->EQUIPO = null;
+            $simcard->IMEI = null;
+        }
+    
+        // Guardar los cambios en la base de datos
+        $simcard->save();
+    
+        return response()->json(['success' => 'SIMCARD actualizada exitosamente', 'simcard' => $simcard]);
     }
+    
 
     /**
      * Remove the specified resource from storage.
