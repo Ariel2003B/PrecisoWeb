@@ -7,6 +7,7 @@
 namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Class USUARIO
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Hash;
  */
 class USUARIO extends Authenticatable
 {
+	use HasApiTokens;
 	protected $table = 'USUARIO';
 	protected $primaryKey = 'USU_ID';
 	public $timestamps = false;

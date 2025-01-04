@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $ESTADO
  * @property string|null $GRUPO
  * @property string|null $ASIGNACION
- * @property int|null $VEH_ID
  * @property string|null $EQUIPO
+ * @property int|null $VEH_ID
  * @property string|null $IMEI
  * 
  * @property VEHICULO|null $v_e_h_i_c_u_l_o
@@ -52,9 +52,8 @@ class SIMCARD extends Model
 		'GRUPO',
 		'ASIGNACION',
 		'EQUIPO',
-		'IMEI',
-		'VEH_ID'
-
+		'VEH_ID',
+		'IMEI'
 	];
 
 	public function v_e_h_i_c_u_l_o()
