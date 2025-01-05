@@ -25,7 +25,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
         <div class="container">
             <a class="" href="{{ route('home.inicio') }}">
-                <img src="{{ asset('img/PrecisNavidad.png') }}" alt="Preciso GPS" />
+                <img src="{{ asset('img/Precisogps.png') }}" alt="Preciso GPS" />
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">

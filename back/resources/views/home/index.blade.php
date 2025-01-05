@@ -8,7 +8,7 @@
                                                 Tu navegador no soporta la reproducción de video.
                                             </video> -->
         <video autoplay muted loop class="masthead-video">
-            <source src="img/FondoNavidad.mp4" type="video/mp4">
+            <source src="img/FondoModelo.mp4" type="video/mp4">
             Tu navegador no soporta la reproducción de video.
         </video>
         <!-- Capa de superposición -->
@@ -26,7 +26,7 @@
                                             </div> -->
     </header>
 
-    <!-- Modal para mostrar el GIF -->
+    {{-- <!-- Modal para mostrar el GIF -->
     <div id="modalNavidad" class="modal-navidad" onclick="cerrarModal(event)">
         <div class="modal-content-navidad" onclick="event.stopPropagation()">
             <!-- Cabecera del modal -->
@@ -40,7 +40,7 @@
                 <img src="{{ asset('img/NavidadGift.gif') }}" alt="Feliz Navidad" class="imagen-navidad">
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <script>
         // Función para abrir el modal
