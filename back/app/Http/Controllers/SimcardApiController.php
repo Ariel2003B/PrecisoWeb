@@ -25,6 +25,7 @@ class SimcardApiController extends Controller
                     ->orWhere('ESTADO', 'like', "%$search%")
                     ->orWhere('GRUPO', 'like', "%$search%")
                     ->orWhere('ASIGNACION', 'like', "%$search%")
+                    ->orWhere('EQUIPO', 'like', "%$search%")
                 ;
 
                 // Manejar el caso de "Sin Asignar"
