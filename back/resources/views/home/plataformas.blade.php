@@ -124,7 +124,7 @@
                                     <img src="{{ asset('img/logoPreciso.jpg') }}" alt="Imagen Claro 2"
                                         class="img-fluid mb-2" style="max-width: 90px;">
                                 </a>
-                                <p><a href="{{ route('simcards.index') }}" class="text-primary">Gestionar Simcards</a></p>
+                                <p><a href="{{ route('simcards.index') }}" target="_blank" class="text-primary">Gestionar Simcards</a></p>
                             @endif
                         </div>
                     </div>
