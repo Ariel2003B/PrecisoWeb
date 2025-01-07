@@ -120,7 +120,7 @@
                             <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank"
                                     class="text-primary">Factuacion CLARO</a></p>
                             @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                                <a href="{{ route('simcards.index') }}">
+                                <a href="{{ route('simcards.index') }}" target="_blank">
                                     <img src="{{ asset('img/logoPreciso.jpg') }}" alt="Imagen Claro 2"
                                         class="img-fluid mb-2" style="max-width: 90px;">
                                 </a>
