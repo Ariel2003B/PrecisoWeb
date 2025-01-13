@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\SancionesController;
 use App\Http\Controllers\SimCardController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VehiculoController;
@@ -42,3 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('vehiculos', VehiculoController::class);
     Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');   
 });
+
+Route::get('/sanciones', [SancionesController::class, 'index'])->name('sanciones.index'); // Vista principal de sanciones
+Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV
+Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
