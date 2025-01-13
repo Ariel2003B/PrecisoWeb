@@ -16,7 +16,7 @@
                     <input type="file" name="archivo" id="archivo" class="form-control" accept=".csv" required>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <button type="submit" class="btn btn-primary">Cargar Archivo</button>
+                    <button type="submit" class="btn btn-contador">Cargar Archivo</button>
                 </div>
             </div>
         </form>
@@ -66,7 +66,7 @@
                 <form id="formGenerarReporte" action="{{ route('sanciones.generarReporte') }}" method="POST">
                     @csrf
                     <input type="hidden" name="datosSeleccionados" id="datosSeleccionados">
-                    <button type="submit" class="btn btn-success">Generar Reporte PDF</button>
+                    <button type="submit" class="btn btn-success">Generar Reporte Excel</button>
                 </form>
             </div>
         @endif
