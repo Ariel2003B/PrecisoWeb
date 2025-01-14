@@ -3,6 +3,24 @@
 @section('Titulo', 'Sanciones')
 
 @section('content')
+
+    <style>
+        table {
+            font-size: 11px;
+            /* Reducir tamaño de la fuente */
+        }
+
+        th,
+        td {
+            padding: 1px;
+            /* Reducir el espacio interno en las celdas */
+        }
+
+        th {
+            white-space: nowrap;
+            /* Evitar que el texto de los encabezados se divida en varias líneas */
+        }
+    </style>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 
     <section class="container mt-5">
