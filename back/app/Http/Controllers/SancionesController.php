@@ -58,8 +58,10 @@ class SancionesController extends Controller
             }
 
             $sanciones = array_map(function ($min) {
-                return str_starts_with($min, '-') ? 1 : 0;
+                // Validar si empieza con '-' seguido por un número
+                return preg_match('/^-\d+$/', $min) ? 1 : 0;
             }, $minutos);
+            
 
             $totalSanciones = array_sum($sanciones);
             $valorTotal = $totalSanciones * (0.25 * $unidades[$unidad]);
