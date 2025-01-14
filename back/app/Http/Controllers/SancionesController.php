@@ -35,7 +35,7 @@ class SancionesController extends Controller
         $datos = [];
         $unidades = [];
         $contadorFila = 0; // Contador para identificar las filas
-
+        $unidadesRep = [];
         while (($fila = fgetcsv($archivo, 1000, ';')) !== false) {
             $contadorFila++;
 
@@ -66,8 +66,25 @@ class SancionesController extends Controller
             $totalSanciones = array_sum($sanciones);
             $valorTotal = $totalSanciones * (0.25 * $unidades[$unidad]);
 
+            $unidadesRep[] = $unidad;
+
+            $contadorVueltas = 0;
+            foreach ($unidadesRep as $data) {
+                if ($data===$unidad){
+                    $contadorVueltas++;
+                }
+            }
+
+            // $datos[] = [
+            //     'vuelta' => $unidades[$unidad],
+            //     'unidad' => $unidad,
+            //     'placa' => $placa,
+            //     'sanciones' => $sanciones,
+            //     'total' => $totalSanciones,
+            //     'valor_total' => $valorTotal,
+            // ];
             $datos[] = [
-                'vuelta' => $unidades[$unidad],
+                'vuelta' => $contadorVueltas,
                 'unidad' => $unidad,
                 'placa' => $placa,
                 'sanciones' => $sanciones,
