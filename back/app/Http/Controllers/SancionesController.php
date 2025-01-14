@@ -29,7 +29,7 @@ class SancionesController extends Controller
 
         // Extraer geocercas de los encabezados
         $geocercas = array_filter($encabezados, function ($columna) {
-            return preg_match('/\d+\.\s+(.*)/', $columna);
+            return preg_match('/\d+\.\s+(.*)/u', $columna);
         });
 
         $datos = [];
