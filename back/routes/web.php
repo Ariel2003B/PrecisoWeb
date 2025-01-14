@@ -41,9 +41,12 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('perfil', PerfilController::class);
     });
     Route::resource('vehiculos', VehiculoController::class);
-    Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');   
+    Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');
+
+    Route::middleware(['auth', 'role:SANCIONES'])->group(function () {
+        Route::get('/sanciones', [SancionesController::class, 'index'])->name('sanciones.index'); // Vista principal de sanciones
+        Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV
+        Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
+    });
 });
 
-Route::get('/sanciones', [SancionesController::class, 'index'])->name('sanciones.index'); // Vista principal de sanciones
-Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV
-Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
