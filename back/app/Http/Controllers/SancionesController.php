@@ -25,27 +25,35 @@ class SancionesController extends Controller
 
         // Leer el archivo CSV
         $archivo = fopen($rutaCompleta, 'r');
-        $encabezados = fgetcsv($archivo, 1000, ';'); // Leer la primera fila como encabezados
+        $encabezados = fgetcsv($archivo, 1000, ','); // Leer la primera fila como encabezados
 
         // Extraer geocercas de los encabezados
         $geocercas = array_filter($encabezados, function ($columna) {
-            return preg_match('/\d+\.\s+(.*)/u', $columna);
+            return preg_match('/^\d+\.\s+.+$/u', $columna);
         });
-
+        
+        
+        
         $datos = [];
         $unidades = [];
         $contadorFila = 0; // Contador para identificar las filas
         $unidadesRep = [];
-        while (($fila = fgetcsv($archivo, 1000, ';')) !== false) {
+        while (($fila = fgetcsv($archivo, 1000, ',')) !== false) {
             $contadorFila++;
 
             // Omitir las primeras filas, incluyendo encabezados
             if ($contadorFila <= 1) {
                 continue;
             }
+            try {
+                $unidad = $fila[0]; // Columna de unidad
+                $placa = $fila[1];  // Columna de placa
+            } catch (\Throwable $th) {
+                $error = $th->getMessage();
+            }
 
-            $unidad = $fila[0]; // Columna de unidad
-            $placa = $fila[1];  // Columna de placa
+
+           
 
             // Extraer los valores "Min" a partir de la columna 5, con un salto de 3 columnas
             $minutos = [];
