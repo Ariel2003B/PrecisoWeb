@@ -71,7 +71,7 @@ class SimCardController extends Controller
         }
 
         // Autenticación y búsqueda en Wialon en una sola URL
-        $token = 'a21e2472955b1cb0847730f34edcf3e8E1E1FA550AEDE0FF779FF697EA72831E24B0F2F8';
+        $token = 'c189ef69fcbd980c9f3740cf36824fe05A0DD4256AB0D47CB58F280439E69159216F48AE';
         $url = "https://hst-api.wialon.com/wialon/ajax.html?svc=token/login&params=" . urlencode(json_encode(['token' => $token]));
 
         // Obtener el SID
