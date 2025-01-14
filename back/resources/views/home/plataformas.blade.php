@@ -124,7 +124,8 @@
                                     <img src="{{ asset('img/logoPreciso.jpg') }}" alt="Imagen Claro 2"
                                         class="img-fluid mb-2" style="max-width: 90px;">
                                 </a>
-                                <p><a href="{{ route('simcards.index') }}" target="_blank" class="text-primary">Gestionar Simcards</a></p>
+                                <p><a href="{{ route('simcards.index') }}" target="_blank" class="text-primary">Gestionar
+                                        Simcards</a></p>
                             @endif
                         </div>
                     </div>
@@ -164,8 +165,7 @@
                             <i class="fas fa-file-invoice fa-stack-1x fa-inverse"></i>
                         </span>
                         <h4 class="my-3">SISTEMA CONTABLE</h4>
-                        <a class="btn btn-success" target="_blank"
-                            href="https://fws.com.ec">Visitar
+                        <a class="btn btn-success" target="_blank" href="https://fws.com.ec">Visitar
                             pagina</a>
                     </div>
                     @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
@@ -188,6 +188,17 @@
                             <h4 class="my-3">GESTION DE PERFILES</h4>
                             <a class="btn btn-success" href="{{ route('perfil.index') }}">Visitar
                                 pagina</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SANCIONES'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">SANCIONES</h4>
+                            <a class="btn btn-success" href="{{route('sanciones')}}" target="_blank">Visitar
+                                página</a>
                         </div>
                     @endif
                     <!-- Modal para WIALON -->
