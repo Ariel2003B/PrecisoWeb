@@ -3,26 +3,7 @@
 @section('Titulo', 'Sanciones')
 
 @section('content')
-
-    <style>
-        table {
-            font-size: 11px;
-            /* Reducir tamaño de la fuente */
-        }
-
-        th,
-        td {
-            padding: 1px;
-            /* Reducir el espacio interno en las celdas */
-        }
-
-        th {
-            white-space: nowrap;
-            /* Evitar que el texto de los encabezados se divida en varias líneas */
-        }
-    </style>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-
     <section class="container mt-5">
         <h1 class="text-center mb-4">Reporte de Sanciones</h1>
 
@@ -52,17 +33,19 @@
                 <table id="tablaSanciones" class="table table-striped table-bordered text-center align-middle">
                     <thead class="table-dark sticky-top">
                         <tr>
-                            <th>Vuelta</th>
-                            <th>Unidad</th>
-                            <th>Placa</th>
+                            <th class="geocerca">Vuelta</th>
+                            <th class="geocerca">Unidad</th>
+                            <th class="geocerca">Placa</th>
                             @foreach ($geocercas as $geocerca)
-                                <th>{{ $geocerca }}</th>
+                                <th class="geocerca">{{ $geocerca }}</th>
                             @endforeach
-                            <th>Total</th>
-                            <th>Valor Total</th>
-                            <th>Seleccionar</th>
+                            <th class="geocerca">Total</th>
+                            <th class="geocerca">Valor Total</th>
+                            <th class="geocerca">Seleccionar</th>
                         </tr>
                     </thead>
+
+
                     <tbody>
                         @foreach ($datos as $key => $dato)
                             <tr data-unidad="{{ $dato['unidad'] }}" data-vuelta="{{ $dato['vuelta'] }}">

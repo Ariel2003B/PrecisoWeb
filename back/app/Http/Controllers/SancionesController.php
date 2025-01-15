@@ -7,6 +7,12 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
+
+
 class SancionesController extends Controller
 {
     public function index()
@@ -109,62 +115,24 @@ class SancionesController extends Controller
 
         return view('sanciones.sanciones', compact('datos', 'geocercas'));
     }
-
-    // public function generarReporte(Request $request)
-    // {
-    //     $datosSeleccionados = json_decode($request->input('datosSeleccionados'), true);
-
-    //     if (!$datosSeleccionados || empty($datosSeleccionados)) {
-    //         return back()->withErrors(['error' => 'No hay datos seleccionados para generar el reporte']);
-    //     }
-
-    //     // Obtener todos los nombres de geocercas globalmente
-    //     $geocercas = [];
-    //     if (!empty($datosSeleccionados)) {
-    //         $geocercas = array_keys($datosSeleccionados[0]['geocercas'] ?? []);
-    //     }
-
-    //     $options = new Options();
-    //     $options->set('isHtml5ParserEnabled', true);
-    //     $options->set('isRemoteEnabled', true); // Permitir imágenes externas
-    //     $dompdf = new Dompdf($options);
-
-    //     // Generar el HTML para el PDF
-    //     $html = view('sanciones.pdf', compact('datosSeleccionados', 'geocercas'))->render();
-
-    //     try {
-    //         $dompdf->loadHtml($html);
-    //         $dompdf->setPaper('A4', 'landscape');
-    //         $dompdf->render();
-    //     } catch (\Throwable $th) {
-    //         return back()->withErrors(['error' => $th->getMessage()]);
-    //     }
-
-    //     return response($dompdf->output(), 200)
-    //         ->header('Content-Type', 'application/pdf')
-    //         ->header('Content-Disposition', 'attachment; filename="Reporte_Sanciones.pdf"');
-    // }
-
-
-
     public function generarReporte(Request $request)
     {
         $datosSeleccionados = json_decode($request->input('datosSeleccionados'), true);
-
+    
         if (!$datosSeleccionados || empty($datosSeleccionados)) {
             return back()->withErrors(['error' => 'No hay datos seleccionados para generar el reporte']);
         }
-
+    
         // Obtener todos los nombres de geocercas globalmente
         $geocercas = [];
         if (!empty($datosSeleccionados)) {
             $geocercas = array_keys($datosSeleccionados[0]['geocercas'] ?? []);
         }
-
+    
         // Crear un nuevo archivo de Excel
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-
+    
         // Escribir el encabezado de la tabla
         $header = ['Unidad', 'Placa'];
         foreach ($geocercas as $geocerca) {
@@ -172,9 +140,39 @@ class SancionesController extends Controller
         }
         $header[] = 'Total';
         $header[] = 'Valor Total';
-
+    
+        // Estilos para el encabezado
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '007BFF'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+                'textRotation' => 90, // Girar texto a vertical
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ];
+    
+        // Aplicar el encabezado y estilos
         $sheet->fromArray($header, null, 'A1');
-
+        $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
+    
+        // Ajustar ancho de las columnas de geocercas
+        foreach (range('C', $sheet->getHighestColumn()) as $column) {
+            $sheet->getColumnDimension($column)->setWidth(5); // Reducir espacio de las columnas
+        }
+    
         // Escribir los datos seleccionados en las filas
         $row = 2; // Comienza en la segunda fila después del encabezado
         foreach ($datosSeleccionados as $dato) {
@@ -182,27 +180,45 @@ class SancionesController extends Controller
                 $dato['unidad'],
                 $dato['placa']
             ];
-
+    
             // Añadir las sanciones de geocercas
             foreach ($geocercas as $geocerca) {
                 $fila[] = $dato['geocercas'][$geocerca] ?? 0;
             }
-
+    
             $fila[] = $dato['total'];
             $fila[] = $dato['valor_total'];
-
+    
             $sheet->fromArray($fila, null, "A$row");
+    
+            // Aplicar bordes a las filas de datos
+            $sheet->getStyle("A$row:" . $sheet->getHighestColumn() . "$row")->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
             $row++;
         }
-
+    
+        // Ajustar el ancho automático solo para las columnas iniciales
+        $sheet->getColumnDimension('A')->setAutoSize(true); // Unidad
+        $sheet->getColumnDimension('B')->setAutoSize(true); // Placa
+    
         // Crear el archivo Excel
         $writer = new Xlsx($spreadsheet);
-
+    
         // Configurar la respuesta para descargar el archivo
         $fileName = 'Reporte_Sanciones.xlsx';
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
-
+    
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 

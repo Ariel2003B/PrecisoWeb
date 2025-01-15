@@ -13940,3 +13940,42 @@ section#contact form#contactForm :-ms-input-placeholder {
     margin: 0;
   }
 }
+
+
+.geocerca {
+    writing-mode: vertical-rl;
+    /* Texto en vertical */
+    transform: rotate(180deg);
+    /* Ajustar orientación del texto */
+    white-space: nowrap;
+    /* Evitar que el texto se divida */
+    text-align: center;
+    /* Centrar texto verticalmente */
+    background-color: #007bff;
+    /* Fondo azul para distinguir */
+    color: white;
+    /* Texto en blanco */
+    font-weight: bold;
+}
+
+#tablaSanciones {
+    font-size: 8px;
+    /* Ajustar el tamaño de fuente */
+    border-collapse: collapse;
+    /* Quitar separación entre celdas */
+    width: 100%;
+    /* Asegurar que ocupe todo el espacio disponible */
+    padding: 1px
+}
+#tablaSanciones th {
+    background-color: #007bff;
+    /* Color de fondo para encabezados */
+    color: white;
+    /* Color del texto */
+    font-weight: bold;
+}
+
+#tablaSanciones td {
+    background-color: #f8f9fa;
+    /* Fondo claro para las celdas */
+}
