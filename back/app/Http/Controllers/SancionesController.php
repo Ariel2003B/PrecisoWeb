@@ -37,9 +37,9 @@ class SancionesController extends Controller
         $geocercas = array_filter($encabezados, function ($columna) {
             return preg_match('/^\d+\.\s+.+$/u', $columna);
         });
-        
-        
-        
+
+
+
         $datos = [];
         $unidades = [];
         $contadorFila = 0; // Contador para identificar las filas
@@ -59,7 +59,7 @@ class SancionesController extends Controller
             }
 
 
-           
+
 
             // Extraer los valores "Min" a partir de la columna 5, con un salto de 3 columnas
             $minutos = [];
@@ -75,7 +75,7 @@ class SancionesController extends Controller
                 // Validar si empieza con '-' seguido por un número
                 return preg_match('/^-\d+$/', $min) ? 1 : 0;
             }, $minutos);
-            
+
 
             $totalSanciones = array_sum($sanciones);
             $valorTotal = $totalSanciones * (0.25 * $unidades[$unidad]);
@@ -84,7 +84,7 @@ class SancionesController extends Controller
 
             $contadorVueltas = 0;
             foreach ($unidadesRep as $data) {
-                if ($data===$unidad){
+                if ($data === $unidad) {
                     $contadorVueltas++;
                 }
             }
@@ -118,21 +118,24 @@ class SancionesController extends Controller
     public function generarReporte(Request $request)
     {
         $datosSeleccionados = json_decode($request->input('datosSeleccionados'), true);
-    
+
         if (!$datosSeleccionados || empty($datosSeleccionados)) {
             return back()->withErrors(['error' => 'No hay datos seleccionados para generar el reporte']);
         }
-    
+        // Ordenar los datos seleccionados por unidad
+        usort($datosSeleccionados, function ($a, $b) {
+            return $a['unidad'] <=> $b['unidad']; // Orden ascendente por la clave 'unidad'
+        });
         // Obtener todos los nombres de geocercas globalmente
         $geocercas = [];
         if (!empty($datosSeleccionados)) {
             $geocercas = array_keys($datosSeleccionados[0]['geocercas'] ?? []);
         }
-    
+
         // Crear un nuevo archivo de Excel
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-    
+
         // Escribir el encabezado de la tabla
         $header = ['Unidad', 'Placa'];
         foreach ($geocercas as $geocerca) {
@@ -140,7 +143,7 @@ class SancionesController extends Controller
         }
         $header[] = 'Total';
         $header[] = 'Valor Total';
-    
+
         // Estilos para el encabezado
         $headerStyle = [
             'font' => [
@@ -163,16 +166,16 @@ class SancionesController extends Controller
                 ],
             ],
         ];
-    
+
         // Aplicar el encabezado y estilos
         $sheet->fromArray($header, null, 'A1');
         $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
-    
+
         // Ajustar ancho de las columnas de geocercas
         foreach (range('C', $sheet->getHighestColumn()) as $column) {
             $sheet->getColumnDimension($column)->setWidth(5); // Reducir espacio de las columnas
         }
-    
+
         // Escribir los datos seleccionados en las filas
         $row = 2; // Comienza en la segunda fila después del encabezado
         foreach ($datosSeleccionados as $dato) {
@@ -180,17 +183,17 @@ class SancionesController extends Controller
                 $dato['unidad'],
                 $dato['placa']
             ];
-    
+
             // Añadir las sanciones de geocercas
             foreach ($geocercas as $geocerca) {
                 $fila[] = $dato['geocercas'][$geocerca] ?? 0;
             }
-    
+
             $fila[] = $dato['total'];
             $fila[] = $dato['valor_total'];
-    
+
             $sheet->fromArray($fila, null, "A$row");
-    
+
             // Aplicar bordes a las filas de datos
             $sheet->getStyle("A$row:" . $sheet->getHighestColumn() . "$row")->applyFromArray([
                 'borders' => [
@@ -206,19 +209,19 @@ class SancionesController extends Controller
             ]);
             $row++;
         }
-    
+
         // Ajustar el ancho automático solo para las columnas iniciales
         $sheet->getColumnDimension('A')->setAutoSize(true); // Unidad
         $sheet->getColumnDimension('B')->setAutoSize(true); // Placa
-    
+
         // Crear el archivo Excel
         $writer = new Xlsx($spreadsheet);
-    
+
         // Configurar la respuesta para descargar el archivo
         $fileName = 'Reporte_Sanciones.xlsx';
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
-    
+
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 
