@@ -22,7 +22,7 @@
                 <i class="fas fa-info-circle text-primary ms-2" data-bs-toggle="modal" data-bs-target="#infoModal"
                     style="cursor: pointer;"></i>
             </div>
-            {{-- <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required> --}}
+           
             
             <div class="input-group">
                 <input type="file" name="csv_file" id="csv_file" type="file" accept=".csv" required class="form-control">
