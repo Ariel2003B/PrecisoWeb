@@ -34,15 +34,16 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('usuario', UsuarioController::class);
     });
     Route::middleware(['auth', 'role:SIMCARDS'])->group(function () {
-        Route::resource('simcards', SimCardController::class);
+        Route::resource('simcards', SimCardController::class)->except(['show']);
         Route::post('/simcards/bulk-upload', [SimCardController::class, 'bulkUpload'])->name('simcards.bulkUpload');
+        Route::get('/simcards/template', [SimCardController::class, 'downloadTemplate'])->name('simcards.template');
     });
     Route::middleware(['auth', 'role:PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);
     });
     Route::resource('vehiculos', VehiculoController::class);
     Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');
-
+   
     Route::middleware(['auth', 'role:SANCIONES'])->group(function () {
         Route::get('/sanciones', [SancionesController::class, 'index'])->name('sanciones.index'); // Vista principal de sanciones
         Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV

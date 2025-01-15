@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Response;
 
 class SimCardController extends Controller
 {
@@ -135,52 +136,58 @@ class SimCardController extends Controller
     }
 
 
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'PROPIETARIO' => 'required|string|max:255',
-    //         'NUMEROTELEFONO' => 'required|string|max:10|unique:SIMCARD,NUMEROTELEFONO',
-    //         'TIPOPLAN' => 'required|string|max:255',
-    //         'PLAN' => 'nullable|string|max:255',
-    //         'ICC' => 'nullable|string|max:255|unique:SIMCARD,ICC',
-    //         'ESTADO' => 'required|string',
-    //         'GRUPO' => 'nullable|string|max:255',
-    //         'ASIGNACION' => [
-    //             'nullable',
-    //             'string',
-    //             function ($attribute, $value, $fail) {
-    //                 // Obtén los primeros 4 caracteres de la columna ASIGNACION
-    //                 $prefix = substr($value, 0, 7);
 
-    //                 // Comprueba si ya existe un registro con este prefijo y ESTADO "ACTIVA" o "LIBRE"
-    //                 $exists = DB::table('SIMCARD')
-    //                     ->where(function ($query) {
-    //                     $query->where('ESTADO', 'ACTIVA')
-    //                         ->orWhere('ESTADO', 'LIBRE');
-    //                 })
-    //                     ->where('ASIGNACION', 'LIKE', $prefix . '%')
-    //                     ->exists();
-
-    //                 if ($exists) {
-    //                     $fail("El prefijo '$prefix' ya está en uso para un registro con estado ACTIVA o LIBRE en ASIGNACION.");
-    //                 }
-    //             },
-    //         ],
-    //     ]);
-    //     SIMCARD::create([
-    //         'CUENTA' => $request->CUENTA,
-    //         'PROPIETARIO' => $request->PROPIETARIO,
-    //         'NUMEROTELEFONO' => $request->NUMEROTELEFONO,
-    //         'TIPOPLAN' => $request->TIPOPLAN,
-    //         'PLAN' => $request->PLAN,
-    //         'ICC' => $request->ICC,
-    //         'ESTADO' => $request->ESTADO,
-    //         'ASIGINACION' => $request->ASIGNACION,
-    //         'GRUPO' => $request->GRUPO
-    //     ]);
-
-    //     return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
-    // }
+    public function downloadTemplate()
+    {
+        // Definir los encabezados de la plantilla
+        $headers = [
+            'PROPIETARIO', 
+            'CUENTA', 
+            'PLAN', 
+            'CODIGO PLAN', 
+            'ICC', 
+            'NUMERO TELEFONO', 
+            'GRUPO', 
+            'ASIGNACION', 
+            'ESTADO'
+        ];
+    
+        // Definir un ejemplo de fila para mayor claridad
+        $exampleRow = [
+            'PRECISOGPS S.A.S.', 
+            '120013636', 
+            'CLARO EMPRESA BAM 1.5', 
+            'BP-9980', 
+            "'8959301001049890843'", 
+            '991906800', 
+            'COMERCIALES', 
+            'JQ049D', 
+            'Activa'
+        ];
+    
+        // Configurar el archivo para la descarga
+        $fileName = "Plantilla_SIMCards.csv";
+    
+        // Stream del archivo CSV con separador de punto y coma
+        return Response::stream(function () use ($headers, $exampleRow) {
+            $output = fopen('php://output', 'w');
+    
+            // Configurar el delimitador como punto y coma
+            $options = [
+                'delimiter' => ';', // Aquí usamos punto y coma
+            ];
+    
+            // Escribir los encabezados y ejemplo
+            fputcsv($output, $headers, $options['delimiter']);
+            fputcsv($output, $exampleRow, $options['delimiter']);
+    
+            fclose($output);
+        }, 200, [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName"
+        ]);
+    }
+    
 
 
     public function store(Request $request)
@@ -232,11 +239,6 @@ class SimCardController extends Controller
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
     }
-
-
-
-
-
     public function edit(SIMCARD $simcard)
     {
         return view('simcard.edit', compact('simcard'));
@@ -259,7 +261,7 @@ class SimCardController extends Controller
         }, $header);
 
         // Validar encabezado esperado
-        $expectedHeaders = ['PROPIETARIO', 'CUENTA', 'PLAN', 'TIPO_PLAN', 'ICC', 'NUMERO_TELEFONO', 'TIPO_VEHICULO', 'PLACA', 'ESTADO'];
+        $expectedHeaders = ['PROPIETARIO', 'CUENTA', 'PLAN', 'CODIGO_PLAN', 'ICC', 'NUMERO_TELEFONO', 'GRUPO', 'ASIGNACION', 'ESTADO'];
         if ($header !== $expectedHeaders) {
             return redirect()->back()->withErrors(['El formato del archivo CSV no es válido. Verifica los encabezados y vuelve a intentarlo.']);
         }
@@ -304,8 +306,8 @@ class SimCardController extends Controller
             }
 
             // Validar unicidad de los primeros 4 caracteres de ASIGNACION si el estado es ACTIVA o LIBRE
-            if (!empty($data['PLACA']) && in_array(strtoupper($data['ESTADO']), ['ACTIVA', 'LIBRE'])) {
-                $firstSixChars = substr($data['PLACA'], 0, 7);
+            if (!empty($data['ASIGNACION']) && in_array(strtoupper($data['ESTADO']), ['ACTIVA', 'LIBRE'])) {
+                $firstSixChars = substr($data['ASIGNACION'], 0, 7);
                 $asignacionExists = SIMCARD::where('ESTADO', '!=', 'ELIMINADA')
                     ->where('ASIGNACION', 'like', "$firstSixChars%")
                     ->exists();
@@ -322,13 +324,13 @@ class SimCardController extends Controller
                     'RUC' => $data['PROPIETARIO'] === 'PRECISOGPS S.A.S.' ? '1793212253001' : null,
                     'PROPIETARIO' => $data['PROPIETARIO'],
                     'NUMEROTELEFONO' => $data['NUMERO_TELEFONO'],
-                    'TIPOPLAN' => $data['TIPO_PLAN'],
+                    'TIPOPLAN' => $data['CODIGO_PLAN'],
                     'PLAN' => $data['PLAN'] ?? null,
                     'ICC' => $data['ICC'],
                     'CUENTA' => $data['CUENTA'] ?? null,
                     'ESTADO' => strtoupper($data['ESTADO']) ?: 'LIBRE',
-                    'GRUPO' => !empty($data['TIPO_VEHICULO']) ? $data['TIPO_VEHICULO'] : null,
-                    'ASIGNACION' => !empty($data['PLACA']) ? $data['PLACA'] : null,
+                    'GRUPO' => !empty($data['GRUPO']) ? $data['GRUPO'] : null,
+                    'ASIGNACION' => !empty($data['ASIGNACION']) ? $data['ASIGNACION'] : null,
                 ]);
 
                 $created++;

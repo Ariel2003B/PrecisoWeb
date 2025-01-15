@@ -15,7 +15,6 @@
                 </ul>
             </div>
         @endif
-
         <form action="{{ route('simcards.bulkUpload') }}" method="POST" enctype="multipart/form-data" class="mb-4">
             @csrf
             <div class="d-flex align-items-center">
@@ -23,9 +22,20 @@
                 <i class="fas fa-info-circle text-primary ms-2" data-bs-toggle="modal" data-bs-target="#infoModal"
                     style="cursor: pointer;"></i>
             </div>
-            <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required>
-            <button type="submit" class="btn btn-success mt-2">Cargar Datos</button>
+            {{-- <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required> --}}
+            
+            <div class="input-group">
+                <input type="file" name="csv_file" id="csv_file" type="file" accept=".csv" required class="form-control">
+                <button class="btn btn-success" type="submit">
+                    <i class="bi bi-cloud-upload"></i> Cargar datos
+                </button>
+            </div>
         </form>
+        <div class="descargar-plantilla-container">
+            <p>¿No tienes la plantilla? <a href="{{ route('simcards.template') }}" class="btn-descargar">DESCARGAR
+                    PLANTILLA</a></p>
+        </div>
+
         <div class="filtros-simcards-container mb-3">
             <!-- Botón para agregar una nueva SIM Card -->
             <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
@@ -154,12 +164,12 @@
                     <p>Por favor, asegúrese de que el archivo CSV cumpla con el siguiente formato:</p>
                     <ul>
                         <li><b>Encabezado:</b> La primera fila debe contener los nombres de las columnas.</li>
-                        <li><b>Columnas requeridas:</b> <code>PROPIETARIO, CUENTA, PLAN, TIPO PLAN, ICC, NUMERO TELEFONO,
-                                TIPO VEHICULO, PLACA, ESTADO</code></li>
+                        <li><b>Columnas requeridas:</b> <code>PROPIETARIO, CUENTA, PLAN, CODIGO PLAN, ICC, NUMERO TELEFONO,
+                                GRUPO, ASIGNACION, ESTADO</code></li>
                         <li><b>Ejemplo:</b></li>
                     </ul>
                     <pre>
-PROPIETARIO;CUENTA;PLAN;TIPO PLAN;ICC;NUMERO TELEFONO;TIPO VEHICULO;PLACA;ESTADO
+PROPIETARIO;CUENTA;PLAN;CODIGO PLAN;ICC;NUMERO TELEFONO;GRUPO;ASIGNACION;ESTADO
 PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;991906800;COMERCIALES;JQ049D;Activa
                 </pre>
                     <p>Nota: Asegúrese de que las celdas no contengan comillas adicionales ni estén vacías para columnas

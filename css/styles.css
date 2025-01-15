@@ -13979,3 +13979,41 @@ section#contact form#contactForm :-ms-input-placeholder {
     background-color: #f8f9fa;
     /* Fondo claro para las celdas */
 }
+.descargar-plantilla-container {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #4A90E2; /* Color azul para el texto del párrafo */
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.descargar-plantilla-container p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.descargar-plantilla-container a.btn-descargar {
+  display: inline-block;
+  background-color: #FFC107; /* Color amarillo */
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-left: 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para el botón */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 14px;
+}
+
+.descargar-plantilla-container a.btn-descargar:hover {
+  background-color: #E6B800; /* Amarillo más oscuro al hacer hover */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Aumentar sombra */
+}
+
+.descargar-plantilla-container a.btn-descargar:active {
+  background-color: #CC9A06; /* Más oscuro al hacer clic */
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2); /* Reducir sombra */
+  transform: translateY(1px); /* Simular presión */
+}
