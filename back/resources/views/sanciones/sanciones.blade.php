@@ -10,15 +10,6 @@
         {{-- Formulario para cargar el archivo --}}
         <form action="{{ route('sanciones.cargarCSV') }}" method="POST" enctype="multipart/form-data" class="mb-4">
             @csrf
-            {{-- <div class="row g-3 align-items-center">
-                <div class="col-md-8">
-                    <input type="file" name="archivo" id="archivo" class="form-control" accept=".csv" required>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <button type="submit" class="btn btn-contador">Cargar Archivo</button>
-                </div>
-            </div> --}}
-
             <div class="input-group">
                 <input type="file" name="archivo" id="archivo" accept=".csv" required class="form-control">
                 <button class="btn btn-success" type="submit">
