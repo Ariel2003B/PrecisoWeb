@@ -220,9 +220,9 @@ class SancionesController extends Controller
     
         // Crear el archivo Excel
         $writer = new Xlsx($spreadsheet);
-    
+        $hoy = date("Y-m-d H:i:s");
         // Configurar la respuesta para descargar el archivo
-        $fileName = 'Reporte_Sanciones.xlsx';
+        $fileName = $hoy.'Reporte_Sanciones.xlsx';
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
     
