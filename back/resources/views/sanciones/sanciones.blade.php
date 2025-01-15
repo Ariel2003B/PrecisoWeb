@@ -74,7 +74,7 @@
     </section>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tabla = $('#tablaSanciones').DataTable({
                 paging: true,
@@ -164,6 +164,118 @@
                 });
 
                 return {
+                    unidad: $fila.find('td:nth-child(2)').text().trim(),
+                    placa: $fila.find('td:nth-child(3)').text().trim(),
+                    geocercas: geocercas,
+                    total: $fila.find('.total-sanciones').text().trim(),
+                    valor_total: $fila.find('.valor-total').text().trim(),
+                };
+            }).get();
+
+            if (datosSeleccionados.length === 0) {
+                alert('Por favor, selecciona al menos una unidad para generar el reporte.');
+                return;
+            }
+
+            document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
+
+            // Enviar el formulario
+            this.submit();
+        });
+    </script> --}}
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabla = $('#tablaSanciones').DataTable({
+                paging: true,
+                searching: true, // Habilitamos la búsqueda general para aprovechar la funcionalidad
+                info: false,
+                language: {
+                    search: "Buscar:",
+                    paginate: {
+                        first: "Primero",
+                        last: "Último",
+                        next: "Siguiente",
+                        previous: "Anterior",
+                    },
+                    zeroRecords: "No se encontraron resultados",
+                },
+            });
+
+            const filtroUnidad = document.getElementById('filtroUnidad');
+
+            // Filtro manual por unidad
+            filtroUnidad.addEventListener('input', function() {
+                const unidad = filtroUnidad.value.trim();
+                tabla.column(1).search(unidad, false, false)
+            .draw(); // Filtrar por la columna de la unidad (índice 1)
+            });
+
+            // Escuchar cambios en los checkboxes
+            document.querySelector('#tablaSanciones tbody').addEventListener('change', function(e) {
+                if (e.target.classList.contains('checkUnidad')) {
+                    calcularTotales();
+                }
+            });
+
+            function calcularTotales() {
+                const unidadesReincidencia = {};
+
+                // Iterar sobre las filas y calcular los valores
+                document.querySelectorAll('#tablaSanciones tbody tr').forEach(fila => {
+                    const checkbox = fila.querySelector('.checkUnidad');
+                    const unidad = fila.querySelector('td:nth-child(2)').textContent.trim();
+                    const totalSancionesCell = fila.querySelector('.total-sanciones');
+                    const valorTotalCell = fila.querySelector('.valor-total');
+
+                    if (!unidadesReincidencia[unidad]) unidadesReincidencia[unidad] = 0;
+
+                    if (checkbox?.checked) {
+                        unidadesReincidencia[unidad]++;
+                        const totalSanciones = parseInt(totalSancionesCell.textContent.trim());
+                        const valorTotal = totalSanciones * (0.25 * unidadesReincidencia[unidad]);
+                        valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
+                    } else {
+                        valorTotalCell.textContent = '$0.00';
+                    }
+                });
+            }
+
+            // Ejecutar el cálculo inicial para actualizar valores visibles
+            calcularTotales();
+        });
+
+        document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
+            e.preventDefault(); // Detener el envío automático
+
+            const tabla = $('#tablaSanciones').DataTable();
+
+            // Obtener los nombres de las geocercas desde el encabezado de la tabla
+            const nombresGeocercas = [...document.querySelectorAll('#tablaSanciones thead th')]
+                .slice(3, -3) // Ignorar las primeras 3 columnas y las últimas 3 (Total, Valor Total, Seleccionar)
+                .map(th => th.textContent.trim());
+
+            // Obtener todas las filas seleccionadas (visible o no visible)
+            const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
+                const checkbox = fila.querySelector('.checkUnidad');
+                return checkbox && checkbox.checked; // Solo incluir filas con el checkbox marcado
+            });
+
+            // Construir los datos seleccionados
+            const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
+                const $fila = $(fila);
+
+                // Crear un objeto con todas las geocercas y sus valores (llenando con 0 donde no aplica)
+                const geocercas = {};
+                nombresGeocercas.forEach((nombreGeocerca, index) => {
+                    geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
+                        .trim() || '0';
+                });
+
+                return {
+                    vuelta: $fila.find('td:nth-child(1)').text()
+                .trim(), // Capturar el valor de la columna vuelta
                     unidad: $fila.find('td:nth-child(2)').text().trim(),
                     placa: $fila.find('td:nth-child(3)').text().trim(),
                     geocercas: geocercas,
