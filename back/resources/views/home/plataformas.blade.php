@@ -197,7 +197,7 @@
                                 <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">SANCIONES</h4>
-                            <a class="btn btn-success" href="{{route('sanciones.index')}}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{route('sanciones.index',['parametro'=>'S-N'])}}" target="_blank">Visitar
                                 página</a>
                         </div>
                     @endif
