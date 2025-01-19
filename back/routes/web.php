@@ -45,9 +45,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');
    
     Route::middleware(['auth', 'role:SANCIONES'])->group(function () {
-        Route::get('/sanciones', [SancionesController::class, 'index'])->name('sanciones.index'); // Vista principal de sanciones
+        Route::get('/sanciones/{parametro}', [SancionesController::class, 'index'])->name('sanciones.index');
         Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV
         Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
+        Route::post('/sanciones/delete',[SancionesController::class,'truncateTable'])->name('sanciones.truncate');
     });
 });
 
