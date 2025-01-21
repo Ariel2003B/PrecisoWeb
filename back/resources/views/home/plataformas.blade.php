@@ -226,7 +226,6 @@
             <script>
                 // Almacena el modal actualmente abierto
                 let modalAbierto = null;
-
                 // Función para cerrar todos los modales
                 function cerrarTodosLosModales() {
                     const modales = document.querySelectorAll('.custom-modal');
