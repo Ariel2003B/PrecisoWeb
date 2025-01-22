@@ -4,107 +4,112 @@
 
 @section('content')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <section class="container mt-5">
-
-        <h1 class="text-center mb-4">Reporte de Sanciones</h1>
-
-        {{-- Formulario para cargar el archivo --}}
-        <form action="{{ route('sanciones.cargarCSV') }}" method="POST" enctype="multipart/form-data" class="mb-4">
-            @csrf
-            <div class="input-group">
-                <input type="file" name="archivo" id="archivo" accept=".csv" required class="form-control">
-                <button class="btn btn-success" type="submit">
-                    <i class="bi bi-cloud-upload"></i> Cargar datos
-                </button>
+    <main class="main">
+        <div class="page-title accent-background">
+            <div class="container d-lg-flex justify-content-between align-items-center">
+                <h1 class="mb-2 mb-lg-0">Reporte de sanciones</h1>
+                <nav class="breadcrumbs">
+                    <ol>
+                        <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
+                        <li class="current"><a href="{{ route('home.plataformas') }}">Plataformas</a></li>
+                        <li class="current">Sanciones</li>
+                    </ol>
+                </nav>
             </div>
-        </form>
-        @if (isset($datos) && isset($geocercas))
-            {{-- Tabla de sanciones procesadas --}}
-            @if (!empty($detalles))
-                <h3 class="text-center mb-4">
-                    Sanciones Procesadas de la ruta {{ $detalles['ruta'] ?? 'No disponible' }}
-                </h3>
-                <h5 class="my-3">
-                    Fecha: {{ $detalles['fecha'] ?? 'No disponible' }}
-                </h5>
-            @endif
+        </div><!-- End Page Title -->
+        <section class="section">
+            <div class="container">
+                <form action="{{ route('sanciones.cargarCSV') }}" method="POST" enctype="multipart/form-data"
+                    class="mb-4">
+                    @csrf
+                    <div class="input-group">
+                        <input type="file" name="archivo" id="archivo" accept=".csv" required class="form-control">
+                        <button class="btn btn-success" type="submit">
+                            <i class="bi bi-cloud-upload"></i> Cargar datos
+                        </button>
+                    </div>
+                </form>
+                @if (isset($datos) && isset($geocercas))
+                    {{-- Tabla de sanciones procesadas --}}
+                    @if (!empty($detalles))
+                        <h3 class="text-center mb-4">
+                            Sanciones Procesadas de la ruta {{ $detalles['ruta'] ?? 'No disponible' }}
+                        </h3>
+                        <h5 class="my-3">
+                            Fecha: {{ $detalles['fecha'] ?? 'No disponible' }}
+                        </h5>
+                    @endif
 
 
-            <table id="tablaSanciones" class="table table-striped table-bordered text-center align-middle">
-                <thead class="table-dark sticky-top">
-                    <tr>
-                        <th class="geocerca">Vuelta</th>
-                        <th class="geocerca">Unidad</th>
-                        {{-- <th class="geocerca">Placa</th> --}}
-                        <th class="geocerca">Hora salida</th>
-                        @foreach ($geocercas as $geocerca)
-                            <th class="geocerca">{{ $geocerca }}</th>
-                        @endforeach
-                        <th class="geocerca">Total</th>
-                        <th class="geocerca">Valor Total</th>
-                        <th class="geocerca">Seleccionar</th>
-                    </tr>
-                </thead>
+                    <table id="tablaSanciones" class="table table-striped table-bordered text-center align-middle">
+                        <thead class="sticky-top">
+                            <tr>
+                                <th class="geocerca">Vuelta</th>
+                                <th class="geocerca">Unidad</th>
+                                {{-- <th class="geocerca">Placa</th> --}}
+                                <th class="geocerca">Hora salida</th>
+                                @foreach ($geocercas as $geocerca)
+                                    <th class="geocerca">{{ $geocerca }}</th>
+                                @endforeach
+                                <th class="geocerca">Total</th>
+                                <th class="geocerca">Valor Total</th>
+                                <th class="geocerca">Seleccionar</th>
+                            </tr>
+                        </thead>
 
 
-                <tbody>
-                    @foreach ($datos as $key => $dato)
-                        <tr data-unidad="{{ $dato['unidad'] }}" data-vuelta="{{ $dato['vuelta'] }}">
-                            <td>{{ $dato['vuelta'] }}</td>
-                            <td>{{ $dato['unidad'] }}</td>
-                            {{-- <td>{{ $dato['placa'] }}</td> --}}
-                            <td>{{ $dato['hora'] }}</td>
-                            @foreach ($dato['sanciones'] as $sancion)
-                                <td>{{ $sancion }}</td>
+                        <tbody>
+                            @foreach ($datos as $key => $dato)
+                                <tr data-unidad="{{ $dato['unidad'] }}" data-vuelta="{{ $dato['vuelta'] }}">
+                                    <td>{{ $dato['vuelta'] }}</td>
+                                    <td>{{ $dato['unidad'] }}</td>
+                                    {{-- <td>{{ $dato['placa'] }}</td> --}}
+                                    <td>{{ $dato['hora'] }}</td>
+                                    @foreach ($dato['sanciones'] as $sancion)
+                                        <td>{{ $sancion }}</td>
+                                    @endforeach
+                                    <td class="total-sanciones">{{ $dato['total'] }}</td>
+                                    <td class="valor-total">$0.00</td>
+                                    <td><input type="checkbox" class="checkUnidad"></td>
+                                </tr>
                             @endforeach
-                            <td class="total-sanciones">{{ $dato['total'] }}</td>
-                            <td class="valor-total">$0.00</td>
-                            <td><input type="checkbox" class="checkUnidad"></td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            </div>
-            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                <form action="{{ route('sanciones.truncate') }}" method="POST">
-                    @csrf
-                    <input type="submit" class="btn btn-danger" value="Limpiar datos" />
-                </form>
-                <button id="btnDetalleUnidad" disabled data-bs-toggle="modal" data-bs-target="#modalDetalle" type="button"
-                    class="btn btn-contador">Ver Detalle de la unidad</button>
+                        </tbody>
+                    </table>
+                    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                        <form action="{{ route('sanciones.truncate') }}" method="POST">
+                            @csrf
+                            <input type="submit" class="btn btn-danger" value="Limpiar datos" />
+                        </form>
+                        <button id="btnDetalleUnidad" disabled data-bs-toggle="modal" data-bs-target="#modalDetalle"
+                            type="button" class="btn btn-primary">Ver Detalle de la unidad</button>
 
-                @if (!empty($detalles['ruta']) && $detalles['ruta'] === 'S-N')
-                    <button type="button" class="btn btn-success"
-                        onclick="location.href='{{ route('sanciones.index', ['parametro' => 'N-S']) }}'">
-                        Ver ruta Norte-Sur
-                    </button>
+                        @if (!empty($detalles['ruta']) && $detalles['ruta'] === 'S-N')
+                            <button type="button" class="btn btn-success"
+                                onclick="location.href='{{ route('sanciones.index', ['parametro' => 'N-S']) }}'">
+                                Ver ruta Norte-Sur
+                            </button>
+                        @endif
+
+                        @if (!empty($detalles['ruta']) && $detalles['ruta'] === 'N-S')
+                            <button type="button" class="btn btn-success"
+                                onclick="location.href='{{ route('sanciones.index', ['parametro' => 'S-N']) }}'">
+                                Ver ruta Sur-Norte
+                            </button>
+                        @endif
+
+
+                    </div>
+                    <div class="text-center mt-4">
+                        <form id="formGenerarReporte" action="{{ route('sanciones.generarReporte') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="datosSeleccionados" id="datosSeleccionados">
+                            <button type="submit" class="btn btn-success">Generar Reporte Excel</button>
+                        </form>
+                    </div>
                 @endif
-
-                @if (!empty($detalles['ruta']) && $detalles['ruta'] === 'N-S')
-                    <button type="button" class="btn btn-success"
-                        onclick="location.href='{{ route('sanciones.index', ['parametro' => 'S-N']) }}'">
-                        Ver ruta Sur-Norte
-                    </button>
-                @endif
-
-
             </div>
-            <div class="text-center mt-4">
-                <form id="formGenerarReporte" action="{{ route('sanciones.generarReporte') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="datosSeleccionados" id="datosSeleccionados">
-                    <button type="submit" class="btn btn-success">Generar Reporte Excel</button>
-                </form>
-            </div>
-            {{-- <div class="text-center mt-4">
-                <button  class="btn btn-primary" >
-                    Ver Detalle de Unidad
-                </button>
-            </div> --}}
-        @endif
-
-    </section>
-
+        </section>
+    </main>
     <!-- Modal para mostrar el detalle de una unidad -->
     <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -473,6 +478,3 @@
         });
     </script>
 @endsection
-
-
-@section('jsCode', 'js/scriptNavBar.js')

@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $valor_total
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $fecha
+ * @property string|null $ruta
  * 
  * @property Collection|Geocerca[] $geocercas
  *
@@ -33,7 +35,8 @@ class Sancione extends Model
 	protected $casts = [
 		'vuelta' => 'int',
 		'total' => 'int',
-		'valor_total' => 'float'
+		'valor_total' => 'float',
+		'fecha' => 'datetime'
 	];
 
 	protected $fillable = [

@@ -1,174 +1,91 @@
 @extends('layout')
-@section('Titulo', 'Planes')
+@section('Titulo', 'PrecisoGPS - Planes')
 @section('ActivarPlanes', 'active')
 @section('content')
-    <br>
-    <br>
-    <br>
-    <br>
-    <section class="page-section bg-light" id="portfolio">
-        <div class="container">
-            <div class="text-center">
-                <h2 class="section-heading text-uppercase">Nuestros planes</h2>
-                <h3 class="section-subheading text-muted">En PrecisoGPS, cuidamos lo que más valoras. Encuentra tu plan
-                    ideal.</h3>
-            </div>
-            <div class="row">
+    <main class="main">
 
-                <div class="col-lg-6 col-sm-6 mb-4">
-                    <!-- Plan GPS Pro -->
-                    <div class="portfolio-item">
-                        <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal1">
-                            <div class="portfolio-hover">
-                                <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
-                            </div>
-                            <img class="img-fluid" src="{{asset('img/portfolio/precisoSatelital.jpg')}}" alt="GPS Pro" />
-                        </a>
-                        <div class="portfolio-caption">
-                            <div class="portfolio-caption-heading">GPS Pro</div>
-                            <div class="portfolio-caption-subheading text-muted">Beneficios Avanzados</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-sm-6 mb-4">
-                    <!-- Plan GPS Básico -->
-                    <div class="portfolio-item">
-                        <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal2">
-                            <div class="portfolio-hover">
-                                <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
-                            </div>
-                            <img class="img-fluid" src="{{asset('img/portfolio/precisoSatelital2.png')}}" alt="GPS Básico" />
-                        </a>
-                        <div class="portfolio-caption">
-                            <div class="portfolio-caption-heading">GPS Básico</div>
-                            <div class="portfolio-caption-subheading text-muted">Características Esenciales</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Page Title -->
+        <div class="page-title accent-background">
+            <div class="container d-lg-flex justify-content-between align-items-center">
+                <h1 class="mb-2 mb-lg-0">Planes</h1>
+                <nav class="breadcrumbs">
+                    <ol>
+                        <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
+                        <li class="current">Planes</li>
+                    </ol>
+                </nav>
             </div>
-        </div>
-    </section>
+        </div><!-- End Page Title -->
+        <!-- Pricing Section -->
+        <section id="pricing" class="pricing section">
 
-    <!-- Modal para GPS Pro -->
-    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="close-modal" data-bs-dismiss="modal"><img src="{{asset('img/close-icon.svg')}}" alt="Close modal" />
-                </div>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
-                            <div class="modal-body text-center">
-                                <!-- Título y subtítulo -->
-                                <h2 class="text-uppercase">GPS Pro</h2>
-                                <p class="item-intro text-muted">Beneficios avanzados para el control total de tu
-                                    vehículo.</p>
-                                <!-- Imagen con estilo llamativo -->
-                                <div class="img-container">
-                                    <img class="img-fluid d-block mx-auto rounded shadow"
-                                        src="{{asset('img/portfolio/precisoSatelital.jpg')}}" alt="GPS Pro"
-                                        style="width: 60%; border: 3px solid #ffc800;" />
-                                </div>
-                                <!-- Características principales -->
-                                <div class="features mt-4">
-                                    <h4 class="text-uppercase">Características Destacadas:</h4>
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <ul class="list-unstyled">
-                                                <li><i class="fas fa-shield-alt text-warning"></i> Protección
-                                                    Anti-jammer</li>
-                                                <li><i class="fas fa-bell text-warning"></i> Notificación de arrastre
-                                                </li>
-                                                <li><i class="fas fa-map-marker-alt text-warning"></i> Geocercas
-                                                    personalizadas</li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <ul class="list-unstyled">
-                                                <li><i class="fas fa-mobile-alt text-warning"></i> Control remoto</li>
-                                                <li><i class="fas fa-broadcast-tower text-warning"></i> Monitoreo 24/7
-                                                </li>
-                                                <li><i class="fas fa-car text-warning"></i> Bloqueo de motor</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Precio y botón -->
-                                <div class="mt-4">
-                                    <h4 class="text-uppercase">Precio: <span class="text-warning">$379.91</span></h4>
-                                    <p class="text-muted">Incluye dispositivo, instalación, y servicio por un año.</p>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal"
-                                        type="button">
-                                        <i class="fas fa-xmark me-1"></i> Cerrar
-                                    </button>
-                                </div>
+            <div class="container">
+
+                <div class="row gy-4">
+                    @foreach ($planes as $plan)
+                        <div class="col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="pricing-item">
+                                <h3>{{ $plan->NOMBRE }}</h3>
+                                <p class="description">{{ $plan->DESCRIPCION }}</p>
+                                <h4><sup>$</sup>{{ $plan->PRECIO }}<span> /{{ $plan->TIEMPO }} Meses </span></h4>
+                                <a href="#" class="cta-btn add-to-cart" data-id="{{ $plan->PLA_ID }}"
+                                    data-name="{{ $plan->NOMBRE }}" data-price="{{ $plan->PRECIO }}"
+                                    data-time="{{ $plan->TIEMPO }}">Añadir al carrito</a>
+
+                                <ul>
+                                    @foreach ($plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s as $caracteristica)
+                                        @if ($caracteristica->pivot->POSEE)
+                                            <li><i class="bi bi-check"></i> <span>{{ $caracteristica->DESCRIPCION }}</span>
+                                            </li>
+                                        @else
+                                            <li class="na"><i class="bi bi-x"></i>
+                                                <span>{{ $caracteristica->DESCRIPCION }}</span>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
                             </div>
-                        </div>
-                    </div>
+                        </div><!-- End Pricing Item -->
+                    @endforeach
                 </div>
             </div>
-        </div>
-    </div>
+        </section><!-- /Pricing Section -->
+    </main>
 
 
-    <!-- Modal para GPS Básico -->
-    <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="close-modal" data-bs-dismiss="modal"><img src="{{asset('img/close-icon.svg')}}" alt="Close modal" />
-                </div>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
-                            <div class="modal-body text-center">
-                                <!-- Título y subtítulo -->
-                                <h2 class="text-uppercase">GPS Básico</h2>
-                                <p class="item-intro text-muted">Características esenciales para un rastreo confiable.
-                                </p>
-                                <!-- Imagen con estilo llamativo -->
-                                <div class="img-container">
-                                    <img class="img-fluid d-block mx-auto rounded shadow"
-                                        src="{{asset('img/portfolio/precisoSatelital2.png')}}"   alt="GPS Básico"
-                                        style="width: 60%; border: 3px solid #ffc800;" />
-                                </div>
-                                <!-- Características principales -->
-                                <div class="features mt-4">
-                                    <h4 class="text-uppercase">Características Destacadas:</h4>
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <ul class="list-unstyled">
-                                                <li><i class="fas fa-broadcast-tower text-warning"></i> Monitoreo 24/7
-                                                </li>
-                                                <li><i class="fas fa-map-marker-alt text-warning"></i> Ubicación precisa
-                                                </li>
-                                                <li><i class="fas fa-bell text-warning"></i> Alertas de
-                                                    encendido/apagado</li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <ul class="list-unstyled">
-                                                <li><i class="fas fa-car text-warning"></i> Bloqueo de motor</li>
-                                                <li><i class="fas fa-mobile-alt text-warning"></i> Geocercas</li>
-                                                <li><i class="fas fa-share-alt text-warning"></i> Uso compartido</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Precio y botón -->
-                                <div class="mt-4">
-                                    <h4 class="text-uppercase">Precio: <span class="text-warning">$230</span></h4>
-                                    <p class="text-muted">Incluye dispositivo, instalación, y servicio por un año.</p>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal"
-                                        type="button">
-                                        <i class="fas fa-xmark me-1"></i> Cerrar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    debugger;
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
+                    const price = this.dataset.price;
+                    const time = this.dataset.time;
+
+                    fetch('carrito/add', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                id,
+                                name,
+                                price,
+                                time
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('cart-count').textContent = data.cartCount;
+                            alert(data.message);
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
 @endsection
-@section('jsCode', 'js/scriptNavBar.js')
