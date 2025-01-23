@@ -87,7 +87,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="DESCRIPCION" class="form-label">Descripción de la Característica</label>
-                            <input type="text" class="form-control" id="DESCRIPCION" name="DESCRIPCION" required>
+                            <textarea type="text" class="form-control" id="DESCRIPCION" name="DESCRIPCION" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
