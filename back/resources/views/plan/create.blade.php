@@ -44,14 +44,18 @@
                         <h5>Características</h5>
                         <div class="form-group">
                             @foreach ($caracteristicas as $caracteristica)
-                                <div class="form-check d-flex align-items-center mb-2">
-                                    <input class="form-check-input me-2" type="checkbox"
-                                        id="caracteristica_{{ $caracteristica->CAR_ID }}"
-                                        name="caracteristicas[{{ $caracteristica->CAR_ID }}]" value="1">
-                                    <label class="form-check-label me-3" for="caracteristica_{{ $caracteristica->CAR_ID }}">
-                                        {{ $caracteristica->DESCRIPCION }}
-                                    </label>
-                                    <div class="form-check form-switch">
+                                <div class="form-check d-flex align-items-center justify-content-between mb-2">
+                                    <!-- Descripción y checkbox inicial -->
+                                    <div class="d-flex align-items-center flex-grow-1">
+                                        <input class="form-check-input me-2" type="checkbox"
+                                            id="caracteristica_{{ $caracteristica->CAR_ID }}"
+                                            name="caracteristicas[{{ $caracteristica->CAR_ID }}]" value="1">
+                                        <label class="form-check-label" for="caracteristica_{{ $caracteristica->CAR_ID }}">
+                                            {{ $caracteristica->DESCRIPCION }}
+                                        </label>
+                                    </div>
+                                    <!-- Switch -->
+                                    <div class="form-check form-switch ms-2">
                                         <input class="form-check-input" type="checkbox"
                                             id="posee_{{ $caracteristica->CAR_ID }}"
                                             name="posee[{{ $caracteristica->CAR_ID }}]" value="1">
@@ -66,7 +70,6 @@
                             Registrar Características
                         </button>
                     </div>
-
                     <button type="submit" class="btn btn-primary">Guardar Plan</button>
                 </form>
             </div>
