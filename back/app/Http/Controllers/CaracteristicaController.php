@@ -29,7 +29,7 @@ class CaracteristicaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'DESCRIPCION' => 'required|string|max:255',
+            'DESCRIPCION' => 'required|string',
         ]);
     
         CARACTERISTICA::create([
