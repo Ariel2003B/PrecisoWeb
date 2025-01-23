@@ -81,12 +81,12 @@
                 <i class="bi bi-cart4"></i>
                 <span id="cart-count" class="cart-count">{{ session('carrito') ? count(session('carrito')) : 0 }}</span>
             </a>
-            <div class="header-social-links">
+            {{-- <div class="header-social-links">
                 <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
                 <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
                 <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
                 <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-            </div>
+            </div> --}}
         </div>
     </header>
 
@@ -104,7 +104,7 @@
                         <p>De los Cholanes E17-47</p>
                         <p>Quito, 170124</p>
                         <p class="mt-3"><strong>Celular:</strong> <span>+593 99 045 3275</span></p>
-                        <p><strong>Correo:</strong> <span>santiago.rojas@precisogps.com</span></p>
+                        <p><strong>Correo:</strong> <span>ventas@precisogps.com</span></p>
                     </div>
                     <div class="social-links d-flex mt-4">
                         <a href=""><i class="bi bi-twitter-x"></i></a>

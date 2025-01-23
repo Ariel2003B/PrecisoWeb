@@ -21,7 +21,7 @@
                             seguridad en cada kilómetro recorrido</p>
                         <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
                     </div>
-                </div><!-- End Carousel Item -->
+                </div>
 
                 <div class="carousel-item">
                     <video autoplay muted loop class="masthead-video">

@@ -25,8 +25,6 @@ Route::get('/obtener-visitas', [VisitasController::class, 'obtenerVisitas']);
 
 
 
-
-
 //routes for login process
 // Mostrar el formulario de login
 Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login.form');

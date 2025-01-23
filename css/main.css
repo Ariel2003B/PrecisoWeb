@@ -232,6 +232,16 @@ h6 {
 }
 
 @media (max-width: 1200px) {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    /* Espaciado uniforme entre logo y elementos */
+    align-items: center;
+    /* Centra verticalmente */
+    padding: 10px 20px;
+    /* Agrega más espacio horizontal */
+  }
+
   .header .logo {
     order: 1;
   }
@@ -365,13 +375,13 @@ h6 {
 @media (max-width: 1199px) {
   .mobile-nav-toggle {
     color: var(--nav-color);
-    font-size: 28px;
+    font-size: 42px;
     line-height: 0;
-    margin-right: 10px;
+    margin-right: 20px;
+    margin-left: 8px;
     cursor: pointer;
     transition: color 0.3s;
   }
-
   .navmenu {
     padding: 0;
     z-index: 9997;
@@ -886,7 +896,7 @@ section,
 
 @media (max-width: 768px) {
   .hero h2 {
-    font-size: 30px;
+    font-size: 25px;
   }
 }
 
@@ -3225,7 +3235,8 @@ section.hero .masthead-video {
   justify-content: center;
   padding: 10px;
   list-style: none;
-  background-color: #ffffff; /* Fondo blanco */
+  background-color: #ffffff;
+  /* Fondo blanco */
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -3238,32 +3249,39 @@ section.hero .masthead-video {
 .pagination li span {
   display: block;
   padding: 8px 12px;
-  border: 1px solid #cccccc; /* Borde gris claro */
+  border: 1px solid #cccccc;
+  /* Borde gris claro */
   border-radius: 4px;
   text-decoration: none;
   font-size: 16px;
-  color: #005298; /* Color azul corporativo */
+  color: #005298;
+  /* Color azul corporativo */
   transition: all 0.3s;
 }
 
 /* Estilo al pasar el mouse */
 .pagination li a:hover {
-  background-color: #FF0000; /* Rojo corporativo */
-  color: #ffffff; /* Texto blanco */
+  background-color: #FF0000;
+  /* Rojo corporativo */
+  color: #ffffff;
+  /* Texto blanco */
   border-color: #FF0000;
 }
 
 /* Botón activo */
 .pagination li.active span {
-  background-color: #005298; /* Azul corporativo */
-  color: #ffffff; /* Texto blanco */
+  background-color: #005298;
+  /* Azul corporativo */
+  color: #ffffff;
+  /* Texto blanco */
   border-color: #005298;
 }
 
 /* Botón deshabilitado */
 .pagination li.disabled span {
   color: #aaaaaa;
-  background-color: #f8f9fa; /* Fondo gris claro */
+  background-color: #f8f9fa;
+  /* Fondo gris claro */
   border-color: #dddddd;
   cursor: not-allowed;
 }
@@ -3294,6 +3312,7 @@ section.hero .masthead-video {
   /* Asegurar que ocupe todo el espacio disponible */
   padding: 1px
 }
+
 #tablaSanciones th {
   background-color: #007bff;
   /* Color de fondo para encabezados */
@@ -3306,42 +3325,61 @@ section.hero .masthead-video {
   background-color: #f8f9fa;
   /* Fondo claro para las celdas */
 }
+
 /* Estilo principal para el ícono del carrito */
 .cart-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem; /* Tamaño más compacto */
+  font-size: 1.5rem;
+  /* Tamaño más compacto */
   color: var(--default-color);
-  position: relative; /* Necesario para el contador */
-  margin-left: 30px; /* Espaciado moderado */
-  margin-right: 10px; /* Alineación uniforme */
+  position: relative;
+  /* Necesario para el contador */
+  margin-left: 30px;
+  /* Espaciado moderado */
+  margin-right: 10px;
+  /* Alineación uniforme */
   cursor: pointer;
-  text-decoration: none; /* Elimina subrayado si existe */
+  text-decoration: none;
+  /* Elimina subrayado si existe */
 }
 
 .cart-icon:hover {
-  color: #0d6efd; /* Azul brillante al pasar el ratón */
-  transition: color 0.3s ease-in-out; /* Transición suave */
+  color: #0d6efd;
+  /* Azul brillante al pasar el ratón */
+  transition: color 0.3s ease-in-out;
+  /* Transición suave */
 }
 
 /* Contador del carrito */
 .cart-count {
   position: absolute;
-  top: -5px; /* Ajuste vertical */
-  right: -11px; /* Ajuste horizontal */
-  background-color: #ff0000; /* Rojo vibrante */
-  color: #ffffff; /* Texto blanco */
-  font-size: 0.7rem; /* Texto compacto */
-  font-weight: bold; /* Resalta el número */
-  border-radius: 50%; /* Forma circular */
-  width: 20px; /* Ancho del contador */
-  height: 20px; /* Altura del contador */
+  top: -5px;
+  /* Ajuste vertical */
+  right: -11px;
+  /* Ajuste horizontal */
+  background-color: #ff0000;
+  /* Rojo vibrante */
+  color: #ffffff;
+  /* Texto blanco */
+  font-size: 0.7rem;
+  /* Texto compacto */
+  font-weight: bold;
+  /* Resalta el número */
+  border-radius: 50%;
+  /* Forma circular */
+  width: 20px;
+  /* Ancho del contador */
+  height: 20px;
+  /* Altura del contador */
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ff0000; /* Borde blanco */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  border: 2px solid #ff0000;
+  /* Borde blanco */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Sombra suave */
 }
 
 /* Ajustes del menú general */
@@ -3350,38 +3388,85 @@ section.hero .masthead-video {
 /* Responsividad */
 @media (max-width: 1500px) {
   .cart-icon {
-    font-size: 1.3rem; /* Tamaño más compacto */
-    margin-left: 5px; /* Ajusta el margen */
-    margin-right: 5px;
+    font-size: 2rem;
+    /* Incrementa el tamaño del ícono */
+    margin-left: 57px;
+    color: var(--accent-color);
+    /* Combina con los colores de la marca */
     order: 2;
+    
   }
-  
+
+
   .cart-count {
-    top: -5px; /* Ajusta la posición */
-    right: -8px;
-    width: 18px; /* Tamaño más pequeño */
-    height: 18px;
-    font-size: 0.6rem; /* Texto más pequeño */
+    top: 3px;
+    /* Ajusta la posición del contador */
+    right: -5px;
+    font-size: 0.8rem;
+    background-color: #dc3545;
+    /* Usa un rojo más llamativo */
   }
 }
 
 /* Contador de visitas en la esquina inferior izquierda */
 #contador-visitas {
   position: fixed;
-  bottom: 0px; /* Posición desde abajo */
-  left: 0px; /* Posición desde la izquierda */
-  background-color: rgba(0, 0, 0, 0.022); /* Fondo oscuro semitransparente */
-  color: #ffffff; /* Texto blanco */
-  font-size: 0.9rem; /* Tamaño de texto moderado */
-  padding: 10px 15px; /* Espaciado interno */
-  border-radius: 5px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave */
-  z-index: 9999; /* Asegura que esté encima de otros elementos */
-  cursor: pointer; /* Indica que es interactivo */
+  bottom: 0px;
+  /* Posición desde abajo */
+  left: 0px;
+  /* Posición desde la izquierda */
+  background-color: rgba(0, 0, 0, 0.022);
+  /* Fondo oscuro semitransparente */
+  color: #ffffff;
+  /* Texto blanco */
+  font-size: 0.9rem;
+  /* Tamaño de texto moderado */
+  padding: 10px 15px;
+  /* Espaciado interno */
+  border-radius: 5px;
+  /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Sombra suave */
+  z-index: 9999;
+  /* Asegura que esté encima de otros elementos */
+  cursor: pointer;
+  /* Indica que es interactivo */
 }
 
 #contador-visitas:hover {
-  background-color: rgba(255, 255, 255, 0.41); /* Fondo más claro al pasar el ratón */
-  color: #000000; /* Texto oscuro al pasar el ratón */
-  transition: all 0.3s ease; /* Transición suave */
+  background-color: rgba(255, 255, 255, 0.41);
+  /* Fondo más claro al pasar el ratón */
+  color: #000000;
+  /* Texto oscuro al pasar el ratón */
+  transition: all 0.3s ease;
+  /* Transición suave */
+}
+
+
+
+
+.responsive-overlay {
+  position: absolute; /* Asegura que el overlay se posicione relativo al contenedor */
+  top: 0;
+  left: 0;
+  width: 100%; /* Asegura que cubra todo el ancho */
+  height: 100%; /* Asegura que cubra toda la altura */
+  background-color: rgba(0, 0, 0, 0.6); /* Ajusta la transparencia del fondo oscuro */
+  display: flex; /* Centra el texto en el overlay */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2; /* Coloca el overlay encima de la imagen */
+}
+
+.responsive-image-container {
+  position: relative;
+  width: 100%;
+  height: auto; /* Ajusta automáticamente la altura según el ancho */
+}
+
+.responsive-image-container img {
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Asegura que la imagen se escale correctamente */
 }
