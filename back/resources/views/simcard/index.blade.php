@@ -119,7 +119,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if (!Auth::check())
+                                        @if (Auth::check())
                                             @if (!Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'LECTURA'))
                                                 <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
                                                     class="btn btn-outline-primary btn-sm">
