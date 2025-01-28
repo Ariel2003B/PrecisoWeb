@@ -446,15 +446,14 @@
     {{-- <a id="contador-visitas" href="#">Cargando visitantes...</a> --}}
 
     <!-- Modal -->
-    <div class="modal fade show" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true"
-        style="display: block;">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="tiktokModalLabel">PrecisoGPS</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <video id="tiktokVideo" controls autoplay muted loop style="width: 100%; height: auto;"
                         controlsList="nodownload" oncontextmenu="return false;">
                         <source src="{{ asset('img/precisoimg/lady.mp4') }}" type="video/mp4">

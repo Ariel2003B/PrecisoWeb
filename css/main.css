@@ -3446,17 +3446,15 @@ section.hero .masthead-video {
   /* Asegura que la imagen se escale correctamente */
 }
 
-.modal-content {
-  max-width: 90%;
-  /* Para asegurar que sea responsivo */
-  border-radius: 10px;
-  overflow: hidden;
+
+.modal-dialog {
+  max-width: 450px; /* Tamaño máximo para dispositivos más grandes */
+  margin: 0 auto; /* Centrar el modal */
 }
 
-video {
-  max-width: 100%;
-  height: auto;
-  display: block;
+.modal-body video {
+  max-height: 85vh; /* Limitar la altura del video al 70% de la pantalla */
+  object-fit: contain; /* Asegurar que el video se ajuste sin distorsión */
 }
 
 
