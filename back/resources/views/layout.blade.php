@@ -109,7 +109,7 @@
                     </div>
                     <div class="social-links d-flex mt-4">
                         <a href=""><i class="bi bi-twitter-x"></i></a>
-                        <a href=""><i class="bi bi-facebook"></i></a>
+                        <a href="fb://page/PrecisoGP"><i class="bi bi-facebook"></i></a>
                         <a href=""><i class="bi bi-instagram"></i></a>
                         <a href=""><i class="bi bi-linkedin"></i></a>
                     </div>
@@ -158,7 +158,6 @@
         target="_blank" class="whatsapp-float">
         <i class="bi bi-whatsapp"></i>
     </a>
-
 
     <!-- Preloader -->
     <div id="preloader"></div>
