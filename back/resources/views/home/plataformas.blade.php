@@ -221,8 +221,7 @@
                                     <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
                                 </span>
                                 <h4 class="my-3">GESTION DE PLANES</h4>
-                                <a class="btn btn-success" href="{{ route('plan.index') }}"
-                                    target="_blank">Visitar
+                                <a class="btn btn-success" href="{{ route('plan.index') }}" target="_blank">Visitar
                                     página</a>
                             </div>
                         @endif
@@ -422,6 +421,42 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade show" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true"
+        style="display: block;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tiktokModalLabel">PrecisoGPS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <video id="tiktokVideo" controls autoplay muted loop style="width: 100%; height: auto;"
+                        controlsList="nodownload" oncontextmenu="return false;">
+                        <source src="{{ asset('img/precisoimg/lady.mp4') }}" type="video/mp4">
+                        Tu navegador no soporta el video.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalElement = document.getElementById('tiktokModal');
+            const videoElement = document.getElementById('tiktokVideo');
+            const modal = new bootstrap.Modal(modalElement);
+
+            // Mostrar el modal automáticamente
+            modal.show();
+
+            // Detener el video cuando se cierre el modal
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                videoElement.pause(); // Pausa el video
+                videoElement.currentTime = 0; // Reinicia el video a su inicio
+            });
+        });
+    </script>
 
 
 

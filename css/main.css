@@ -382,6 +382,7 @@ h6 {
     cursor: pointer;
     transition: color 0.3s;
   }
+
   .navmenu {
     padding: 0;
     z-index: 9997;
@@ -3394,7 +3395,7 @@ section.hero .masthead-video {
     color: var(--accent-color);
     /* Combina con los colores de la marca */
     order: 2;
-    
+
   }
 
 
@@ -3408,65 +3409,62 @@ section.hero .masthead-video {
   }
 }
 
-/* Contador de visitas en la esquina inferior izquierda */
-#contador-visitas {
-  position: fixed;
-  bottom: 0px;
-  /* Posición desde abajo */
-  left: 0px;
-  /* Posición desde la izquierda */
-  background-color: rgba(0, 0, 0, 0.022);
-  /* Fondo oscuro semitransparente */
-  color: #ffffff;
-  /* Texto blanco */
-  font-size: 0.9rem;
-  /* Tamaño de texto moderado */
-  padding: 10px 15px;
-  /* Espaciado interno */
-  border-radius: 5px;
-  /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  /* Sombra suave */
-  z-index: 9999;
-  /* Asegura que esté encima de otros elementos */
-  cursor: pointer;
-  /* Indica que es interactivo */
-}
-
-#contador-visitas:hover {
-  background-color: rgba(255, 255, 255, 0.41);
-  /* Fondo más claro al pasar el ratón */
-  color: #000000;
-  /* Texto oscuro al pasar el ratón */
-  transition: all 0.3s ease;
-  /* Transición suave */
-}
-
 
 
 
 .responsive-overlay {
-  position: absolute; /* Asegura que el overlay se posicione relativo al contenedor */
+  position: absolute;
+  /* Asegura que el overlay se posicione relativo al contenedor */
   top: 0;
   left: 0;
-  width: 100%; /* Asegura que cubra todo el ancho */
-  height: 100%; /* Asegura que cubra toda la altura */
-  background-color: rgba(0, 0, 0, 0.6); /* Ajusta la transparencia del fondo oscuro */
-  display: flex; /* Centra el texto en el overlay */
+  width: 100%;
+  /* Asegura que cubra todo el ancho */
+  height: 100%;
+  /* Asegura que cubra toda la altura */
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Ajusta la transparencia del fondo oscuro */
+  display: flex;
+  /* Centra el texto en el overlay */
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 2; /* Coloca el overlay encima de la imagen */
+  z-index: 2;
+  /* Coloca el overlay encima de la imagen */
 }
 
 .responsive-image-container {
   position: relative;
   width: 100%;
-  height: auto; /* Ajusta automáticamente la altura según el ancho */
+  height: auto;
+  /* Ajusta automáticamente la altura según el ancho */
 }
 
 .responsive-image-container img {
   width: 100%;
   height: auto;
-  object-fit: cover; /* Asegura que la imagen se escale correctamente */
+  object-fit: cover;
+  /* Asegura que la imagen se escale correctamente */
+}
+
+.modal-content {
+  max-width: 90%;
+  /* Para asegurar que sea responsivo */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+.visitor-counter {
+  font-size: 1.2rem; /* Tamaño de texto discreto */
+  color: #ffffff; /* Texto en blanco */
+  margin-top: 8px; /* Separación con el botón */
+  opacity: 0.8; /* Opacidad reducida para menor protagonismo */
+  font-weight: 400; /* Peso ligero para un estilo más sutil */
+  padding: 10px 15px;
 }

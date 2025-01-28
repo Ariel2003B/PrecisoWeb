@@ -193,27 +193,54 @@
 
 })();
 
-document.addEventListener('DOMContentLoaded', function () {
-  fetch('/incrementar-visitas')
-      .then(response => {
-          if (!response.ok) {
-              throw new Error(`Error HTTP: ${response.status}`);
-          }
-          return response.json();
-      })
-      .then(() => fetch('/obtener-visitas'))
-      .then(response => {
-          if (!response.ok) {
-              throw new Error(`Error HTTP: ${response.status}`);
-          }
-          return response.json();
-      })
-      .then(data => {
-          document.getElementById('contador-visitas').innerText =
-              `Tú eres el visitante número ${data.contador} de PrecisoGPS`;
-      })
-      .catch(error => {
-          console.error('Error al cargar el contador de visitas:', error);
-      });
-});
+// document.addEventListener('DOMContentLoaded', function () {
+//   fetch('/incrementar-visitas')
+//       .then(response => {
+//           if (!response.ok) {
+//               throw new Error(`Error HTTP: ${response.status}`);
+//           }
+//           return response.json();
+//       })
+//       .then(() => fetch('/obtener-visitas'))
+//       .then(response => {
+//           if (!response.ok) {
+//               throw new Error(`Error HTTP: ${response.status}`);
+//           }
+//           return response.json();
+//       })
+//       .then(data => {
+//           document.getElementById('contador-visitas').innerText =
+//               `Tú eres el visitante número ${data.contador} de PrecisoGPS`;
+//       })
+//       .catch(error => {
+//           console.error('Error al cargar el contador de visitas:', error);
+//       });
+// });
 
+document.addEventListener('DOMContentLoaded', function () {
+  // Incrementar visitas
+  fetch('/incrementar-visitas')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => fetch('/obtener-visitas')) // Obtener el contador actualizado
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Actualizar todos los contadores en la página
+      const counters = document.querySelectorAll('.contador-visitas'); // Seleccionamos todos los elementos con la clase
+      counters.forEach(counter => {
+        counter.innerText = `Tú eres el visitante número ${data.contador} de PrecisoGPS`;
+      });
+    })
+    .catch(error => {
+      console.error('Error al cargar el contador de visitas:', error);
+    });
+});
