@@ -14,7 +14,7 @@ class HomeController extends Controller
     }
     public function privacidad()
     {
-        return view('home.privacy');
+        return view('home.politica');
     }
     public function plataformas()
     {
