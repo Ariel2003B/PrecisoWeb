@@ -446,7 +446,7 @@
     {{-- <a id="contador-visitas" href="#">Cargando visitantes...</a> --}}
 
     <!-- Modal -->
-    <div class="modal fade" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -462,7 +462,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
