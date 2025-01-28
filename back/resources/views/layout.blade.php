@@ -46,7 +46,7 @@
     <header id="header" class="header d-flex align-items-center sticky-top">
         <div class="container position-relative d-flex align-items-center">
 
-            <a href="{{route('home.inicio')}}" class="logo d-flex align-items-center me-auto">
+            <a href="{{ route('home.inicio') }}" class="logo d-flex align-items-center me-auto">
                 <img src="{{ asset('img/Precisogps.png') }}" alt="">
             </a>
 
@@ -79,7 +79,8 @@
             </nav>
             <a href="{{ route('carrito.index') }}" class="cart-icon">
                 <i class="bi bi-cart4"></i>
-                <span id="cart-count" class="cart-count">{{ session('carrito') ? count(session('carrito')) : 0 }}</span>
+                <span id="cart-count"
+                    class="cart-count">{{ session('carrito') ? count(session('carrito')) : 0 }}</span>
             </a>
             {{-- <div class="header-social-links">
                 <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
@@ -151,6 +152,13 @@
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
+    <!-- Botón flotante de WhatsApp -->
+    <!-- Botón flotante de WhatsApp con mensaje predefinido -->
+    <a href="https://wa.me/593990453275?text=Hola%2C%20me%20interesa%20asesoramiento%20sobre%20el%20rastreo%20vehicular.%20¿Podrías%20darme%20más%20información%3F"
+        target="_blank" class="whatsapp-float">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
 
     <!-- Preloader -->
     <div id="preloader"></div>
@@ -167,4 +175,5 @@
     <!-- Main JS File -->
     <script src="{{ asset('js/main.js') }}"></script>
 </body>
+
 </html>

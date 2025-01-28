@@ -3448,21 +3448,63 @@ section.hero .masthead-video {
 
 
 .modal-dialog {
-  max-width: 450px; /* Tamaño máximo para dispositivos más grandes */
-  margin: 0 auto; /* Centrar el modal */
+  max-width: 450px;
+  /* Tamaño máximo para dispositivos más grandes */
+  margin: 0 auto;
+  /* Centrar el modal */
 }
 
 .modal-body video {
-  max-height: 85vh; /* Limitar la altura del video al 70% de la pantalla */
-  object-fit: contain; /* Asegurar que el video se ajuste sin distorsión */
+  max-height: 85vh;
+  /* Limitar la altura del video al 70% de la pantalla */
+  object-fit: contain;
+  /* Asegurar que el video se ajuste sin distorsión */
 }
 
 
 .visitor-counter {
-  font-size: 1.2rem; /* Tamaño de texto discreto */
-  color: #ffffff; /* Texto en blanco */
-  margin-top: 8px; /* Separación con el botón */
-  opacity: 0.8; /* Opacidad reducida para menor protagonismo */
-  font-weight: 400; /* Peso ligero para un estilo más sutil */
+  font-size: 1.2rem;
+  /* Tamaño de texto discreto */
+  color: #ffffff;
+  /* Texto en blanco */
+  margin-top: 8px;
+  /* Separación con el botón */
+  opacity: 0.8;
+  /* Opacidad reducida para menor protagonismo */
+  font-weight: 400;
+  /* Peso ligero para un estilo más sutil */
   padding: 10px 15px;
+}
+/* Ajuste del botón de WhatsApp */
+.whatsapp-float {
+  position: fixed;
+  bottom: 80px; /* Subir el botón */
+  right: 20px;
+  background-color: #25d366;
+  color: white;
+  font-size: 28px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  transition: transform 0.3s ease;
+  animation: blink 1.5s infinite;
+}
+
+/* Efecto de parpadeo */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Efecto hover */
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  background-color: #1ebe5d;
 }
