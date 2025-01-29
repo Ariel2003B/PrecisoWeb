@@ -56,7 +56,7 @@
                     <li><a href="{{ route('home.servicios') }}" class="@yield('ActivarServicios')">Servicios</a></li>
                     <!-- <li><a href="portfolio.html">Portfolio</a></li> -->
                     <li><a href="{{ route('home.planes') }}" class="@yield('ActivarPlanes')">Planes</a></li>
-                    {{-- <li><a href="{{ route('home.blog') }}" class="@yield('ActivarBlog')">Blog</a></li> --}}
+                    <li><a href="{{ route('home.blogs') }}" class="@yield('ActivarBlog')">Blog</a></li>
                     <li><a href="{{ route('home.nosotros') }}" class="@yield('ActivarNosotros')">Nosotros</a></li>
                     <!-- Dropdown del usuario -->
                     <li><a href="{{ route('home.plataformas') }}" class="@yield('ActivarPlataformas')">Plataformas</a></li>

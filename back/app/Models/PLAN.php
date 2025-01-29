@@ -42,6 +42,6 @@ class PLAN extends Model
 	public function c_a_r_a_c_t_e_r_i_s_t_i_c_a_s()
 	{
 		return $this->belongsToMany(CARACTERISTICA::class, 'PLANCARACTERISTICA', 'PLA_ID', 'CAR_ID')
-					->withPivot('PCA_ID', 'POSEE');
+			->withPivot('PCA_ID', 'POSEE');
 	}
 }

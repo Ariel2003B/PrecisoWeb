@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthLoginController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PlanController;
@@ -19,7 +21,11 @@ Route::get('/plataformas', [HomeController::class, 'plataformas'])->name('home.p
 Route::get('/servicios', [HomeController::class, 'servicios'])->name('home.servicios');
 Route::get('/planes', [HomeController::class, 'planes'])->name('home.planes');
 Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('home.nosotros');
-Route::get('/blog', [HomeController::class, 'blog'])->name('home.blog');
+Route::get('/blogs', [HomeController::class, 'blog'])->name('home.blogs');
+Route::get('/blogs/{id}', [HomeController::class, 'detailsBlog'])->name('blog.details');
+//Route::post('/blogs', [HomeController::class, 'detailsBlog'])->name('blog.comment');
+Route::post('/comentario/store', [ComentarioController::class, 'store'])->name('comentario.store');
+
 Route::get('/incrementar-visitas', [VisitasController::class, 'incrementarVisitas']);
 Route::get('/obtener-visitas', [VisitasController::class, 'obtenerVisitas']);
 
@@ -70,6 +76,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('plan', PlanController::class);
         Route::resource('caracteristica', CaracteristicaController::class);
     });
+    Route::middleware(['auth', 'role:BLOGS'])->group(function () {
+        Route::resource('blog', BlogController::class);
+    });
+    
 });
 
 
