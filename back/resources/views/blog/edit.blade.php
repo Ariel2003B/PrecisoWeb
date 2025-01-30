@@ -42,10 +42,13 @@
                             <option value="">Seleccione una categoría</option>
                             <option value="Tecnología" {{ $blog->CATEGORIA == 'Tecnología' ? 'selected' : '' }}>Tecnología
                             </option>
-                            <option value="Ciencia" {{ $blog->CATEGORIA == 'Ciencia' ? 'selected' : '' }}>Ciencia</option>
+                            <option value="Tecnología" {{ $blog->CATEGORIA == 'Transporte público' ? 'selected' : '' }}>Transporte público
+                            </option>
+
+                            {{-- <option value="Ciencia" {{ $blog->CATEGORIA == 'Ciencia' ? 'selected' : '' }}>Ciencia</option>
                             <option value="Educación" {{ $blog->CATEGORIA == 'Educación' ? 'selected' : '' }}>Educación
                             </option>
-                            <option value="Salud" {{ $blog->CATEGORIA == 'Salud' ? 'selected' : '' }}>Salud</option>
+                            <option value="Salud" {{ $blog->CATEGORIA == 'Salud' ? 'selected' : '' }}>Salud</option> --}}
                         </select>
                     </div>
 
