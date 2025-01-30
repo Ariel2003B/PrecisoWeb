@@ -62,9 +62,10 @@
                         <select name="CATEGORIA" class="form-control" required>
                             <option value="">Seleccione una categoría</option>
                             <option value="Tecnología">Tecnología</option>
-                            <option value="Ciencia">Ciencia</option>
+                            <option value="Transporte público">Transporte público</option>
+                            {{-- <option value="Ciencia">Ciencia</option>
                             <option value="Educación">Educación</option>
-                            <option value="Salud">Salud</option>
+                            <option value="Salud">Salud</option> --}}
                         </select>
                     </div>
 
