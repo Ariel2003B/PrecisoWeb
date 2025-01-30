@@ -22,52 +22,60 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
-        // Validar entrada
-        $request->validate([
-            'TITULO' => 'required|max:255',
-            'AUTOR' => 'nullable|max:500',
-            'CATEGORIA' => 'nullable|max:100',
-            'URL_IMAGEN' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'CONTENIDO' => 'required',
-            'subtitulos' => 'nullable|array', // Subtítulos opcionales
-            'subtitulos.*' => 'nullable|max:255', // Cada subtítulo puede tener hasta 255 caracteres
-            'textosubtitulos' => 'nullable|array', // Contenido de subtítulos opcional
-            'textosubtitulos.*' => 'nullable' // Cada contenido de subtítulo puede tener hasta 2000 caracteres
-        ]);
+        try {
+            // Validar entrada
+            $request->validate([
+                'TITULO' => 'required|max:255',
+                'AUTOR' => 'nullable|max:500',
+                'CATEGORIA' => 'nullable|max:100',
+                'URL_IMAGEN' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'CONTENIDO' => 'required',
+                'subtitulos' => 'nullable|array',
+                'subtitulos.*' => 'nullable|max:255',
+                'textosubtitulos' => 'nullable|array',
+                'textosubtitulos.*' => 'nullable'
+            ]);
 
-        // Manejo de imagen
-        $imagenPath = null;
-        if ($request->hasFile('URL_IMAGEN')) {
-            $imagenPath = $request->file('URL_IMAGEN')->store('imagenes_blog', 'public');
-        }
+            // Manejo de imagen
+            $imagenPath = null;
+            if ($request->hasFile('URL_IMAGEN')) {
+                $imagenPath = $request->file('URL_IMAGEN')->store('imagenes_blog', 'public');
+            }
 
-        // Crear el blog
-        $blog = BLOG::create([
-            'TITULO' => $request->TITULO,
-            'AUTOR' => $request->AUTOR,
-            'CATEGORIA' => $request->CATEGORIA,
-            'FECHACREACION' => now(),
-            'URL_IMAGEN' => $imagenPath,
-            'CONTENIDO' => $request->CONTENIDO,
-            'NUMEROCOMENTARIOS' => 0
-        ]);
+            // Crear el blog
+            $blog = BLOG::create([
+                'TITULO' => $request->TITULO,
+                'AUTOR' => $request->AUTOR,
+                'CATEGORIA' => $request->CATEGORIA,
+                'FECHACREACION' => now(),
+                'URL_IMAGEN' => $imagenPath,
+                'CONTENIDO' => $request->CONTENIDO,
+                'NUMEROCOMENTARIOS' => 0
+            ]);
 
-        // Guardar los subtítulos si existen
-        if ($request->has('subtitulos') && $request->has('textosubtitulos')) {
-            foreach ($request->subtitulos as $index => $titulo) {
-                // Asegurar que el título del subtítulo y su contenido no estén vacíos antes de guardar
-                if (!empty($titulo) && !empty($request->textosubtitulos[$index])) {
-                    SUBTITULO::create([
-                        'BLO_ID' => $blog->BLO_ID,
-                        'NUMERO' => $index + 1,
-                        'TEXTO' => $titulo, // Solo el título
-                        'CONTENIDO' => $request->textosubtitulos[$index] // Ahora el contenido está separado
-                    ]);
+            // Guardar los subtítulos si existen
+            if ($request->has('subtitulos') && $request->has('textosubtitulos')) {
+                foreach ($request->subtitulos as $index => $titulo) {
+                    if (!empty($titulo) && !empty($request->textosubtitulos[$index])) {
+                        SUBTITULO::create([
+                            'BLO_ID' => $blog->BLO_ID,
+                            'NUMERO' => $index + 1,
+                            'TEXTO' => $titulo,
+                            'CONTENIDO' => $request->textosubtitulos[$index]
+                        ]);
+                    }
                 }
             }
+
+            return redirect()->route('blog.index')->with('success', 'Blog creado correctamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+
+            return redirect()->back()->with('error', 'Ocurrió un error inesperado. ' . $e->getMessage())->withInput();
         }
-        return redirect()->route('blog.index')->with('success', 'Blog creado correctamente.');
     }
+
 
 
     public function show($id)

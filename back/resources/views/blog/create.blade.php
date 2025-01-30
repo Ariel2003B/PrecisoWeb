@@ -18,6 +18,29 @@
         </div>
         <section class="section">
             <div class="container">
+                @if (session()->has('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session()->has('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <strong>¡Error!</strong> Hay problemas con los datos ingresados:
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('blog.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
