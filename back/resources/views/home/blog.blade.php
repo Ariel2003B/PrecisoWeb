@@ -29,8 +29,9 @@
                                     <img src="{{ asset('back/storage/app/public/' . $blog->URL_IMAGEN) }}" class="img-fluid"
                                         alt="Imagen del blog">
                                     <span class="post-date">
-                                        {{ \Carbon\Carbon::parse($blog->FECHACREACION)->locale('es')->translatedFormat('d \d\e F') }}
+                                        {{ \Carbon\Carbon::parse($blog->FECHACREACION)->locale('es')->translatedFormat('d \d\e F Y') }}
                                     </span>
+
                                 </div>
 
                                 <div class="post-content d-flex flex-column">
