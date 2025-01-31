@@ -89,10 +89,6 @@ class SIMCARDObserver
                     'OLD' => $oldData['EQUIPO'],
                     'NEW' => $newData['EQUIPO']
                 ]),
-                'VEH_ID' => json_encode([
-                    'OLD' => $oldData['VEH_ID'],
-                    'NEW' => $newData['VEH_ID']
-                ]),
                 'IMEI' => json_encode([
                     'OLD' => $oldData['IMEI'],
                     'NEW' => $newData['IMEI']

@@ -9,10 +9,33 @@
             <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
                 <div class="carousel-item active">
-                    <!-- <img src="assets/img/hero-carousel/hero-carousel-1.jpg" alt=""> -->
-                    <img src="https://ccq.ec/wp-content/uploads/2023/06/230601_AM_MitosAcercaDelRastreoVehicular.jpg"
-                        alt="">
+
+                    <video autoplay muted loop class="masthead-video">
+                        <source src="{{ asset('img/precisoimg/video2Preciso.mp4') }}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
                     <div class="container">
+                        <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
+                        <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
+                    </div>
+                </div>
+                <div class="carousel-item active">
+                    <video autoplay muted loop class="masthead-video">
+                        <source src="{{ asset('img/precisoimg/video3Preciso.mp4') }}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
+                    <div class="container">
+                        <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
+                        <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
+                    </div>
+                </div>
+                <div class="carousel-item active">
+                    <video autoplay muted loop class="masthead-video">
+                        <source src="{{ asset('img/precisoimg/videoPreciso.mp4') }}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
+
+                    {{-- <div class="container">
                         <h2>Soluciones Profesionales en Rastreo Vehicular</h2>
                         <p>Monitorea, protege y gestiona tu flota o vehículo en tiempo real con nuestra tecnología
                             avanzada de
@@ -23,24 +46,8 @@
                         <!-- Contador de visitantes -->
                         <!-- Contador de visitantes -->
                         <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
-                    </div>
+                    </div> --}}
                 </div>
-
-                {{-- <div class="carousel-item">
-                    <video autoplay muted loop class="masthead-video">
-                        <source src="{{ asset('img/precisoimg/FondoModelo.mp4') }}" type="video/mp4">
-                        Tu navegador no soporta la reproducción de video.
-                    </video>
-                   
-                    <div class="container">
-                        <h2>Tecnología de Precisión en Rastreo Vehicular</h2>
-                        <p>En PrecisoGPS, brindamos soluciones innovadoras en rastreo satelital y gestión de flotas.
-                            Garantiza la seguridad y eficiencia de tus vehículos con tecnología confiable y fácil de usar.
-                            Integra cámaras de conteo, herramientas de análisis y mucho más, diseñado a tu medida.</p>
-                        <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
-                        <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
-                    </div>
-                </div> --}}
 
                 <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>

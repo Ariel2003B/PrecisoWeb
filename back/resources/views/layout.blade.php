@@ -94,7 +94,6 @@
     @yield('content')
 
     <footer id="footer" class="footer dark-background">
-
         <div class="container footer-top">
             <div class="row gy-4">
                 <div class="col-lg-4 col-md-6 footer-about">
@@ -127,7 +126,7 @@
                     </ul>
                 </div>
 
-                <div class="col-lg-4 col-md-12 footer-newsletter">
+                <div class="col-lg-3 col-md-12 footer-newsletter">
                     <h4>¿Quieres recibir nuestras actualizaciones?</h4>
                     <p>Suscribete y recibe notificaciones de nuestras ultimas actualizaciones, planes y productos.</p>
                     <form action="forms/newsletter.php" method="post" class="php-email-form">
@@ -138,6 +137,11 @@
                         <div class="sent-message">Tu suscripción ha sido registrada, Gracias!</div>
                     </form>
                 </div>
+                <div class="col-lg-3 col-md-4 footer-newsletter">
+                    <p class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></p>
+                </div>
+
+
 
             </div>
         </div>
