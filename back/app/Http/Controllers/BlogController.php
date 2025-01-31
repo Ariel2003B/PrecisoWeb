@@ -35,7 +35,6 @@ class BlogController extends Controller
                 'textosubtitulos' => 'nullable|array',
                 'textosubtitulos.*' => 'nullable'
             ]);
-
             // Manejo de imagen
             $imagenPath = null;
             if ($request->hasFile('URL_IMAGEN')) {
@@ -71,7 +70,6 @@ class BlogController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-
             return redirect()->back()->with('error', 'Ocurrió un error inesperado. ' . $e->getMessage())->withInput();
         }
     }

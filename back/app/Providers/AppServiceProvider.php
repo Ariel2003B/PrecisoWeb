@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\SIMCARD;
+use App\Observers\SIMCARDObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 class AppServiceProvider extends ServiceProvider
@@ -20,5 +22,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
+        SIMCARD::observe(SIMCARDObserver::class);
     }
 }
