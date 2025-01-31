@@ -9,25 +9,18 @@
             <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
                 <div class="carousel-item active">
-
                     <video autoplay muted loop class="masthead-video">
                         <source src="{{ asset('img/precisoimg/video2Preciso.mp4') }}" type="video/mp4">
                         Tu navegador no soporta la reproducción de video.
                     </video>
-                    <div class="container">
-                        <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
-                        <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
-                    </div>
+                    
                 </div>
                 <div class="carousel-item active">
                     <video autoplay muted loop class="masthead-video">
                         <source src="{{ asset('img/precisoimg/video3Preciso.mp4') }}" type="video/mp4">
                         Tu navegador no soporta la reproducción de video.
                     </video>
-                    <div class="container">
-                        <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
-                        <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
-                    </div>
+                    
                 </div>
                 <div class="carousel-item active">
                     <video autoplay muted loop class="masthead-video">
