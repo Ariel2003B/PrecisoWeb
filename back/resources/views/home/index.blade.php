@@ -26,12 +26,12 @@
                     </div>
                 </div>
 
-                <div class="carousel-item">
+                {{-- <div class="carousel-item">
                     <video autoplay muted loop class="masthead-video">
                         <source src="{{ asset('img/precisoimg/FondoModelo.mp4') }}" type="video/mp4">
                         Tu navegador no soporta la reproducción de video.
                     </video>
-                    {{-- <img src="{{ asset('img/precisoimg/FondoModelo.mp4') }}" alt=""> --}}
+                   
                     <div class="container">
                         <h2>Tecnología de Precisión en Rastreo Vehicular</h2>
                         <p>En PrecisoGPS, brindamos soluciones innovadoras en rastreo satelital y gestión de flotas.
@@ -40,7 +40,7 @@
                         <a href="{{ route('home.planes') }}" class="btn-get-started">Conoce nuestros planes</a>
                         <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
                     </div>
-                </div><!-- End Carousel Item -->
+                </div> --}}
 
                 <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
