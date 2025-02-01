@@ -140,9 +140,6 @@
                 <div class="col-lg-3 col-md-4 footer-newsletter">
                     <p class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></p>
                 </div>
-
-
-
             </div>
         </div>
 
