@@ -7,14 +7,21 @@
         <section id="hero" class="hero section dark-background">
 
             <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
-
                 <div class="carousel-item active">
+                    <!-- <img src="assets/img/hero-carousel/hero-carousel-1.jpg" alt=""> -->
+                    <img src="https://ccq.ec/wp-content/uploads/2023/06/230601_AM_MitosAcercaDelRastreoVehicular.jpg" alt="">
+                  </div>
+                {{-- <div class="carousel-item active">
                     <video autoplay muted loop class="masthead-video">
                         <source src="{{ asset('img/precisoimg/video2Preciso.mp4') }}" type="video/mp4">
                         Tu navegador no soporta la reproducción de video.
                     </video>
                     
-                </div>
+                </div> --}}
+                {{-- <div class="carousel-item">
+                    <img src="https://ccq.ec/wp-content/uploads/2023/06/230601_AM_MitosAcercaDelRastreoVehicular.jpg"
+                        alt="">
+                </div> --}}
                 {{-- <div class="carousel-item active">
                     <video autoplay muted loop class="masthead-video">
                         <source src="{{ asset('img/precisoimg/video3Preciso.mp4') }}" type="video/mp4">
@@ -40,16 +47,16 @@
                         <!-- Contador de visitantes -->
                         <p class="visitor-counter mt-2"><b><span class="contador-visitas">Cargando...</span></b></p>
                     </div> --}}
-                </div>
+            </div>
 
-                <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
-                </a>
-                <a class="carousel-control-next" href="#hero-carousel" role="button" data-bs-slide="next">
-                    <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
-                </a>
+            <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
+            </a>
+            <a class="carousel-control-next" href="#hero-carousel" role="button" data-bs-slide="next">
+                <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
+            </a>
 
-                <ol class="carousel-indicators"></ol>
+            <ol class="carousel-indicators"></ol>
 
             </div>
 
