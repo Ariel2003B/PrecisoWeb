@@ -15,7 +15,7 @@
                     </video>
                     
                 </div>
-                <div class="carousel-item active">
+                {{-- <div class="carousel-item active">
                     <video autoplay muted loop class="masthead-video">
                         <source src="{{ asset('img/precisoimg/video3Preciso.mp4') }}" type="video/mp4">
                         Tu navegador no soporta la reproducción de video.
@@ -28,7 +28,7 @@
                         Tu navegador no soporta la reproducción de video.
                     </video>
 
-                    {{-- <div class="container">
+                    <div class="container">
                         <h2>Soluciones Profesionales en Rastreo Vehicular</h2>
                         <p>Monitorea, protege y gestiona tu flota o vehículo en tiempo real con nuestra tecnología
                             avanzada de
