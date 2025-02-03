@@ -427,16 +427,16 @@ class SimCardController extends Controller
         $wialon_api_url = "https://hst-api.wialon.com/wialon/ajax.html";
         $token = "a21e2472955b1cb0847730f34edcf3e804692BDC51F76DAA7CC69358123221016F111F39";
         $updatedSimcards = [];
-    
+
         // 1. Obtener la sesión (SID) de Wialon
         $authResponse = Http::get("$wialon_api_url?svc=token/login&params=" . urlencode(json_encode(["token" => $token])));
         $authData = $authResponse->json();
-    
+
         if (!isset($authData['eid'])) {
             return response()->json(["message" => "Error autenticando en Wialon."], 500);
         }
         $sid = $authData['eid'];
-    
+
         // 2. Obtener todas las unidades con UID desde Wialon
         $params = json_encode([
             "spec" => [
@@ -446,41 +446,42 @@ class SimCardController extends Controller
                 "sortType" => "sys_name"
             ],
             "force" => 1,
-            "flags" => 1024, // Incluye número de teléfono actual
+            "flags" => 256, // Cambiado a 256 para asegurar que traiga el UID (IMEI)
             "from" => 0,
             "to" => 0
         ]);
-    
+
         $response = Http::get("$wialon_api_url?svc=core/search_items&params=" . urlencode($params) . "&sid=$sid");
         $data = $response->json();
-    
+
         if (!isset($data["items"]) || empty($data["items"])) {
             return response()->json(["message" => "No se encontraron unidades en Wialon."], 404);
         }
-    
+
         // 3. Obtener IMEIs desde la base de datos
         $simcards = SIMCARD::select("IMEI", "NUMEROTELEFONO")->get();
         $imei_phone_map = $simcards->pluck("NUMEROTELEFONO", "IMEI")->toArray();
-    
+
         // 4. Buscar coincidencias y obtener itemId
         foreach ($data["items"] as $unit) {
             if (!isset($unit["uid"]) || empty($unit["uid"])) {
+                Log::warning("⚠️ No se encontró UID (IMEI) en esta unidad, se omite.");
                 continue;
             }
-    
+
             $imei = $unit["uid"];
             if (isset($imei_phone_map[$imei])) {
                 $new_phone = "+593" . $imei_phone_map[$imei];
-    
+
                 // Obtener el número de teléfono actual en Wialon
                 $current_phone = isset($unit["ph"]) ? $unit["ph"] : "";
-    
+
                 // Comparar antes de actualizar
                 if ($new_phone === $current_phone) {
                     Log::info("⚠️ El número de IMEI '$imei' ya está actualizado. Se omite.");
                     continue;
                 }
-    
+
                 // Obtener itemId desde Wialon
                 $params_item = json_encode([
                     "spec" => [
@@ -494,44 +495,44 @@ class SimCardController extends Controller
                     "from" => 0,
                     "to" => 0
                 ]);
-    
+
                 $item_response = Http::get("$wialon_api_url?svc=core/search_items&params=" . urlencode($params_item) . "&sid=$sid");
                 $item_data = $item_response->json();
-    
+
                 if (!isset($item_data["items"][0]["id"])) {
                     Log::warning("⚠️ No se encontró itemId para IMEI '$imei'. Se omite.");
                     continue;
                 }
-    
+
                 $item_id = $item_data["items"][0]["id"];
-    
+
                 // 5. Actualizar el número de teléfono en Wialon
                 $params_update = json_encode([
                     "itemId" => $item_id,
                     "phoneNumber" => $new_phone
                 ]);
-    
+
                 $update_response = Http::get("$wialon_api_url?svc=unit/update_phone&params=" . urlencode($params_update) . "&sid=$sid");
                 $update_data = $update_response->json();
-    
+
                 if (!isset($update_data["error"])) {
                     $updatedSimcards[] = ["IMEI" => $imei, "Nuevo Número" => $new_phone];
                 }
             }
         }
-    
+
         // 6. Generar el PDF con los números actualizados
         $pdf = Pdf::loadView('pdf.reporte_actualizacion', compact('updatedSimcards'))->setPaper('a4');
         $pdfPath = storage_path('app/public/actualizacion_numeros.pdf');
         $pdf->save($pdfPath);
-    
+
         // 7. Enviar el PDF por correo
         Mail::send([], [], function ($message) use ($pdfPath) {
             $message->to("elrey_guato01@hotmail.com")
                 ->subject("Reporte de Actualización en Wialon")
                 ->attach($pdfPath);
         });
-    
+
         return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
     }
 }
