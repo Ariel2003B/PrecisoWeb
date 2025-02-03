@@ -9,13 +9,6 @@
             <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
                 <div class="carousel-item active">
-                    <img src="{{asset('img/precisoimg/corousel-1.jpg')}}" alt="">
-                    <div class="container">
-                        <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
-                    </div>
-                </div><!-- End Carousel Item -->
-
-                <div class="carousel-item">
                     <img src="{{asset('img/precisoimg/carousel-2.jpg')}}" alt="">
                     <div class="container">
                         <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
@@ -28,6 +21,13 @@
                         <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
                     </div>
                 </div><!-- End Carousel Item -->
+                <div class="carousel-item">
+                    <img src="{{asset('img/precisoimg/carousel-5.jpg')}}" alt="">
+                    <div class="container">
+                        <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
+                    </div>
+                </div><!-- End Carousel Item -->
+
 
                 <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
