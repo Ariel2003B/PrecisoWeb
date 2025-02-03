@@ -59,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('simcards', SimCardController::class)->except(['show']);
         Route::post('/simcards/bulk-upload', [SimCardController::class, 'bulkUpload'])->name('simcards.bulkUpload');
         Route::get('/simcards/template', [SimCardController::class, 'downloadTemplate'])->name('simcards.template');
+        Route::get('/simcards/update-wialon', [SimCardController::class, 'updateWialonPhones'])
+            ->name('simcards.updateWialonPhones');
     });
     Route::middleware(['auth', 'role:PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);
@@ -79,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'role:BLOGS'])->group(function () {
         Route::resource('blog', BlogController::class);
     });
-    
+
 });
 
 

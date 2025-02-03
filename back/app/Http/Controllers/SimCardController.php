@@ -7,6 +7,7 @@ use App\Models\VEHICULO;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Response;
 
@@ -141,53 +142,53 @@ class SimCardController extends Controller
     {
         // Definir los encabezados de la plantilla
         $headers = [
-            'PROPIETARIO', 
-            'CUENTA', 
-            'PLAN', 
-            'CODIGO PLAN', 
-            'ICC', 
-            'NUMERO TELEFONO', 
-            'GRUPO', 
-            'ASIGNACION', 
+            'PROPIETARIO',
+            'CUENTA',
+            'PLAN',
+            'CODIGO PLAN',
+            'ICC',
+            'NUMERO TELEFONO',
+            'GRUPO',
+            'ASIGNACION',
             'ESTADO'
         ];
-    
+
         // Definir un ejemplo de fila para mayor claridad
         $exampleRow = [
-            'PRECISOGPS S.A.S.', 
-            '120013636', 
-            'CLARO EMPRESA BAM 1.5', 
-            'BP-9980', 
-            "'8959301001049890843'", 
-            '991906800', 
-            'COMERCIALES', 
-            'JQ049D', 
+            'PRECISOGPS S.A.S.',
+            '120013636',
+            'CLARO EMPRESA BAM 1.5',
+            'BP-9980',
+            "'8959301001049890843'",
+            '991906800',
+            'COMERCIALES',
+            'JQ049D',
             'Activa'
         ];
-    
+
         // Configurar el archivo para la descarga
         $fileName = "Plantilla_SIMCards.csv";
-    
+
         // Stream del archivo CSV con separador de punto y coma
         return Response::stream(function () use ($headers, $exampleRow) {
             $output = fopen('php://output', 'w');
-    
+
             // Configurar el delimitador como punto y coma
             $options = [
                 'delimiter' => ';', // Aquí usamos punto y coma
             ];
-    
+
             // Escribir los encabezados y ejemplo
             fputcsv($output, $headers, $options['delimiter']);
             fputcsv($output, $exampleRow, $options['delimiter']);
-    
+
             fclose($output);
         }, 200, [
             "Content-Type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$fileName"
         ]);
     }
-    
+
 
 
     public function store(Request $request)
@@ -415,5 +416,100 @@ class SimCardController extends Controller
         $simcard->delete();
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card eliminada exitosamente.');
+    }
+
+
+
+    public function updateWialonPhones(Request $request)
+    {
+        $wialon_api_url = "https://hst-api.wialon.com/wialon/ajax.html";
+        $token = "a21e2472955b1cb0847730f34edcf3e804692BDC51F76DAA7CC69358123221016F111F39";
+    
+        // 1. Obtener la sesión (SID) de Wialon
+        $authResponse = Http::get("$wialon_api_url?svc=token/login&params=" . urlencode(json_encode(["token" => $token])));
+        $authData = $authResponse->json();
+        if (!isset($authData['eid'])) {
+            return response()->json(["message" => "Error autenticando en Wialon."], 500);
+        }
+        $sid = $authData['eid']; 
+    
+        // 2. Obtener todas las unidades con UID desde Wialon
+        $params = json_encode([
+            "spec" => [
+                "itemsType" => "avl_unit",
+                "propName" => "sys_name",
+                "propValueMask" => "*",
+                "sortType" => "sys_name"
+            ],
+            "force" => 1,
+            "flags" => 256,
+            "from" => 0,
+            "to" => 0
+        ]);
+    
+        $response = Http::get("$wialon_api_url?svc=core/search_items&params=" . urlencode($params) . "&sid=$sid");
+        $data = $response->json();
+    
+        if (!isset($data["items"]) || empty($data["items"])) {
+            return response()->json(["message" => "No se encontraron unidades en Wialon."], 404);
+        }
+    
+        // 3. Obtener IMEIs desde la base de datos
+        $simcards = SIMCARD::select("IMEI", "NUMEROTELEFONO")->get();
+        $imei_phone_map = $simcards->pluck("NUMEROTELEFONO", "IMEI")->toArray();
+    
+        // 4. Buscar coincidencias y obtener itemId
+        $actualizados = 0;
+        foreach ($data["items"] as $unit) {
+            if (!isset($unit["uid"]) || empty($unit["uid"])) {
+                continue;
+            }
+    
+            $imei = $unit["uid"];
+            if (isset($imei_phone_map[$imei])) {
+                $new_phone = "+593" . $imei_phone_map[$imei];
+    
+                // Obtener itemId desde Wialon
+                $params_item = json_encode([
+                    "spec" => [
+                        "itemsType" => "avl_unit",
+                        "propName" => "sys_unique_id",
+                        "propValueMask" => $imei,
+                        "sortType" => "sys_name"
+                    ],
+                    "force" => 1,
+                    "flags" => 1,
+                    "from" => 0,
+                    "to" => 0
+                ]);
+    
+                $item_response = Http::get("$wialon_api_url?svc=core/search_items&params=" . urlencode($params_item) . "&sid=$sid");
+                $item_data = $item_response->json();
+    
+                if (!isset($item_data["items"][0]["id"])) {
+                    Log::warning("⚠️ No se encontró itemId para IMEI '$imei'. Se omite.");
+                    continue;
+                }
+    
+                $item_id = $item_data["items"][0]["id"];
+    
+                // 5. Actualizar el número de teléfono en Wialon
+                $params_update = json_encode([
+                    "itemId" => $item_id,
+                    "phoneNumber" => $new_phone
+                ]);
+    
+                $update_response = Http::get("$wialon_api_url?svc=unit/update_phone&params=" . urlencode($params_update) . "&sid=$sid");
+                $update_data = $update_response->json();
+    
+                if (!isset($update_data["error"])) {
+                    $actualizados++;
+                } else {
+                    Log::error("❌ Error actualizando teléfono para IMEI '$imei'. Código: " . $update_data["error"]);
+                }
+            }
+        }
+    
+        return response()->json(["message" => "Se actualizaron {$actualizados} números en Wialon."]);
     }
 }

@@ -45,12 +45,19 @@
                         </button>
                     </div>
                 </form>
+
+
                 <div class="descargar-plantilla-container">
                     <p>¿No tienes la plantilla? <a href="{{ route('simcards.template') }}" class="btn-descargar">DESCARGAR
                             PLANTILLA</a></p>
                 </div>
                 <div class="filtros-simcards-container mb-3">
                     <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
+                    <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
+                        <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
+                    </button>
+                    <span id="cargando-texto" style="display:none; color: blue;">Actualizando... Por favor, espera.</span>
+
                     <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                         <input type="text" name="search" id="filtro" class="filtros-simcards-input"
                             placeholder="Busqueda avanzada..." value="{{ request('search') }}">
@@ -185,4 +192,35 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             });
         });
     </script>
+    <script>
+        function actualizarWialon() {
+            let btn = document.getElementById("actualizar-wialon");
+            let cargandoTexto = document.getElementById("cargando-texto");
+
+            // Deshabilitar el botón y mostrar "Cargando..."
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando...';
+            cargandoTexto.style.display = "inline";
+
+            // Hacer la petición AJAX a Laravel
+            fetch("{{ route('simcards.updateWialonPhones') }}", {
+                    method: "GET"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Muestra el mensaje de éxito o error
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Números en Wialon';
+                    cargandoTexto.style.display = "none";
+                })
+                .catch(error => {
+                    console.error("Error en la actualización:", error);
+                    alert("Hubo un error en la actualización.");
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Números en Wialon';
+                    cargandoTexto.style.display = "none";
+                });
+        }
+    </script>
+
 @endsection
