@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class SimCardController extends Controller
 {
@@ -493,7 +496,7 @@ class SimCardController extends Controller
                     "force" => 1,
                     "flags" => 1,
                     "from" => 0,
-                    "to" => 0   
+                    "to" => 0
                 ]);
 
                 $item_response = Http::get("$wialon_api_url?svc=core/search_items&params=" . urlencode($params_item) . "&sid=$sid");
@@ -522,16 +525,43 @@ class SimCardController extends Controller
         }
 
         // 6. Generar el PDF con los números actualizados
-        $pdf = Pdf::loadView('pdf.reporte_actualizacion', compact('updatedSimcards'))->setPaper('a4');
-        $pdfPath = storage_path('app/public/actualizacion_numeros.pdf');
-        $pdf->save($pdfPath);
-
-        // 7. Enviar el PDF por correo
-        Mail::send([], [], function ($message) use ($pdfPath) {
-            $message->to("elrey_guato01@hotmail.com")
-                ->subject("Reporte de Actualización en Wialon")
-                ->attach($pdfPath);
-        });
+        try {
+            $html = view('pdf.reporteactualizacion', ['updatedSimcards' => $updatedSimcards])->render();
+        
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+        
+            $pdf = new Dompdf($options);
+            $pdf->loadHtml($html);
+            $pdf->setPaper('A4');
+            $pdf->render();
+        
+            // Guardar el PDF en storage/app/public/pdf/
+            $pdfPath = storage_path('app/public/pdf/actualizacion_numeros.pdf');
+            file_put_contents($pdfPath, $pdf->output());
+        
+            // Verificar si el archivo se guardó correctamente
+            if (!file_exists($pdfPath)) {
+                throw new Exception("No se pudo guardar el PDF.");
+            }
+        
+            // Enviar el PDF por correo
+            Mail::send([], [], function ($message) use ($pdfPath) {
+                $message->to("elrey_guato01@hotmail.com")
+                    ->subject("Reporte de Actualización en Wialon")
+                    ->attach($pdfPath, [
+                        'as' => 'reporte_actualizacion.pdf',
+                        'mime' => 'application/pdf',
+                    ]);
+            });
+        
+            return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
+        
+        } catch (\Exception $th) {
+            return response()->json(["message" => "Error generando PDF: " . $th->getMessage()], 500);
+        }
+        
 
         return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
     }
