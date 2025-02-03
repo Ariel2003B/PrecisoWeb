@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Actualizar todos los contadores en la página
       const counters = document.querySelectorAll('.contador-visitas'); // Seleccionamos todos los elementos con la clase
       counters.forEach(counter => {
-        counter.innerText = `Tú eres el visitante número ${data.contador} de PrecisoGPS`;
+        counter.innerText = `Bienvenido a PrecisoGPS eres el visitante número ${data.contador}`;
       });
     })
     .catch(error => {

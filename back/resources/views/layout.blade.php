@@ -138,7 +138,7 @@
                     </form>
                 </div>
                 <div class="col-lg-3 col-md-4 footer-newsletter">
-                    <p class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></p>
+                   
                 </div>
             </div>
         </div>
@@ -150,7 +150,7 @@
         </div>
 
     </footer>
-    <!-- Scroll Top -->
+    <!-- Scroll Top --> 
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
     <!-- Botón flotante de WhatsApp -->
