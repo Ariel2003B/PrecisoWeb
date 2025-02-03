@@ -418,6 +418,11 @@
                                             href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Eimynka85wBPqjjUbFp6m14BSdHPe9v72DI1PHeoGo4YIw?email=stalin.yepez%40hotmail.com&e=jpXkzU">Nacional
                                             S.A.</a>
                                     </li>
+                                    <li class="list-group-item">
+                                        <a target="_blank"
+                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EotoF48EFdtNmyieE73Hqp4BFnQjj5AdEZdOJp44-FIECg?email=semgyllfor%40yahoo.com&e=2HeipY">Semgyllfor
+                                            S.A.</a>
+                                    </li>
                                 </ul>
                                 <!-- Botón de cierre -->
                                 <div class="mt-4">
@@ -433,42 +438,4 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tiktokModalLabel">PrecisoGPS</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <video id="tiktokVideo" controls autoplay muted loop style="width: 100%; height: auto;"
-                        controlsList="nodownload" oncontextmenu="return false;">
-                        <source src="{{ asset('img/precisoimg/lady.mp4') }}" type="video/mp4">
-                        Tu navegador no soporta el video.
-                    </video>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const modalElement = document.getElementById('tiktokModal');
-            const videoElement = document.getElementById('tiktokVideo');
-            const modal = new bootstrap.Modal(modalElement);
-
-            // Mostrar el modal automáticamente
-            modal.show();
-
-            // Detener el video cuando se cierre el modal
-            modalElement.addEventListener('hidden.bs.modal', function() {
-                videoElement.pause(); // Pausa el video
-                videoElement.currentTime = 0; // Reinicia el video a su inicio
-            });
-        });
-    </script>
-
-
-
 @endsection
