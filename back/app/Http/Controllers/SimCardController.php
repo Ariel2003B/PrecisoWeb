@@ -493,7 +493,7 @@ class SimCardController extends Controller
                     "force" => 1,
                     "flags" => 1,
                     "from" => 0,
-                    "to" => 0
+                    "to" => 0   
                 ]);
 
                 $item_response = Http::get("$wialon_api_url?svc=core/search_items&params=" . urlencode($params_item) . "&sid=$sid");
