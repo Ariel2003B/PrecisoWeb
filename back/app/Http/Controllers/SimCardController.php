@@ -546,7 +546,7 @@ class SimCardController extends Controller
 
             // Enviar el PDF por correo
             Mail::send([], ['updatedSimcards' => $updatedSimcards], function ($message) use ($pdfPath) {
-                $message->to("elvisguato02@gmail.com")
+                $message->to("cesar.vargas@precisogps.com")
                     ->subject("Reporte de Actualización en Wialon")
                     ->attach($pdfPath, [
                         'as' => 'reporte_actualizacion.pdf',
@@ -554,8 +554,7 @@ class SimCardController extends Controller
                     ])
                     ->setBody('<h3>Reporte de Actualización</h3><p>Adjunto encontrarás el reporte de actualización de números en Wialon.</p>', 'text/html');
             });
-
-
+            Log::info("🔹 Enviado al correo electronico");
             return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
 
         } catch (\Exception $th) {
