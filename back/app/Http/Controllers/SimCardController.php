@@ -557,8 +557,8 @@ class SimCardController extends Controller
                         'mime' => 'application/pdf',
                     ]);
             });
-            
-            
+
+
 
             Log::info("🔹 Enviado al correo electronico");
             return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
@@ -566,8 +566,147 @@ class SimCardController extends Controller
         } catch (\Exception $th) {
             return response()->json(["message" => "Error generando PDF: " . $th->getMessage()], 500);
         }
-
-
-        //return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
     }
+
+
+    private function getWialonSid()
+    {
+        $token = "a21e2472955b1cb0847730f34edcf3e804692BDC51F76DAA7CC69358123221016F111F39";
+        $url = "https://hst-api.wialon.com/wialon/ajax.html?svc=token/login&params=" . urlencode(json_encode(["token" => $token]));
+
+        $response = Http::get($url);
+        if ($response->failed() || !isset($response->json()['eid'])) {
+            return null;
+        }
+
+        return $response->json()['eid']; // Retorna el `sid`
+    }
+
+
+    // public function updateSimCardFromWialon()
+    // {
+    //     $sid = $this->getWialonSid();
+    //     if (!$sid) {
+    //         return response()->json(["message" => "Error obteniendo SID de Wialon."], 500);
+    //     }
+
+    //     // URL para obtener los grupos
+    //     $groupsUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
+    //         "spec" => [
+    //             "itemsType" => "avl_unit_group",
+    //             "propName" => "sys_name",
+    //             "propValueMask" => "*",
+    //             "sortType" => "sys_name"
+    //         ],
+    //         "force" => 1,
+    //         "flags" => 1,
+    //         "from" => 0,
+    //         "to" => 0
+    //     ])) . "&sid=" . $sid;
+
+    //     $groupsResponse = Http::get($groupsUrl);
+    //     if ($groupsResponse->failed() || !isset($groupsResponse->json()['items'])) {
+    //         return response()->json(["message" => "No se pudieron obtener los grupos de Wialon."], 500);
+    //     }
+
+    //     $groups = $groupsResponse->json()['items'];
+
+    //     foreach ($groups as $group) {
+    //         strtoupper($groupName = $group['nm']); // Nombre del grupo
+    //         $unitIds = $group['u'] ?? []; // IDs de unidades
+
+    //         foreach ($unitIds as $unitId) {
+    //             // Obtener detalles de cada unidad
+    //             $unitUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_item&params=" . urlencode(json_encode([
+    //                 "id" => $unitId,
+    //                 "flags" => 4611686018427387903
+    //             ])) . "&sid=" . $sid;
+
+    //             $unitResponse = Http::get($unitUrl);
+    //             if ($unitResponse->failed() || !isset($unitResponse->json()['item']['uid'])) {
+    //                 continue; // Si falla, saltamos esta unidad
+    //             }
+
+    //             $unitData = $unitResponse->json()['item'];
+    //             $imei = $unitData['uid'];
+    //             strtoupper($assignmentName = $unitData['nm']);
+
+    //             // Buscar en la base de datos y actualizar
+    //             SIMCARD::where('IMEI', $imei)->update([
+    //                 'ASIGNACION' => $assignmentName,
+    //                 'GRUPO' => $groupName
+    //             ]);
+    //         }
+    //     }
+
+    //     return response()->json(["message" => "Actualización de SIMCards completada."]);
+    // }
+
+    public function updateSimCardFromWialon()
+    {
+        $sid = $this->getWialonSid();
+        if (!$sid) {
+            return response()->json(["message" => "Error obteniendo SID de Wialon."], 500);
+        }
+
+        // URL para obtener los grupos
+        $groupsUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
+            "spec" => [
+                "itemsType" => "avl_unit_group",
+                "propName" => "sys_name",
+                "propValueMask" => "*",
+                "sortType" => "sys_name"
+            ],
+            "force" => 1,
+            "flags" => 1,
+            "from" => 0,
+            "to" => 0
+        ])) . "&sid=" . $sid;
+
+        $groupsResponse = Http::get($groupsUrl);
+        if ($groupsResponse->failed() || !isset($groupsResponse->json()['items'])) {
+            return response()->json(["message" => "No se pudieron obtener los grupos de Wialon."], 500);
+        }
+
+        $groups = $groupsResponse->json()['items'];
+
+        foreach ($groups as $group) {
+            $groupName = strtoupper($group['nm']); // Convertir grupo a mayúsculas
+            $unitIds = $group['u'] ?? [];
+
+            foreach ($unitIds as $unitId) {
+                // Obtener detalles de cada unidad
+                $unitUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_item&params=" . urlencode(json_encode([
+                    "id" => $unitId,
+                    "flags" => 4611686018427387903
+                ])) . "&sid=" . $sid;
+
+                $unitResponse = Http::get($unitUrl);
+                if ($unitResponse->failed() || !isset($unitResponse->json()['item']['uid'])) {
+                    continue;
+                }
+
+                $unitData = $unitResponse->json()['item'];
+                $imei = $unitData['uid'];
+                $assignmentName = $unitData['nm'];
+
+                // Validación específica para el grupo "TRANSPERIFERICOS"
+                if (strtolower($group['nm']) === "transperifericos") {
+                    if (preg_match('/\.$|\.\.$/', $assignmentName)) {
+                        Log::info("❌ Ignorada unidad '$assignmentName' en grupo 'TRANSPERIFERICOS' porque termina en punto.");
+                        continue;
+                    }
+                }
+
+                // Buscar en la base de datos y actualizar
+                SIMCARD::where('IMEI', $imei)->update([
+                    'ASIGNACION' => $assignmentName,
+                    'GRUPO' => $groupName
+                ]);
+            }
+        }
+
+        return response()->json(["message" => "Actualización de SIMCards completada."]);
+    }
+
 }

@@ -57,7 +57,11 @@
                         <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
                     </button>
                     <span id="cargando-texto" style="display:none; color: blue;">Actualizando... Por favor, espera.</span>
-
+                    <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
+                        onclick="actualizarSimCardsDesdeWialon()">
+                        <i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon
+                    </button>
+                    <span id="cargando-wialon" style="display:none; color: blue;">Actualizando... Por favor, espera.</span>
                     <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                         <input type="text" name="search" id="filtro" class="filtros-simcards-input"
                             placeholder="Busqueda avanzada..." value="{{ request('search') }}">
@@ -218,6 +222,37 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
                     alert("Hubo un error en la actualización.");
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Números en Wialon';
+                    cargandoTexto.style.display = "none";
+                });
+        }
+    </script>
+    {{-- para actualizar nuestra base --}}
+    <script>
+        function actualizarSimCardsDesdeWialon() {
+            let btn = document.getElementById("actualizar-simcards-wialon");
+            let cargandoTexto = document.getElementById("cargando-wialon");
+    
+            // Deshabilitar el botón y mostrar "Cargando..."
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando...';
+            cargandoTexto.style.display = "inline";
+    
+            // Hacer la petición AJAX a Laravel
+            fetch("{{ route('simcards.updateSimCardFromWialon') }}", {
+                    method: "GET"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Muestra el mensaje de éxito o error
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon';
+                    cargandoTexto.style.display = "none";
+                })
+                .catch(error => {
+                    console.error("Error en la actualización:", error);
+                    alert("Hubo un error en la actualización.");
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon';
                     cargandoTexto.style.display = "none";
                 });
         }

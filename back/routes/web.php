@@ -61,6 +61,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/simcards/template', [SimCardController::class, 'downloadTemplate'])->name('simcards.template');
         Route::get('/simcards/update-wialon', [SimCardController::class, 'updateWialonPhones'])
             ->name('simcards.updateWialonPhones');
+        Route::get('/simcards/updateSimCardFromWialon', [SimCardController::class, 'updateSimCardFromWialon'])
+            ->name('simcards.updateSimCardFromWialon');
     });
     Route::middleware(['auth', 'role:PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);
