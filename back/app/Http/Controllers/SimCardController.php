@@ -582,14 +582,13 @@ class SimCardController extends Controller
         return $response->json()['eid']; // Retorna el `sid`
     }
 
-
     // public function updateSimCardFromWialon()
     // {
+    //     set_time_limit(1200);
     //     $sid = $this->getWialonSid();
     //     if (!$sid) {
     //         return response()->json(["message" => "Error obteniendo SID de Wialon."], 500);
     //     }
-
     //     // URL para obtener los grupos
     //     $groupsUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
     //         "spec" => [
@@ -612,8 +611,8 @@ class SimCardController extends Controller
     //     $groups = $groupsResponse->json()['items'];
 
     //     foreach ($groups as $group) {
-    //         strtoupper($groupName = $group['nm']); // Nombre del grupo
-    //         $unitIds = $group['u'] ?? []; // IDs de unidades
+    //         $groupName = strtoupper($group['nm']); // Convertir grupo a mayúsculas
+    //         $unitIds = $group['u'] ?? [];
 
     //         foreach ($unitIds as $unitId) {
     //             // Obtener detalles de cada unidad
@@ -624,12 +623,20 @@ class SimCardController extends Controller
 
     //             $unitResponse = Http::get($unitUrl);
     //             if ($unitResponse->failed() || !isset($unitResponse->json()['item']['uid'])) {
-    //                 continue; // Si falla, saltamos esta unidad
+    //                 continue;
     //             }
 
     //             $unitData = $unitResponse->json()['item'];
     //             $imei = $unitData['uid'];
-    //             strtoupper($assignmentName = $unitData['nm']);
+    //             $assignmentName = $unitData['nm'];
+
+    //             // Validación específica para el grupo "TRANSPERIFERICOS"
+    //             if (strtolower($group['nm']) === "transperifericos") {
+    //                 if (preg_match('/\.$|\.\.$/', $assignmentName)) {
+    //                     Log::info("❌ Ignorada unidad '$assignmentName' en grupo 'TRANSPERIFERICOS' porque termina en punto.");
+    //                     continue;
+    //                 }
+    //             }
 
     //             // Buscar en la base de datos y actualizar
     //             SIMCARD::where('IMEI', $imei)->update([
@@ -644,12 +651,35 @@ class SimCardController extends Controller
 
     public function updateSimCardFromWialon()
     {
-        set_time_limit(1200);
+        set_time_limit(300); // Evita que Laravel cierre la ejecución si tarda
+
         $sid = $this->getWialonSid();
         if (!$sid) {
             return response()->json(["message" => "Error obteniendo SID de Wialon."], 500);
         }
-        // URL para obtener los grupos
+
+        // 🔹 Obtener TODAS las unidades de una sola vez (evita hacer múltiples peticiones)
+        $unitsUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
+            "spec" => [
+                "itemsType" => "avl_unit",
+                "propName" => "sys_name",
+                "propValueMask" => "*",
+                "sortType" => "sys_name"
+            ],
+            "force" => 1,
+            "flags" => 4611686018427387903, // Trae todos los datos de cada unidad
+            "from" => 0,
+            "to" => 0
+        ])) . "&sid=" . $sid;
+
+        $unitsResponse = Http::get($unitsUrl);
+        if ($unitsResponse->failed() || !isset($unitsResponse->json()['items'])) {
+            return response()->json(["message" => "No se pudieron obtener las unidades de Wialon."], 500);
+        }
+
+        $units = $unitsResponse->json()['items'];
+
+        // 🔹 Obtener los grupos
         $groupsUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
             "spec" => [
                 "itemsType" => "avl_unit_group",
@@ -670,43 +700,46 @@ class SimCardController extends Controller
 
         $groups = $groupsResponse->json()['items'];
 
+        // 🔹 Crear un mapa de unidades con su grupo correspondiente
+        $unitGroupMap = [];
         foreach ($groups as $group) {
-            $groupName = strtoupper($group['nm']); // Convertir grupo a mayúsculas
+            $groupName = strtoupper($group['nm']); // Convertimos el grupo a mayúsculas
             $unitIds = $group['u'] ?? [];
 
             foreach ($unitIds as $unitId) {
-                // Obtener detalles de cada unidad
-                $unitUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_item&params=" . urlencode(json_encode([
-                    "id" => $unitId,
-                    "flags" => 4611686018427387903
-                ])) . "&sid=" . $sid;
+                $unitGroupMap[$unitId] = $groupName; // Asignamos la unidad a su grupo
+            }
+        }
 
-                $unitResponse = Http::get($unitUrl);
-                if ($unitResponse->failed() || !isset($unitResponse->json()['item']['uid'])) {
-                    continue;
-                }
+        // 🔹 Actualizar todas las SIMCARD en una sola transacción
+        DB::beginTransaction();
+        try {
+            foreach ($units as $unit) {
+                $imei = $unit['uid'];
+                $assignmentName = $unit['nm'];
+                $groupName = $unitGroupMap[$unit['id']] ?? null; // Buscar el grupo al que pertenece la unidad
 
-                $unitData = $unitResponse->json()['item'];
-                $imei = $unitData['uid'];
-                $assignmentName = $unitData['nm'];
-
-                // Validación específica para el grupo "TRANSPERIFERICOS"
-                if (strtolower($group['nm']) === "transperifericos") {
+                // 🔹 Validación especial para "TRANSPERIFERICOS"
+                if ($groupName === "TRANSPERIFERICOS") {
                     if (preg_match('/\.$|\.\.$/', $assignmentName)) {
                         Log::info("❌ Ignorada unidad '$assignmentName' en grupo 'TRANSPERIFERICOS' porque termina en punto.");
                         continue;
                     }
                 }
 
-                // Buscar en la base de datos y actualizar
+                // 🔹 Actualizar en la base de datos
                 SIMCARD::where('IMEI', $imei)->update([
                     'ASIGNACION' => $assignmentName,
                     'GRUPO' => $groupName
                 ]);
             }
-        }
 
-        return response()->json(["message" => "Actualización de SIMCards completada."]);
+            DB::commit();
+            return response()->json(["message" => "Actualización de SIMCards completada."]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(["message" => "Error al actualizar las SIMCards: " . $e->getMessage()], 500);
+        }
     }
 
 }
