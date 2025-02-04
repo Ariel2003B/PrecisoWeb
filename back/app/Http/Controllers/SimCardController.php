@@ -15,6 +15,8 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Mime\Part\Text\HtmlPart;
+use Symfony\Component\Mime\Part\TextPart;
 
 class SimCardController extends Controller
 {
@@ -545,15 +547,19 @@ class SimCardController extends Controller
 
 
             // Enviar el PDF por correo
-            Mail::send([], ['updatedSimcards' => $updatedSimcards], function ($message) use ($pdfPath) {
-                $message->to("cesar.vargas@precisogps.com")
+
+            Mail::send([], [], function ($message) use ($pdfPath) {
+                $message->to("elvisguato02@gmail.com")
                     ->subject("Reporte de Actualización en Wialon")
+                    ->html('<h3>Reporte de Actualización</h3><p>Adjunto encontrarás el reporte de actualización de números en Wialon.</p>')
                     ->attach($pdfPath, [
                         'as' => 'reporte_actualizacion.pdf',
                         'mime' => 'application/pdf',
-                    ])
-                    ->setBody('<h3>Reporte de Actualización</h3><p>Adjunto encontrarás el reporte de actualización de números en Wialon.</p>', 'text/html');
+                    ]);
             });
+            
+            
+
             Log::info("🔹 Enviado al correo electronico");
             return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
 
