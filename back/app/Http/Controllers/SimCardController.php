@@ -644,11 +644,11 @@ class SimCardController extends Controller
 
     public function updateSimCardFromWialon()
     {
+        set_time_limit(1200);
         $sid = $this->getWialonSid();
         if (!$sid) {
             return response()->json(["message" => "Error obteniendo SID de Wialon."], 500);
         }
-
         // URL para obtener los grupos
         $groupsUrl = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
             "spec" => [
