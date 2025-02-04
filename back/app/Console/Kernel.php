@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $controller = new \App\Http\Controllers\SimCardController();
             $controller->updateWialonPhones(new \Illuminate\Http\Request());
-        })->dailyAt('03:39');
+        })->dailyAt('08:00');
     }
 
 
