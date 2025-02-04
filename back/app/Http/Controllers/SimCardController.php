@@ -527,42 +527,40 @@ class SimCardController extends Controller
         // 6. Generar el PDF con los números actualizados
         try {
             $html = view('pdf.reporteactualizacion', ['updatedSimcards' => $updatedSimcards])->render();
-        
+
             $options = new Options();
             $options->set('isRemoteEnabled', true);
             $options->set('isHtml5ParserEnabled', true);
-        
+
             $pdf = new Dompdf($options);
             $pdf->loadHtml($html);
             $pdf->setPaper('A4');
             $pdf->render();
-        
+
             // Guardar el PDF en storage/app/public/pdf/
             $pdfPath = storage_path('app/public/pdf/actualizacion_numeros.pdf');
             file_put_contents($pdfPath, $pdf->output());
-        
+
             // Verificar si el archivo se guardó correctamente
-            if (!file_exists($pdfPath)) {
-                throw new Exception("No se pudo guardar el PDF.");
-            }
-        
+
+
             // Enviar el PDF por correo
             Mail::send([], [], function ($message) use ($pdfPath) {
-                $message->to("elrey_guato01@hotmail.com")
+                $message->to("cesar.vargas@gmail.com")
                     ->subject("Reporte de Actualización en Wialon")
                     ->attach($pdfPath, [
                         'as' => 'reporte_actualizacion.pdf',
                         'mime' => 'application/pdf',
                     ]);
             });
-        
+
             return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
-        
+
         } catch (\Exception $th) {
             return response()->json(["message" => "Error generando PDF: " . $th->getMessage()], 500);
         }
-        
 
-        return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
+
+        //return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
     }
 }
