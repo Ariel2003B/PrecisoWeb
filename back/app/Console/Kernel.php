@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $controller = new SimCardController();
             $controller->updateWialonPhones(request());
-        })->dailyAt('02:47');// Se ejecuta todos los días a las 2:00 AM
+        })->dailyAt('03:20');// Se ejecuta todos los días a las 2:00 AM
     }
 
     /**
