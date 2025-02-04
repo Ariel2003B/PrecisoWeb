@@ -53,15 +53,17 @@
                 </div>
                 <div class="filtros-simcards-container mb-3">
                     <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
-                    <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
-                        <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
-                    </button>
-                    <span id="cargando-texto" style="display:none; color: blue;">Actualizando... Por favor, espera.</span>
-                    <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
-                        onclick="actualizarSimCardsDesdeWialon()">
-                        <i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon
-                    </button>
-                    <span id="cargando-wialon" style="display:none; color: blue;">Actualizando... Por favor, espera.</span>
+                    @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'WIALON DATA'))
+                        <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
+                            <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
+                        </button>
+                        <span id="cargando-texto" style="display:none; color: #005298;">Actualizando... Por favor, espera.</span>
+                        <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
+                            onclick="actualizarSimCardsDesdeWialon()">
+                            <i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon
+                        </button>
+                        <span id="cargando-wialon" style="display:none; color: #005298;">Actualizando... Por favor, espera.</span>
+                    @endif
                     <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                         <input type="text" name="search" id="filtro" class="filtros-simcards-input"
                             placeholder="Busqueda avanzada..." value="{{ request('search') }}">
@@ -231,12 +233,12 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
         function actualizarSimCardsDesdeWialon() {
             let btn = document.getElementById("actualizar-simcards-wialon");
             let cargandoTexto = document.getElementById("cargando-wialon");
-    
+
             // Deshabilitar el botón y mostrar "Cargando..."
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando...';
             cargandoTexto.style.display = "inline";
-    
+
             // Hacer la petición AJAX a Laravel
             fetch("{{ route('simcards.updateSimCardFromWialon') }}", {
                     method: "GET"

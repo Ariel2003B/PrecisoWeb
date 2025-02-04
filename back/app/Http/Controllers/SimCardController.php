@@ -726,7 +726,6 @@ class SimCardController extends Controller
                         continue;
                     }
                 }
-
                 // 🔹 Actualizar en la base de datos
                 SIMCARD::where('IMEI', $imei)->update([
                     'ASIGNACION' => $assignmentName,

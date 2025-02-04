@@ -7,6 +7,7 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SancionesController;
 use App\Http\Controllers\SimCardController;
@@ -66,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::middleware(['auth', 'role:PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);
+        Route::post('/permisos', [PermisoController::class, 'store'])->name('permiso.store');
+
+
     });
     Route::resource('vehiculos', VehiculoController::class);
     Route::post('/simcards/fetch-wialon-data', [SimCardController::class, 'fetchWialonData'])->name('simcards.fetchWialonData');

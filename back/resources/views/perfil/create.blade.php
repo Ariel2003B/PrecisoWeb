@@ -17,6 +17,7 @@
                 </nav>
             </div>
         </div><!-- End Page Title -->
+
         <section class="section">
             <div class="container">
                 <form action="{{ route('perfil.store') }}" method="POST">
@@ -24,7 +25,7 @@
                     <div class="mb-3">
                         <label for="DESCRIPCION" class="form-label">Descripción</label>
                         <input type="text" name="DESCRIPCION" id="DESCRIPCION" class="form-control"
-                            placeholder="Descripcion del perfil" required>
+                            placeholder="Descripción del perfil" required>
                     </div>
 
                     <div class="mb-3">
@@ -43,12 +44,41 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <!-- Botón para abrir el modal de creación de permisos -->
+                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                        data-bs-target="#crearPermisoModal">
+                        <i class="fas fa-plus"></i> Crear nuevo permiso
+                    </button>
+
                     <button type="submit" class="btn btn-success">Guardar</button>
                     <a href="{{ route('perfil.index') }}" class="btn btn-secondary">Cancelar</a>
                 </form>
             </div>
         </section>
     </main>
-@endsection
 
-@section('jsCode', 'js/scriptNavBar.js')
+    <!-- Modal para crear nuevo permiso -->
+    <div class="modal fade" id="crearPermisoModal" tabindex="-1" aria-labelledby="crearPermisoModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearPermisoModalLabel">Crear Nuevo Permiso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('permiso.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="nuevoPermiso" class="form-label">Descripción del Permiso</label>
+                            <input type="text" class="form-control" id="nuevoPermiso" name="DESCRIPCION" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
