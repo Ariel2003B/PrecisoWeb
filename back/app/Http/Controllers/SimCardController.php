@@ -545,14 +545,16 @@ class SimCardController extends Controller
 
 
             // Enviar el PDF por correo
-            Mail::send([], [], function ($message) use ($pdfPath) {
+            Mail::send([], ['updatedSimcards' => $updatedSimcards], function ($message) use ($pdfPath) {
                 $message->to("cesar.vargas@gmail.com")
                     ->subject("Reporte de Actualización en Wialon")
                     ->attach($pdfPath, [
                         'as' => 'reporte_actualizacion.pdf',
                         'mime' => 'application/pdf',
-                    ]);
+                    ])
+                    ->setBody('<h3>Reporte de Actualización</h3><p>Adjunto encontrarás el reporte de actualización de números en Wialon.</p>', 'text/html');
             });
+
 
             return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
 
