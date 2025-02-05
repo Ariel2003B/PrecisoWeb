@@ -83,6 +83,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'role:PLANES'])->group(function () {
         Route::resource('plan', PlanController::class);
         Route::resource('caracteristica', CaracteristicaController::class);
+        Route::get('/caracteristica/{id}/edit', [CaracteristicaController::class, 'edit'])->name('caracteristica.edit');
+        Route::put('/caracteristica/{id}', [CaracteristicaController::class, 'update'])->name('caracteristica.update');
+
     });
     Route::middleware(['auth', 'role:BLOGS'])->group(function () {
         Route::resource('blog', BlogController::class);

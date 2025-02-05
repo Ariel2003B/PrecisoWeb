@@ -98,17 +98,17 @@
             <div class="row gy-4">
                 <div class="col-lg-4 col-md-6 footer-about">
                     <a href="index.html" class="logo d-flex align-items-center">
-                        <span class="sitename">PrecisoGps</span>
+                        <span class="sitename">PrecisoGPS</span>
                     </a>
                     <div class="footer-contact pt-3">
-                        <p>De los Cholanes E17-47</p>
-                        <p>Quito, 170124</p>
+                        <p>E16 N53-209 y de los Cholanes</p>
+                        <p>Quito, 170514</p>
                         <p class="mt-3"><strong>Celular:</strong> <span>+593 99 045 3275</span></p>
                         <p><strong>Correo:</strong> <span>ventas@precisogps.com</span></p>
                     </div>
                     <div class="social-links d-flex mt-4">
                         <a href=""><i class="bi bi-twitter-x"></i></a>
-                        <a href="fb://page/PrecisoGP"><i class="bi bi-facebook"></i></a>
+                        <a href=""><i class="bi bi-facebook"></i></a>
                         <a href=""><i class="bi bi-instagram"></i></a>
                         <a href=""><i class="bi bi-linkedin"></i></a>
                     </div>
@@ -118,11 +118,9 @@
                     <h4>Enlaces utiles</h4>
                     <ul>
                         <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
-                        <li><a href="{{ route('home.servicios') }}">Servicios</a></li>
                         <li><a href="#">Planes</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Contáctanos</a></li>
                         <li><a href="{{ route('home.privacidad') }}">Politica de privacidad</a></li>
+                        <li><a href="#">FAQ y manual de usuario y videos de capacitacion</a></li>
                     </ul>
                 </div>
 
@@ -144,7 +142,7 @@
         </div>
 
         <div class="container copyright text-center mt-4">
-            <p>© <span>Copyright</span> <strong class="px-1 sitename">PrecisoGps</strong> <span>Todos los derechos
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">PrecisoGPS</strong> <span>Todos los derechos
                     reservados.</span>
             </p>
         </div>

@@ -27,7 +27,7 @@
                             <div class="pricing-item">
                                 <h3>{{ $plan->NOMBRE }}</h3>
                                 <p class="description">{{ $plan->DESCRIPCION }}</p>
-                                <h4><sup>$</sup>{{ $plan->PRECIO }}<span> /{{ $plan->TIEMPO }} Meses </span></h4>
+                                <h4><sup>$</sup>{{ $plan->PRECIO }}</h4>
                                 <a href="#" class="cta-btn add-to-cart" data-id="{{ $plan->PLA_ID }}"
                                     data-name="{{ $plan->NOMBRE }}" data-price="{{ $plan->PRECIO }}"
                                     data-time="{{ $plan->TIEMPO }}">Añadir al carrito</a>

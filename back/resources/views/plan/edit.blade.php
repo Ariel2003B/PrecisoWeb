@@ -47,28 +47,35 @@
                         <h5>Características</h5>
                         <div class="form-group">
                             @foreach ($caracteristicas as $caracteristica)
-                                <div class="form-check d-flex align-items-center mb-2">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
                                     <!-- Checkbox para seleccionar la característica -->
-                                    <input class="form-check-input me-2" type="checkbox"
-                                        id="caracteristica_{{ $caracteristica->CAR_ID }}"
-                                        name="caracteristicas[{{ $caracteristica->CAR_ID }}]" value="1"
-                                        {{ $plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s->contains($caracteristica->CAR_ID) ? 'checked' : '' }}>
-                                    <label class="form-check-label me-3"
-                                        for="caracteristica_{{ $caracteristica->CAR_ID }}">
-                                        {{ $caracteristica->DESCRIPCION }}
-                                    </label>
-                                    <!-- Switch para definir el valor de "POSEE" -->
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox"
-                                            id="posee_{{ $caracteristica->CAR_ID }}"
-                                            name="posee[{{ $caracteristica->CAR_ID }}]" value="1"
-                                            {{ $plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s->where('CAR_ID', $caracteristica->CAR_ID)->first()?->pivot->POSEE ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="posee_{{ $caracteristica->CAR_ID }}">
-                                            Posee
+                                    <div class="form-check d-flex align-items-center flex-grow-1">
+                                        <input class="form-check-input me-2" type="checkbox"
+                                            id="caracteristica_{{ $caracteristica->CAR_ID }}"
+                                            name="caracteristicas[{{ $caracteristica->CAR_ID }}]" value="1"
+                                            {{ $plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s->contains($caracteristica->CAR_ID) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="caracteristica_{{ $caracteristica->CAR_ID }}">
+                                            {{ $caracteristica->DESCRIPCION }}
                                         </label>
+                                    </div>
+
+                                    <!-- Switch para definir el valor de "POSEE" y botón de editar -->
+                                    <div class="d-flex align-items-center">
+                                        <div class="form-check form-switch me-2">
+                                            <input class="form-check-input" type="checkbox"
+                                                id="posee_{{ $caracteristica->CAR_ID }}"
+                                                name="posee[{{ $caracteristica->CAR_ID }}]" value="1"
+                                                {{ $plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s->where('CAR_ID', $caracteristica->CAR_ID)->first()?->pivot->POSEE ? 'checked' : '' }}>
+                                            <label class="form-check-label"
+                                                for="posee_{{ $caracteristica->CAR_ID }}">Posee</label>
+                                        </div>
+
+                                        <a href="{{ route('caracteristica.edit', $caracteristica->CAR_ID) }}"
+                                            class="btn btn-warning btn-sm">Editar</a>
                                     </div>
                                 </div>
                             @endforeach
+
                         </div>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
                             data-bs-target="#addCaracteristicaModal">

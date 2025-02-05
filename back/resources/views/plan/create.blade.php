@@ -44,17 +44,22 @@
                         <h5>Características</h5>
                         <div class="form-group">
                             @foreach ($caracteristicas as $caracteristica)
-                                <div class="form-check d-flex align-items-center justify-content-between mb-2">
-                                    <!-- Descripción y checkbox inicial -->
-                                    <div class="d-flex align-items-center flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <!-- Checkbox y Descripción -->
+                                    <div class="d-flex align-items-center">
                                         <input class="form-check-input me-2" type="checkbox"
                                             id="caracteristica_{{ $caracteristica->CAR_ID }}"
                                             name="caracteristicas[{{ $caracteristica->CAR_ID }}]" value="1">
-                                        <label class="form-check-label" for="caracteristica_{{ $caracteristica->CAR_ID }}">
+                                        <label for="caracteristica_{{ $caracteristica->CAR_ID }}">
                                             {{ $caracteristica->DESCRIPCION }}
                                         </label>
                                     </div>
-                                    <!-- Switch -->
+
+                                    <!-- Botón Editar -->
+                                    <a href="{{ route('caracteristica.edit', $caracteristica->CAR_ID) }}"
+                                        class="btn btn-warning btn-sm">Editar</a>
+
+                                    <!-- Switch Posee -->
                                     <div class="form-check form-switch ms-2">
                                         <input class="form-check-input" type="checkbox"
                                             id="posee_{{ $caracteristica->CAR_ID }}"
@@ -64,6 +69,7 @@
                                     </div>
                                 </div>
                             @endforeach
+
                         </div>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
                             data-bs-target="#addCaracteristicaModal">
