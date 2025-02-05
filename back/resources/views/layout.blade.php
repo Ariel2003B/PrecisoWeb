@@ -107,10 +107,11 @@
                         <p><strong>Correo:</strong> <span>ventas@precisogps.com</span></p>
                     </div>
                     <div class="social-links d-flex mt-4">
-                        <a href=""><i class="bi bi-twitter-x"></i></a>
-                        <a href=""><i class="bi bi-facebook"></i></a>
-                        <a href=""><i class="bi bi-instagram"></i></a>
-                        <a href=""><i class="bi bi-linkedin"></i></a>
+                       
+                        <a href="https://www.facebook.com/PrecisoGPS?locale=es_LA" target="_blank"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/precisogps/" target="_blank"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.youtube.com/@PrecisoGPS" target="_blank" ><i class="bi bi-youtube"></i></a>
+                        <a href="https://www.tiktok.com/@precisogps" target="_blank" ><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
 
@@ -118,7 +119,7 @@
                     <h4>Enlaces utiles</h4>
                     <ul>
                         <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
-                        <li><a href="#">Planes</a></li>
+                        <li><a href="{{route ('home.planes')}}">Planes</a></li>
                         <li><a href="{{ route('home.privacidad') }}">Politica de privacidad</a></li>
                         <li><a href="#">FAQ y manual de usuario y videos de capacitacion</a></li>
                     </ul>

@@ -168,6 +168,9 @@
                     <div class="col-xl-3 col-md-4 client-logo">
                         <img src="{{ asset('img/clients/Transalfa.jpg') }}" class="img-fluid" alt="">
                     </div><!-- End Client Item -->
+                    <div class="col-xl-3 col-md-4 client-logo">
+                        <img src="{{ asset('img/clients/TransPerifericos.png') }}" class="img-fluid" alt="">
+                    </div><!-- End Client Item -->
 
                 </div>
 

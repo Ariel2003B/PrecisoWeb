@@ -112,7 +112,7 @@
     </main>
     <!-- Modal para mostrar el detalle de una unidad -->
     <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl"> <!-- Cambia a modal-xl para mayor tamaño -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalDetalleLabel">Detalle de Unidad</h5>
@@ -126,20 +126,22 @@
                         <h6><strong>Unidad Seleccionada:</strong> <span id="unidadSeleccionadaTexto"></span></h6>
                     </div>
 
-                    <table class="table table-bordered text-center">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Vuelta</th>
-                                <th>Geocercas caídas</th>
-                                <th>Total de Sanciones</th>
-                                <th>Valor por geocerca</th>
-                                <th>Valor Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detalleUnidadBody">
-                            <!-- Detalles llenados dinámicamente -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive"> <!-- Agregado para hacer la tabla desplazable -->
+                        <table class="table table-bordered text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Vuelta</th>
+                                    <th>Geocercas caídas</th>
+                                    <th>Total de Sanciones</th>
+                                    <th>Valor por geocerca</th>
+                                    <th>Valor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detalleUnidadBody">
+                                <!-- Detalles llenados dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <input type="hidden" name="unidadSeleccionada" id="unidadSeleccionadaModal">
                 <div class="modal-footer">
@@ -148,117 +150,9 @@
             </div>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabla = $('#tablaSanciones').DataTable({
-                paging: true,
-                searching: true, // Habilitamos la búsqueda general para aprovechar la funcionalidad
-                info: false,
-                language: {
-                    search: "Buscar:",
-                    paginate: {
-                        first: "Primero",
-                        last: "Último",
-                        next: "Siguiente",
-                        previous: "Anterior",
-                    },
-                    zeroRecords: "No se encontraron resultados",
-                },
-            });
-
-            const filtroUnidad = document.getElementById('filtroUnidad');
-
-            // Filtro manual por unidad
-            filtroUnidad.addEventListener('input', function() {
-                const unidad = filtroUnidad.value.trim();
-                tabla.column(1).search(unidad, false, false)
-                    .draw(); // Filtrar por la columna de la unidad (índice 1)
-            });
-
-            // Escuchar cambios en los checkboxes
-            document.querySelector('#tablaSanciones tbody').addEventListener('change', function(e) {
-                if (e.target.classList.contains('checkUnidad')) {
-                    calcularTotales();
-                }
-            });
-
-            function calcularTotales() {
-                const unidadesReincidencia = {};
-
-                // Iterar sobre las filas y calcular los valores
-                document.querySelectorAll('#tablaSanciones tbody tr').forEach(fila => {
-                    const checkbox = fila.querySelector('.checkUnidad');
-                    const unidad = fila.querySelector('td:nth-child(2)').textContent.trim();
-                    const totalSancionesCell = fila.querySelector('.total-sanciones');
-                    const valorTotalCell = fila.querySelector('.valor-total');
-
-                    if (!unidadesReincidencia[unidad]) unidadesReincidencia[unidad] = 0;
-
-                    if (checkbox?.checked) {
-                        unidadesReincidencia[unidad]++;
-                        const totalSanciones = parseInt(totalSancionesCell.textContent.trim());
-                        const valorTotal = totalSanciones * (0.25 * unidadesReincidencia[unidad]);
-                        valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
-                    } else {
-                        valorTotalCell.textContent = '$0.00';
-                    }
-                });
-            }
-
-
-            // Ejecutar el cálculo inicial para actualizar valores visibles
-            calcularTotales();
-        });
-
-        document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
-            e.preventDefault(); // Detener el envío automático
-
-            const tabla = $('#tablaSanciones').DataTable();
-
-            // Obtener los nombres de las geocercas desde el encabezado de la tabla
-            const nombresGeocercas = [...document.querySelectorAll('#tablaSanciones thead th')]
-                .slice(3, -3) // Ignorar las primeras 3 columnas y las últimas 3 (Total, Valor Total, Seleccionar)
-                .map(th => th.textContent.trim());
-
-            // Obtener todas las filas seleccionadas (visible o no visible)
-            const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
-                const checkbox = fila.querySelector('.checkUnidad');
-                return checkbox && checkbox.checked; // Solo incluir filas con el checkbox marcado
-            });
-
-            // Construir los datos seleccionados
-            const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
-                const $fila = $(fila);
-
-                // Crear un objeto con todas las geocercas y sus valores (llenando con 0 donde no aplica)
-                const geocercas = {};
-                nombresGeocercas.forEach((nombreGeocerca, index) => {
-                    geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
-                        .trim() || '0';
-                });
-
-                return {
-                    unidad: $fila.find('td:nth-child(2)').text().trim(),
-                    placa: $fila.find('td:nth-child(3)').text().trim(),
-                    geocercas: geocercas,
-                    total: $fila.find('.total-sanciones').text().trim(),
-                    valor_total: $fila.find('.valor-total').text().trim(),
-                };
-            }).get();
-
-            if (datosSeleccionados.length === 0) {
-                alert('Por favor, selecciona al menos una unidad para generar el reporte.');
-                return;
-            }
-
-            document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
-
-            // Enviar el formulario
-            this.submit();
-        });
-    </script> --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tabla = $('#tablaSanciones').DataTable({
@@ -286,27 +180,21 @@
             });
 
             function calcularTotales() {
-                const unidadesReincidencia = {};
-
-                // Iterar sobre las filas y calcular los valores
                 document.querySelectorAll('#tablaSanciones tbody tr').forEach(fila => {
                     const checkbox = fila.querySelector('.checkUnidad');
-                    const unidad = fila.querySelector('td:nth-child(2)').textContent.trim();
                     const totalSancionesCell = fila.querySelector('.total-sanciones');
                     const valorTotalCell = fila.querySelector('.valor-total');
 
-                    if (!unidadesReincidencia[unidad]) unidadesReincidencia[unidad] = 0;
-
                     if (checkbox?.checked) {
-                        unidadesReincidencia[unidad]++;
                         const totalSanciones = parseInt(totalSancionesCell.textContent.trim());
-                        const valorTotal = totalSanciones * (0.25 * unidadesReincidencia[unidad]);
+                        const valorTotal = totalSanciones * 0.50; // Nuevo valor fijo por cada geocerca
                         valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
                     } else {
                         valorTotalCell.textContent = '$0.00';
                     }
                 });
             }
+
             // Ejecutar el cálculo inicial para actualizar valores visibles
             calcularTotales();
         });
@@ -362,113 +250,82 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM cargado correctamente');
-
             const btnDetalleUnidad = document.getElementById('btnDetalleUnidad');
-            const tablaBody = document.querySelector('#tablaSanciones tbody');
             const detalleUnidadBody = document.getElementById('detalleUnidadBody');
-            const unidadSeleccionadaModal = document.getElementById('unidadSeleccionadaModal');
             const unidadSeleccionadaTexto = document.getElementById('unidadSeleccionadaTexto');
+            const unidadSeleccionadaModal = document.getElementById('unidadSeleccionadaModal');
 
-            if (!tablaBody || !btnDetalleUnidad || !detalleUnidadBody || !unidadSeleccionadaModal || !
-                unidadSeleccionadaTexto) {
-                console.error('No se encontraron elementos necesarios en el DOM');
-                return;
-            }
-
-            console.log('Añadiendo eventos');
-
-            // Escuchar cambios en los checkboxes
-            tablaBody.addEventListener('change', function(e) {
+            document.querySelector('#tablaSanciones tbody').addEventListener('change', function(e) {
                 if (e.target.classList.contains('checkUnidad')) {
-                    console.log('Checkbox detectado:', e.target);
+                    const checkboxes = document.querySelectorAll('.checkUnidad:checked');
 
-                    const checkboxes = document.querySelectorAll('.checkUnidad');
-                    const checkedBoxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+                    if (checkboxes.length > 0) {
+                        const unidadesSeleccionadas = [...new Set(
+                            Array.from(checkboxes).map(checkbox =>
+                                checkbox.closest('tr').querySelector('td:nth-child(2)').textContent
+                                .trim()
+                            )
+                        )];
 
-                    if (checkedBoxes.length > 0) {
-                        // Verificar si todas las unidades seleccionadas son iguales
-                        const unidadesSeleccionadas = checkedBoxes.map(checkbox => {
-                            const fila = checkbox.closest('tr');
-                            return fila.querySelector('td:nth-child(2)').textContent.trim();
-                        });
-
-                        const unidadUnica = [...new Set(
-                            unidadesSeleccionadas)]; // Lista única de unidades seleccionadas
-
-                        if (unidadUnica.length === 1) {
-                            console.log('Todas las unidades seleccionadas son iguales:', unidadUnica[0]);
-
-                            // Mostrar la unidad seleccionada en el modal
-                            unidadSeleccionadaTexto.textContent = unidadUnica[0];
-                            unidadSeleccionadaModal.value = unidadUnica[0];
-
-                            // Habilitar el botón
+                        if (unidadesSeleccionadas.length === 1) {
+                            const unidad = unidadesSeleccionadas[0];
+                            unidadSeleccionadaTexto.textContent = unidad;
+                            unidadSeleccionadaModal.value = unidad;
                             btnDetalleUnidad.removeAttribute('disabled');
 
-                            // Llenar el modal con detalles
+                            // Calcular el total de sanciones de todas las vueltas de la misma unidad
                             detalleUnidadBody.innerHTML = '';
                             let totalGeneral = 0;
 
-                            // Calcular valor basado en la vuelta
-                            let vueltaReincidencia = 0;
-
-                            checkedBoxes.forEach(checkbox => {
+                            checkboxes.forEach(checkbox => {
                                 const fila = checkbox.closest('tr');
                                 const vuelta = fila.querySelector('td:nth-child(1)').textContent
                                     .trim();
                                 const sanciones = fila.querySelectorAll('td');
                                 const nombresGeocercas = Array.from(document.querySelectorAll(
                                         '#tablaSanciones thead th'))
-                                    .slice(3, -3) // Ignorar columnas irrelevantes
+                                    .slice(3, -3)
                                     .map(th => th.textContent.trim());
 
-                                vueltaReincidencia++; // Incrementar la reincidencia por vuelta seleccionada
-                                const valorBase = 0.25 *
-                                    vueltaReincidencia; // Calcular el valor base según la vuelta
-
                                 let totalSanciones = 0;
-                                let valorTotal = 0.0;
                                 let geocercasConSanciones = [];
 
                                 nombresGeocercas.forEach((geocerca, index) => {
                                     const valor = sanciones[index + 3].textContent.trim();
-
                                     if (valor === '1') {
                                         totalSanciones++;
-                                        geocercasConSanciones.push(`${geocerca}`);
+                                        geocercasConSanciones.push(geocerca);
                                     }
                                 });
 
-                                // Calcular el valor total de la vuelta
-                                valorTotal = totalSanciones * valorBase;
+                                // Calcular el valor total por vuelta
+                                const valorTotal = totalSanciones *
+                                    0.50; // Precio fijo por geocerca
                                 totalGeneral += valorTotal;
 
-                                // Renderizar la fila para esta vuelta
+                                // Renderizar la fila en el modal
                                 detalleUnidadBody.innerHTML += `
-                        <tr>
-                            <td>${vuelta}</td>
-                            <td>${geocercasConSanciones.join(', ')}</td>
-                            <td>${totalSanciones}</td>
-                            <td>$${valorBase.toFixed(2)}</td>
-                            <td>$${valorTotal.toFixed(2)}</td>
-                        </tr>`;
+                            <tr>
+                                <td>${vuelta}</td>
+                                <td>${geocercasConSanciones.join(', ')}</td>
+                                <td>${totalSanciones}</td>
+                                <td>$0.50</td>
+                                <td>$${valorTotal.toFixed(2)}</td>
+                            </tr>`;
                             });
 
-                            // Agregar la fila final para el total general
+                            // Agregar total general en la última fila del modal
                             detalleUnidadBody.innerHTML += `
-                    <tr class="table-dark">
-                        <td colspan="4" class="text-end"><strong>Total a pagar:</strong></td>
-                        <td><strong>$${totalGeneral.toFixed(2)}</strong></td>
-                    </tr>`;
+                        <tr class="table-dark">
+                            <td colspan="4" class="text-end"><strong>Total a pagar:</strong></td>
+                            <td><strong>$${totalGeneral.toFixed(2)}</strong></td>
+                        </tr>`;
                         } else {
-                            console.log('Se seleccionaron unidades diferentes');
                             btnDetalleUnidad.setAttribute('disabled', 'disabled');
                             unidadSeleccionadaTexto.textContent = '';
                             unidadSeleccionadaModal.value = '';
                         }
                     } else {
-                        console.log('No hay checkboxes seleccionados');
                         btnDetalleUnidad.setAttribute('disabled', 'disabled');
                         unidadSeleccionadaTexto.textContent = '';
                         unidadSeleccionadaModal.value = '';

@@ -3508,3 +3508,18 @@ section.hero .masthead-video {
   transform: scale(1.1);
   background-color: #1ebe5d;
 }
+
+.modal-xl {
+  max-width: 90vw; /* Ocupa el 90% del ancho de la pantalla */
+}
+
+.modal-body {
+  max-height: 80vh; /* Máximo 80% del alto de la pantalla */
+  overflow-y: auto; /* Agrega desplazamiento si el contenido es muy largo */
+}
+
+.table-responsive {
+  max-height: 60vh; /* Limita el alto de la tabla */
+  overflow-y: auto; /* Permite desplazamiento vertical */
+}
+
