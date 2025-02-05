@@ -107,11 +107,13 @@
                         <p><strong>Correo:</strong> <span>ventas@precisogps.com</span></p>
                     </div>
                     <div class="social-links d-flex mt-4">
-                       
-                        <a href="https://www.facebook.com/PrecisoGPS?locale=es_LA" target="_blank"><i class="bi bi-facebook"></i></a>
-                        <a href="https://www.instagram.com/precisogps/" target="_blank"><i class="bi bi-instagram"></i></a>
-                        <a href="https://www.youtube.com/@PrecisoGPS" target="_blank" ><i class="bi bi-youtube"></i></a>
-                        <a href="https://www.tiktok.com/@precisogps" target="_blank" ><i class="bi bi-tiktok"></i></a>
+
+                        <a href="https://www.facebook.com/PrecisoGPS?locale=es_LA" target="_blank"><i
+                                class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/precisogps/" target="_blank"><i
+                                class="bi bi-instagram"></i></a>
+                        <a href="https://www.youtube.com/@PrecisoGPS" target="_blank"><i class="bi bi-youtube"></i></a>
+                        <a href="https://www.tiktok.com/@precisogps" target="_blank"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
 
@@ -119,13 +121,13 @@
                     <h4>Enlaces utiles</h4>
                     <ul>
                         <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
-                        <li><a href="{{route ('home.planes')}}">Planes</a></li>
+                        <li><a href="{{ route('home.planes') }}">Planes</a></li>
                         <li><a href="{{ route('home.privacidad') }}">Politica de privacidad</a></li>
                         <li><a href="#">FAQ y manual de usuario y videos de capacitacion</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3 col-md-12 footer-newsletter">
+                {{-- <div class="col-lg-3 col-md-12 footer-newsletter">
                     <h4>¿Quieres recibir nuestras actualizaciones?</h4>
                     <p>Suscribete y recibe notificaciones de nuestras ultimas actualizaciones, planes y productos.</p>
                     <form action="forms/newsletter.php" method="post" class="php-email-form">
@@ -135,9 +137,34 @@
                         <div class="error-message"></div>
                         <div class="sent-message">Tu suscripción ha sido registrada, Gracias!</div>
                     </form>
+                </div> --}}
+                <div class="col-lg-3 col-md-12 footer-newsletter">
+                    <h4>¿Quieres recibir nuestras actualizaciones?</h4>
+                    <p>Suscríbete y recibe notificaciones de nuestras últimas actualizaciones, planes y productos.</p>
+
+                    <form id="newsletter-form">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="accept-privacy">
+                            <label class="form-check-label" for="accept-privacy">
+                                Acepto las <a href="{{ route('home.privacidad') }}" target="_blank">políticas de
+                                    privacidad</a>.
+                            </label>
+                        </div>
+
+                        <div class="newsletter-form">
+                            <input type="email" id="email" name="email" placeholder="Tu correo electrónico"
+                                required>
+                            <input type="submit" id="subscribe-button" value="Registrar" disabled>
+                        </div>
+
+                        <div class="loading" style="display: none;">Cargando...</div>
+                        <div class="error-message" style="color: red;"></div>
+                        <div class="sent-message" style="color: green;"></div>
+                    </form>
                 </div>
+
                 <div class="col-lg-3 col-md-4 footer-newsletter">
-                   
+
                 </div>
             </div>
         </div>
@@ -149,7 +176,7 @@
         </div>
 
     </footer>
-    <!-- Scroll Top --> 
+    <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
     <!-- Botón flotante de WhatsApp -->
@@ -173,6 +200,62 @@
     <script src="{{ asset('vendor/swiper/swiper-bundle.min.js') }}"></script>
     <!-- Main JS File -->
     <script src="{{ asset('js/main.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("newsletter-form");
+            const emailInput = document.getElementById("email");
+            const privacyCheckbox = document.getElementById("accept-privacy");
+            const submitButton = document.getElementById("subscribe-button");
+            const loading = document.querySelector(".loading");
+            const errorMessage = document.querySelector(".error-message");
+            const sentMessage = document.querySelector(".sent-message");
+
+            // Habilitar el botón solo si se acepta la política
+            privacyCheckbox.addEventListener("change", function() {
+                submitButton.disabled = !this.checked;
+            });
+
+            // Manejo del formulario con AJAX
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                loading.style.display = "block";
+                errorMessage.style.display = "none";
+                sentMessage.style.display = "none";
+
+                fetch("{{ route('newsletter.subscribe') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            email: emailInput.value
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        loading.style.display = "none";
+                        if (data.message) {
+                            sentMessage.textContent = data.message;
+                            sentMessage.style.display = "block";
+                            emailInput.value = "";
+                            privacyCheckbox.checked = false;
+                            submitButton.disabled = true;
+                        }
+                    })
+                    .catch(error => {
+                        loading.style.display = "none";
+                        errorMessage.textContent = "Error al suscribirse. Inténtalo de nuevo.";
+                        errorMessage.style.display = "block";
+                    });
+            });
+        });
+    </script>
+
+
+
+
 </body>
 
 </html>

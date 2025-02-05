@@ -6,6 +6,7 @@ use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PlanController;
@@ -50,6 +51,7 @@ Route::post('/carrito/update-quantity', [CarritoController::class, 'updateQuanti
 //rute para pago
 Route::post('/pago/inicio', [CarritoController::class, 'updateQuantity'])->name('pago.iniciar');
 
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
