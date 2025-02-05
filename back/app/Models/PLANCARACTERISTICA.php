@@ -38,7 +38,8 @@ class PLANCARACTERISTICA extends Model
 	protected $fillable = [
 		'PLA_ID',
 		'CAR_ID',
-		'POSEE'
+		'POSEE',
+		'ORDEN'
 	];
 
 	public function c_a_r_a_c_t_e_r_i_s_t_i_c_a()

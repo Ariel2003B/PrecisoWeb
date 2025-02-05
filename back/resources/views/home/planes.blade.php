@@ -32,7 +32,7 @@
                                     data-name="{{ $plan->NOMBRE }}" data-price="{{ $plan->PRECIO }}"
                                     data-time="{{ $plan->TIEMPO }}">Añadir al carrito</a>
 
-                                <ul>
+                                {{-- <ul>
                                     @foreach ($plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s as $caracteristica)
                                         @if ($caracteristica->pivot->POSEE)
                                             <li><i class="bi bi-check"></i> <span>{{ $caracteristica->DESCRIPCION }}</span>
@@ -43,7 +43,16 @@
                                             </li>
                                         @endif
                                     @endforeach
-                                </ul>
+                                </ul> --}}
+                                <ul>
+                                    @foreach ($plan->c_a_r_a_c_t_e_r_i_s_t_i_c_a_s as $caracteristica)
+                                        @if ($caracteristica->pivot->POSEE)
+                                            <li><i class="bi bi-check"></i> <span>{{ $caracteristica->DESCRIPCION }}</span></li>
+                                        @else
+                                            <li class="na"><i class="bi bi-x"></i> <span>{{ $caracteristica->DESCRIPCION }}</span></li>
+                                        @endif
+                                    @endforeach
+                                </ul>                                
                             </div>
                         </div><!-- End Pricing Item -->
                     @endforeach
