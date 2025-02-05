@@ -53,7 +53,8 @@
                                 @endforeach
                                 <th class="geocerca">Total</th>
                                 <th class="geocerca">Valor Total</th>
-                                <th class="geocerca">Seleccionar</th>
+                                <th class="geocerca"> <input type="checkbox" id="checkAll"> Seleccionar</th>
+
                             </tr>
                         </thead>
 
@@ -119,8 +120,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="text-center mb-3">Sanciones de la unidad seleccionada</h5>
-
+                    <h5 class="text-center mb-3">Sanciones de la unidad seleccionada Ruta: {{ $detalles['ruta'] ?? 'No disponible' }}</h5>
+                    
                     <!-- Mostrar el valor de la unidad seleccionada -->
                     <div class="mb-3">
                         <h6><strong>Unidad Seleccionada:</strong> <span id="unidadSeleccionadaTexto"></span></h6>
@@ -154,6 +155,79 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
+        $(document).ready(function() {
+            // 🔥 Verificar si DataTable ya está inicializado antes de reinicializarlo
+            if ($.fn.DataTable.isDataTable("#tablaSanciones")) {
+                $('#tablaSanciones').DataTable().destroy(); // Destruir DataTable si ya existe
+            }
+
+            // Inicializar DataTable correctamente
+            let tabla = $('#tablaSanciones').DataTable({
+                paging: true,
+                searching: true,
+                info: false,
+                language: {
+                    search: "Buscar:",
+                    paginate: {
+                        first: "Primero",
+                        last: "Último",
+                        next: "Siguiente",
+                        previous: "Anterior",
+                    },
+                    zeroRecords: "No se encontraron resultados",
+                }
+            });
+
+            const checkAll = $('#checkAll');
+
+            // ✅ SELECCIONAR TODAS LAS FILAS, INCLUYENDO LAS NO VISIBLES
+            checkAll.on('change', function() {
+                let isChecked = $(this).prop('checked');
+
+                // Marcar/desmarcar TODAS las filas, incluso las que NO están visibles
+                tabla.rows().every(function() {
+                    let node = $(this.node());
+                    node.find('.checkUnidad').prop('checked', isChecked);
+                });
+
+                // 🔥 Asegurar que TODOS los valores de las filas cambien correctamente
+                calcularTotales();
+            });
+
+            // ✅ SI UN CHECKBOX INDIVIDUAL CAMBIA, ACTUALIZAR EL ESTADO DEL "SELECCIONAR TODOS"
+            $('#tablaSanciones tbody').on('change', '.checkUnidad', function() {
+                let totalCheckboxes = tabla.$('.checkUnidad').length;
+                let checkedCheckboxes = tabla.$('.checkUnidad:checked').length;
+
+                checkAll.prop('checked', totalCheckboxes === checkedCheckboxes);
+
+                // 🔥 Recalcular el valor total individualmente
+                calcularTotales();
+            });
+
+            // ✅ FUNCIÓN PARA RECALCULAR LOS VALORES TOTALES DE TODAS LAS FILAS
+            function calcularTotales() {
+                let allRows = tabla.rows().nodes(); // 🔥 Obtener TODAS las filas, visibles o no
+
+                $(allRows).each(function() {
+                    let checkbox = $(this).find('.checkUnidad');
+                    let totalSancionesCell = $(this).find('.total-sanciones');
+                    let valorTotalCell = $(this).find('.valor-total');
+
+                    if (checkbox.prop('checked')) {
+                        let totalSanciones = parseInt(totalSancionesCell.text().trim()) || 0;
+                        let valorTotal = totalSanciones * 0.50; // Multiplicador por geocerca caída
+                        valorTotalCell.text(`$${valorTotal.toFixed(2)}`);
+                    } else {
+                        valorTotalCell.text('$0.00');
+                    }
+                });
+            }
+
+            // ✅ AL CARGAR LA PÁGINA, HACER QUE LOS VALORES SE ACTUALICEN CORRECTAMENTE
+            calcularTotales();
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const tabla = $('#tablaSanciones').DataTable({
                 paging: true,
@@ -198,9 +272,8 @@
             // Ejecutar el cálculo inicial para actualizar valores visibles
             calcularTotales();
         });
-
         document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
-            e.preventDefault(); // Detener el envío automático
+            e.preventDefault(); // Evita el envío automático del formulario
 
             const tabla = $('#tablaSanciones').DataTable();
 
@@ -209,7 +282,7 @@
                 .slice(3, -3) // Ignorar las primeras 3 columnas y las últimas 3 (Total, Valor Total, Seleccionar)
                 .map(th => th.textContent.trim());
 
-            // Obtener todas las filas seleccionadas (visible o no visible)
+            // Obtener TODAS las filas de la tabla, no solo las visibles
             const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
                 const checkbox = fila.querySelector('.checkUnidad');
                 return checkbox && checkbox.checked; // Solo incluir filas con el checkbox marcado
@@ -227,15 +300,18 @@
                 });
 
                 return {
-                    vuelta: $fila.find('td:nth-child(1)').text()
-                        .trim(), // Capturar el valor de la columna vuelta
+                    vuelta: $fila.find('td:nth-child(1)').text().trim(),
                     unidad: $fila.find('td:nth-child(2)').text().trim(),
                     hora: $fila.find('td:nth-child(3)').text().trim(),
                     geocercas: geocercas,
                     total: $fila.find('.total-sanciones').text().trim(),
-                    valor_total: $fila.find('.valor-total').text().trim(),
+                    valor_total: $fila.find('.valor-total').text()
+                        .trim(), // Asegurar captura del valor total
                 };
             }).get();
+
+            console.log("Datos enviados al backend:",
+                datosSeleccionados); // Debugging para ver si se están enviando correctamente
 
             if (datosSeleccionados.length === 0) {
                 alert('Por favor, selecciona al menos una unidad para generar el reporte.');
@@ -248,6 +324,7 @@
             this.submit();
         });
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const btnDetalleUnidad = document.getElementById('btnDetalleUnidad');

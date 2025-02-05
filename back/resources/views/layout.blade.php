@@ -143,6 +143,13 @@
                     <p>Suscríbete y recibe notificaciones de nuestras últimas actualizaciones, planes y productos.</p>
 
                     <form id="newsletter-form">
+
+
+                        <div class="newsletter-form">
+                            <input type="email" id="email" name="email" placeholder="Tu correo electrónico"
+                                required>
+                            <input type="submit" id="subscribe-button" value="Registrar" disabled>
+                        </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="accept-privacy">
                             <label class="form-check-label" for="accept-privacy">
@@ -150,13 +157,6 @@
                                     privacidad</a>.
                             </label>
                         </div>
-
-                        <div class="newsletter-form">
-                            <input type="email" id="email" name="email" placeholder="Tu correo electrónico"
-                                required>
-                            <input type="submit" id="subscribe-button" value="Registrar" disabled>
-                        </div>
-
                         <div class="loading" style="display: none;">Cargando...</div>
                         <div class="error-message" style="color: red;"></div>
                         <div class="sent-message" style="color: green;"></div>

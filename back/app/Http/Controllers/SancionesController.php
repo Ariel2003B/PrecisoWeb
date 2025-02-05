@@ -78,7 +78,6 @@ class SancionesController extends Controller
         return view('sanciones.sanciones', compact('datos', 'geocercas', 'detalles'));
     }
 
-
     // public function cargarCSV(Request $request)
     // {
     //     $request->validate([
@@ -91,13 +90,34 @@ class SancionesController extends Controller
     //     // Leer el archivo CSV
     //     $archivo = fopen($rutaCompleta, 'r');
     //     $encabezados = fgetcsv($archivo, 1000, ','); // Leer la primera fila como encabezados
+    //     // Capturar los dos primeros valores
+    //     $date = $encabezados[0];
+    //     $fecha = DateTime::createFromFormat('d-m-Y', $date);
+
+    //     $ruta = $encabezados[1];
+    //     $encabezados = array_slice($encabezados, 2);
+
 
     //     // Extraer geocercas de los encabezados
     //     $geocercas = array_filter($encabezados, function ($columna) {
     //         return preg_match('/^\d+\.\s+.+$/u', $columna);
     //     });
+    //     // Reindexar y ordenar las geocercas
+    //     $geocercasOrdenadas = [];
+    //     foreach ($geocercas as $columna) {
+    //         // Extraer el índice inicial del encabezado (ejemplo: "1. Carapungo" => 1)
+    //         preg_match('/^(\d+)\./', $columna, $matches);
+    //         $indice = isset($matches[1]) ? (int) $matches[1] : PHP_INT_MAX;
 
+    //         // Asignar a un array temporal con el índice extraído como clave
+    //         $geocercasOrdenadas[$indice] = $columna;
+    //     }
 
+    //     // Ordenar por clave numérica (índice)
+    //     ksort($geocercasOrdenadas);
+
+    //     // Reindexar desde 0
+    //     $geocercas = array_values($geocercasOrdenadas);
 
     //     $datos = [];
     //     $unidades = [];
@@ -112,14 +132,11 @@ class SancionesController extends Controller
     //         }
     //         try {
     //             $unidad = $fila[0]; // Columna de unidad
-    //             $time = $fila[1];  
+    //             $time = $fila[1];
     //             $hora = str_replace(' ', '', $time);
     //         } catch (\Throwable $th) {
     //             $error = $th->getMessage();
     //         }
-
-
-
 
     //         // Extraer los valores "Min" a partir de la columna 5, con un salto de 3 columnas
     //         $minutos = [];
@@ -136,7 +153,6 @@ class SancionesController extends Controller
     //             return preg_match('/^-\d+$/', $min) ? 1 : 0;
     //         }, $minutos);
 
-
     //         $totalSanciones = array_sum($sanciones);
     //         $valorTotal = $totalSanciones * (0.25 * $unidades[$unidad]);
 
@@ -148,33 +164,41 @@ class SancionesController extends Controller
     //                 $contadorVueltas++;
     //             }
     //         }
-
-    //         // $datos[] = [
-    //         //     'vuelta' => $unidades[$unidad],
-    //         //     'unidad' => $unidad,
-    //         //     'placa' => $placa,
-    //         //     'sanciones' => $sanciones,
-    //         //     'total' => $totalSanciones,
-    //         //     'valor_total' => $valorTotal,
-    //         // ];
-    //         $datos[] = [
-    //             'vuelta' => $contadorVueltas,
+    //         $sancionId = DB::table('sanciones')->insertGetId([
     //             'unidad' => $unidad,
+    //             'vuelta' => $contadorVueltas,
     //             'hora' => $hora,
-    //             'sanciones' => $sanciones,
     //             'total' => $totalSanciones,
     //             'valor_total' => $valorTotal,
-    //         ];
+    //             'created_at' => now(),
+    //             'updated_at' => now(),
+    //             'fecha' => $fecha,
+    //             'ruta' => $ruta
+    //         ]);
 
+    //         // Insertar sanciones de geocercas
+    //         foreach ($geocercas as $index => $nombreGeocerca) {
+    //             DB::table('geocercas')->insert([
+    //                 'sancion_id' => $sancionId,
+    //                 'nombre' => $nombreGeocerca,
+    //                 'sancion' => $sanciones[$index] ?? 0,
+    //                 'created_at' => now(),
+    //                 'updated_at' => now(),
+    //             ]);
+    //         }
     //         if ($totalSanciones > 0) {
     //             $unidades[$unidad]++;
     //         }
     //     }
 
+    //     DB::commit();
+
     //     fclose($archivo);
 
-    //     return view('sanciones.sanciones', compact('datos', 'geocercas'));
+    //     return redirect()->route('sanciones.index', ['parametro' => $ruta])->with('success', 'Datos cargados correctamente.');
     // }
+
+
     public function cargarCSV(Request $request)
     {
         $request->validate([
@@ -187,52 +211,47 @@ class SancionesController extends Controller
         // Leer el archivo CSV
         $archivo = fopen($rutaCompleta, 'r');
         $encabezados = fgetcsv($archivo, 1000, ','); // Leer la primera fila como encabezados
+
         // Capturar los dos primeros valores
         $date = $encabezados[0];
         $fecha = DateTime::createFromFormat('d-m-Y', $date);
-
         $ruta = $encabezados[1];
-        $encabezados = array_slice($encabezados, 2);
-
+        $encabezados = array_slice($encabezados, 2); // Omitir fecha y ruta
 
         // Extraer geocercas de los encabezados
         $geocercas = array_filter($encabezados, function ($columna) {
             return preg_match('/^\d+\.\s+.+$/u', $columna);
         });
-        // Reindexar y ordenar las geocercas
+
+        // Ordenar las geocercas por su índice
         $geocercasOrdenadas = [];
         foreach ($geocercas as $columna) {
-            // Extraer el índice inicial del encabezado (ejemplo: "1. Carapungo" => 1)
             preg_match('/^(\d+)\./', $columna, $matches);
             $indice = isset($matches[1]) ? (int) $matches[1] : PHP_INT_MAX;
-
-            // Asignar a un array temporal con el índice extraído como clave
             $geocercasOrdenadas[$indice] = $columna;
         }
-
-        // Ordenar por clave numérica (índice)
         ksort($geocercasOrdenadas);
-
-        // Reindexar desde 0
         $geocercas = array_values($geocercasOrdenadas);
 
-
+        // 🔥 **Eliminar la primera y última geocerca**
+        array_shift($geocercas); // Elimina la primera
+        array_pop($geocercas);   // Elimina la última
 
         $datos = [];
         $unidades = [];
-        $contadorFila = 0; // Contador para identificar las filas
+        $contadorFila = 0;
         $unidadesRep = [];
+
         while (($fila = fgetcsv($archivo, 1000, ',')) !== false) {
             $contadorFila++;
 
-            // Omitir las primeras filas, incluyendo encabezados
             if ($contadorFila <= 1) {
                 continue;
             }
+
             try {
                 $unidad = $fila[0]; // Columna de unidad
-                $time = $fila[1];
-                $hora = str_replace(' ', '', $time);
+                $hora = str_replace(' ', '', $fila[1]);
             } catch (\Throwable $th) {
                 $error = $th->getMessage();
             }
@@ -243,15 +262,19 @@ class SancionesController extends Controller
                 $minutos[] = $fila[$i];
             }
 
+            // 🔥 **Eliminar la primera y la última sanción (para que coincida con las geocercas eliminadas)**
+            if (!empty($minutos)) {
+                array_shift($minutos); // Elimina el primer valor de sanción
+                array_pop($minutos);   // Elimina el último valor de sanción
+            }
+
             if (!isset($unidades[$unidad])) {
-                $unidades[$unidad] = 1; // Primera vuelta
+                $unidades[$unidad] = 1;
             }
 
             $sanciones = array_map(function ($min) {
-                // Validar si empieza con '-' seguido por un número
                 return preg_match('/^-\d+$/', $min) ? 1 : 0;
             }, $minutos);
-
 
             $totalSanciones = array_sum($sanciones);
             $valorTotal = $totalSanciones * (0.25 * $unidades[$unidad]);
@@ -265,15 +288,7 @@ class SancionesController extends Controller
                 }
             }
 
-            // $datos[] = [
-            //     'vuelta' => $unidades[$unidad],
-            //     'unidad' => $unidad,
-            //     'placa' => $placa,
-            //     'sanciones' => $sanciones,
-            //     'total' => $totalSanciones,
-            //     'valor_total' => $valorTotal,
-            // ];
-
+            // Insertar en tabla sanciones
             $sancionId = DB::table('sanciones')->insertGetId([
                 'unidad' => $unidad,
                 'vuelta' => $contadorVueltas,
@@ -286,7 +301,7 @@ class SancionesController extends Controller
                 'ruta' => $ruta
             ]);
 
-            // Insertar sanciones de geocercas
+            // Insertar sanciones de geocercas (EXCLUYENDO la primera y última)
             foreach ($geocercas as $index => $nombreGeocerca) {
                 DB::table('geocercas')->insert([
                     'sancion_id' => $sancionId,
@@ -296,6 +311,7 @@ class SancionesController extends Controller
                     'updated_at' => now(),
                 ]);
             }
+
             if ($totalSanciones > 0) {
                 $unidades[$unidad]++;
             }
@@ -305,8 +321,9 @@ class SancionesController extends Controller
 
         fclose($archivo);
 
-        return redirect()->route('sanciones.index',['parametro' => $ruta])->with('success', 'Datos cargados correctamente.');
+        return redirect()->route('sanciones.index', ['parametro' => $ruta])->with('success', 'Datos cargados correctamente.');
     }
+
     public function truncateTable()
     {
         $tableName = 'sanciones';
@@ -323,7 +340,7 @@ class SancionesController extends Controller
             // Reactiva la protección de claves foráneas
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-            return redirect()->route('sanciones.index',['parametro'=>'S-N']);
+            return redirect()->route('sanciones.index', ['parametro' => 'S-N']);
         } catch (\Exception $e) {
             return response()->json(['error' => "Error al truncar la tabla $tableName: " . $e->getMessage()], 500);
         }
@@ -410,8 +427,12 @@ class SancionesController extends Controller
                 $fila[] = $dato['geocercas'][$geocerca] ?? 0;
             }
 
-            $fila[] = $dato['total'];
-            $fila[] = $dato['valor_total'];
+            $fila[] = $dato['total']; // Asegurar que sea un número
+
+            // Asegurar que el valor total tenga $ y se registre aunque sea 0.00
+            $valorTotal = str_replace(['$', ','], '', $dato['valor_total']);
+            $valorTotal = is_numeric($valorTotal) ? floatval($valorTotal) : 0.00;
+            $fila[] = '$' . number_format($valorTotal, 2, '.', ',');
 
             $sheet->fromArray($fila, null, "A$row");
 
