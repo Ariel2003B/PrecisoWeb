@@ -31,6 +31,8 @@
                                 <th>Imagen</th>
                                 <th>Nombre</th>
                                 <th>Precio</th>
+                                <th>Stock</th>
+
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -41,19 +43,23 @@
 
                                     <!-- Muestra la imagen del equipo -->
                                     <td>
-                                        <img src="{{ asset('back/storage/app/public/' . $equipo->EQU_ICONO) }}" class="img-thumbnail" 
-                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <img src="{{ asset('back/storage/app/public/' . $equipo->EQU_ICONO) }}"
+                                            class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                                     </td>
 
                                     <td>{{ $equipo->EQU_NOMBRE }}</td>
                                     <td>${{ number_format($equipo->EQU_PRECIO, 2) }}</td>
+                                    <td>${{ $equipo->EQU_STOCK }}</td>
 
                                     <td>
-                                        <a href="{{ route('equipos.edit', $equipo->EQU_ID) }}" class="btn btn-warning btn-sm">Editar</a>
-                                        <form action="{{ route('equipos.destroy', $equipo->EQU_ID) }}" method="POST" class="d-inline-block">
+                                        <a href="{{ route('equipos.edit', $equipo->EQU_ID) }}"
+                                            class="btn btn-warning btn-sm">Editar</a>
+                                        <form action="{{ route('equipos.destroy', $equipo->EQU_ID) }}" method="POST"
+                                            class="d-inline-block">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este equipo/accesorio?')">Eliminar</button>
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('¿Estás seguro de eliminar este equipo/accesorio?')">Eliminar</button>
                                         </form>
                                     </td>
                                 </tr>

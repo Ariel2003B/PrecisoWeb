@@ -39,6 +39,11 @@
                                     <input type="number" name="EQU_PRECIO" id="EQU_PRECIO" class="form-control"
                                         placeholder="Ejemplo: 120.99" step="0.01" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="EQU_STOCK" class="form-label fw-bold">Stock</label>
+                                    <input type="number" name="EQU_STOCK" id="EQU_STOCK" class="form-control"
+                                        placeholder="Ejemplo: 20" required>
+                                </div>
 
                                 <!-- Imagen -->
                                 <div class="mb-3">

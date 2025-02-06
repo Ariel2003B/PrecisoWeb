@@ -40,7 +40,11 @@
                                     <input type="number" name="EQU_PRECIO" id="EQU_PRECIO" class="form-control"
                                         value="{{ $equipo->EQU_PRECIO }}" step="0.01" required>
                                 </div>
-
+                                <div class="mb-3">
+                                    <label for="EQU_STOCK" class="form-label fw-bold">Stock</label>
+                                    <input type="number" name="EQU_STOCK" id="EQU_STOCK" class="form-control"
+                                        value="{{ $equipo->EQU_STOCK }}" step="0.01" required>
+                                </div>
                                 <!-- Imagen -->
                                 <div class="mb-3">
                                     <label for="EQU_ICONO" class="form-label fw-bold">Imagen del Equipo</label>

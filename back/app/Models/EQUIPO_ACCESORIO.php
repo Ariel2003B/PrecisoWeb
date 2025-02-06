@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $EQU_NOMBRE
  * @property float $EQU_PRECIO
  * @property string $EQU_ICONO
+ * @property int $EQU_STOCK
  * @property string $CREATED_AT
  * @property string $UPDATED_AT
  *
@@ -25,6 +26,7 @@ class EQUIPO_ACCESORIO extends Model
     protected $fillable = [
         'EQU_NOMBRE',
         'EQU_PRECIO',
-        'EQU_ICONO'
+        'EQU_ICONO',
+        'EQU_STOCK'
     ];
 }

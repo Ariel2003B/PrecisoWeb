@@ -44,7 +44,8 @@ class EquipoAccesorioController extends Controller
         EQUIPO_ACCESORIO::create([
             'EQU_NOMBRE' => $request->EQU_NOMBRE,
             'EQU_PRECIO' => $request->EQU_PRECIO,
-            'EQU_ICONO' => $imagePath
+            'EQU_ICONO' => $imagePath,
+            'EQU_STOCK' => $request->EQU_STOCK
         ]);
 
         return redirect()->route('equipos.index')->with('success', 'Equipo/Accesorio creado correctamente.');
@@ -83,7 +84,8 @@ class EquipoAccesorioController extends Controller
 
         $equipo->update([
             'EQU_NOMBRE' => $request->EQU_NOMBRE,
-            'EQU_PRECIO' => $request->EQU_PRECIO
+            'EQU_PRECIO' => $request->EQU_PRECIO,
+            'EQU_STOCK' => $request->EQU_STOCK
         ]);
 
         return redirect()->route('equipos.index')->with('success', 'Equipo/Accesorio actualizado correctamente.');
