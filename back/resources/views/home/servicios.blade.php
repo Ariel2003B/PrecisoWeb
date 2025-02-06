@@ -46,11 +46,11 @@
                 'color' => 'item-indigo',
             ],
             [
-                'nombre' => 'Seguridad Integral',
+                'nombre' => 'Centros de Monitoreo',
                 'descripcion' =>
-                    'Soluciones de seguridad integral, incluyendo desarrollo de hardware y software con monitoreo 24/7.',
-                'icono' => 'bi-shield',
-                'mensaje' => "Hola $nombreUsuario, estoy interesado en la Seguridad Integral para mi negocio/vehículo. ¿Pueden enviarme más información sobre las opciones disponibles?",
+                    'Centros de monitoreo 24/7 para supervisión de seguridad en tiempo real con tecnología avanzada.',
+                'icono' => 'bi-building-lock', // Icono actualizado
+                'mensaje' => "Hola $nombreUsuario, quiero información sobre los Centros de Monitoreo que ofrecen. ¿Podrían explicarme cómo funciona el servicio y qué beneficios proporciona?",
                 'color' => 'item-pink',
             ],
         ];

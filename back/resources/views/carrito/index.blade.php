@@ -31,7 +31,6 @@
                             <tr>
                                 <th>Nombre</th>
                                 <th>Precio</th>
-                                <th>Duración</th>
                                 <th>Cantidad</th>
                                 <th>Subtotal</th>
                                 <th>Acciones</th>
@@ -44,7 +43,6 @@
                                 <tr>
                                     <td>{{ $item['name'] }}</td>
                                     <td>${{ number_format($item['price'], 2) }}</td>
-                                    <td>{{ $item['time'] }} meses</td>
                                     <td>
                                         <input type="number"
                                             class="form-control form-control-sm quantity-update w-50 mx-auto"

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BLOG;
+use App\Models\EQUIPO_ACCESORIO;
 use App\Models\PLAN;
 use App\Models\RESPUESTUM;
 use App\Models\SIMCARD;
@@ -21,6 +22,11 @@ class HomeController extends Controller
     public function plataformas()
     {
         return view('home.plataformas');
+    }
+    public function equipos()
+    {
+        $equipos = EQUIPO_ACCESORIO::all();
+        return view('home.equipos',compact('equipos'));
     }
     public function servicios()
     {

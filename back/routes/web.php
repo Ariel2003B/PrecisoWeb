@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\EquipoAccesorioController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PerfilController;
@@ -25,6 +26,7 @@ Route::get('/planes', [HomeController::class, 'planes'])->name('home.planes');
 Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('home.nosotros');
 Route::get('/blogs', [HomeController::class, 'blog'])->name('home.blogs');
 Route::get('/blogs/{id}', [HomeController::class, 'detailsBlog'])->name('blog.details');
+Route::get('/equiposacc', [HomeController::class, 'equipos'])->name('home.equipos');
 //Route::post('/blogs', [HomeController::class, 'detailsBlog'])->name('blog.comment');
 Route::post('/comentario/store', [ComentarioController::class, 'store'])->name('comentario.store');
 
@@ -40,6 +42,10 @@ Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login
 Route::post('/login', [AuthLoginController::class, 'login'])->name('login');
 // Cerrar sesion
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
+
+
+Route::resource('equipos', EquipoAccesorioController::class);
+
 
 
 //rutas para el carrito
