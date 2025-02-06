@@ -49,7 +49,7 @@
 
                                     <td>{{ $equipo->EQU_NOMBRE }}</td>
                                     <td>${{ number_format($equipo->EQU_PRECIO, 2) }}</td>
-                                    <td>${{ $equipo->EQU_STOCK }}</td>
+                                    <td>{{ $equipo->EQU_STOCK }}</td>
 
                                     <td>
                                         <a href="{{ route('equipos.edit', $equipo->EQU_ID) }}"
