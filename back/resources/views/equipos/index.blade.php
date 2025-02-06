@@ -10,7 +10,6 @@
                 <nav class="breadcrumbs">
                     <ol>
                         <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
-                        <li><a href="{{ route('home.plataformas') }}">Plataformas</a></li>
                         <li class="current">Equipos y Accesorios</li>
                     </ol>
                 </nav>
@@ -29,9 +28,9 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
+                                <th>Imagen</th>
                                 <th>Nombre</th>
                                 <th>Precio</th>
-                                <th>Icono</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -39,9 +38,16 @@
                             @foreach ($equipos as $equipo)
                                 <tr>
                                     <td>{{ $equipo->EQU_ID }}</td>
+
+                                    <!-- Muestra la imagen del equipo -->
+                                    <td>
+                                        <img src="{{ asset('back/storage/app/public/' . $equipo->EQU_ICONO) }}" class="img-thumbnail" 
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                    </td>
+
                                     <td>{{ $equipo->EQU_NOMBRE }}</td>
                                     <td>${{ number_format($equipo->EQU_PRECIO, 2) }}</td>
-                                    <td><i class="{{ $equipo->EQU_ICONO }} fs-1 text-primary"></i></td>
+
                                     <td>
                                         <a href="{{ route('equipos.edit', $equipo->EQU_ID) }}" class="btn btn-warning btn-sm">Editar</a>
                                         <form action="{{ route('equipos.destroy', $equipo->EQU_ID) }}" method="POST" class="d-inline-block">
@@ -55,6 +61,12 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if ($equipos->isEmpty())
+                    <div class="alert alert-warning text-center mt-4">
+                        No hay equipos o accesorios registrados aún.
+                    </div>
+                @endif
             </div>
         </section>
     </main>

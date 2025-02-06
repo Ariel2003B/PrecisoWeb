@@ -24,11 +24,16 @@
                     @foreach ($equipos as $equipo)
                         <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
                             <div class="mi-card shadow-sm p-3 rounded text-center h-100">
-                                <div class="icon-card mb-3">
-                                    <i class="{{ $equipo->EQU_ICONO }} fs-1 text-primary"></i>
+
+                                <!-- Imagen del equipo -->
+                                <div class="image-card mb-3">
+                                    <img src="{{asset('back/storage/app/public/'. $equipo->EQU_ICONO) ?: asset('images/no-image.png') }}"
+                                        alt="{{ $equipo->EQU_NOMBRE }}" class="img-fluid">
                                 </div>
+
                                 <h4 class="fw-bold">{{ $equipo->EQU_NOMBRE }}</h4>
                                 <h5 class="text-success"><sup>$</sup>{{ number_format($equipo->EQU_PRECIO, 2) }}</h5>
+
                                 <button class="btn btn-primary add-to-cart mt-2" data-id="{{ $equipo->EQU_ID }}"
                                     data-name="{{ $equipo->EQU_NOMBRE }}" data-price="{{ $equipo->EQU_PRECIO }}">
                                     Añadir al carrito

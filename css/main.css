@@ -3538,98 +3538,101 @@ section.hero .masthead-video {
   /* Permite desplazamiento vertical */
 }
 
-
 #equipos .mi-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-    height: 100%;
-    width: 100%;
-    max-width: 300px;
-    /* 🔥 Se mantiene un tamaño uniforme */
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background: var(--bg-card);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 8px var(--shadow-card);
-    min-height: 380px;
-    margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  height: 100%;
+  width: 100%;
+  max-width: 300px;
+  /* 🔥 Se mantiene un tamaño uniforme */
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: var(--bg-card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px var(--shadow-card);
+  min-height: 380px;
+  margin: auto;
 }
 
 #equipos .mi-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px var(--shadow-card);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px var(--shadow-card);
+}
+
+/* 📌 Estilos para la imagen del equipo */
+#equipos .image-card img {
+  max-width: 80%; /* 🔥 Reduce el tamaño de la imagen sin recortarla */
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px; /* 🔥 Bordes redondeados */
+}
+
+#equipos .image-card img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px; /* 🔥 Bordes redondeados */
 }
 
 #equipos .mi-card h4 {
-    min-height: 50px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-#equipos .mi-card .icon-card {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  min-height: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 #equipos .mi-card h5 {
-    font-size: 1.5rem;
-    color: var(--price-color);
-    font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--price-color);
+  font-weight: bold;
 }
 
 #equipos .mi-card .btn {
-    display: block;
-    /* Asegura que el botón ocupe todo el ancho */
-    width: 90%;
-    /* Un poco de margen en los lados */
-    max-width: 250px;
-    /* Para evitar que se estire demasiado */
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: bold;
-    background-color: var(accent-color);
-    border-radius: 8px;
-    color: white;
-    text-align: center;
-    /* Asegura el centrado del texto */
-    border: none;
-    transition: background-color 0.3s ease;
+  display: block;
+  width: 90%;
+  max-width: 250px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: var(--accent-color);
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+  border: none;
+  transition: background-color 0.3s ease;
 }
 
 #equipos .mi-card .btn:hover {
-    background-color: var(--nav-hover-color);
+  background-color: var(--nav-hover-color);
 }
 
 #equipos .mi-card .btn:focus {
-    outline: none;
-    /* Quita el borde feo cuando se hace clic */
+  outline: none;
 }
+
 /* 🔥 🔥 🔥 Asegurar uniformidad en ANCHO 🔥 🔥 🔥 */
 #equipos .row.gy-4 {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 #equipos .col-lg-4,
 #equipos .col-md-6 {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 #equipos .d-flex.align-items-stretch {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
 }

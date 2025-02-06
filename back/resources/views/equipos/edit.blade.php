@@ -10,7 +10,6 @@
                 <nav class="breadcrumbs">
                     <ol>
                         <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
-                        <li><a href="{{ route('home.plataformas') }}">Plataformas</a></li>
                         <li><a href="{{ route('equipos.index') }}">Equipos y Accesorios</a></li>
                         <li class="current">Editar</li>
                     </ol>
@@ -24,7 +23,7 @@
                     <div class="col-lg-6">
                         <div class="card shadow-sm p-4">
                             <h2 class="fw-bold text-center mb-4">Editar Información</h2>
-                            <form action="{{ route('equipos.update', $equipo->EQU_ID) }}" method="POST">
+                            <form action="{{ route('equipos.update', $equipo->EQU_ID) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
 
@@ -42,29 +41,17 @@
                                         value="{{ $equipo->EQU_PRECIO }}" step="0.01" required>
                                 </div>
 
-                                <!-- Icono -->
+                                <!-- Imagen -->
                                 <div class="mb-3">
-                                    <label for="EQU_ICONO" class="form-label fw-bold">Ícono (Bootstrap Icons o Font
-                                        Awesome)</label>
-                                    <div class="input-group">
-                                        <input type="text" name="EQU_ICONO" id="EQU_ICONO" class="form-control"
-                                            value="{{ $equipo->EQU_ICONO }}" oninput="updateIconPreview()">
-                                        <span class="input-group-text">
-                                            <i id="icon-preview" class="{{ $equipo->EQU_ICONO }} fs-3"></i>
-                                        </span>
-                                    </div>
-                                    <small class="form-text text-muted">
-                                        Puedes encontrar íconos en:
-                                    </small>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <a href="https://icons.getbootstrap.com/" target="_blank"
-                                            class="btn btn-outline-primary w-50">
-                                            <i class="bi bi-bootstrap"></i> Bootstrap Icons
-                                        </a>
-                                        <a href="https://fontawesome.com/icons" target="_blank"
-                                            class="btn btn-outline-dark w-50">
-                                            <i class="fa-solid fa-font-awesome"></i> Font Awesome
-                                        </a>
+                                    <label for="EQU_ICONO" class="form-label fw-bold">Imagen del Equipo</label>
+                                    <input type="file" name="EQU_ICONO" id="EQU_ICONO" class="form-control" accept="image/*" onchange="previewImage()">
+                                    <small class="form-text text-muted">Sube una imagen en formato JPG, PNG o JPEG.</small>
+                                    <div class="mt-3 text-center">
+                                        @if($equipo->EQU_ICONO)
+                                            <img id="image-preview" src="{{ asset('back/storage/app/public/' . $equipo->EQU_ICONO) }}" class="img-thumbnail" style="max-width: 200px;">
+                                        @else
+                                            <img id="image-preview" src="{{ asset('images/no-image.png') }}" class="img-thumbnail" style="max-width: 200px;">
+                                        @endif
                                     </div>
                                 </div>
 
@@ -81,18 +68,19 @@
     </main>
 
     <script>
-        function updateIconPreview() {
-            let iconInput = document.getElementById('EQU_ICONO').value;
-            let iconPreview = document.getElementById('icon-preview');
+        function previewImage() {
+            let file = document.getElementById('EQU_ICONO').files[0];
+            let preview = document.getElementById('image-preview');
 
-            if (iconInput.includes('bi-')) {
-                iconPreview.className = iconInput + " fs-3";
-            } else if (iconInput.includes('fa-')) {
-                iconPreview.className = iconInput + " fs-3";
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
             } else {
-                iconPreview.className = "bi bi-question-circle fs-3";
+                preview.src = "{{ asset('images/no-image.png') }}";
             }
         }
     </script>
-
 @endsection
