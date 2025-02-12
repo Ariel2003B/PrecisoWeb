@@ -29,12 +29,22 @@
                     <div class="mb-3">
                         <label for="APELLIDO" class="form-label">Apellido</label>
                         <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
-                            placeholder="Apellido del usuario" required>
+                            placeholder="Apellido del usuario">
                     </div>
                     <div class="mb-3">
                         <label for="CORREO" class="form-label">Correo Electrónico</label>
                         <input type="email" name="CORREO" id="CORREO" class="form-control"
                             placeholder="Correo del usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="TOKEN" class="form-label">Token</label>
+                        <input type="text" name="TOKEN" id="TOKEN" class="form-control"
+                            placeholder="Token de Nimbus para operadoras">
+                    </div>
+                    <div class="mb-3">
+                        <label for="DEPOT" class="form-label">Depot Id</label>
+                        <input type="number" name="DEPOT" id="DEPOT" class="form-control"
+                            placeholder="Depot Id de Nimbus para operadoras">
                     </div>
                     <div class="mb-3">
                         <label for="CLAVE" class="form-label">Contraseña</label>

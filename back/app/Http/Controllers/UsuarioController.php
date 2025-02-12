@@ -24,7 +24,7 @@ class UsuarioController extends Controller
     {
         $request->validate([
             'NOMBRE' => 'required|string|max:255',
-            'APELLIDO' => 'required|string|max:255',
+            'APELLIDO' => 'nullable|string|max:255',
             'CORREO' => 'required|email|unique:USUARIO,CORREO',
             'CLAVE' => 'required|min:6',
             'PER_ID' => 'required|exists:PERFIL,PER_ID',
@@ -37,6 +37,8 @@ class UsuarioController extends Controller
             'CLAVE' => $request->CLAVE,
             'ESTADO' => 'A',
             'PER_ID' => $request->PER_ID,
+            'TOKEN' => $request->TOKEN,
+            'DEPOT' => $request->DEPOT
         ]);
 
         return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente.');
@@ -52,7 +54,7 @@ class UsuarioController extends Controller
     {
         $request->validate([
             'NOMBRE' => 'required|string|max:255',
-            'APELLIDO' => 'required|string|max:255',
+            'APELLIDO' => 'nullable|string|max:255',
             'CORREO' => 'required|email|unique:USUARIO,CORREO,' . $usuario->USU_ID . ',USU_ID',
             'CLAVE' => 'nullable|min:6', // Permite clave nula
             'PER_ID' => 'required|exists:PERFIL,PER_ID',
@@ -64,6 +66,8 @@ class UsuarioController extends Controller
             'APELLIDO' => $request->APELLIDO,
             'CORREO' => $request->CORREO,
             'PER_ID' => $request->PER_ID,
+            'TOKEN' => $request->TOKEN,
+            'DEPOT' => $request->DEPOT
         ];
 
         // Solo actualizar la clave si se proporciona una nueva

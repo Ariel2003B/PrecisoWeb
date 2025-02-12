@@ -19,6 +19,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $CORREO
  * @property string|null $CLAVE
  * @property string|null $ESTADO
+ * @property string|null $TOKEN
+ * @property int|null $DEPOT
  * 
  * @property PERFIL|null $p_e_r_f_i_l
  *
@@ -41,7 +43,9 @@ class USUARIO extends Authenticatable
 		'APELLIDO',
 		'CORREO',
 		'CLAVE',
-		'ESTADO'
+		'ESTADO',
+		'DEPOT',
+		'TOKEN'
 	];
 
 	// Sobrescribir el campo de contraseña

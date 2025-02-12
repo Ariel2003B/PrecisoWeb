@@ -53,7 +53,8 @@ class SIMCARD extends Model
 		'ASIGNACION',
 		'EQUIPO',
 		'VEH_ID',
-		'IMEI'
+		'IMEI',
+		'ID_WIALON'
 	];
 
 	public function v_e_h_i_c_u_l_o()

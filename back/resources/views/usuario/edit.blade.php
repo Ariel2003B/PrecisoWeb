@@ -30,12 +30,22 @@
                     <div class="mb-3">
                         <label for="APELLIDO" class="form-label">Apellido</label>
                         <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
-                            value="{{ old('APELLIDO', $usuario->APELLIDO) }}" required>
+                            value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
                     </div>
                     <div class="mb-3">
                         <label for="CORREO" class="form-label">Correo Electrónico</label>
                         <input type="email" name="CORREO" id="CORREO" class="form-control"
                             value="{{ old('CORREO', $usuario->CORREO) }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="TOKEN" class="form-label">Token</label>
+                        <input type="text" name="TOKEN" id="TOKEN" class="form-control"
+                            value="{{ old('TOKEN', $usuario->TOKEN) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="DEPOT" class="form-label">Depot Id</label>
+                        <input type="text" name="DEPOT" id="DEPOT" class="form-control"
+                            value="{{ old('DEPOT', $usuario->DEPOT) }}">
                     </div>
                     <div class="mb-3">
                         <label for="CLAVE" class="form-label">Contraseña</label>

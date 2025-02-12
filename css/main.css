@@ -3565,17 +3565,20 @@ section.hero .masthead-video {
 
 /* 📌 Estilos para la imagen del equipo */
 #equipos .image-card img {
-  max-width: 80%; /* 🔥 Reduce el tamaño de la imagen sin recortarla */
+  max-width: 80%;
+  /* 🔥 Reduce el tamaño de la imagen sin recortarla */
   height: auto;
   object-fit: contain;
-  border-radius: 8px; /* 🔥 Bordes redondeados */
+  border-radius: 8px;
+  /* 🔥 Bordes redondeados */
 }
 
 #equipos .image-card img {
   max-width: 100%;
   height: auto;
   object-fit: contain;
-  border-radius: 8px; /* 🔥 Bordes redondeados */
+  border-radius: 8px;
+  /* 🔥 Bordes redondeados */
 }
 
 #equipos .mi-card h4 {
@@ -3635,4 +3638,172 @@ section.hero .masthead-video {
   display: flex;
   align-items: stretch;
   justify-content: center;
+}
+
+/* Contenedor de la tabla con scroll */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 80vh;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+/* Estilos generales de la tabla */
+.table-rutas {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+/* 🔹 Encabezado de la tabla fijo al hacer scroll vertical */
+.table-rutas thead {
+  position: sticky;
+  top: 0;
+  background-color: var(--accent-color);
+  color: white;
+  z-index: 105;
+}
+
+/* 🔹 Celdas del encabezado */
+.table-rutas th {
+  padding: 6px;
+  text-align: center;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  min-width: 100px;
+}
+
+/* 🔹 Celda "Unidad" fija al hacer scroll horizontal y vertical */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background-color: var(--accent-color) !important;
+  color: white !important;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: bold;
+  border-right: 2px solid #ffffff;
+  box-shadow: 3px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔹 Celda "Rutina" fija en scroll horizontal y vertical */
+.sticky-col-rutina {
+  position: sticky;
+  left: 120px;
+  /* Se posiciona justo después de Unidad */
+  background-color: var(--accent-color) !important;
+  color: white !important;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: bold;
+  border-right: 2px solid #ffffff;
+  box-shadow: 3px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔹 Celdas de datos */
+.table-rutas td {
+  padding: 5px;
+  text-align: center;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  min-width: 80px;
+  background-color: #ffffff;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+/* 🔹 Resaltar diferencia negativa en rojo */
+.table-rutas td.negative {
+  color: red;
+  font-weight: bold;
+}
+
+/* 🔹 Resaltar diferencia positiva en verde */
+.table-rutas td.positive {
+  color: green;
+  font-weight: bold;
+}
+
+/* 🔹 Scroll en la tabla */
+.scrollable-table {
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-height: 70vh;
+}
+
+/* 🔹 Mejorar el diseño en dispositivos pequeños */
+@media (max-width: 768px) {
+
+  .table-rutas th,
+  .table-rutas td {
+    font-size: 11px;
+    padding: 5px;
+  }
+
+  .rutas-buttons {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+}
+
+/* 🔹 Botones de rutas */
+.rutas-buttons {
+  text-align: center;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* 🔹 Estilos de los botones */
+.rutas-buttons button {
+  background-color: #457b9d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+/* 🔹 Botón activo (ruta seleccionada) */
+.rutas-buttons button.active {
+  background-color: #1d3557 !important;
+  font-weight: bold;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔹 Efecto hover en los botones */
+.rutas-buttons button:hover {
+  background-color: #1d3557;
+}
+/* 🔹 Alternar colores en las filas */
+.table-rutas tbody tr:nth-child(even) td {
+  background-color: #f1f1f1;
+}
+
+.table-rutas tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+
+/* 🔹 Cambio de color al pasar el cursor sobre una fila */
+.table-rutas tbody tr:hover td {
+  background-color:  rgba(114, 154, 210, 0.5) !important;
+}
+/* Reducir el ancho de las columnas Plan, Eje y Dif */
+/* Reducir el ancho de las columnas "Plan", "Eje" y "Dif" */
+.col-peq {
+  min-width: 50px !important;
+  max-width: 50px !important;
+  font-size: 11px;
+  padding: 3px;
+  text-align: center;
 }

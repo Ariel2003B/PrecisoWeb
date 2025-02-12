@@ -7,6 +7,7 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\EquipoAccesorioController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MinutosCaidosController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PermisoController;
@@ -98,6 +99,12 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'role:BLOGS'])->group(function () {
         Route::resource('blog', BlogController::class);
     });
+
+
+
+    Route::get('/rutas', [MinutosCaidosController::class, 'index'])->name('rutas.index');
+    Route::get('/rutas/minutos-caidos', [MinutosCaidosController::class, 'actualizarTabla'])->name('rutas.actualizar');
+
 
 });
 

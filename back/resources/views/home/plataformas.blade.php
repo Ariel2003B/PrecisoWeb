@@ -367,8 +367,8 @@
                                 <ul id="listaOperadoras" class="list-group text-start">
                                     <li class="list-group-item">
                                         <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Ev1ZMLYgYF1PnTNw1uuO_rcBsQI-3IL9H0OCxsHaqa9ObQ?email=trans-alfa95%40hotmail.com&e=ECFlAv">
-                                            Transalfa S.A.
+                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EmWsJmG8EEFPquLbG0TbYrIBf-wlhylDidrO4fv8Nudafg?email=cia.metropoli%40gmail.com&e=0APeRY">
+                                            Transmetropoli S.A.
                                         </a>
                                     </li>
                                     <li class="list-group-item">
