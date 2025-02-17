@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\SimcardController;
+use App\Http\Controllers\SimCardController;
 
 class GeocercaController extends Controller
 {
     public function index()
     {
-        $sidWialon = (new SimcardController())->getWialonSid();
+        $sidWialon = (new SimCardController())->getWialonSid();
     
         $url = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
             "spec" => [
