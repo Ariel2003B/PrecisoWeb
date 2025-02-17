@@ -104,6 +104,15 @@
             <p class="mt-2 fw-bold">Cargando depots, por favor espere...</p>
         </div>
     </div>
+    <!-- Mensaje de Éxito -->
+    <div id="success-message"
+        class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center text-white"
+        style="z-index: 1050; opacity: 0; pointer-events: none;">
+        <div class="text-center">
+            <i class="bi bi-check-circle-fill text-success fs-1"></i>
+            <p class="mt-2 fw-bold">Geocercas creadas correctamente</p>
+        </div>
+    </div>
 
     <!-- JQuery y Select2 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -111,7 +120,7 @@
 
     <script>
         $(document).ready(function() {
-            // INICIALIZAR SELECT2
+            // Inicializar Select2
             $('#item_id').select2({
                 placeholder: "Seleccione un recurso...",
                 width: '100%',
@@ -125,22 +134,23 @@
                 const div = document.createElement('div');
                 div.classList.add('grupo', 'row', 'mb-2');
                 div.innerHTML = `
-                    <div class="col-md-6">
-                        <input type="text" name="grupos[${contador}][nombre]" class="form-control" placeholder="Nombre del Grupo" required>
-                    </div>
-                    <div class="col-md-6">
-                        <select name="grupos[${contador}][identificador]" class="form-select" required>
-                            <option value="">Seleccione el Identificador</option>
-                            <option value="number">Números secuenciales</option>
-                            <option value="letter">Letras de la "a" a la "z" minúscula</option>
-                            <option value="plain">Solo nombre</option>
-                        </select>
-                    </div>
-                `;
+            <div class="col-md-6">
+                <input type="text" name="grupos[${contador}][nombre]" class="form-control" placeholder="Nombre del Grupo" required>
+            </div>
+            <div class="col-md-6">
+                <select name="grupos[${contador}][identificador]" class="form-select" required>
+                    <option value="">Seleccione el Identificador</option>
+                    <option value="number">Números secuenciales</option>
+                    <option value="letter">Letras de la "a" a la "z" minúscula</option>
+                    <option value="plain">Solo nombre</option>
+                </select>
+            </div>
+        `;
                 container.appendChild(div);
                 contador++;
             }
 
+            // Spinner al cargar Depots
             $('#btnCargarDepots').on('click', function() {
                 const token = $('#token_nimbus').val();
 
@@ -186,6 +196,56 @@
                     }
                 });
             });
+
+            // Spinner al Enviar Formulario y Mostrar Mensaje de Éxito
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+
+                $('#loading-spinner').css({
+                    opacity: '1',
+                    'pointer-events': 'auto'
+                });
+
+                const form = $(this);
+                const actionUrl = form.attr('action');
+
+                $.ajax({
+                    type: "POST",
+                    url: actionUrl,
+                    data: form.serialize(),
+                    success: function(response) {
+                        $('#loading-spinner').css({
+                            opacity: '0',
+                            'pointer-events': 'none'
+                        });
+
+                        // Mostrar el mensaje de éxito
+                        $('#success-message').css({
+                            opacity: '1',
+                            'pointer-events': 'auto'
+                        });
+
+                        // Ocultar mensaje después de unos segundos
+                        setTimeout(function() {
+                            $('#success-message').css({
+                                opacity: '0',
+                                'pointer-events': 'none'
+                            });
+                            form[0].reset(); // Limpiar el formulario
+                            $('#depot_id').prop('disabled', true);
+                        }, 3000);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading-spinner').css({
+                            opacity: '0',
+                            'pointer-events': 'none'
+                        });
+
+                        alert('Ocurrió un error al crear las geocercas: ' + error);
+                    }
+                });
+            });
+
         });
     </script>
 @endsection

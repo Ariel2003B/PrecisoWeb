@@ -10,7 +10,7 @@ class GeocercaController extends Controller
     public function index()
     {
         $sidWialon = (new SimCardController())->getWialonSid();
-    
+
         $url = "https://hst-api.wialon.com/wialon/ajax.html?svc=core/search_items&params=" . urlencode(json_encode([
             "spec" => [
                 "itemsType" => "avl_resource",
@@ -23,9 +23,9 @@ class GeocercaController extends Controller
             "from" => 0,
             "to" => 0
         ])) . "&sid=$sidWialon";
-    
+
         $response = \Http::get($url);
-    
+
         if ($response->failed()) {
             $recursos = [];
         } else {
@@ -38,13 +38,13 @@ class GeocercaController extends Controller
                 ];
             }
         }
-    
+
         return view('geofences.index', compact('recursos'));
     }
-    
+
     public function crear(Request $request)
     {
-        $sidWialon = (new SimcardController())->getWialonSid();
+        $sidWialon = (new SimCardController())->getWialonSid();
         // Recibir variables dinámicas
         $tokenNimbus = $request->input('token_nimbus');
         $depotId = $request->input('depot_id');
@@ -176,8 +176,7 @@ class GeocercaController extends Controller
 
             $this->curlGet("https://hst-api.wialon.com/wialon/ajax.html?svc=resource/update_zones_group&params=" . urlencode(json_encode($paramsGrupoUpdate)) . "&sid=$sidWialon");
         }
-
-        return 'Proceso completado';
+        return response()->json(['message' => 'Geocercas creadas correctamente']);
     }
 
     private function curlGet($url, $headers = [])
