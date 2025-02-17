@@ -6,6 +6,7 @@ use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\EquipoAccesorioController;
+use App\Http\Controllers\GeocercaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MinutosCaidosController;
 use App\Http\Controllers\NewsletterController;
@@ -60,6 +61,8 @@ Route::post('/pago/inicio', [CarritoController::class, 'updateQuantity'])->name(
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
+
+
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'role:USUARIOS'])->group(function () {
@@ -98,6 +101,13 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::middleware(['auth', 'role:BLOGS'])->group(function () {
         Route::resource('blog', BlogController::class);
+    });
+
+    //geocerca
+    Route::middleware(['auth', 'role:WIALON DATA'])->group(function () {
+        Route::post('/geocercas/crear', [GeocercaController::class, 'crear'])->name('geocercas.crear');
+        Route::get('/geocercas', [GeocercaController::class, 'index'])->name('geocercas.index');
+        Route::post('/geocercas/depot', [GeocercaController::class, 'obtenerDepots'])->name('geocercas.obtenerDepots');
     });
 
 

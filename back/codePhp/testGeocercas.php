@@ -16,8 +16,7 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 $data = json_decode($response, true);
-//$stops = array_slice($data['stops'], 0, 1); // Tomamos solo los primeros 3
-$stops = $data['stops']; // Tomamos solo los primeros 3
+$stops = $data['stops']; 
 
 $itemId = 401275156; // ID del recurso en Wialon
 $sessionId = "41c0468d899bb62d88aa0e20ff12ef7f"; // SID válido para la sesión
@@ -158,5 +157,4 @@ foreach ($geofences_by_group as $group_id => $geo_ids) {
         echo "Respuesta del servidor: " . $response . "\n";
     }
 }
-
 ?>

@@ -245,9 +245,18 @@
                                     página</a>
                             </div>
                         @endif
+                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'WIALON DATA'))
+                            <div class="col-md-4">
+                                <span class="fa-stack fa-4x">
+                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                    <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <h4 class="my-3">CREAR GEOCERCAS EN WIALON</h4>
+                                <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
+                                    página</a>
+                            </div>
+                        @endif
                         {{-- <i class="fa-solid fa-blog"></i> --}}
-
-
 
 
                         <!-- Modal para WIALON -->
