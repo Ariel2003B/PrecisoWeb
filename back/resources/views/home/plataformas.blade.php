@@ -101,14 +101,16 @@
                             <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                         </div>
                     @else
-                        <div class="col-md-4 text-center">
-                            <span class="fa-stack fa-4x">
-                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
-                            </span>
-                            <h4 class="my-3">SIMCARDS</h4>
-                            <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
-                        </div>
+                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
+                            <div class="col-md-4 text-center">
+                                <span class="fa-stack fa-4x">
+                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                    <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <h4 class="my-3">SIMCARDS</h4>
+                                <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
+                            </div>
+                        @endif
                         <!-- Modal para CLARO -->
                         <div id="modalClaro"
                             class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
