@@ -15,7 +15,6 @@ class LoginController extends Controller
             'correo' => 'required|email',
             'clave' => 'required',
         ]);
-    
         // Buscar el usuario por correo
         $usuario = USUARIO::where('CORREO', $request->input('correo'))->first();
     
@@ -37,8 +36,8 @@ class LoginController extends Controller
             'user' => [
                 'id' => $usuario->USU_ID,
                 'nombre' => $usuario->NOMBRE,
-                'apellido' => $usuario->APELLIDO,
-                'permisos' => $permisos,
+                'tokenNimbus' => $usuario->TOKEN,
+                'depot' => $usuario->DEPOT
             ]
         ]);
     }

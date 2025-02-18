@@ -126,18 +126,6 @@
                         <li><a href="#">FAQ y manual de usuario y videos de capacitacion</a></li>
                     </ul>
                 </div>
-
-                {{-- <div class="col-lg-3 col-md-12 footer-newsletter">
-                    <h4>¿Quieres recibir nuestras actualizaciones?</h4>
-                    <p>Suscribete y recibe notificaciones de nuestras ultimas actualizaciones, planes y productos.</p>
-                    <form action="forms/newsletter.php" method="post" class="php-email-form">
-                        <div class="newsletter-form"><input type="email" name="email"><input type="submit"
-                                value="Registrar"></div>
-                        <div class="loading">Cargando</div>
-                        <div class="error-message"></div>
-                        <div class="sent-message">Tu suscripción ha sido registrada, Gracias!</div>
-                    </form>
-                </div> --}}
                 <div class="col-lg-3 col-md-12 footer-newsletter">
                     <h4>¿Quieres recibir nuestras actualizaciones?</h4>
                     <p>Suscríbete y recibe notificaciones de nuestras últimas actualizaciones, planes y productos.</p>
