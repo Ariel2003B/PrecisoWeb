@@ -206,4 +206,59 @@ class GeocercaController extends Controller
     }
 
 
+    public function eliminar(Request $request)
+    {
+        $itemId = $request->input('item_id');
+        $sidWialon = (new SimCardController())->getWialonSid();
+
+        // 1️⃣ Obtener las geocercas del recurso
+        $zonesResponse = $this->curlGet(
+            "https://hst-api.wialon.com/wialon/ajax.html?svc=resource/get_zone_data&params=" .
+            urlencode(json_encode(["itemId" => (int) $itemId])) .
+            "&sid=$sidWialon"
+        );
+
+        $zones = json_decode($zonesResponse, true);
+
+        // Si hay error en la respuesta
+        if (isset($zones['error'])) {
+            return response()->json([
+                'error' => 'Error al obtener geocercas',
+                'codigo' => $zones['error']
+            ], 500);
+        }
+
+        // 2️⃣ Extraer IDs de geocercas
+        $zoneIds = [];
+        foreach ($zones as $zone) {
+            $zoneIds[] = $zone['id'];
+        }
+
+        // 3️⃣ Eliminar cada geocerca
+        foreach ($zoneIds as $zoneId) {
+            $paramsGeocercaDelete = [
+                "itemId" => (int) $itemId,
+                "id" => $zoneId,
+                "callMode" => "delete"
+            ];
+
+            $deleteResponse = $this->curlGet(
+                "https://hst-api.wialon.com/wialon/ajax.html?svc=resource/update_zone&params=" .
+                urlencode(json_encode($paramsGeocercaDelete)) .
+                "&sid=$sidWialon"
+            );
+            $deleteResult = json_decode($deleteResponse, true);
+
+            if (isset($deleteResult['error'])) {
+                return response()->json([
+                    'error' => "Error al eliminar geocerca con ID $zoneId",
+                    'codigo' => $deleteResult['error']
+                ], 500);
+            }
+        }
+
+        return response()->json(['message' => 'Geocercas eliminadas correctamente']);
+    }
+
+
 }

@@ -86,6 +86,9 @@
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="bi bi-send"></i> Enviar y Crear Geocercas
                             </button>
+                            <button type="button" class="btn btn-danger btn-lg" id="btnEliminarGeocercas">
+                                <i class="bi bi-trash"></i> Eliminar Grupos y Geocercas
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -244,6 +247,29 @@
                         alert('Ocurrió un error al crear las geocercas: ' + error);
                     }
                 });
+            });
+
+
+            $('#btnEliminarGeocercas').on('click', function() {
+                const itemId = $('#item_id').val();
+
+                if (!itemId) {
+                    alert('Seleccione un recurso válido');
+                    return;
+                }
+
+                $('#loading-spinner').css({ opacity: '1', 'pointer-events': 'auto' });
+
+                $.post("{{ route('geocercas.eliminar') }}", { item_id: itemId, _token: '{{ csrf_token() }}' })
+                    .done(function() {
+                        alert('Grupos y Geocercas eliminados correctamente');
+                    })
+                    .fail(function() {
+                        alert('Error al eliminar geocercas');
+                    })
+                    .always(function() {
+                        $('#loading-spinner').css({ opacity: '0', 'pointer-events': 'none' });
+                    });
             });
 
         });

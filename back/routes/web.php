@@ -104,12 +104,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     //geocerca
+    Route::middleware(['auth', 'role:WIALON DATA'])->group(function () {
+        Route::post('/geocercas/crear', [GeocercaController::class, 'crear'])->name('geocercas.crear');
+        Route::get('/geocercas', [GeocercaController::class, 'index'])->name('geocercas.index');
+        Route::post('/geocercas/depot', [GeocercaController::class, 'obtenerDepots'])->name('geocercas.obtenerDepots');
+        Route::post('/geocercas/eliminar', [GeocercaController::class, 'eliminar'])->name('geocercas.eliminar');
 
-    Route::post('/geocercas/crear', [GeocercaController::class, 'crear'])->name('geocercas.crear');
-    Route::get('/geocercas', [GeocercaController::class, 'index'])->name('geocercas.index');
-    Route::post('/geocercas/depot', [GeocercaController::class, 'obtenerDepots'])->name('geocercas.obtenerDepots');
-
-
+    });
 
 
     Route::get('/rutas', [MinutosCaidosController::class, 'index'])->name('rutas.index');
