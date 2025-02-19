@@ -246,6 +246,53 @@
             // ✅ Ejecutar al inicio
             calcularTotales();
         });
+        // document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
+        //     e.preventDefault();
+
+        //     const tabla = $('#tablaSanciones').DataTable();
+
+        //     // Obtener los nombres de las geocercas desde el encabezado de la tabla
+        //     const nombresGeocercas = [...document.querySelectorAll('#tablaSanciones thead th')]
+        //         .slice(3, -3)
+        //         .map(th => th.textContent.trim());
+
+        //     // Obtener las geocercas activas (no excluidas)
+        //     const geocercasActivas = nombresGeocercas.filter((_, index) => !columnasExcluidas.includes(index));
+
+        //     const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
+        //         const checkbox = fila.querySelector('.checkUnidad');
+        //         return checkbox && checkbox.checked;
+        //     });
+
+        //     const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
+        //         const $fila = $(fila);
+
+        //         const geocercas = {};
+        //         nombresGeocercas.forEach((nombreGeocerca, index) => {
+        //             geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
+        //                 .trim() || '0';
+        //         });
+
+        //         return {
+        //             vuelta: $fila.find('td:nth-child(1)').text().trim(),
+        //             unidad: $fila.find('td:nth-child(2)').text().trim(),
+        //             hora: $fila.find('td:nth-child(3)').text().trim(),
+        //             geocercas: geocercas,
+        //             total: $fila.find('.total-sanciones').text().trim(),
+        //             valor_total: $fila.find('.valor-total').text().trim(),
+        //         };
+        //     }).get();
+
+        //     if (datosSeleccionados.length === 0) {
+        //         alert('Por favor, selecciona al menos una unidad para generar el reporte.');
+        //         return;
+        //     }
+
+        //     document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
+        //     document.getElementById('geocercasActivas').value = JSON.stringify(geocercasActivas);
+
+        //     this.submit();
+        // });
         document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -259,12 +306,10 @@
             // Obtener las geocercas activas (no excluidas)
             const geocercasActivas = nombresGeocercas.filter((_, index) => !columnasExcluidas.includes(index));
 
-            const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
-                const checkbox = fila.querySelector('.checkUnidad');
-                return checkbox && checkbox.checked;
-            });
+            // 🔥 Capturar TODAS las filas, no solo las seleccionadas
+            const filas = tabla.rows().nodes().to$();
 
-            const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
+            const datosReporte = filas.map((_, fila) => {
                 const $fila = $(fila);
 
                 const geocercas = {};
@@ -280,15 +325,11 @@
                     geocercas: geocercas,
                     total: $fila.find('.total-sanciones').text().trim(),
                     valor_total: $fila.find('.valor-total').text().trim(),
+                    seleccionado: $fila.find('.checkUnidad').prop('checked') // 🔥 Agregar campo booleano
                 };
             }).get();
 
-            if (datosSeleccionados.length === 0) {
-                alert('Por favor, selecciona al menos una unidad para generar el reporte.');
-                return;
-            }
-
-            document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
+            document.getElementById('datosSeleccionados').value = JSON.stringify(datosReporte);
             document.getElementById('geocercasActivas').value = JSON.stringify(geocercasActivas);
 
             this.submit();
