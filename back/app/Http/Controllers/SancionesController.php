@@ -348,6 +348,7 @@ class SancionesController extends Controller
     // public function generarReporte(Request $request)
     // {
     //     $datosSeleccionados = json_decode($request->input('datosSeleccionados'), true);
+    //     $geocercasActivas = json_decode($request->input('geocercasActivas'), true);
 
     //     if (!$datosSeleccionados || empty($datosSeleccionados)) {
     //         return back()->withErrors(['error' => 'No hay datos seleccionados para generar el reporte']);
@@ -355,106 +356,67 @@ class SancionesController extends Controller
 
     //     // Ordenar los datos seleccionados por unidad
     //     usort($datosSeleccionados, function ($a, $b) {
-    //         return $a['unidad'] <=> $b['unidad']; // Orden ascendente por la clave 'unidad'
+    //         return $a['unidad'] <=> $b['unidad'];
     //     });
-
-    //     // Obtener todos los nombres de geocercas globalmente
-    //     $geocercas = [];
-    //     if (!empty($datosSeleccionados)) {
-    //         $geocercas = array_keys($datosSeleccionados[0]['geocercas'] ?? []);
-    //     }
 
     //     // Crear un nuevo archivo de Excel
     //     $spreadsheet = new Spreadsheet();
     //     $sheet = $spreadsheet->getActiveSheet();
 
-    //     // Escribir el encabezado de la tabla
+    //     // Escribir el encabezado de la tabla con solo las geocercas activas
     //     $header = ['N Vuelta', 'Unidad', 'Hora salida'];
-    //     foreach ($geocercas as $geocerca) {
+    //     foreach ($geocercasActivas as $geocerca) {
     //         $header[] = $geocerca;
     //     }
     //     $header[] = 'Total';
     //     $header[] = 'Valor Total';
 
-    //     // Estilos para el encabezado
-    //     $headerStyle = [
-    //         'font' => [
-    //             'bold' => true,
-    //             'color' => ['rgb' => 'FFFFFF'],
-    //         ],
-    //         'fill' => [
-    //             'fillType' => Fill::FILL_SOLID,
-    //             'startColor' => ['rgb' => '007BFF'],
-    //         ],
-    //         'alignment' => [
-    //             'horizontal' => Alignment::HORIZONTAL_CENTER,
-    //             'vertical' => Alignment::VERTICAL_CENTER,
-    //             'textRotation' => 90, // Girar texto a vertical
-    //         ],
-    //         'borders' => [
-    //             'allBorders' => [
-    //                 'borderStyle' => Border::BORDER_THIN,
-    //                 'color' => ['rgb' => '000000'],
-    //             ],
-    //         ],
-    //     ];
-
-    //     // Aplicar el encabezado y estilos
+    //     // Aplicar estilos y escribir encabezado
     //     $sheet->fromArray($header, null, 'A1');
-    //     $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
+    //     $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray([
+    //         'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+    //         'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '007BFF']],
+    //         'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER, 'textRotation' => 90],
+    //         'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+    //     ]);
 
-    //     // Ajustar ancho de las columnas de las geocercas
-    //     foreach (range('D', $sheet->getHighestColumn()) as $column) { // Cambia 'C' a 'D' porque "Placa" ahora es la tercera columna
-    //         $sheet->getColumnDimension($column)->setWidth(5); // Reducir espacio de las columnas solo para las geocercas
+    //     // Ajustar tamaño de columnas
+    //     foreach (range('D', $sheet->getHighestColumn()) as $column) {
+    //         $sheet->getColumnDimension($column)->setWidth(5);
     //     }
+    //     $sheet->getColumnDimension('A')->setAutoSize(true);
+    //     $sheet->getColumnDimension('B')->setAutoSize(true);
+    //     $sheet->getColumnDimension('C')->setAutoSize(true);
 
-    //     // Ajustar el ancho automático para las primeras columnas
-    //     $sheet->getColumnDimension('A')->setAutoSize(true); // N Vuelta
-    //     $sheet->getColumnDimension('B')->setAutoSize(true); // Unidad
-    //     $sheet->getColumnDimension('C')->setAutoSize(true); // Placa
-
-    //     // Escribir los datos seleccionados en las filas
-    //     $row = 2; // Comienza en la segunda fila después del encabezado
+    //     // Escribir los datos
+    //     $row = 2;
     //     foreach ($datosSeleccionados as $dato) {
     //         $fila = [
     //             $dato['vuelta'],
     //             $dato['unidad'],
-    //             $dato['hora']
+    //             $dato['hora'],
     //         ];
 
-    //         // Añadir las sanciones de geocercas
-    //         foreach ($geocercas as $geocerca) {
+    //         foreach ($geocercasActivas as $geocerca) {
     //             $fila[] = $dato['geocercas'][$geocerca] ?? 0;
     //         }
 
-    //         $fila[] = $dato['total']; // Asegurar que sea un número
-
-    //         // Asegurar que el valor total tenga $ y se registre aunque sea 0.00
+    //         $fila[] = $dato['total'];
     //         $valorTotal = str_replace(['$', ','], '', $dato['valor_total']);
     //         $valorTotal = is_numeric($valorTotal) ? floatval($valorTotal) : 0.00;
     //         $fila[] = '$' . number_format($valorTotal, 2, '.', ',');
 
     //         $sheet->fromArray($fila, null, "A$row");
 
-    //         // Aplicar bordes a las filas de datos
     //         $sheet->getStyle("A$row:" . $sheet->getHighestColumn() . "$row")->applyFromArray([
-    //             'borders' => [
-    //                 'allBorders' => [
-    //                     'borderStyle' => Border::BORDER_THIN,
-    //                     'color' => ['rgb' => '000000'],
-    //                 ],
-    //             ],
-    //             'alignment' => [
-    //                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-    //                 'vertical' => Alignment::VERTICAL_CENTER,
-    //             ],
+    //             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+    //             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
     //         ]);
     //         $row++;
     //     }
 
-    //     // Crear el archivo Excel
     //     $writer = new Xlsx($spreadsheet);
-    //     $hoy = date("Y-m-d"); // Obtiene solo la fecha en el formato Año-Mes-Día
+    //     $hoy = date("Y-m-d");
     //     $fileName = $hoy . '_Reporte_Sanciones.xlsx';
 
     //     $tempFile = tempnam(sys_get_temp_dir(), $fileName);
@@ -478,19 +440,25 @@ class SancionesController extends Controller
             return $a['unidad'] <=> $b['unidad'];
         });
 
+        // Obtener todas las geocercas presentes en los datos
+        $todasLasGeocercas = [];
+        if (!empty($datosSeleccionados)) {
+            $todasLasGeocercas = array_keys($datosSeleccionados[0]['geocercas'] ?? []);
+        }
+
         // Crear un nuevo archivo de Excel
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Escribir el encabezado de la tabla con solo las geocercas activas
+        // Escribir el encabezado de la tabla con todas las geocercas
         $header = ['N Vuelta', 'Unidad', 'Hora salida'];
-        foreach ($geocercasActivas as $geocerca) {
+        foreach ($todasLasGeocercas as $geocerca) {
             $header[] = $geocerca;
         }
         $header[] = 'Total';
         $header[] = 'Valor Total';
 
-        // Aplicar estilos y escribir encabezado
+        // Aplicar estilos al encabezado
         $sheet->fromArray($header, null, 'A1');
         $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
@@ -507,7 +475,7 @@ class SancionesController extends Controller
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
 
-        // Escribir los datos
+        // Escribir los datos y pintar columnas inactivas
         $row = 2;
         foreach ($datosSeleccionados as $dato) {
             $fila = [
@@ -516,8 +484,19 @@ class SancionesController extends Controller
                 $dato['hora'],
             ];
 
-            foreach ($geocercasActivas as $geocerca) {
-                $fila[] = $dato['geocercas'][$geocerca] ?? 0;
+            $colIndex = 4; // Empieza desde la columna D (4ta columna)
+
+            foreach ($todasLasGeocercas as $geocerca) {
+                $valor = $dato['geocercas'][$geocerca] ?? 0;
+                $fila[] = $valor;
+
+                // Pinta la columna si la geocerca no está activa
+                if (!in_array($geocerca, $geocercasActivas)) {
+                    $sheet->getStyleByColumnAndRow($colIndex, $row)->getFill()->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()->setRGB('FFFF00'); // Amarillo
+                }
+
+                $colIndex++;
             }
 
             $fila[] = $dato['total'];
@@ -531,6 +510,7 @@ class SancionesController extends Controller
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
             ]);
+
             $row++;
         }
 

@@ -163,195 +163,89 @@
         let columnasExcluidas = [];
 
         $(document).ready(function() {
-            // 🔥 Verificar si DataTable ya está inicializado antes de reinicializarlo
-            if ($.fn.DataTable.isDataTable("#tablaSanciones")) {
-                $('#tablaSanciones').DataTable().destroy(); // Destruir DataTable si ya existe
+            let tabla;
+            if (!$.fn.DataTable.isDataTable('#tablaSanciones')) {
+                tabla = $('#tablaSanciones').DataTable({
+                    paging: true,
+                    searching: true,
+                    info: false,
+                    language: {
+                        search: "Buscar:",
+                        paginate: {
+                            first: "Primero",
+                            last: "Último",
+                            next: "Siguiente",
+                            previous: "Anterior",
+                        },
+                        zeroRecords: "No se encontraron resultados",
+                    }
+                });
+            } else {
+                tabla = $('#tablaSanciones').DataTable();
             }
 
-            // Inicializar DataTable correctamente
-            let tabla = $('#tablaSanciones').DataTable({
-                paging: true,
-                searching: true,
-                info: false,
-                language: {
-                    search: "Buscar:",
-                    paginate: {
-                        first: "Primero",
-                        last: "Último",
-                        next: "Siguiente",
-                        previous: "Anterior",
-                    },
-                    zeroRecords: "No se encontraron resultados",
-                }
-            });
 
             const checkAll = $('#checkAll');
 
-            // ✅ SELECCIONAR TODAS LAS FILAS, INCLUYENDO LAS NO VISIBLES
             checkAll.on('change', function() {
                 let isChecked = $(this).prop('checked');
 
-                // Marcar/desmarcar TODAS las filas, incluso las que NO están visibles
+                // 🔥 Seleccionar TODAS LAS FILAS de TODAS LAS PÁGINAS
                 tabla.rows().every(function() {
-                    let node = $(this.node());
-                    node.find('.checkUnidad').prop('checked', isChecked);
+                    $(this.node()).find('.checkUnidad').prop('checked', isChecked);
                 });
 
-                // 🔥 Asegurar que TODOS los valores de las filas cambien correctamente
                 calcularTotales();
             });
 
-            // ✅ SI UN CHECKBOX INDIVIDUAL CAMBIA, ACTUALIZAR EL ESTADO DEL "SELECCIONAR TODOS"
+
+            // ✅ Seleccionar fila individual
             $('#tablaSanciones tbody').on('change', '.checkUnidad', function() {
-                let totalCheckboxes = tabla.$('.checkUnidad').length;
-                let checkedCheckboxes = tabla.$('.checkUnidad:checked').length;
-
-                checkAll.prop('checked', totalCheckboxes === checkedCheckboxes);
-
-                // 🔥 Recalcular el valor total individualmente
                 calcularTotales();
             });
 
-            // ✅ FUNCIÓN PARA RECALCULAR LOS VALORES TOTALES DE TODAS LAS FILAS
-            function calcularTotales() {
-                let allRows = tabla.rows().nodes(); // 🔥 Obtener TODAS las filas, visibles o no
-
-                $(allRows).each(function() {
-                    let checkbox = $(this).find('.checkUnidad');
-                    let totalSancionesCell = $(this).find('.total-sanciones');
-                    let valorTotalCell = $(this).find('.valor-total');
-
-                    if (checkbox.prop('checked')) {
-                        let totalSanciones = parseInt(totalSancionesCell.text().trim()) || 0;
-                        let valorTotal = totalSanciones * 0.50; // Multiplicador por geocerca caída
-                        valorTotalCell.text(`$${valorTotal.toFixed(2)}`);
+            // ✅ Cambiar checkbox de geocercas
+            document.querySelectorAll('.checkGeocerca').forEach(check => {
+                check.addEventListener('change', function() {
+                    const index = parseInt(this.dataset.index);
+                    if (this.checked) {
+                        columnasExcluidas = columnasExcluidas.filter(i => i !== index);
                     } else {
-                        valorTotalCell.text('$0.00');
+                        if (!columnasExcluidas.includes(index)) {
+                            columnasExcluidas.push(index);
+                        }
                     }
-                });
-            }
-
-            // ✅ AL CARGAR LA PÁGINA, HACER QUE LOS VALORES SE ACTUALICEN CORRECTAMENTE
-            calcularTotales();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabla = $('#tablaSanciones').DataTable({
-                paging: true,
-                searching: true, // Habilitamos la búsqueda general para aprovechar la funcionalidad
-                info: false,
-                language: {
-                    search: "Buscar:",
-                    paginate: {
-                        first: "Primero",
-                        last: "Último",
-                        next: "Siguiente",
-                        previous: "Anterior",
-                    },
-                    zeroRecords: "No se encontraron resultados",
-                },
-            });
-
-            const filtroUnidad = document.getElementById('filtroUnidad');
-            // Escuchar cambios en los checkboxes
-            document.querySelector('#tablaSanciones tbody').addEventListener('change', function(e) {
-                if (e.target.classList.contains('checkUnidad')) {
                     calcularTotales();
-                }
+                });
             });
 
+            // ✅ Función para calcular el total y valor total
             function calcularTotales() {
-                document.querySelectorAll('#tablaSanciones tbody tr').forEach(fila => {
-                    const checkbox = fila.querySelector('.checkUnidad');
-                    const totalSancionesCell = fila.querySelector('.total-sanciones');
-                    const valorTotalCell = fila.querySelector('.valor-total');
+                tabla.rows().every(function() {
+                    const fila = $(this.node());
+                    const checkbox = fila.find('.checkUnidad').prop('checked');
+                    let totalSanciones = 0;
 
-                    if (checkbox?.checked) {
-                        //const totalSanciones = parseInt(totalSancionesCell.textContent.trim());
-                        //const valorTotal = totalSanciones * 0.50; // Nuevo valor fijo por cada geocerca
-                        //valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
+                    // Recorremos todas las celdas de geocercas (asumiendo que son desde la columna 4 en adelante)
+                    fila.find('td').each(function(colIndex) {
+                        const columnaGeocerca = colIndex -
+                            3; // Ajustamos según las primeras 3 columnas
+                        const valorCelda = $(this).text().trim();
 
-                        let totalSanciones = 0;
+                        if (columnaGeocerca >= 0 && valorCelda === '1' && !columnasExcluidas
+                            .includes(columnaGeocerca)) {
+                            totalSanciones++;
+                        }
+                    });
 
-                        // Recorremos todas las celdas de sanciones (geocercas) de la fila
-                        $(fila).find('td').each(function(colIndex) {
-                            // Ajustar índice según tu estructura de tabla (Empieza después de "Vuelta", "Unidad", "Hora salida")
-                            const valorCelda = $(this).text().trim();
-                            const columnaGeocerca = colIndex -
-                                3; // Suponiendo que las geocercas empiezan en la columna 4
-
-                            // Validar si es una celda de geocerca y si está "1" y si NO está excluida
-                            if (columnaGeocerca >= 0 && valorCelda === '1' && !columnasExcluidas
-                                .includes(columnaGeocerca)) {
-                                totalSanciones++;
-                            }
-                        });
-
-                        const valorTotal = totalSanciones * 0.50;
-                        totalSancionesCell.textContent = totalSanciones;
-                        valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
-
-
-                    } else {
-                        valorTotalCell.textContent = '$0.00';
-                    }
+                    fila.find('.total-sanciones').text(totalSanciones);
+                    const valorTotal = totalSanciones * 0.50;
+                    fila.find('.valor-total').text(checkbox ? `$${valorTotal.toFixed(2)}` : '$0.00');
                 });
             }
-
-            // Ejecutar el cálculo inicial para actualizar valores visibles
+            // ✅ Ejecutar al inicio
             calcularTotales();
         });
-        // document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
-        //     e.preventDefault(); // Evita el envío automático del formulario
-
-        //     const tabla = $('#tablaSanciones').DataTable();
-
-        //     // Obtener los nombres de las geocercas desde el encabezado de la tabla
-        //     const nombresGeocercas = [...document.querySelectorAll('#tablaSanciones thead th')]
-        //         .slice(3, -3) // Ignorar las primeras 3 columnas y las últimas 3 (Total, Valor Total, Seleccionar)
-        //         .map(th => th.textContent.trim());
-
-        //     // Obtener TODAS las filas de la tabla, no solo las visibles
-        //     const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
-        //         const checkbox = fila.querySelector('.checkUnidad');
-        //         return checkbox && checkbox.checked; // Solo incluir filas con el checkbox marcado
-        //     });
-
-        //     // Construir los datos seleccionados
-        //     const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
-        //         const $fila = $(fila);
-
-        //         // Crear un objeto con todas las geocercas y sus valores (llenando con 0 donde no aplica)
-        //         const geocercas = {};
-        //         nombresGeocercas.forEach((nombreGeocerca, index) => {
-        //             geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
-        //                 .trim() || '0';
-        //         });
-
-        //         return {
-        //             vuelta: $fila.find('td:nth-child(1)').text().trim(),
-        //             unidad: $fila.find('td:nth-child(2)').text().trim(),
-        //             hora: $fila.find('td:nth-child(3)').text().trim(),
-        //             geocercas: geocercas,
-        //             total: $fila.find('.total-sanciones').text().trim(),
-        //             valor_total: $fila.find('.valor-total').text()
-        //                 .trim(), // Asegurar captura del valor total
-        //         };
-        //     }).get();
-
-        //     console.log("Datos enviados al backend:",
-        //         datosSeleccionados); // Debugging para ver si se están enviando correctamente
-
-        //     if (datosSeleccionados.length === 0) {
-        //         alert('Por favor, selecciona al menos una unidad para generar el reporte.');
-        //         return;
-        //     }
-
-        //     document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
-
-        //     // Enviar el formulario
-        //     this.submit();
-        // });
         document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -375,10 +269,8 @@
 
                 const geocercas = {};
                 nombresGeocercas.forEach((nombreGeocerca, index) => {
-                    if (!columnasExcluidas.includes(index)) {
-                        geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
-                            .trim() || '0';
-                    }
+                    geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
+                        .trim() || '0';
                 });
 
                 return {
@@ -409,105 +301,154 @@
             const detalleUnidadBody = document.getElementById('detalleUnidadBody');
             const unidadSeleccionadaTexto = document.getElementById('unidadSeleccionadaTexto');
             const unidadSeleccionadaModal = document.getElementById('unidadSeleccionadaModal');
+            const checkAll = document.getElementById('checkAll');
 
-            document.querySelector('#tablaSanciones tbody').addEventListener('change', function(e) {
-                if (e.target.classList.contains('checkUnidad')) {
-                    const checkboxes = document.querySelectorAll('.checkUnidad:checked');
+            let tabla;
+            if (!$.fn.DataTable.isDataTable('#tablaSanciones')) {
+                tabla = $('#tablaSanciones').DataTable();
+            } else {
+                tabla = $('#tablaSanciones').DataTable();
+            }
 
-                    if (checkboxes.length > 0) {
-                        const unidadesSeleccionadas = [...new Set(
-                            Array.from(checkboxes).map(checkbox =>
-                                checkbox.closest('tr').querySelector('td:nth-child(2)').textContent
-                                .trim()
-                            )
-                        )];
 
-                        if (unidadesSeleccionadas.length === 1) {
-                            const unidad = unidadesSeleccionadas[0];
-                            unidadSeleccionadaTexto.textContent = unidad;
-                            unidadSeleccionadaModal.value = unidad;
-                            btnDetalleUnidad.removeAttribute('disabled');
+            function validarBotonDetalleUnidad() {
+                let unidadesSeleccionadas = new Set();
 
-                            // Calcular el total de sanciones de todas las vueltas de la misma unidad
-                            detalleUnidadBody.innerHTML = '';
-                            let totalGeneral = 0;
-
-                            checkboxes.forEach(checkbox => {
-                                const fila = checkbox.closest('tr');
-                                const vuelta = fila.querySelector('td:nth-child(1)').textContent
-                                    .trim();
-                                const sanciones = fila.querySelectorAll('td');
-                                const nombresGeocercas = Array.from(document.querySelectorAll(
-                                        '#tablaSanciones thead th'))
-                                    .slice(3, -3)
-                                    .map(th => th.textContent.trim());
-
-                                let totalSanciones = 0;
-                                let geocercasConSanciones = [];
-
-                                nombresGeocercas.forEach((geocerca, index) => {
-                                    const valor = sanciones[index + 3].textContent.trim();
-                                    if (valor === '1' && !columnasExcluidas.includes(
-                                            index)) {
-                                        totalSanciones++;
-                                        geocercasConSanciones.push(geocerca);
-                                    }
-                                });
-
-                                // Calcular el valor total por vuelta
-                                const valorTotal = totalSanciones *
-                                    0.50; // Precio fijo por geocerca
-                                totalGeneral += valorTotal;
-
-                                // Renderizar la fila en el modal
-                                detalleUnidadBody.innerHTML += `
-                            <tr>
-                                <td>${vuelta}</td>
-                                <td>${geocercasConSanciones.join(', ')}</td>
-                                <td>${totalSanciones}</td>
-                                <td>$0.50</td>
-                                <td>$${valorTotal.toFixed(2)}</td>
-                            </tr>`;
-                            });
-
-                            // Agregar total general en la última fila del modal
-                            detalleUnidadBody.innerHTML += `
-                        <tr class="table-dark">
-                            <td colspan="4" class="text-end"><strong>Total a pagar:</strong></td>
-                            <td><strong>$${totalGeneral.toFixed(2)}</strong></td>
-                        </tr>`;
-                        } else {
-                            btnDetalleUnidad.setAttribute('disabled', 'disabled');
-                            unidadSeleccionadaTexto.textContent = '';
-                            unidadSeleccionadaModal.value = '';
-                        }
-                    } else {
-                        btnDetalleUnidad.setAttribute('disabled', 'disabled');
-                        unidadSeleccionadaTexto.textContent = '';
-                        unidadSeleccionadaModal.value = '';
+                // 🔥 Revisamos TODAS las páginas, no solo la visible
+                tabla.rows().every(function() {
+                    const fila = $(this.node());
+                    if (fila.find('.checkUnidad').prop('checked')) {
+                        const unidad = fila.find('td:nth-child(2)').text().trim();
+                        unidadesSeleccionadas.add(unidad);
                     }
+                });
+
+                if (unidadesSeleccionadas.size === 1) {
+                    btnDetalleUnidad.removeAttribute('disabled');
+                    const unidad = [...unidadesSeleccionadas][0];
+                    unidadSeleccionadaTexto.textContent = unidad;
+                    unidadSeleccionadaModal.value = unidad;
+                } else {
+                    btnDetalleUnidad.setAttribute('disabled', 'disabled');
+                    unidadSeleccionadaTexto.textContent = '';
+                    unidadSeleccionadaModal.value = '';
                 }
+            }
+
+            function actualizarSeleccionGlobal(isChecked) {
+                // ✅ Seleccionamos TODAS las filas, incluyendo las no visibles
+                tabla.rows().every(function() {
+                    $(this.node()).find('.checkUnidad').prop('checked', isChecked);
+                });
+
+                validarBotonDetalleUnidad();
+            }
+
+            function calcularTotales() {
+                tabla.rows().every(function() {
+                    const fila = $(this.node());
+                    const checkbox = fila.find('.checkUnidad').prop('checked');
+                    let totalSanciones = 0;
+
+                    fila.find('td').each(function(colIndex) {
+                        const columnaGeocerca = colIndex - 3;
+                        const valorCelda = $(this).text().trim();
+
+                        if (columnaGeocerca >= 0 && valorCelda === '1' && !columnasExcluidas
+                            .includes(columnaGeocerca)) {
+                            totalSanciones++;
+                        }
+                    });
+
+                    fila.find('.total-sanciones').text(totalSanciones);
+                    const valorTotal = totalSanciones * 0.50;
+                    fila.find('.valor-total').text(checkbox ? `$${valorTotal.toFixed(2)}` : '$0.00');
+                });
+            }
+
+            // ✅ Cuando se cambia el checkbox de "Seleccionar Todos"
+            checkAll.addEventListener('change', function() {
+                actualizarSeleccionGlobal(this.checked);
+                calcularTotales();
             });
-            // Capturar cambios en los checks de las geocercas
+
+            // ✅ Cuando se selecciona/desselecciona una fila individual
+            $('#tablaSanciones tbody').on('change', '.checkUnidad', function() {
+                validarBotonDetalleUnidad();
+                calcularTotales();
+            });
+
+            // ✅ Capturar cambios en los checkboxes de geocercas
             document.querySelectorAll('.checkGeocerca').forEach(check => {
                 check.addEventListener('change', function() {
                     const index = parseInt(this.dataset.index);
-
                     if (this.checked) {
-                        // Remover del array si se activa el check
                         columnasExcluidas = columnasExcluidas.filter(i => i !== index);
                     } else {
-                        // Añadir al array si se desactiva el check
                         if (!columnasExcluidas.includes(index)) {
                             columnasExcluidas.push(index);
                         }
                     }
-
-                    // Recalcular totales después de cambiar una geocerca
                     calcularTotales();
                 });
             });
 
+            // ✅ Evento para llenar el modal cuando se hace clic en "Ver Detalle de la Unidad"
+            btnDetalleUnidad.addEventListener('click', function() {
+                detalleUnidadBody.innerHTML = '';
+                let totalGeneral = 0;
+
+                const nombresGeocercas = Array.from(document.querySelectorAll('#tablaSanciones thead th'))
+                    .slice(3, -3)
+                    .map(th => th.textContent.trim());
+
+                tabla.rows().every(function() {
+                    const fila = $(this.node());
+                    if (fila.find('.checkUnidad').prop('checked')) {
+                        const vuelta = fila.find('td:nth-child(1)').text().trim();
+                        const sanciones = fila.find('td');
+
+                        let totalSanciones = 0;
+                        let geocercasConSanciones = [];
+
+                        sanciones.each(function(colIndex) {
+                            const columnaGeocerca = colIndex - 3;
+                            const valorCelda = $(this).text().trim();
+
+                            if (columnaGeocerca >= 0 && valorCelda === '1' && !
+                                columnasExcluidas.includes(columnaGeocerca)) {
+                                totalSanciones++;
+                                geocercasConSanciones.push(nombresGeocercas[
+                                    columnaGeocerca]);
+                            }
+                        });
+
+                        const valorTotal = totalSanciones * 0.50;
+                        totalGeneral += valorTotal;
+
+                        detalleUnidadBody.innerHTML += `
+                    <tr>
+                        <td>${vuelta}</td>
+                        <td>${geocercasConSanciones.join(', ')}</td>
+                        <td>${totalSanciones}</td>
+                        <td>$0.50</td>
+                        <td>$${valorTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+                    }
+                });
+
+                detalleUnidadBody.innerHTML += `
+            <tr class="table-dark">
+                <td colspan="4" class="text-end"><strong>Total a pagar:</strong></td>
+                <td><strong>$${totalGeneral.toFixed(2)}</strong></td>
+            </tr>
+        `;
+            });
+
+            // ✅ Ejecutar validación inicial
+            validarBotonDetalleUnidad();
+            calcularTotales();
         });
     </script>
 @endsection
