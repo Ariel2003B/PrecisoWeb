@@ -48,8 +48,12 @@
                                 <th class="geocerca">Unidad</th>
                                 {{-- <th class="geocerca">Placa</th> --}}
                                 <th class="geocerca">Hora salida</th>
-                                @foreach ($geocercas as $geocerca)
-                                    <th class="geocerca">{{ $geocerca }}</th>
+                                @foreach ($geocercas as $index => $geocerca)
+                                    <th class="geocerca">
+                                        <input type="checkbox" class="checkGeocerca" data-index="{{ $index }}"
+                                            checked>
+                                        {{ $geocerca }}
+                                    </th>
                                 @endforeach
                                 <th class="geocerca">Total</th>
                                 <th class="geocerca">Valor Total</th>
@@ -103,6 +107,7 @@
                     <div class="text-center mt-4">
                         <form id="formGenerarReporte" action="{{ route('sanciones.generarReporte') }}" method="POST">
                             @csrf
+                            <input type="hidden" name="geocercasActivas" id="geocercasActivas">
                             <input type="hidden" name="datosSeleccionados" id="datosSeleccionados">
                             <button type="submit" class="btn btn-success">Generar Reporte Excel</button>
                         </form>
@@ -120,8 +125,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="text-center mb-3">Sanciones de la unidad seleccionada Ruta: {{ $detalles['ruta'] ?? 'No disponible' }}</h5>
-                    
+                    <h5 class="text-center mb-3">Sanciones de la unidad seleccionada Ruta:
+                        {{ $detalles['ruta'] ?? 'No disponible' }}</h5>
+
                     <!-- Mostrar el valor de la unidad seleccionada -->
                     <div class="mb-3">
                         <h6><strong>Unidad Seleccionada:</strong> <span id="unidadSeleccionadaTexto"></span></h6>
@@ -151,10 +157,11 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
+        let columnasExcluidas = [];
+
         $(document).ready(function() {
             // 🔥 Verificar si DataTable ya está inicializado antes de reinicializarlo
             if ($.fn.DataTable.isDataTable("#tablaSanciones")) {
@@ -260,9 +267,31 @@
                     const valorTotalCell = fila.querySelector('.valor-total');
 
                     if (checkbox?.checked) {
-                        const totalSanciones = parseInt(totalSancionesCell.textContent.trim());
-                        const valorTotal = totalSanciones * 0.50; // Nuevo valor fijo por cada geocerca
+                        //const totalSanciones = parseInt(totalSancionesCell.textContent.trim());
+                        //const valorTotal = totalSanciones * 0.50; // Nuevo valor fijo por cada geocerca
+                        //valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
+
+                        let totalSanciones = 0;
+
+                        // Recorremos todas las celdas de sanciones (geocercas) de la fila
+                        $(fila).find('td').each(function(colIndex) {
+                            // Ajustar índice según tu estructura de tabla (Empieza después de "Vuelta", "Unidad", "Hora salida")
+                            const valorCelda = $(this).text().trim();
+                            const columnaGeocerca = colIndex -
+                                3; // Suponiendo que las geocercas empiezan en la columna 4
+
+                            // Validar si es una celda de geocerca y si está "1" y si NO está excluida
+                            if (columnaGeocerca >= 0 && valorCelda === '1' && !columnasExcluidas
+                                .includes(columnaGeocerca)) {
+                                totalSanciones++;
+                            }
+                        });
+
+                        const valorTotal = totalSanciones * 0.50;
+                        totalSancionesCell.textContent = totalSanciones;
                         valorTotalCell.textContent = `$${valorTotal.toFixed(2)}`;
+
+
                     } else {
                         valorTotalCell.textContent = '$0.00';
                     }
@@ -272,31 +301,84 @@
             // Ejecutar el cálculo inicial para actualizar valores visibles
             calcularTotales();
         });
+        // document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
+        //     e.preventDefault(); // Evita el envío automático del formulario
+
+        //     const tabla = $('#tablaSanciones').DataTable();
+
+        //     // Obtener los nombres de las geocercas desde el encabezado de la tabla
+        //     const nombresGeocercas = [...document.querySelectorAll('#tablaSanciones thead th')]
+        //         .slice(3, -3) // Ignorar las primeras 3 columnas y las últimas 3 (Total, Valor Total, Seleccionar)
+        //         .map(th => th.textContent.trim());
+
+        //     // Obtener TODAS las filas de la tabla, no solo las visibles
+        //     const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
+        //         const checkbox = fila.querySelector('.checkUnidad');
+        //         return checkbox && checkbox.checked; // Solo incluir filas con el checkbox marcado
+        //     });
+
+        //     // Construir los datos seleccionados
+        //     const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
+        //         const $fila = $(fila);
+
+        //         // Crear un objeto con todas las geocercas y sus valores (llenando con 0 donde no aplica)
+        //         const geocercas = {};
+        //         nombresGeocercas.forEach((nombreGeocerca, index) => {
+        //             geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
+        //                 .trim() || '0';
+        //         });
+
+        //         return {
+        //             vuelta: $fila.find('td:nth-child(1)').text().trim(),
+        //             unidad: $fila.find('td:nth-child(2)').text().trim(),
+        //             hora: $fila.find('td:nth-child(3)').text().trim(),
+        //             geocercas: geocercas,
+        //             total: $fila.find('.total-sanciones').text().trim(),
+        //             valor_total: $fila.find('.valor-total').text()
+        //                 .trim(), // Asegurar captura del valor total
+        //         };
+        //     }).get();
+
+        //     console.log("Datos enviados al backend:",
+        //         datosSeleccionados); // Debugging para ver si se están enviando correctamente
+
+        //     if (datosSeleccionados.length === 0) {
+        //         alert('Por favor, selecciona al menos una unidad para generar el reporte.');
+        //         return;
+        //     }
+
+        //     document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
+
+        //     // Enviar el formulario
+        //     this.submit();
+        // });
         document.getElementById('formGenerarReporte').addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita el envío automático del formulario
+            e.preventDefault();
 
             const tabla = $('#tablaSanciones').DataTable();
 
             // Obtener los nombres de las geocercas desde el encabezado de la tabla
             const nombresGeocercas = [...document.querySelectorAll('#tablaSanciones thead th')]
-                .slice(3, -3) // Ignorar las primeras 3 columnas y las últimas 3 (Total, Valor Total, Seleccionar)
+                .slice(3, -3)
                 .map(th => th.textContent.trim());
 
-            // Obtener TODAS las filas de la tabla, no solo las visibles
+            // Obtener las geocercas activas (no excluidas)
+            const geocercasActivas = nombresGeocercas.filter((_, index) => !columnasExcluidas.includes(index));
+
             const filasSeleccionadas = tabla.rows().nodes().to$().filter((_, fila) => {
                 const checkbox = fila.querySelector('.checkUnidad');
-                return checkbox && checkbox.checked; // Solo incluir filas con el checkbox marcado
+                return checkbox && checkbox.checked;
             });
 
-            // Construir los datos seleccionados
             const datosSeleccionados = filasSeleccionadas.map((_, fila) => {
                 const $fila = $(fila);
 
-                // Crear un objeto con todas las geocercas y sus valores (llenando con 0 donde no aplica)
                 const geocercas = {};
                 nombresGeocercas.forEach((nombreGeocerca, index) => {
-                    geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
-                        .trim() || '0';
+                    if (!columnasExcluidas.includes(index)) {
+                        geocercas[nombreGeocerca] = $fila.find(`td:nth-child(${index + 4})`).text()
+                            .trim() || '0';
+                    }
                 });
 
                 return {
@@ -305,13 +387,9 @@
                     hora: $fila.find('td:nth-child(3)').text().trim(),
                     geocercas: geocercas,
                     total: $fila.find('.total-sanciones').text().trim(),
-                    valor_total: $fila.find('.valor-total').text()
-                        .trim(), // Asegurar captura del valor total
+                    valor_total: $fila.find('.valor-total').text().trim(),
                 };
             }).get();
-
-            console.log("Datos enviados al backend:",
-                datosSeleccionados); // Debugging para ver si se están enviando correctamente
 
             if (datosSeleccionados.length === 0) {
                 alert('Por favor, selecciona al menos una unidad para generar el reporte.');
@@ -319,8 +397,8 @@
             }
 
             document.getElementById('datosSeleccionados').value = JSON.stringify(datosSeleccionados);
+            document.getElementById('geocercasActivas').value = JSON.stringify(geocercasActivas);
 
-            // Enviar el formulario
             this.submit();
         });
     </script>
@@ -369,7 +447,8 @@
 
                                 nombresGeocercas.forEach((geocerca, index) => {
                                     const valor = sanciones[index + 3].textContent.trim();
-                                    if (valor === '1') {
+                                    if (valor === '1' && !columnasExcluidas.includes(
+                                            index)) {
                                         totalSanciones++;
                                         geocercasConSanciones.push(geocerca);
                                     }
@@ -409,6 +488,26 @@
                     }
                 }
             });
+            // Capturar cambios en los checks de las geocercas
+            document.querySelectorAll('.checkGeocerca').forEach(check => {
+                check.addEventListener('change', function() {
+                    const index = parseInt(this.dataset.index);
+
+                    if (this.checked) {
+                        // Remover del array si se activa el check
+                        columnasExcluidas = columnasExcluidas.filter(i => i !== index);
+                    } else {
+                        // Añadir al array si se desactiva el check
+                        if (!columnasExcluidas.includes(index)) {
+                            columnasExcluidas.push(index);
+                        }
+                    }
+
+                    // Recalcular totales después de cambiar una geocerca
+                    calcularTotales();
+                });
+            });
+
         });
     </script>
 @endsection
