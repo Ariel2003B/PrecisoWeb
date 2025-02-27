@@ -42,11 +42,6 @@ if (!$rides_data || !isset($rides_data['rides'])) {
     die("Error al obtener los viajes");
 }
 
-
-
-
-
-
 // Función para convertir HH:MM o HH:MM:SS a segundos
 function timeToSeconds($time)
 {
@@ -141,7 +136,6 @@ foreach ($routes_data['routes'] as $route) {
             } else {
                 $diff_display = "-";
             }
-
             echo "<td>$plan_time</td><td>$exec_time</td><td>$diff_display</td>";
         }
         echo "</tr>";

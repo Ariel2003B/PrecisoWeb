@@ -12,7 +12,7 @@ class LoginController extends Controller
     {
         // Validar entrada
         $request->validate([
-            'correo' => 'required|email',
+            'correo' => 'required',
             'clave' => 'required',
         ]);
         // Buscar el usuario por correo
