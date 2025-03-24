@@ -21,25 +21,53 @@ class HojaTrabajoController extends Controller
             'fecha' => 'required|date',
             'tipo_dia' => 'required|in:LABORABLE,FERIADO,SABADO,DOMINGO',
             'id_conductor' => 'required|exists:personal,id_personal',
-            'id_ayudante' => 'required|exists:personal,id_personal',
+            'ayudante_nombre' => 'required|string|max:100',
             'id_ruta' => 'required|exists:rutas,id_ruta',
             'id_unidad' => 'required|exists:unidades,id_unidad',
             'gastos' => 'array',
             'produccion' => 'array'
         ]);
 
-        $hoja = HojaTrabajo::create($request->only([
-            'fecha', 'tipo_dia', 'id_conductor', 'id_ayudante', 'id_ruta', 'id_unidad'
-        ]));
+        // Crear hoja de trabajo con nombre de ayudante tipeado
+        $hoja = HojaTrabajo::create([
+            'fecha' => $request->fecha,
+            'tipo_dia' => $request->tipo_dia,
+            'id_conductor' => $request->id_conductor,
+            'id_ruta' => $request->id_ruta,
+            'id_unidad' => $request->id_unidad,
+            'ayudante_nombre' => $request->ayudante_nombre
+        ]);
 
+        // Crear gastos
         foreach ($request->gastos as $gasto) {
+            $rutaImagen = null;
+
+            // Solo si el tipo es DIESEL u OTROS y hay imagen_base64
+            if (in_array($gasto['tipo_gasto'], ['DIESEL', 'OTROS']) && !empty($gasto['imagen_base64'])) {
+                $base64 = $gasto['imagen_base64'];
+                if (preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+                    $imageData = base64_decode(substr($base64, strpos($base64, ',') + 1));
+                    $extension = strtolower($type[1]); // jpg, png, etc.
+                    $imageName = 'gasto_' . uniqid() . '.' . $extension;
+                    $gastosPath = storage_path('app/public/gastos');
+                    if (!file_exists($gastosPath)) {
+                        mkdir($gastosPath, 0777, true); // crea la carpeta con permisos recursivos
+                    }
+                    $savePath = storage_path('app/public/gastos/' . $imageName);
+                    file_put_contents($savePath, $imageData);
+                    $rutaImagen = 'gastos/' . $imageName;
+                }
+            }
+
             Gasto::create([
                 'id_hoja' => $hoja->id_hoja,
                 'tipo_gasto' => $gasto['tipo_gasto'],
                 'valor' => $gasto['valor'],
+                'imagen' => $rutaImagen
             ]);
         }
 
+        // Crear producción
         foreach ($request->produccion as $vuelta) {
             Produccion::create([
                 'id_hoja' => $hoja->id_hoja,
@@ -54,41 +82,42 @@ class HojaTrabajoController extends Controller
         return response()->json(['message' => 'Hoja de trabajo creada', 'id' => $hoja->id_hoja]);
     }
 
+
     public function generarPDF($id)
     {
         $user = Auth::user(); // gracias a Sanctum
         $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
-
+       // dd($hoja);
         try {
             // Renderizamos el contenido HTML de la vista
             $html = view('pdf.hoja_trabajo', compact('hoja', 'user'))->render();
-    
+
             // Configuramos las opciones de DomPDF
             $options = new Options();
             $options->set('isRemoteEnabled', true);
             $options->set('isHtml5ParserEnabled', true);
             $options->set('chroot', public_path()); // Para evitar el error "Cannot resolve public path"
-    
+
             // Instanciamos DomPDF
             $pdf = new Dompdf($options);
             $pdf->loadHtml($html);
             $pdf->setPaper('A4');
             $pdf->render();
-    
+
             // Ruta donde se guarda el PDF generado
-            $pdfPath = storage_path('app/public/pdf/hoja_trabajo_'.$id.'.pdf');
-    
+            $pdfPath = storage_path('app/public/pdf/hoja_trabajo_' . $id . '.pdf');
+
             file_put_contents($pdfPath, $pdf->output());
-    
+
             // Puedes devolver el PDF directamente si quieres:
             return response()->download($pdfPath);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error generando PDF: ' . $e->getMessage()
             ], 500);
         }
 
-        return $pdf->download('hoja_trabajo_'.$id.'.pdf');
+        return $pdf->download('hoja_trabajo_' . $id . '.pdf');
     }
 }

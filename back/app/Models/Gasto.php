@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id_hoja
  * @property string $tipo_gasto
  * @property float $valor
+ * @property string|null $imagen
  * 
  * @property HojaTrabajo $hoja_trabajo
  */
@@ -23,7 +24,8 @@ class Gasto extends Model
     protected $fillable = [
         'id_hoja',
         'tipo_gasto',
-        'valor'
+        'valor',
+        'imagen' // nueva columna para almacenar ruta de imagen
     ];
 
     public function hoja_trabajo()

@@ -96,8 +96,6 @@ class AuthLoginController extends Controller
 
         return redirect()->route('login.form')->with('error', 'Correo o contraseña incorrectos.');
     }
-
-
     public function logout()
     {
         Auth::logout();

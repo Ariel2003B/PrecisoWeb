@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id_ayudante
  * @property int $id_ruta
  * @property int $id_unidad
+ * @property string|null $ayudante_nombre
  * 
  * @property Personal $conductor
  * @property Personal $ayudante
@@ -34,7 +35,8 @@ class HojaTrabajo extends Model
         'id_conductor',
         'id_ayudante',
         'id_ruta',
-        'id_unidad'
+        'id_unidad',
+        'ayudante_nombre' // nuevo campo para ayudante ingresado manualmente
     ];
 
     public function conductor()

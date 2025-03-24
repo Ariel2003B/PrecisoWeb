@@ -79,19 +79,19 @@
             <td style="width: 25%; text-align: left; border: none;">
                 <img src="http://precisogps.com/img/Precisogps.png" alt="Logo" width="150">
             </td>
-    
+
             <!-- Columna central: títulos centrados visualmente -->
             <td style="width: 50%; text-align: center; border: none;">
                 <h2 style="margin: 0;">HOJA DE TRABAJO</h2>
                 <h3 style="margin: 0;">CÍA. TRANSMETROPOLI S.A.</h3>
             </td>
-    
+
             <!-- Columna derecha vacía para compensar -->
             <td style="width: 25%; border: none;"></td>
         </tr>
     </table>
-    
-    
+
+
 
     <table width="100%" class="header">
         <tr>
@@ -107,7 +107,7 @@
         </tr>
         <tr>
             <td colspan="3" class="no-border bold">CONDUCTOR: {{ $hoja->conductor->nombre }}</td>
-            <td colspan="2" class="no-border bold">AYUDANTE: {{ $hoja->ayudante->nombre }}</td>
+            <td colspan="2" class="no-border bold">AYUDANTE: {{ $hoja->ayudante_nombre }}</td>
         </tr>
     </table>
 
@@ -124,8 +124,8 @@
                             <th rowspan="2">TOTAL POR VUELTA</th>
                         </tr>
                         <tr>
-                            <th>B</th>
-                            <th>S</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
                             <th>B</th>
                             <th>S</th>
                         </tr>
@@ -201,6 +201,25 @@
             </td>
         </tr>
     </table>
+
+
+    {{-- @if ($hoja->gastos->whereIn('tipo_gasto', ['DIESEL', 'OTROS'])->whereNotNull('imagen')->count())
+        <div style="page-break-before: always;"></div> <!-- Fuerza nueva página en el PDF -->
+
+        <h3 style="text-align: center; margin-bottom: 20px;">ANEXOS</h3>
+
+        @foreach ($hoja->gastos->whereIn('tipo_gasto', ['DIESEL', 'OTROS']) as $gasto)
+            @if ($gasto->imagen)
+                <div style="margin-bottom: 25px; text-align: center;">
+                    <p class="bold">{{ $gasto->tipo_gasto }} - Foto</p>
+                    {{-- <img src="{{ asset('back/storage/app/public/' . $gasto->imagen) }}"
+                        alt="Imagen {{ $gasto->tipo_gasto }}" style="max-width: 400px; max-height: 400px;"> --}}
+                    {{-- <img src="{{ storage_path($gasto->imagen) }}" alt="Imagen {{ $gasto->tipo_gasto }}"
+                        style="max-width: 400px;"> 
+                </div>
+            @endif
+        @endforeach
+    @endif --}}
 
 </body>
 
