@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,5 +19,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-//Route::post('/auth', LoginController::class, 'Auth');
 Route::post('/auth', [LoginController::class, 'auth']);
+Route::middleware('auth:sanctum')->group(function () {
+    //Route::post('/auth', LoginController::class, 'Auth');
+    Route::post('/hojas-trabajo', [HojaTrabajoController::class, 'store']);
+    Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
+});
