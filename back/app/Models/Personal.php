@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id_personal
  * @property string|null $nombre
  * @property string $tipo
+ * @property string|null $cedula
+ * @property string|null $telefono
+ * @property string|null $correo
  * 
  * @property Collection|HojaTrabajo[] $hojas_como_conductor
  * @property Collection|HojaTrabajo[] $hojas_como_ayudante
@@ -22,7 +25,10 @@ class Personal extends Model
 
     protected $fillable = [
         'nombre',
-        'tipo'
+        'tipo',
+        'cedula',
+        'telefono',
+        'correo'
     ];
 
     public function hojas_como_conductor()

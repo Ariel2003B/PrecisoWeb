@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
@@ -20,8 +21,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
+Route::get('/hojas', [HojaTrabajoController::class, 'index']);
+Route::put('/hojas/{id}', [HojaTrabajoController::class, 'update']);
+Route::delete('/hojas/{id}', [HojaTrabajoController::class, 'destroy']);
+Route::prefix('conductores')->group(function () {
+    Route::get('/', [ConductorController::class, 'index']);
+    Route::post('/', [ConductorController::class, 'store']);
+    Route::get('/{id}', [ConductorController::class, 'show']);
+    Route::put('/{id}', [ConductorController::class, 'update']);
+    Route::delete('/{id}', [ConductorController::class, 'destroy']);
+});
 Route::post('/auth', [LoginController::class, 'auth']);
 Route::middleware('auth:sanctum')->group(function () {
     //Route::post('/auth', LoginController::class, 'Auth');
