@@ -191,8 +191,4 @@ class HojaTrabajoController extends Controller
         return $pdf->download('hoja_trabajo_' . $id . '.pdf');
     }
 
-
-
-
-
 }
