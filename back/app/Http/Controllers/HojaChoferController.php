@@ -15,7 +15,7 @@ class HojaChoferController extends Controller
     {
         $fecha = date('Y-m-d');
 
-        $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones'])
+        $hoja = HojaTrabajo::with(['ruta', 'conductor', 'gastos', 'producciones'])
             ->where('id_unidad', $id_unidad)
             ->where('fecha', $fecha)
             ->first();
