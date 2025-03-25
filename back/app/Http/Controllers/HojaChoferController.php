@@ -1,0 +1,100 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\HojaTrabajo;
+use App\Models\Produccion;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+class HojaChoferController extends Controller
+{
+    // 1. Buscar hoja del día por unidad (desde QR)
+    public function buscarPorUnidad($id_unidad)
+    {
+        $fecha = date('Y-m-d');
+
+        $hoja = HojaTrabajo::with('producciones')
+            ->where('id_unidad', $id_unidad)
+            ->where('fecha', $fecha)
+            ->first();
+
+        if (!$hoja) {
+            // Si no existe, crear nueva hoja (puedes cambiar esto si no quieres crear directamente)
+            $hoja = HojaTrabajo::create([
+                'fecha' => $fecha,
+                'tipo_dia' => $this->getTipoDia(),
+                'id_unidad' => $id_unidad,
+                'id_conductor' => null,
+                'id_ruta' => null,
+                'ayudante_nombre' => null,
+            ]);
+        }
+
+        return response()->json($hoja);
+    }
+    // 2. Actualizar producción (el chofer solo puede actualizar vueltas)
+    public function actualizarProduccion(Request $request, $id)
+    {
+        $request->validate([
+            'produccion' => 'required|array',
+        ]);
+
+        foreach ($request->produccion as $vuelta) {
+            Produccion::updateOrCreate(
+                ['id_hoja' => $id, 'nro_vuelta' => $vuelta['nro_vuelta']],
+                [
+                    'hora_subida' => $vuelta['hora_subida'],
+                    'valor_subida' => $vuelta['valor_subida'],
+                    'hora_bajada' => $vuelta['hora_bajada'],
+                    'valor_bajada' => $vuelta['valor_bajada'],
+                ]
+            );
+        }
+
+        return response()->json(['message' => 'Producción actualizada correctamente']);
+    }
+
+    // Detectar tipo de día automáticamente (opcional)
+    private function getTipoDia()
+    {
+        $fechaActual = Carbon::now()->format('Y-m-d');
+        $anio = Carbon::now()->year;
+    
+        try {
+            $response = Http::get("https://date.nager.at/api/v3/PublicHolidays/{$anio}/EC");
+    
+            if ($response->successful()) {
+                $feriados = $response->json();
+    
+                foreach ($feriados as $feriado) {
+                    if ($feriado['date'] === $fechaActual) {
+                        return 'FERIADO';
+                    }
+                }
+    
+                $dia = Carbon::now()->dayOfWeek;
+                if ($dia === 0) return 'DOMINGO';
+                if ($dia === 6) return 'SABADO';
+                return 'LABORABLE';
+    
+            } else {
+                // Si falla la API, usar lógica local
+                return $this->tipoDiaFallback();
+            }
+    
+        } catch (\Exception $e) {
+            // En caso de error en la conexión
+            return $this->tipoDiaFallback();
+        }
+    }
+    
+    private function tipoDiaFallback()
+    {
+        $dia = Carbon::now()->dayOfWeek;
+        if ($dia === 0) return 'DOMINGO';
+        if ($dia === 6) return 'SABADO';
+        return 'LABORABLE';
+    }
+}

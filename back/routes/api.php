@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\HojaChoferController;
 use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
@@ -20,6 +21,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+// Buscar (y crear si no existe) la hoja del día para la unidad
+Route::get('/hoja-chofer/{id_unidad}', [HojaChoferController::class, 'buscarPorUnidad']);
+
+// Actualizar las vueltas (producción) de la hoja de trabajo del día
+Route::put('/hoja-chofer/{id_hoja}/produccion', [HojaChoferController::class, 'actualizarProduccion']);
 
 Route::get('/hojas', [HojaTrabajoController::class, 'index']);
 Route::put('/hojas/{id}', [HojaTrabajoController::class, 'update']);

@@ -6,6 +6,7 @@ use App\Models\HojaTrabajo;
 use App\Models\Gasto;
 use App\Models\Produccion;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Exception;
@@ -189,4 +190,9 @@ class HojaTrabajoController extends Controller
 
         return $pdf->download('hoja_trabajo_' . $id . '.pdf');
     }
+
+
+
+
+
 }
