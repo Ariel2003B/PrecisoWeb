@@ -212,10 +212,9 @@
             @if ($gasto->imagen)
                 <div style="margin-bottom: 25px; text-align: center;">
                     <p class="bold">{{ $gasto->tipo_gasto }} - Foto</p>
-                    {{-- <img src="{{ asset('back/storage/app/public/' . $gasto->imagen) }}"
-                        alt="Imagen {{ $gasto->tipo_gasto }}" style="max-width: 400px; max-height: 400px;"> --}}
-                    {{-- <img src="{{ storage_path($gasto->imagen) }}" alt="Imagen {{ $gasto->tipo_gasto }}"
-                        style="max-width: 400px;"> 
+                    
+                    <img src="http://precisogps.com/back/storage/app/public/gastos/gasto_67e42863aacfc.png" alt="Imagen {{ $gasto->tipo_gasto }}"
+                        style="max-width: 400px;">
                 </div>
             @endif
         @endforeach
