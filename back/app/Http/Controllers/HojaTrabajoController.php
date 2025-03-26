@@ -94,6 +94,56 @@ class HojaTrabajoController extends Controller
     }
 
 
+    // public function update(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'fecha' => 'required|date',
+    //         'tipo_dia' => 'required|in:LABORABLE,FERIADO,SABADO,DOMINGO',
+    //         'id_conductor' => 'required|exists:personal,id_personal',
+    //         'ayudante_nombre' => 'required|string|max:100',
+    //         'id_ruta' => 'required|exists:rutas,id_ruta',
+    //         'id_unidad' => 'required|exists:unidades,id_unidad',
+    //         'gastos' => 'array',
+    //         'produccion' => 'array' 
+    //     ]);
+
+    //     $hoja = HojaTrabajo::findOrFail($id);
+    //     $hoja->update([
+    //         'fecha' => $request->fecha,
+    //         'tipo_dia' => $request->tipo_dia,
+    //         'id_conductor' => $request->id_conductor,
+    //         'ayudante_nombre' => $request->ayudante_nombre,
+    //         'id_ruta' => $request->id_ruta,
+    //         'id_unidad' => $request->id_unidad,
+    //     ]);
+
+    //     // Limpiar y volver a insertar gastos y producción
+    //     $hoja->gastos()->delete();
+    //     $hoja->producciones()->delete();
+
+    //     foreach ($request->gastos as $gasto) {
+    //         $hoja->gastos()->create([
+    //             'tipo_gasto' => $gasto['tipo_gasto'],
+    //             'valor' => $gasto['valor'],
+    //             'imagen' => $gasto['imagen'] ?? null
+    //         ]);
+    //     }
+
+    //     foreach ($request->produccion as $prod) {
+    //         $hoja->producciones()->create([
+    //             'nro_vuelta' => $prod['nro_vuelta'],
+    //             'hora_subida' => $prod['hora_subida'],
+    //             'valor_subida' => $prod['valor_subida'],
+    //             'hora_bajada' => $prod['hora_bajada'],
+    //             'valor_bajada' => $prod['valor_bajada']
+    //         ]);
+    //     }
+
+    //     return response()->json(['message' => 'Hoja de trabajo actualizada']);
+    // }
+
+
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -107,7 +157,9 @@ class HojaTrabajoController extends Controller
             'produccion' => 'array'
         ]);
 
-        $hoja = HojaTrabajo::findOrFail($id);
+        $hoja = HojaTrabajo::with(['gastos', 'producciones'])->findOrFail($id);
+
+        // Actualizar la hoja
         $hoja->update([
             'fecha' => $request->fecha,
             'tipo_dia' => $request->tipo_dia,
@@ -117,17 +169,36 @@ class HojaTrabajoController extends Controller
             'id_unidad' => $request->id_unidad,
         ]);
 
-        // Limpiar y volver a insertar gastos y producción
-        $hoja->gastos()->delete();
-        $hoja->producciones()->delete();
-
+        // Actualizar o crear gastos
         foreach ($request->gastos as $gasto) {
-            $hoja->gastos()->create([
-                'tipo_gasto' => $gasto['tipo_gasto'],
-                'valor' => $gasto['valor'],
-                'imagen' => $gasto['imagen'] ?? null
-            ]);
+            $rutaImagen = null;
+
+            if (in_array($gasto['tipo_gasto'], ['DIESEL', 'OTROS']) && !empty($gasto['imagen_base64'])) {
+                if (preg_match('/^data:image\/(\w+);base64,/', $gasto['imagen_base64'], $type)) {
+                    $imageData = base64_decode(substr($gasto['imagen_base64'], strpos($gasto['imagen_base64'], ',') + 1));
+                    $extension = strtolower($type[1]);
+                    $imageName = 'gasto_' . uniqid() . '.' . $extension;
+                    $gastosPath = storage_path('app/public/gastos');
+                    if (!file_exists($gastosPath)) {
+                        mkdir($gastosPath, 0777, true);
+                    }
+                    $savePath = $gastosPath . '/' . $imageName;
+                    file_put_contents($savePath, $imageData);
+                    $rutaImagen = 'gastos/' . $imageName;
+                }
+            }
+
+            $hoja->gastos()->updateOrCreate(
+                ['tipo_gasto' => $gasto['tipo_gasto']],
+                [
+                    'valor' => $gasto['valor'],
+                    'imagen' => $rutaImagen ?? $hoja->gastos->firstWhere('tipo_gasto', $gasto['tipo_gasto'])?->imagen
+                ]
+            );
         }
+
+        // Eliminar y reemplazar producción (puedes modificarlo para actualizar también si prefieres)
+        $hoja->producciones()->delete();
 
         foreach ($request->produccion as $prod) {
             $hoja->producciones()->create([
@@ -139,9 +210,8 @@ class HojaTrabajoController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Hoja de trabajo actualizada']);
+        return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
     }
-
 
     public function destroy($id)
     {
