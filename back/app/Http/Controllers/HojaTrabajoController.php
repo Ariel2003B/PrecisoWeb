@@ -103,7 +103,6 @@ class HojaTrabajoController extends Controller
             'fecha' => 'required|date',
             'tipo_dia' => 'required|in:LABORABLE,FERIADO,SABADO,DOMINGO',
             'id_conductor' => 'required|exists:personal,id_personal',
-            'ayudante_nombre' => 'required|string|max:100',
             'id_ruta' => 'required|exists:rutas,id_ruta',
             'id_unidad' => 'required|exists:unidades,id_unidad',
             'gastos' => 'array',
