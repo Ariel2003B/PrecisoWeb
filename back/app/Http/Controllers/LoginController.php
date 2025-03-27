@@ -11,30 +11,26 @@ class LoginController extends Controller
 {
     public function Auth(Request $request)
     {
+        // Validar entrada
         $request->validate([
             'correo' => 'required',
             'clave' => 'required',
         ]);
-    
+        // Buscar el usuario por correo
         $usuario = USUARIO::where('CORREO', $request->input('correo'))->first();
-    
+
+        // Verificar si existe el usuario y si la clave coincide
         if (!$usuario || !Hash::check($request->input('clave'), $usuario->CLAVE)) {
             return response()->json(['message' => 'Credenciales inválidas'], 401);
         }
-    
-        // Buscar un token existente (opcionalmente filtrando por nombre si usas varios)
-        $tokenExistente = $usuario->tokens()->latest()->first();
-    
-        if ($tokenExistente) {
-            $token = $tokenExistente->plainTextToken ?? $tokenExistente->token;
-        } else {
-            // Crear nuevo token si no hay ninguno
-            $token = $usuario->createToken('auth_token')->plainTextToken;
-        }
-    
+
+        // Generar token
+        $usuario->tokens()->delete(); // eliminar tokens previos
+        $token = $usuario->createToken('auth_token')->plainTextToken;
+        // Construir respuesta con perfil y permisos
         $perfilDescripcion = $usuario->p_e_r_f_i_l?->DESCRIPCION;
         $permisos = $usuario->p_e_r_f_i_l?->p_e_r_m_i_s_o_s?->pluck('DESCRIPCION') ?? [];
-    
+
         return response()->json([
             'message' => 'Inicio de sesión exitoso',
             'token' => $token,
@@ -47,7 +43,6 @@ class LoginController extends Controller
             ]
         ]);
     }
-    
 
 
     public function user()
@@ -65,7 +60,7 @@ class LoginController extends Controller
                 'nombre' => $usuario->NOMBRE,
                 'tokenNimbus' => $usuario->TOKEN,
                 'depot' => $usuario->DEPOT,
-                'perfil'=>$perfilDescripcion
+                'perfil' => $perfilDescripcion
             ]
         ]);
     }
