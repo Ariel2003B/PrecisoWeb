@@ -36,13 +36,13 @@ Route::prefix('conductores')->group(function () {
     Route::delete('/{id}', [ConductorController::class, 'destroy']);
 });
 Route::post('/auth', [LoginController::class, 'auth']);
-
+Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
 Route::middleware('auth:sanctum')->group(function () {
     //Route::post('/auth', LoginController::class, 'Auth');
     Route::post('/hojas-trabajo', [HojaTrabajoController::class, 'store']);
 
     Route::get('/user', [LoginController::class, 'user']);
 
-    Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
+   
 
 });

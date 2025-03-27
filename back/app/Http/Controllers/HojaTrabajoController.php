@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
 use PDF;
 
 class HojaTrabajoController extends Controller
@@ -263,9 +264,26 @@ class HojaTrabajoController extends Controller
     // }
 
 
-    public function generarPDF($id)
+    public function generarPDF($id, Request $request)
     {
-        $user = Auth::user(); // gracias a Sanctum
+
+        $authHeader = $request->header('Authorization');
+
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Token no proporcionado'], 401);
+        }
+
+        $token = substr($authHeader, 7); // quita "Bearer "
+        $accessToken = PersonalAccessToken::findToken($token);
+
+        if (!$accessToken) {
+            return response()->json(['error' => 'Token inválido'], 401);
+        }
+
+        $user = $accessToken->tokenable; // Este es el usuario
+
+
+        //$user = Auth::user(); // gracias a Sanctum
         Log::info('Usuario autenticado para generar PDF', ['user_id' => $user->id ?? 'No autenticado']);
 
         try {
