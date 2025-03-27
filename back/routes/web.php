@@ -18,6 +18,7 @@ use App\Http\Controllers\SimCardController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\VisitasController;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'inicio'])->name('home.inicio');
@@ -61,7 +62,10 @@ Route::post('/pago/inicio', [CarritoController::class, 'updateQuantity'])->name(
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
-
+Route::get('/log-test', function () {
+    Log::info('Escribiendo en el log desde /log-test');
+    return 'Log generado';
+});
 
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
