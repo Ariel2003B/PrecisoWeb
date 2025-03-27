@@ -151,17 +151,20 @@ class HojaTrabajoController extends Controller
         }
 
         // Eliminar y reemplazar producción (puedes modificarlo para actualizar también si prefieres)
-        $hoja->producciones()->delete();
+        // $hoja->producciones()->delete();
 
+        // Producción: actualizar si existe, crear si no
         foreach ($request->produccion as $prod) {
-            $hoja->producciones()->create([
-                'nro_vuelta' => $prod['nro_vuelta'],
-                'hora_subida' => $prod['hora_subida'],
-                'hora_bajada' => $prod['hora_bajada'],
-                'valor_vuelta' => $prod['valor_vuelta']
-
-            ]);
+            $hoja->producciones()->updateOrCreate(
+                ['nro_vuelta' => $prod['nro_vuelta']],
+                [
+                    'hora_subida' => $prod['hora_subida'],
+                    'hora_bajada' => $prod['hora_bajada'],
+                    'valor_vuelta' => $prod['valor_vuelta'],
+                ]
+            );
         }
+
 
         return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
     }
@@ -200,7 +203,7 @@ class HojaTrabajoController extends Controller
 
         try {
 
-            $vueltasUsuario  = ProduccionUsuario::with('usuario')
+            $vueltasUsuario = ProduccionUsuario::with('usuario')
                 ->where('id_hoja', $id)
                 ->orderBy('nro_vuelta')
                 ->get();
