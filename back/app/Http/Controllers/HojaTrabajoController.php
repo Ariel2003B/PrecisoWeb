@@ -12,6 +12,7 @@ use Dompdf\Options;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use PDF;
 
 class HojaTrabajoController extends Controller
@@ -223,42 +224,86 @@ class HojaTrabajoController extends Controller
         return response()->json(['message' => 'Hoja de trabajo eliminada']);
     }
 
+    // public function generarPDF($id)
+    // {
+    //     $user = Auth::user(); // gracias a Sanctum
+    //     $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+    //     // dd($hoja);
+    //     try {
+    //         // Renderizamos el contenido HTML de la vista
+    //         $html = view('pdf.hoja_trabajo', compact('hoja', 'user'))->render();
+
+    //         // Configuramos las opciones de DomPDF
+    //         $options = new Options();
+    //         $options->set('isRemoteEnabled', true);
+    //         $options->set('isHtml5ParserEnabled', true);
+    //         $options->set('chroot', public_path()); // Para evitar el error "Cannot resolve public path"
+
+    //         // Instanciamos DomPDF
+    //         $pdf = new Dompdf($options);
+    //         $pdf->loadHtml($html);
+    //         $pdf->setPaper('A4');
+    //         $pdf->render();
+
+    //         // Ruta donde se guarda el PDF generado
+    //         $pdfPath = storage_path('app/public/pdf/hoja_trabajo_' . $id . '.pdf');
+
+    //         file_put_contents($pdfPath, $pdf->output());
+
+    //         // Puedes devolver el PDF directamente si quieres:
+    //         return response()->download($pdfPath);
+
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'error' => 'Error generando PDF: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+
+    //     return $pdf->download('hoja_trabajo_' . $id . '.pdf');
+    // }
+
+
     public function generarPDF($id)
     {
         $user = Auth::user(); // gracias a Sanctum
-        $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
-        // dd($hoja);
-        try {
-            // Renderizamos el contenido HTML de la vista
-            $html = view('pdf.hoja_trabajo', compact('hoja', 'user'))->render();
+        Log::info('Usuario autenticado para generar PDF', ['user_id' => $user->id ?? 'No autenticado']);
 
-            // Configuramos las opciones de DomPDF
+        try {
+            $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+            Log::info('Hoja de trabajo encontrada', ['id' => $id]);
+
+            $html = view('pdf.hoja_trabajo', compact('hoja', 'user'))->render();
+            Log::info('Vista HTML renderizada correctamente.');
+
             $options = new Options();
             $options->set('isRemoteEnabled', true);
             $options->set('isHtml5ParserEnabled', true);
-            $options->set('chroot', public_path()); // Para evitar el error "Cannot resolve public path"
+            $options->set('chroot', public_path());
 
-            // Instanciamos DomPDF
             $pdf = new Dompdf($options);
             $pdf->loadHtml($html);
             $pdf->setPaper('A4');
             $pdf->render();
+            Log::info('PDF renderizado correctamente.');
 
-            // Ruta donde se guarda el PDF generado
             $pdfPath = storage_path('app/public/pdf/hoja_trabajo_' . $id . '.pdf');
-
             file_put_contents($pdfPath, $pdf->output());
+            Log::info('PDF guardado correctamente', ['path' => $pdfPath]);
 
-            // Puedes devolver el PDF directamente si quieres:
             return response()->download($pdfPath);
 
         } catch (\Exception $e) {
+            Log::error('Error al generar PDF', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'error' => 'Error generando PDF: ' . $e->getMessage()
             ], 500);
         }
-
-        return $pdf->download('hoja_trabajo_' . $id . '.pdf');
     }
 
 }
