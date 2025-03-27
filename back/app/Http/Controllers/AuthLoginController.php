@@ -90,7 +90,7 @@ class AuthLoginController extends Controller
         if ($user && Hash::check($credentials['CLAVE'], $user->CLAVE)) {
             // Iniciar sesión manualmente
             Auth::login($user);
-
+            
             return redirect()->route('home.plataformas')->with('success', 'Inicio de sesión exitoso.');
         }
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ReporteProduccionController;
 use App\Http\Controllers\SancionesController;
 use App\Http\Controllers\SimCardController;
 use App\Http\Controllers\UsuarioController;
@@ -69,6 +70,9 @@ Route::get('/log-test', function () {
 
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/reportes', [ReporteProduccionController::class, 'index'])->name('reportes.index');
+    Route::get('/reportes/registrar/{id}', [ReporteProduccionController::class, 'create'])->name('reportes.create');
+    Route::post('/reportes/guardar', [ReporteProduccionController::class, 'store'])->name('reportes.store');
     Route::middleware(['auth', 'role:USUARIOS'])->group(function () {
         Route::resource('usuario', UsuarioController::class);
     });

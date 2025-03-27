@@ -260,7 +260,15 @@
                         @endif
                         {{-- <i class="fa-solid fa-blog"></i> --}}
 
-
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">REGISTRAR CONTEO PASAJEROS</h4>
+                            <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
                         <!-- Modal para WIALON -->
                         <div id="modalWialon"
                             class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
