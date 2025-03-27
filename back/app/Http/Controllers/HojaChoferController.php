@@ -46,10 +46,10 @@ class HojaChoferController extends Controller
                 ['id_hoja' => $id, 'nro_vuelta' => $vuelta['nro_vuelta']],
                 [
                     'hora_subida' => $vuelta['hora_subida'],
-                    'valor_subida' => $vuelta['valor_subida'],
                     'hora_bajada' => $vuelta['hora_bajada'],
-                    'valor_bajada' => $vuelta['valor_bajada'],
+                    'valor_vuelta' => $vuelta['valor_vuelta'],
                 ]
+                
             );
         }
 

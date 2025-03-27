@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id_produccion
  * @property int $id_hoja
  * @property int $nro_vuelta
- * @property string|null $hora_subida
- * @property float|null $valor_subida
  * @property string|null $hora_bajada
  * @property float|null $valor_bajada
  * 
@@ -27,11 +25,10 @@ class Produccion extends Model
         'id_hoja',
         'nro_vuelta',
         'hora_subida',
-        'valor_subida',
         'hora_bajada',
-        'valor_bajada'
+        'valor_vuelta' // nuevo campo
     ];
-
+    
     public function hoja_trabajo()
     {
         return $this->belongsTo(HojaTrabajo::class, 'id_hoja');
