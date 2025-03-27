@@ -38,7 +38,8 @@ class LoginController extends Controller
                 'id' => $usuario->USU_ID,
                 'nombre' => $usuario->NOMBRE,
                 'tokenNimbus' => $usuario->TOKEN,
-                'depot' => $usuario->DEPOT
+                'depot' => $usuario->DEPOT,
+                'perfil'=>$perfilDescripcion
             ]
         ]);
     }
@@ -51,12 +52,16 @@ class LoginController extends Controller
         if (!$usuario) {
             return response()->json(['message' => 'Token inválido o expirado'], 401);
         }
-
+        $perfilDescripcion = $usuario->p_e_r_f_i_l?->DESCRIPCION;
         return response()->json([
-            'id' => $usuario->USU_ID,
-            'nombre' => $usuario->NOMBRE,
-            'tokenNimbus' => $usuario->TOKEN,
-            'depot' => $usuario->DEPOT
+            'message' => 'Token valido',
+            'user' => [
+                'id' => $usuario->USU_ID,
+                'nombre' => $usuario->NOMBRE,
+                'tokenNimbus' => $usuario->TOKEN,
+                'depot' => $usuario->DEPOT,
+                'perfil'=>$perfilDescripcion
+            ]
         ]);
     }
 

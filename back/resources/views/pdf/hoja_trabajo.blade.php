@@ -103,7 +103,7 @@
         </tr>
         <tr>
             <td colspan="3" class="no-border bold">RUTA: {{ $hoja->ruta->descripcion }}</td>
-            <td colspan="2" class="no-border bold">UNIDAD No.: {{ $hoja->unidad->placa }}({{ $hoja->unidad->numero_habilitacion }})</td>
+            <td colspan="2" class="no-border bold">UNIDAD No.: {{ $hoja->unidad->placa }} ({{ $hoja->unidad->numero_habilitacion }})</td>
         </tr>
         <tr>
             <td colspan="3" class="no-border bold">CONDUCTOR: {{ $hoja->conductor->nombre }}</td>
