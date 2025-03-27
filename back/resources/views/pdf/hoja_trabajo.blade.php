@@ -103,7 +103,7 @@
         </tr>
         <tr>
             <td colspan="3" class="no-border bold">RUTA: {{ $hoja->ruta->descripcion }}</td>
-            <td colspan="2" class="no-border bold">UNIDAD No.: {{ $hoja->unidad->numero_habilitacion }}</td>
+            <td colspan="2" class="no-border bold">UNIDAD No.: {{ $hoja->unidad->placa }}({{ $hoja->unidad->numero_habilitacion }})</td>
         </tr>
         <tr>
             <td colspan="3" class="no-border bold">CONDUCTOR: {{ $hoja->conductor->nombre }}</td>
@@ -111,7 +111,7 @@
         </tr>
     </table>
 
-    <table width="100%" class="prod-table">
+    {{-- <table width="100%" class="prod-table">
         <tr>
             <!-- PRODUCCIÓN -->
             <td style="vertical-align: top;" width="60%">
@@ -158,6 +158,164 @@
                     </tbody>
                 </table>
             </td>
+        <tr>
+            <td colspan="6" style="padding-top: 15px;">
+                <table width="100%">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="section-title" style="text-align:left;">DETALLE DE PRODUCCIÓN POR
+                                USUARIO</th>
+                        </tr>
+                        <tr>
+                            <th>No. Vuelta</th>
+                            <th>Pasajes Completos</th>
+                            <th>Pasajes Medios</th>
+                            <th>Valor Vuelta</th>
+                            <th>Registrado por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($vueltasUsuario as $vu)
+                            <tr>
+                                <td>{{ $vu->nro_vuelta }}</td>
+                                <td>{{ $vu->pasaje_completo }}</td>
+                                <td>{{ $vu->pasaje_medio }}</td>
+                                <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
+                                <td>{{ $vu->usuario->NOMBRE }} {{ $vu->usuario->APELLIDO }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <!-- GASTOS -->
+        <td style="vertical-align: top;" width="40%">
+            <table width="100%" class="gastos-table">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="height: 36px;">GASTOS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $totalGastos = 0; @endphp
+                    @foreach (['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'] as $tipo)
+                        @php
+                            $valor = $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
+                            $totalGastos += $valor;
+                        @endphp
+                        <tr>
+                            <td>{{ $tipo }}</td>
+                            <td>{{ $valor > 0 ? number_format($valor, 2) : '' }}</td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <td class="total-row left">TOTAL GASTOS</td>
+                        <td class="total-row">{{ number_format($totalGastos, 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <div class="signature">
+                <p>______________________________</p>
+                <p>Firma del responsable</p>
+                <p><strong>{{ $user->NOMBRE }} {{ $user->APELLIDO }}</strong></p>
+            </div>
+            <br><br>
+            <table width="100%">
+                <tr>
+                    <td class="total-row">TOTAL A DEPOSITAR</td>
+                    <td class="total-row">{{ number_format($totalProduccion - $totalGastos, 2) }}</td>
+                </tr>
+            </table>
+        </td>
+        </tr>
+    </table> --}}
+
+
+    <table width="100%" class="prod-table">
+        <tr>
+            <!-- PRODUCCIÓN -->
+            <td style="vertical-align: top;" width="60%">
+                <table width="100%">
+                    <thead>
+                        <tr>
+                            <th>No. de vuelta</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Total por Vuelta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php $totalProduccion = 0; @endphp
+                        @for ($i = 1; $i <= 10; $i++)
+                            @php
+                                $prod = $hoja->producciones->firstWhere('nro_vuelta', $i);
+                                $hora_s = $prod?->hora_subida ?? '';
+                                $hora_b = $prod?->hora_bajada ?? '';
+                                $valor_vuelta = $prod?->valor_vuelta ?? 0;
+                                $totalProduccion += $valor_vuelta;
+                            @endphp
+                            <tr>
+                                <td>{{ $i }}</td>
+                                <td>{{ $hora_s }}</td>
+                                <td>{{ $hora_b }}</td>
+                                <td>{{ $valor_vuelta > 0 ? number_format($valor_vuelta, 2) : '' }}</td>
+                            </tr>
+                        @endfor
+                        <tr>
+                            <td colspan="3" class="total-row left">TOTAL PRODUCCIÓN</td>
+                            <td class="total-row">{{ number_format($totalProduccion, 2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                {{-- DETALLE ADICIONAL DEL USUARIO --}}
+                {{-- DETALLE DE PRODUCCIÓN POR USUARIO --}}
+                @if ($vueltasUsuario && $vueltasUsuario->count())
+                    <br>
+                    <table width="100%" style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th colspan="4" class="section-title" style="text-align:left;">
+                                    DETALLE DE PRODUCCIÓN POR USUARIO
+                                </th>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="bold" style="text-align:center; padding: 6px 0;">
+                                    Registrado por: {{ $vueltasUsuario->first()->usuario->NOMBRE ?? '' }} {{ $vueltasUsuario->first()->usuario->APELLIDO ?? '' }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>No. Vuelta</th>
+                                <th>Pasajes Completos</th>
+                                <th>Pasajes Medios</th>
+                                <th>Valor Vuelta</th>
+                           
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($vueltasUsuario as $vu)
+                                <tr>
+                                    <td>{{ $vu->nro_vuelta }}</td>
+                                    <td>{{ $vu->pasaje_completo }}</td>
+                                    <td>{{ $vu->pasaje_medio }}</td>
+                                    <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
+                                 
+                                </tr>
+                            @endforeach
+                            <tr class="total-row">
+                                <td colspan="3" class="left">TOTAL PRODUCCIÓN USUARIO</td>
+                                <td colspan="2">
+                                    {{ number_format($vueltasUsuario->sum('valor_vuelta'), 2) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                @endif
+
+            </td>
 
             <!-- GASTOS -->
             <td style="vertical-align: top;" width="40%">
@@ -201,24 +359,6 @@
             </td>
         </tr>
     </table>
-
-
-    {{-- @if ($hoja->gastos->whereIn('tipo_gasto', ['DIESEL', 'OTROS'])->whereNotNull('imagen')->count())
-        <div style="page-break-before: always;"></div> <!-- Fuerza nueva página en el PDF -->
-
-        <h3 style="text-align: center; margin-bottom: 20px;">ANEXOS</h3>
-
-        @foreach ($hoja->gastos->whereIn('tipo_gasto', ['DIESEL', 'OTROS']) as $gasto)
-            @if ($gasto->imagen)
-                <div style="margin-bottom: 25px; text-align: center;">
-                    <p class="bold">{{ $gasto->tipo_gasto }} - Foto</p>
-                    
-                    <img src="http://precisogps.com/back/storage/app/public/gastos/gasto_67e42863aacfc.png" alt="Imagen {{ $gasto->tipo_gasto }}"
-                        style="max-width: 400px;">
-                </div>
-            @endif
-        @endforeach
-    @endif --}}
 
 </body>
 

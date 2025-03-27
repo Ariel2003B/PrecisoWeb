@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HojaTrabajo;
 use App\Models\Gasto;
 use App\Models\Produccion;
+use App\Models\ProduccionUsuario;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
@@ -198,10 +199,16 @@ class HojaTrabajoController extends Controller
         Log::info('Usuario autenticado para generar PDF', ['user_id' => $user->id ?? 'No autenticado']);
 
         try {
+
+            $vueltasUsuario  = ProduccionUsuario::with('usuario')
+                ->where('id_hoja', $id)
+                ->orderBy('nro_vuelta')
+                ->get();
+
             $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
             Log::info('Hoja de trabajo encontrada', ['id' => $id]);
 
-            $html = view('pdf.hoja_trabajo', compact('hoja', 'user'))->render();
+            $html = view('pdf.hoja_trabajo', compact('hoja', 'user', 'vueltasUsuario'))->render();
             Log::info('Vista HTML renderizada correctamente.');
 
             $options = new Options();

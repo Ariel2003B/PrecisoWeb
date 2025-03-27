@@ -13,7 +13,7 @@ class HojaChoferController extends Controller
     // 1. Buscar hoja del día por unidad (desde QR)
     public function buscarPorUnidad($id_unidad)
     {
-        $fecha = date('Y-m-d');
+        $fecha = Carbon::now('America/Guayaquil')->format('Y-m-d');
 
         $hoja = HojaTrabajo::with(['ruta', 'conductor', 'gastos', 'producciones'])
             ->where('id_unidad', $id_unidad)
@@ -59,7 +59,7 @@ class HojaChoferController extends Controller
     // Detectar tipo de día automáticamente (opcional)
     private function getTipoDia()
     {
-        $fechaActual = Carbon::now()->format('Y-m-d');
+        $fechaActual = Carbon::now('America/Guayaquil')->format('Y-m-d');
         $anio = Carbon::now()->year;
     
         try {

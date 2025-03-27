@@ -64,4 +64,10 @@ class USUARIO extends Authenticatable
 	{
 		return $this->belongsTo(PERFIL::class, 'PER_ID');
 	}
+
+	public function producciones_usuario()
+	{
+		return $this->hasMany(ProduccionUsuario::class, 'usu_id');
+	}
+
 }

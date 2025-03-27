@@ -68,4 +68,10 @@ class HojaTrabajo extends Model
     {
         return $this->hasMany(Produccion::class, 'id_hoja');
     }
+
+    public function producciones_usuario()
+    {
+        return $this->hasMany(ProduccionUsuario::class, 'id_hoja');
+    }
+
 }
