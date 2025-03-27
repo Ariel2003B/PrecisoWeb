@@ -37,7 +37,7 @@
             <div class="mb-3">
                 <label for="ICC" class="form-label">ICC</label>
                 <input type="text" name="ICC" id="ICC" class="form-control" maxlength="255"
-                    value="{{ old('ICC') }}" placeholder="Ingrese el ICC" readonly>
+                    value="{{ old('ICC') }}" placeholder="Ingrese el ICC">
             </div>
             <div class="mb-3">
                 <label for="GRUPO" class="form-label">Grupo</label>
@@ -64,7 +64,7 @@
             <div class="mb-3">
                 <label for="IMEI" class="form-label">IMEI</label>
                 <input type="text" name="IMEI" id="IMEI" class="form-control" value="{{ old('IMEI') }}"
-                    placeholder="Ingrese el IMEI del equipo" readonly>
+                    placeholder="Ingrese el IMEI del equipo">
             </div>
             <div class="mb-3">
                 <label for="ESTADO" class="form-label">Estado</label>
