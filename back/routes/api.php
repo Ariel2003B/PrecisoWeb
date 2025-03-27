@@ -18,9 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 // Buscar (y crear si no existe) la hoja del día para la unidad
 Route::get('/hoja-chofer/{id_unidad}', [HojaChoferController::class, 'buscarPorUnidad']);
 
@@ -39,11 +37,12 @@ Route::prefix('conductores')->group(function () {
 });
 Route::post('/auth', [LoginController::class, 'auth']);
 
-Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
 Route::middleware('auth:sanctum')->group(function () {
     //Route::post('/auth', LoginController::class, 'Auth');
     Route::post('/hojas-trabajo', [HojaTrabajoController::class, 'store']);
-   
+
     Route::get('/user', [LoginController::class, 'user']);
+
+    Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
 
 });
