@@ -100,7 +100,7 @@
                             <h4 class="my-3">ACCESO CLIENTES</h4>
                             <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                         </div>
-                    @else
+                    @else   
                         @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
                             <div class="col-md-4 text-center">
                                 <span class="fa-stack fa-4x">

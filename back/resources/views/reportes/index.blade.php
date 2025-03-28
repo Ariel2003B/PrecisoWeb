@@ -56,10 +56,6 @@
                                 <td>{{ $hoja->tipo_dia }}</td>
                                 <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                 <td>{{ $hoja->unidad->placa . '(' . $hoja->unidad->numero_habilitacion . ')' ?? '-' }}</td>
-
-
-                                {{ $hoja->unidad->placa }}
-
                                 <td>
                                     <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">
                                         Registrar Reporte
