@@ -107,6 +107,10 @@ class GeocercaController extends Controller
 
             // Validación para omitir '1. Nombre'
             // Determinar identificador
+            if (str_starts_with($name, '.')) {
+                // Si el nombre empieza con un punto, no se agrega
+                continue;
+            }
             $identificador = 'plain';
             if (preg_match('/^\d/', $name)) {
                 $identificador = 'number';
