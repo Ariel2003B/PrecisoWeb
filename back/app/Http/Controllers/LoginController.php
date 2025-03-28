@@ -25,7 +25,7 @@ class LoginController extends Controller
         }
 
         // Generar token
-        $usuario->tokens()->delete(); // eliminar tokens previos
+//        $usuario->tokens()->delete(); // eliminar tokens previos
         $token = $usuario->createToken('auth_token')->plainTextToken;
         // Construir respuesta con perfil y permisos
         $perfilDescripcion = $usuario->p_e_r_f_i_l?->DESCRIPCION;

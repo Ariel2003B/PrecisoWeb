@@ -201,16 +201,23 @@ class HojaTrabajoController extends Controller
         Log::info('Usuario autenticado para generar PDF', ['user_id' => $user->id ?? 'No autenticado']);
 
         try {
-
             $vueltasUsuario = ProduccionUsuario::with('usuario')
                 ->where('id_hoja', $id)
                 ->orderBy('nro_vuelta')
                 ->get();
 
             $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+            $gastoDiesel = $hoja->gastos->firstWhere('tipo_gasto', 'DIESEL');
+            $gastoOtros = $hoja->gastos->firstWhere('tipo_gasto', 'OTROS');
+
+            // Construir la URL pública
+            $baseUrl = "http://precisogps.com/back/storage/app/public/";
+            $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
+            $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
+
             Log::info('Hoja de trabajo encontrada', ['id' => $id]);
 
-            $html = view('pdf.hoja_trabajo', compact('hoja', 'user', 'vueltasUsuario'))->render();
+            $html = view('pdf.hoja_trabajo', compact('hoja', 'user', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
             Log::info('Vista HTML renderizada correctamente.');
 
             $options = new Options();

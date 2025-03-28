@@ -18,43 +18,49 @@
 
         <section class="section">
             <div class="container">
-                <h4 class="mb-4">Reporte para la hoja del {{ $hoja->fecha }} - Ruta: {{ $hoja->ruta->descripcion ?? '' }}</h4>
+                <h4 class="mb-4">Reporte para la hoja del {{ $hoja->fecha }} - Ruta: {{ $hoja->ruta->descripcion ?? '' }}
+                </h4>
 
                 <form method="POST" action="{{ route('reportes.store') }}">
                     @csrf
                     <input type="hidden" name="id_hoja" value="{{ $hoja->id_hoja }}">
                     <div id="vueltasContainer">
                         @php $contador = 0; @endphp
-                        @foreach($registros as $registro)
+                        @foreach ($registros as $registro)
                             <div class="vuelta mb-3">
                                 <h5>Vuelta #{{ $registro->nro_vuelta }}</h5>
-                                <input type="hidden" name="reportes[{{ $contador }}][nro_vuelta]" value="{{ $registro->nro_vuelta }}">
+                                <input type="hidden" name="reportes[{{ $contador }}][nro_vuelta]"
+                                    value="{{ $registro->nro_vuelta }}">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <label>Pasajes Completos</label>
-                                        <input type="number" name="reportes[{{ $contador }}][pasaje_completo]" class="form-control" value="{{ $registro->pasaje_completo }}" required>
+                                        <input type="number" name="reportes[{{ $contador }}][pasaje_completo]"
+                                            class="form-control" value="{{ $registro->pasaje_completo }}" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label>Pasajes Medios</label>
-                                        <input type="number" name="reportes[{{ $contador }}][pasaje_medio]" class="form-control" value="{{ $registro->pasaje_medio }}" required>
+                                        <input type="number" name="reportes[{{ $contador }}][pasaje_medio]"
+                                            class="form-control" value="{{ $registro->pasaje_medio }}" required>
                                     </div>
                                 </div>
                             </div>
                             @php $contador++; @endphp
                         @endforeach
 
-                        @if($registros->isEmpty())
+                        @if ($registros->isEmpty())
                             <div class="vuelta mb-3">
                                 <h5>Vuelta #1</h5>
                                 <input type="hidden" name="reportes[0][nro_vuelta]" value="1">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <label>Pasajes Completos</label>
-                                        <input type="number" name="reportes[0][pasaje_completo]" class="form-control" required>
+                                        <input type="number" name="reportes[0][pasaje_completo]" class="form-control"
+                                            required>
                                     </div>
                                     <div class="col-md-4">
                                         <label>Pasajes Medios</label>
-                                        <input type="number" name="reportes[0][pasaje_medio]" class="form-control" required>
+                                        <input type="number" name="reportes[0][pasaje_medio]" class="form-control"
+                                            required>
                                     </div>
                                 </div>
                             </div>
@@ -67,6 +73,9 @@
             </div>
         </section>
     </main>
+    @php
+        $contador = $registros->isEmpty() ? 1 : $registros->max('nro_vuelta') + 1;
+    @endphp
 
     <script>
         let contador = {{ $contador }};
