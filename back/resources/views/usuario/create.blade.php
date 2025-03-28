@@ -51,14 +51,24 @@
                         <input type="password" name="CLAVE" id="CLAVE" class="form-control" placeholder="Contraseña"
                             required>
                     </div>
+                    
+                    <!-- Permisos -->
                     <div class="mb-3">
-                        <label for="PER_ID" class="form-label">Perfil</label>
-                        <select name="PER_ID" id="PER_ID" class="form-select" required>
-                            @foreach ($perfiles as $perfil)
-                                <option value="{{ $perfil->PER_ID }}">{{ $perfil->DESCRIPCION }}</option>
+                        <label for="permisos" class="form-label">Permisos</label>
+                        <div class="row">
+                            @foreach ($permisos as $permiso)
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="permisos[]" value="{{ $permiso->PRM_ID }}" id="permiso{{ $permiso->PRM_ID }}">
+                                        <label class="form-check-label" for="permiso{{ $permiso->PRM_ID }}">
+                                            {{ $permiso->DESCRIPCION }}
+                                        </label>
+                                    </div>
+                                </div>
                             @endforeach
-                        </select>
+                        </div>
                     </div>
+
                     <button type="submit" class="btn btn-success">Guardar</button>
                     <a href="{{ route('usuario.index') }}" class="btn btn-secondary">Cancelar</a>
                 </form>
@@ -66,4 +76,5 @@
         </section>
     </main>
 @endsection
+
 @section('jsCode', 'js/scriptNavBar.js')

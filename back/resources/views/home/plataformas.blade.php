@@ -19,79 +19,95 @@
         <section class="section" id="plataformas">
             <div class="container">
                 <div class="row text-center">
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-bus fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">PRECISO BUS</h4>
-                        <a class="btn btn-success" href="https://nimbus.wialon.com/login" target="_blank">Visitar página</a>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-satellite-dish fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">RASTREA TU VEHICULO</h4>
-                        <a class="btn btn-success" href="http://www.precisogps.online/" target="_blank">Visitar página</a>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-clock fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">MINUTOS CAIDOS</h4>
-                        <a class="btn btn-success" href="http://157.245.141.38:4020/login" target="_blank">Visitar
-                            página</a>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-wrench fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">MANTENIMIENTO VEHICULAR</h4>
-                        <a class="btn btn-success" href="https://fleetrun.wialon.com/login" target="_blank">Visitar
-                            página</a>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-cash-register fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">CAJA COMÚN</h4>
-                        <a class="btn btn-success" href="http://157.230.189.65:5030/login" target="_blank">Visitar
-                            página</a>
-                    </div>
-
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fas fa-folder-open fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">SECRETARIA DE MOVILIDAD</h4>
-                        <a class="btn btn-success" data-bs-toggle="modal" href="#modalSecretaria">Encuentra tu CIA</a>
-                    </div>
-
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fa-brands fa-google-drive fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">GOOGLE DRIVE</h4>
-                        <a class="btn btn-success" target="_blank"
-                            href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&followup=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&ifkv=AeZLP9-5DeLhxmOumIzRqjg75tnu7ARb-PJ4kJqAKXsKbT118fIevNTIhcCodd5k_VTr3SGo09e4gw&osid=1&passive=1209600&service=wise&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S958401757%3A1735063661397253&ddm=1">Visitar
-                            página</a>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                            <i class="fa-solid fa-car-side fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">E-DRIVERS</h4>
-                        <a class="btn btn-success" href="http://159.223.161.160:3020/forms" target="_blank">Visitar
-                            página</a>
-                    </div>
-                    @if (!Auth::check())
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-bus fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">PRECISO BUS</h4>
+                            <a class="btn btn-success" href="https://nimbus.wialon.com/login" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'RASTREA TU VEHICULO'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-satellite-dish fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">RASTREA TU VEHICULO</h4>
+                            <a class="btn btn-success" href="http://www.precisogps.online/" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'MINUTOS CAIDOS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-clock fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">MINUTOS CAIDOS</h4>
+                            <a class="btn btn-success" href="http://157.245.141.38:4020/login" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'MANTENIMIENTO VEHICULAR'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-wrench fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">MANTENIMIENTO VEHICULAR</h4>
+                            <a class="btn btn-success" href="https://fleetrun.wialon.com/login" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'CAJA COMÚN'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-cash-register fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">CAJA COMÚN</h4>
+                            <a class="btn btn-success" href="http://157.230.189.65:5030/login" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SECRETARIA DE MOVILIDAD'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-folder-open fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">SECRETARIA DE MOVILIDAD</h4>
+                            <a class="btn btn-success" data-bs-toggle="modal" href="#modalSecretaria">Encuentra tu CIA</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GOOGLE DRIVE'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-brands fa-google-drive fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GOOGLE DRIVE</h4>
+                            <a class="btn btn-success" target="_blank"
+                                href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&followup=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&ifkv=AeZLP9-5DeLhxmOumIzRqjg75tnu7ARb-PJ4kJqAKXsKbT118fIevNTIhcCodd5k_VTr3SGo09e4gw&osid=1&passive=1209600&service=wise&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S958401757%3A1735063661397253&ddm=1">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'E-DRIVERS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-car-side fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">E-DRIVERS</h4>
+                            <a class="btn btn-success" href="http://159.223.161.160:3020/forms" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    {{-- @if (!Auth::check())
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -100,51 +116,50 @@
                             <h4 class="my-3">ACCESO CLIENTES</h4>
                             <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                         </div>
-                    @else
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                            <div class="col-md-4 text-center">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">SIMCARDS</h4>
-                                <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
-                            </div>
-                        @endif
-                        <!-- Modal para CLARO -->
-                        <div id="modalClaro"
-                            class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
-                            style="display: none;">
-                            <p class="text-center mb-3 fw-bold">Selecciona una opción para SIMCARDS:</p>
-                            <div>
-                                <!-- Imagen con enlace -->
-                                <a href="http://www.miclaro.com.ec/ivrdigital" target="_blank">
-                                    <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
-                                        alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 90px;">
-                                </a>
-                                <p><a href="http://www.miclaro.com.ec/ivrdigital" target="_blank"
-                                        class="text-primary">Reposicion de chips</a></p>
-                                <!-- Otra Imagen con enlace -->
-                                <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
-                                    <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
-                                        alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 90px;">
-                                </a>
-                                <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero"
-                                        target="_blank" class="text-primary">Factuacion CLARO</a></p>
-                                @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SIMCARDS'))
-                                    <a href="{{ route('simcards.index') }}" target="_blank">
-                                        <img src="{{ asset('img/precisoimg/logoPreciso.jpg') }}" alt="Imagen Claro 2"
-                                            class="img-fluid mb-2" style="max-width: 90px;">
-                                    </a>
-                                    <p><a href="{{ route('simcards.index') }}" target="_blank"
-                                            class="text-primary">Gestionar
-                                            Simcards</a></p>
-                                @endif
-                            </div>
+                    @else --}}
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SIMCARDS'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">SIMCARDS</h4>
+                            <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
                         </div>
                     @endif
-                    @if (Auth::check())
-                        <!-- Sección WIALON -->
+                    <!-- Modal para CLARO -->
+                    <div id="modalClaro"
+                        class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
+                        style="display: none;">
+                        <p class="text-center mb-3 fw-bold">Selecciona una opción para SIMCARDS:</p>
+                        <div>
+                            <!-- Imagen con enlace -->
+                            <a href="http://www.miclaro.com.ec/ivrdigital" target="_blank">
+                                <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
+                                    alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 90px;">
+                            </a>
+                            <p><a href="http://www.miclaro.com.ec/ivrdigital" target="_blank"
+                                    class="text-primary">Reposicion de chips</a></p>
+                            <!-- Otra Imagen con enlace -->
+                            <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
+                                <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
+                                    alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 90px;">
+                            </a>
+                            <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank"
+                                    class="text-primary">Factuacion CLARO</a></p>
+                            @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
+                                <a href="{{ route('simcards.index') }}" target="_blank">
+                                    <img src="{{ asset('img/precisoimg/logoPreciso.jpg') }}" alt="Imagen Claro 2"
+                                        class="img-fluid mb-2" style="max-width: 90px;">
+                                </a>
+                                <p><a href="{{ route('simcards.index') }}" target="_blank" class="text-primary">Gestionar
+                                        Simcards</a></p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Sección WIALON -->
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'WIALON'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -153,6 +168,8 @@
                             <h4 class="my-3">WIALON</h4>
                             <button class="btn btn-success" onclick="mostrarModalWialon(event)">Opciones</button>
                         </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'DIGITAL OCEAN'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -163,6 +180,8 @@
                                 href="https://cloud.digitalocean.com/login">Visitar
                                 pagina</a>
                         </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GODADDY'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -173,6 +192,8 @@
                                 href="https://sso.godaddy.com/?realm=idp&app=cart&path=%2Fcheckoutapi%2Fv1%2Fredirects%2Flogin">Visitar
                                 pagina</a>
                         </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SISTEMA CONTABLE'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -182,116 +203,119 @@
                             <a class="btn btn-success" target="_blank" href="https://fws.com.ec">Visitar
                                 pagina</a>
                         </div>
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'USUARIOS'))
-                            <div class="col-md-4 text-center">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fas fa-users fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">GESTION DE USUARIOS</h4>
-                                <a class="btn btn-success" href="{{ route('usuario.index') }}">Visitar
-                                    pagina</a>
-                            </div>
-                        @endif
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PERFILES'))
-                            <div class="col-md-4 text-center">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">GESTION DE PERFILES</h4>
-                                <a class="btn btn-success" href="{{ route('perfil.index') }}">Visitar
-                                    pagina</a>
-                            </div>
-                        @endif
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'SANCIONES'))
-                            <div class="col-md-4">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">SANCIONES</h4>
-                                <a class="btn btn-success" href="{{ route('sanciones.index', ['parametro' => 'S-N']) }}"
-                                    target="_blank">Visitar
-                                    página</a>
-                            </div>
-                        @endif
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'PLANES'))
-                            <div class="col-md-4">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">GESTION DE PLANES</h4>
-                                <a class="btn btn-success" href="{{ route('plan.index') }}" target="_blank">Visitar
-                                    página</a>
-                            </div>
-                            <div class="col-md-4">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">GESTION DE EQUIPOS Y ACCESORIOS</h4>
-                                <a class="btn btn-success" href="{{ route('equipos.index') }}" target="_blank">Visitar
-                                    página</a>
-                            </div>
-                        @endif
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'BLOGS'))
-                            <div class="col-md-4">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fa-solid fa-blog fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">GESTION DE BLOGS</h4>
-                                <a class="btn btn-success" href="{{ route('blog.index') }}" target="_blank">Visitar
-                                    página</a>
-                            </div>
-                        @endif
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'WIALON DATA'))
-                            <div class="col-md-4">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">CREAR GEOCERCAS EN WIALON</h4>
-                                <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
-                                    página</a>
-                            </div>
-                        @endif
-                        {{-- <i class="fa-solid fa-blog"></i> --}}
-                        @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'CONTEO'))
-                            <div class="col-md-4">
-                                <span class="fa-stack fa-4x">
-                                    <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                    <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">REGISTRAR CONTEO PASAJEROS</h4>
-                                <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
-                                    página</a>
-                            </div>
-                        @endif
-                        <!-- Modal para WIALON -->
-                        <div id="modalWialon"
-                            class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
-                            style="display: none;">
-                            <p class="text-center mb-3 fw-bold">Selecciona una opción para WIALON:</p>
-                            <div>
-                                <!-- Imagen con enlace -->
-                                <a href="https://cms.wialon.us" target="_blank">
-                                    <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
-                                        alt="Imagen WIALON 1" class="img-fluid mb-2" style="max-width: 80px;">
-                                </a>
-                                <p><a href="https://cms.wialon.us" target="_blank" class="text-primary">CMS WIALON</a>
-                                </p>
-                                <!-- Otra Imagen con enlace -->
-                                <a href="https://my.wialon.com/es/login" target="_blank">
-                                    <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
-                                        alt="Imagen WIALON 2" class="img-fluid mb-2" style="max-width: 80px;">
-                                </a>
-                                <p><a href="https://my.wialon.com/es/login" target="_blank" class="text-primary">Pagos
-                                        WIALON</a></p>
-                            </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE USUARIOS'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-users fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE USUARIOS</h4>
+                            <a class="btn btn-success" href="{{ route('usuario.index') }}">Visitar
+                                pagina</a>
                         </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE PERFILES'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE PERFILES</h4>
+                            <a class="btn btn-success" href="{{ route('perfil.index') }}">Visitar
+                                pagina</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SANCIONES'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">SANCIONES</h4>
+                            <a class="btn btn-success" href="{{ route('sanciones.index', ['parametro' => 'S-N']) }}"
+                                target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE PLANES'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE PLANES</h4>
+                            <a class="btn btn-success" href="{{ route('plan.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE EQUIPOS Y ACCESORIOS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE EQUIPOS Y ACCESORIOS</h4>
+                            <a class="btn btn-success" href="{{ route('equipos.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE BLOGS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-blog fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE BLOGS</h4>
+                            <a class="btn btn-success" href="{{ route('blog.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'CREAR GEOCERCAS EN WIALON'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">CREAR GEOCERCAS EN WIALON</h4>
+                            <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    {{-- <i class="fa-solid fa-blog"></i> --}}
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'REGISTRAR CONTEO PASAJEROS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">REGISTRAR CONTEO PASAJEROS</h4>
+                            <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    <!-- Modal para WIALON -->
+                    <div id="modalWialon"
+                        class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
+                        style="display: none;">
+                        <p class="text-center mb-3 fw-bold">Selecciona una opción para WIALON:</p>
+                        <div>
+                            <!-- Imagen con enlace -->
+                            <a href="https://cms.wialon.us" target="_blank">
+                                <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
+                                    alt="Imagen WIALON 1" class="img-fluid mb-2" style="max-width: 80px;">
+                            </a>
+                            <p><a href="https://cms.wialon.us" target="_blank" class="text-primary">CMS WIALON</a>
+                            </p>
+                            <!-- Otra Imagen con enlace -->
+                            <a href="https://my.wialon.com/es/login" target="_blank">
+                                <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
+                                    alt="Imagen WIALON 2" class="img-fluid mb-2" style="max-width: 80px;">
+                            </a>
+                            <p><a href="https://my.wialon.com/es/login" target="_blank" class="text-primary">Pagos
+                                    WIALON</a></p>
+                        </div>
+                    </div>
                 </div>
                 <script>
                     // Almacena el modal actualmente abierto
@@ -358,7 +382,6 @@
                         mostrarModal(event, 'modalWialon', -420);
                     }
                 </script>
-                @endif
             </div>
         </section>
     </main>

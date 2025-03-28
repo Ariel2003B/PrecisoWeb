@@ -34,6 +34,11 @@ class PERMISO extends Model
 	public function p_e_r_f_i_l_s()
 	{
 		return $this->belongsToMany(PERFIL::class, 'PERFILPERMISO', 'PRM_ID', 'PER_ID')
-					->withPivot('PERPER_ID');
+			->withPivot('PERPER_ID');
+	}
+	// Nueva relación con la tabla USUARIO (Relación directa)
+	public function usuarios()
+	{
+		return $this->belongsToMany(USUARIO::class, 'USUARIOPERMISO', 'PRM_ID', 'USU_ID');
 	}
 }

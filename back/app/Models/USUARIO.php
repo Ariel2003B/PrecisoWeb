@@ -23,7 +23,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int|null $DEPOT
  * 
  * @property PERFIL|null $p_e_r_f_i_l
- *
+ * @property \Illuminate\Database\Eloquent\Collection|PERMISO[] $permisos
  * @package App\Models
  */
 class USUARIO extends Authenticatable
@@ -68,6 +68,11 @@ class USUARIO extends Authenticatable
 	public function producciones_usuario()
 	{
 		return $this->hasMany(ProduccionUsuario::class, 'usu_id');
+	}
+	// Nueva relación con la tabla USUARIOPERMISO
+	public function permisos()
+	{
+		return $this->belongsToMany(PERMISO::class, 'USUARIOPERMISO', 'USU_ID', 'PRM_ID');
 	}
 
 }

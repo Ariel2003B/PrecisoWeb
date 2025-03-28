@@ -73,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reportes', [ReporteProduccionController::class, 'index'])->name('reportes.index');
     Route::get('/reportes/registrar/{id}', [ReporteProduccionController::class, 'create'])->name('reportes.create');
     Route::post('/reportes/guardar', [ReporteProduccionController::class, 'store'])->name('reportes.store');
-    Route::middleware(['auth', 'role:USUARIOS'])->group(function () {
+    Route::middleware(['auth', 'role:GESTION DE USUARIOS'])->group(function () {
         Route::resource('usuario', UsuarioController::class);
     });
     Route::middleware(['auth', 'role:SIMCARDS'])->group(function () {
@@ -85,7 +85,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/simcards/updateSimCardFromWialon', [SimCardController::class, 'updateSimCardFromWialon'])
             ->name('simcards.updateSimCardFromWialon');
     });
-    Route::middleware(['auth', 'role:PERFILES'])->group(function () {
+    Route::middleware(['auth', 'role:GESTION DE PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);
         Route::post('/permisos', [PermisoController::class, 'store'])->name('permiso.store');
 
@@ -100,14 +100,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
         Route::post('/sanciones/delete', [SancionesController::class, 'truncateTable'])->name('sanciones.truncate');
     });
-    Route::middleware(['auth', 'role:PLANES'])->group(function () {
+    Route::middleware(['auth', 'role:GESTION DE PLANES'])->group(function () {
         Route::resource('plan', PlanController::class);
         Route::resource('caracteristica', CaracteristicaController::class);
         Route::get('/caracteristica/{id}/edit', [CaracteristicaController::class, 'edit'])->name('caracteristica.edit');
         Route::put('/caracteristica/{id}', [CaracteristicaController::class, 'update'])->name('caracteristica.update');
 
     });
-    Route::middleware(['auth', 'role:BLOGS'])->group(function () {
+    Route::middleware(['auth', 'role:GESTION DE BLOGS'])->group(function () {
         Route::resource('blog', BlogController::class);
     });
 
@@ -119,8 +119,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/geocercas/eliminar', [GeocercaController::class, 'eliminar'])->name('geocercas.eliminar');
 
     });
-
-
     Route::get('/rutas', [MinutosCaidosController::class, 'index'])->name('rutas.index');
     Route::get('/rutas/minutos-caidos', [MinutosCaidosController::class, 'actualizarTabla'])->name('rutas.actualizar');
 

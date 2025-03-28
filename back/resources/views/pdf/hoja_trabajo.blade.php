@@ -177,30 +177,40 @@
                     <table width="100%">
                         <thead>
                             <tr>
-                                <th colspan="4" class="section-title" style="text-align:left;">
+                                <th colspan="5" class="section-title" style="text-align:left;">
                                     DETALLE PRODUCCIÓN USUARIO
                                 </th>
                             </tr>
                             <tr>
-                                <td colspan="4" class="bold" style="text-align:center; padding: 6px 0;">
+                                <td colspan="5" class="bold" style="text-align:center; padding: 6px 0;">
                                     Registrado por: {{ $vueltasUsuario->first()->usuario->NOMBRE ?? '' }}
                                     {{ $vueltasUsuario->first()->usuario->APELLIDO ?? '' }}
                                 </td>
                             </tr>
                             <tr>
-                                <th>No. Vuelta</th>
+                                <th>No.</th>
                                 <th>Completos</th>
                                 <th>Medios</th>
                                 <th>Valor</th>
+                                <th>Diferencia</th> <!-- Nueva columna -->
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($vueltasUsuario as $vu)
+                                @php
+                                    $produccionChofer = $hoja->producciones->firstWhere('nro_vuelta', $vu->nro_vuelta);
+                                    $valorChofer = $produccionChofer ? $produccionChofer->valor_vuelta : 0;
+                                    $diferencia = $valorChofer - $vu->valor_vuelta;
+
+                                    $diferenciaTexto =
+                                        $diferencia > 0 ? "+$diferencia" : ($diferencia < 0 ? "$diferencia" : '0');
+                                @endphp
                                 <tr>
                                     <td>{{ $vu->nro_vuelta }}</td>
                                     <td>{{ $vu->pasaje_completo }}</td>
                                     <td>{{ $vu->pasaje_medio }}</td>
                                     <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
+                                    <td>{{ $diferenciaTexto }}</td>
                                 </tr>
                             @endforeach
                             <tr class="total-row">
@@ -211,6 +221,7 @@
                     </table>
                 @endif
             </td>
+
         </tr>
     </table>
 

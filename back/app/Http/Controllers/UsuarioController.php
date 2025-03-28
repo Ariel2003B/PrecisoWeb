@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\USUARIO;
 use App\Models\PERFIL;
+use App\Models\PERMISO;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
@@ -17,7 +18,8 @@ class UsuarioController extends Controller
     public function create()
     {
         $perfiles = PERFIL::where('ESTADO', 'A')->get();
-        return view('usuario.create', compact('perfiles'));
+        $permisos = PERMISO::where('ESTADO', 'A')->get(); // Traemos todos los permisos activos
+        return view('usuario.create', compact('perfiles', 'permisos'));
     }
 
     public function store(Request $request)
@@ -27,19 +29,22 @@ class UsuarioController extends Controller
             'APELLIDO' => 'nullable|string|max:255',
             'CORREO' => 'required|email|unique:USUARIO,CORREO',
             'CLAVE' => 'required|min:6',
-            'PER_ID' => 'required|exists:PERFIL,PER_ID',
+            'permisos' => 'array' // Aseguramos que sea un array de permisos
         ]);
 
-        USUARIO::create([
+        $usuario = USUARIO::create([
             'NOMBRE' => $request->NOMBRE,
             'APELLIDO' => $request->APELLIDO,
             'CORREO' => $request->CORREO,
             'CLAVE' => $request->CLAVE,
             'ESTADO' => 'A',
-            'PER_ID' => $request->PER_ID,
             'TOKEN' => $request->TOKEN,
             'DEPOT' => $request->DEPOT
         ]);
+
+        if ($request->has('permisos')) {
+            $usuario->permisos()->sync($request->permisos); // Asignar permisos seleccionados
+        }
 
         return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente.');
     }
@@ -47,7 +52,10 @@ class UsuarioController extends Controller
     public function edit(USUARIO $usuario)
     {
         $perfiles = PERFIL::where('ESTADO', 'A')->get();
-        return view('usuario.edit', compact('usuario', 'perfiles'));
+        $permisos = PERMISO::where('ESTADO', 'A')->get();
+        $usuarioPermisos = $usuario->permisos->pluck('PRM_ID')->toArray(); // Obtener permisos actuales del usuario
+
+        return view('usuario.edit', compact('usuario', 'perfiles', 'permisos', 'usuarioPermisos'));
     }
 
     public function update(Request $request, USUARIO $usuario)
@@ -57,29 +65,28 @@ class UsuarioController extends Controller
             'APELLIDO' => 'nullable|string|max:255',
             'CORREO' => 'required|email|unique:USUARIO,CORREO,' . $usuario->USU_ID . ',USU_ID',
             'CLAVE' => 'nullable|min:6', // Permite clave nula
-            'PER_ID' => 'required|exists:PERFIL,PER_ID',
+            'permisos' => 'array'
         ]);
 
-        // Actualización de los datos del usuario
         $updateData = [
             'NOMBRE' => $request->NOMBRE,
             'APELLIDO' => $request->APELLIDO,
             'CORREO' => $request->CORREO,
-            'PER_ID' => $request->PER_ID,
             'TOKEN' => $request->TOKEN,
             'DEPOT' => $request->DEPOT
         ];
 
-        // Solo actualizar la clave si se proporciona una nueva
         if ($request->filled('CLAVE')) {
-            $updateData['CLAVE'] = $request->CLAVE; // Laravel usará el setter para encriptarla
+            $updateData['CLAVE'] = $request->CLAVE;
         }
 
-        // Actualizar el usuario
         $usuario->update($updateData);
 
-        return redirect()->route('usuario.index')->with('success', 'Usuario actualizado exitosamente.');
+        if ($request->has('permisos')) {
+            $usuario->permisos()->sync($request->permisos); // Actualizar permisos seleccionados
+        }
 
+        return redirect()->route('usuario.index')->with('success', 'Usuario actualizado exitosamente.');
     }
 
     public function destroy(USUARIO $usuario)

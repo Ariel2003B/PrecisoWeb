@@ -25,7 +25,7 @@
                     <div class="input-group">
                         <input type="file" name="archivo" id="archivo" accept=".csv" required class="form-control">
                         <button class="btn btn-success" type="submit">
-                            <i class="bi bi-cloud-upload"></i> Cargar datos
+                            <i class="bi bi-cloud-upload"></i> Cargar datos 
                         </button>
                     </div>
                 </form>

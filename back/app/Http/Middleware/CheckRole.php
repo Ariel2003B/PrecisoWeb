@@ -14,7 +14,7 @@ class CheckRole
             return redirect('/login');
         }
         $user = Auth::user();
-        $permissions = $user->p_e_r_f_i_l->p_e_r_m_i_s_o_s->pluck('DESCRIPCION')->toArray();
+        $permissions = $user->permisos->pluck('DESCRIPCION')->toArray();
         $confirmAcces = false;
         $valorBuscar = null;
         foreach ($permission as $valor) {
