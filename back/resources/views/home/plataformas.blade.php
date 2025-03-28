@@ -97,7 +97,7 @@
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                                 <i class="fas fa-user-circle fa-stack-1x fa-inverse"></i>
                             </span>
-                            <h4 class="my-3">AREA TECNICOS</h4>
+                            <h4 class="my-3">ACCESO CLIENTES</h4>
                             <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                         </div>
                     @else
