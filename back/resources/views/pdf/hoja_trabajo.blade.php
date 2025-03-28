@@ -271,22 +271,22 @@
         </tbody>
     </table>
     @if ($imagenDiesel || $imagenOtros)
-        <div style="page-break-inside: avoid; margin-top: 15px;">
+        <div style="margin-top: 5px;">
             <h4 style="text-align: left; text-decoration: underline; margin-bottom: 5px;">Anexos</h4>
             <table width="100%" style="border: none;">
                 <tr>
                     @if ($imagenDiesel)
-                        <td style="text-align: center; border: none;">
+                        <td style="text-align: center; border: none; width: 50%;">
                             <p style="margin: 0;"><strong>Comprobante DIESEL</strong></p>
                             <img src="{{ $imagenDiesel }}" alt="Imagen DIESEL"
-                                style="max-width: 220px; max-height: 200px; margin: 5px;">
+                                style="max-width: 180px; max-height: 160px; margin: 5px;">
                         </td>
                     @endif
                     @if ($imagenOtros)
-                        <td style="text-align: center; border: none;">
+                        <td style="text-align: center; border: none; width: 50%;">
                             <p style="margin: 0;"><strong>Comprobante OTROS</strong></p>
                             <img src="{{ $imagenOtros }}" alt="Imagen OTROS"
-                                style="max-width: 220px; max-height: 200px; margin: 5px;">
+                                style="max-width: 180px; max-height: 160px; margin: 5px;">
                         </td>
                     @endif
                 </tr>
@@ -336,11 +336,11 @@
                         </tr>
                     </table>
                 </td>
-                
+
             </tr>
         </table>
     </div>
-    
+
 
 
 </body>
