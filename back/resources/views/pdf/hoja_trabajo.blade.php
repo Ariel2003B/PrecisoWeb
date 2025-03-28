@@ -216,6 +216,7 @@
                             <tr class="total-row">
                                 <td colspan="3" class="left">TOTAL USUARIO</td>
                                 <td>{{ number_format($vueltasUsuario->sum('valor_vuelta'), 2) }}</td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
@@ -237,7 +238,7 @@
                     <td class="no-border bold" style="text-align: left;">
                         @if ($diferencia > 0)
                             El chofer registró <span
-                                style="color: rgb(0, 128, 255);">{{ number_format($diferencia, 2) }} dólares
+                                style="color: rgb(49, 115, 16);">{{ number_format($diferencia, 2) }} dólares
                                 más</span> que el conteo del usuario.
                         @elseif ($diferencia < 0)
                             El chofer registró <span style="color: red;">${{ number_format(abs($diferencia), 2) }}

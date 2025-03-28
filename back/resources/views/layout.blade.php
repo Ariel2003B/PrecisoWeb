@@ -59,8 +59,11 @@
                     <li><a href="{{ route('home.blogs') }}" class="@yield('ActivarBlog')">Blog</a></li>
                     <li><a href="{{ route('home.nosotros') }}" class="@yield('ActivarNosotros')">Nosotros</a></li>
                     <!-- Dropdown del usuario -->
-                    <li><a href="{{ route('home.plataformas') }}" class="@yield('ActivarPlataformas')">Plataformas</a></li>
+                    @if (!Auth::check())
+                        <li><a href="{{ route('login.form') }}">Iniciar Sesion</a></li>
+                    @endif
                     @if (Auth::check())
+                        <li><a href="{{ route('home.plataformas') }}" class="@yield('ActivarPlataformas')">Plataformas</a></li>
                         <li class="dropdown"><a><span>{{ Auth::user()->NOMBRE }}
                                     {{ Auth::user()->APELLIDO }}</span> <i
                                     class="bi bi-chevron-down toggle-dropdown"></i></a>
