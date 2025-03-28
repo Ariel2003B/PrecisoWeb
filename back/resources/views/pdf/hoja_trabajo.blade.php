@@ -215,24 +215,29 @@
         </tbody>
     </table>
     @if ($imagenDiesel || $imagenOtros)
-        <div style="page-break-inside: avoid; margin-top: 20px;">
-            <h4 style="text-align: left; text-decoration: underline;">Anexos</h4>
-
-            @if ($imagenDiesel)
-                <div style="margin-bottom: 10px;">
-                    <strong>Comprobante DIESEL</strong><br>
-                    <img src="{{ $imagenDiesel }}" alt="Imagen DIESEL" style="max-width: 300px; max-height: 400px;">
-                </div>
-            @endif
-
-            @if ($imagenOtros)
-                <div>
-                    <strong>Comprobante OTROS</strong><br>
-                    <img src="{{ $imagenOtros }}" alt="Imagen OTROS" style="max-width: 300px; max-height: 400px;">
-                </div>
-            @endif
+        <div style="page-break-inside: avoid; margin-top: 15px;">
+            <h4 style="text-align: left; text-decoration: underline; margin-bottom: 5px;">Anexos</h4>
+            <table width="100%" style="border: none;">
+                <tr>
+                    @if ($imagenDiesel)
+                        <td style="text-align: center; border: none;">
+                            <p style="margin: 0;"><strong>Comprobante DIESEL</strong></p>
+                            <img src="{{ $imagenDiesel }}" alt="Imagen DIESEL"
+                                style="max-width: 220px; max-height: 200px; margin: 5px;">
+                        </td>
+                    @endif
+                    @if ($imagenOtros)
+                        <td style="text-align: center; border: none;">
+                            <p style="margin: 0;"><strong>Comprobante OTROS</strong></p>
+                            <img src="{{ $imagenOtros }}" alt="Imagen OTROS"
+                                style="max-width: 220px; max-height: 200px; margin: 5px;">
+                        </td>
+                    @endif
+                </tr>
+            </table>
         </div>
     @endif
+
 
 
     <!-- FIRMA -->
