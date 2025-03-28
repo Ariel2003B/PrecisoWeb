@@ -56,6 +56,11 @@
             background-color: #F1F8E9;
             font-weight: bold;
         }
+
+        .total-row-depot {
+            background-color: #f2d6d6;
+            font-weight: bold;
+        }
     </style>
 
 </head>
@@ -75,8 +80,11 @@
                 <h3 style="margin: 0;">CÍA. TRANSMETROPOLI S.A.</h3>
             </td>
 
-            <!-- Columna derecha vacía para compensar -->
-            <td style="width: 25%; border: none;"></td>
+            <!-- Columna derecha: logo de Metropoli -->
+            <td style="width: 25%; text-align: right; border: none;">
+                <img src="http://precisogps.com/img/clients/metropoli.png" alt="Logo Metropoli" width="100">
+            </td>
+
         </tr>
     </table>
 
@@ -185,6 +193,33 @@
         </tr>
     </table>
 
+    @if ($vueltasUsuario && $vueltasUsuario->count())
+        @php
+            $totalUsuario = $vueltasUsuario->sum('valor_vuelta');
+            $diferencia = $totalProduccion - $totalUsuario;
+        @endphp
+
+        <div style="margin-top: 10px;">
+            <table width="100%" style="border: none;">
+                <tr>
+                    <td class="no-border bold" style="text-align: left;">
+                        @if ($diferencia > 0)
+                            El chofer registró <span
+                                style="color: rgb(0, 128, 255);">{{ number_format($diferencia, 2) }} dólares
+                                más</span> que el conteo del usuario.
+                        @elseif ($diferencia < 0)
+                            El chofer registró <span style="color: red;">${{ number_format(abs($diferencia), 2) }}
+                                dólares menos</span> que el conteo del usuario.
+                        @else
+                            El chofer y el usuario registraron la misma cantidad de dinero.
+                        @endif
+                    </td>
+                </tr>
+            </table>
+        </div>
+    @endif
+
+
     <!-- GASTOS Y TOTAL FINAL -->
     <table width="100%" class="gastos-table" style="margin-top: 20px;">
         <thead>
@@ -209,8 +244,8 @@
                 <td class="total-row">{{ number_format($totalGastos, 2) }}</td>
             </tr>
             <tr>
-                <td class="total-row left">TOTAL A DEPOSITAR</td>
-                <td class="total-row">{{ number_format($totalProduccion - $totalGastos, 2) }}</td>
+                <td class="total-row-depot left">TOTAL A DEPOSITAR</td>
+                <td class="total-row-depot">{{ number_format($totalProduccion - $totalGastos, 2) }}</td>
             </tr>
         </tbody>
     </table>
