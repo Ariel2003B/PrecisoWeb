@@ -4,10 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        @page {
+            margin-top: 100px;
+            margin-bottom: 120px;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+
+
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
+            margin: 0;
+            padding: 0;
         }
+
+        .footer {
+            position: fixed;
+            bottom: -60px;
+            /* Esto baja el footer al final real del PDF */
+            left: 0;
+            right: 0;
+            height: 100px;
+            font-size: 11px;
+        }
+
 
         table,
         th,
@@ -273,139 +294,54 @@
         </div>
     @endif
 
+    <div class="footer">
+        <hr style="margin-bottom: 10px; border: none; border-top: 1px solid #ccc;">
+        <table width="100%">
+            <tr>
+                <td width="50%" style="text-align: left; vertical-align: top;">
+                    <strong>PrecisoGPS</strong><br>
+                    E16 N53-209 y de los Cholanes<br>
+                    Quito, 170514<br>
+                    <strong>Celular:</strong> +593 99 045 3275<br>
+                    <strong>Correo:</strong> ventas@precisogps.com<br>
+                    <a href="www.precisogps.com">www.precisogps.com</a>
 
-
-    <!-- FIRMA -->
-    {{-- <div class="signature">
-        <p>______________________________</p>
-        <p>Firma del responsable</p>
-        <p><strong>{{ $user->NOMBRE }} {{ $user->APELLIDO }}</strong></p>
-    </div> --}}
-
-
-    {{-- <table width="100%" class="prod-table">
-        <tr>
-            <!-- PRODUCCIÓN -->
-            <td style="vertical-align: top;" width="60%">
-                <table width="100%">
-                    <thead>
+                </td>
+                <td width="50%" style="text-align: right; vertical-align: top;">
+                    <strong>Síguenos en redes:</strong><br>
+                    <table style="border: none; margin-top: 5px; margin-left: auto;">
                         <tr>
-                            <th>No. de vuelta</th>
-                            <th>Hora Inicio</th>
-                            <th>Hora Fin</th>
-                            <th>Total por Vuelta</th>
+                            <td style="border: none; padding: 2px;">
+                                <img src="https://cdn-icons-png.flaticon.com/16/733/733547.png" alt="Facebook">
+                            </td>
+                            <td style="border: none; padding: 2px;">@PrecisoGPS</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @php $totalProduccion = 0; @endphp
-                        @for ($i = 1; $i <= 10; $i++)
-                            @php
-                                $prod = $hoja->producciones->firstWhere('nro_vuelta', $i);
-                                $hora_s = $prod?->hora_subida ?? '';
-                                $hora_b = $prod?->hora_bajada ?? '';
-                                $valor_vuelta = $prod?->valor_vuelta ?? 0;
-                                $totalProduccion += $valor_vuelta;
-                            @endphp
-                            <tr>
-                                <td>{{ $i }}</td>
-                                <td>{{ $hora_s }}</td>
-                                <td>{{ $hora_b }}</td>
-                                <td>{{ $valor_vuelta > 0 ? number_format($valor_vuelta, 2) : '' }}</td>
-                            </tr>
-                        @endfor
                         <tr>
-                            <td colspan="3" class="total-row left">TOTAL PRODUCCIÓN</td>
-                            <td class="total-row">{{ number_format($totalProduccion, 2) }}</td>
+                            <td style="border: none; padding: 2px;">
+                                <img src="https://cdn-icons-png.flaticon.com/16/2111/2111463.png" alt="Instagram">
+                            </td>
+                            <td style="border: none; padding: 2px;">@precisogps</td>
                         </tr>
-                    </tbody>
-                </table>
-                @if ($vueltasUsuario && $vueltasUsuario->count())
-                    <br>
-                    <table width="100%" style="margin-top: 10px;">
-                        <thead>
-                            <tr>
-                                <th colspan="4" class="section-title" style="text-align:left;">
-                                    DETALLE DE PRODUCCIÓN POR USUARIO
-                                </th>
-                            </tr>
-                            <tr>
-                                <td colspan="4" class="bold" style="text-align:center; padding: 6px 0;">
-                                    Registrado por: {{ $vueltasUsuario->first()->usuario->NOMBRE ?? '' }} {{ $vueltasUsuario->first()->usuario->APELLIDO ?? '' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>No. Vuelta</th>
-                                <th>Pasajes Completos</th>
-                                <th>Pasajes Medios</th>
-                                <th>Valor Vuelta</th>
-                           
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($vueltasUsuario as $vu)
-                                <tr>
-                                    <td>{{ $vu->nro_vuelta }}</td>
-                                    <td>{{ $vu->pasaje_completo }}</td>
-                                    <td>{{ $vu->pasaje_medio }}</td>
-                                    <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
-                                 
-                                </tr>
-                            @endforeach
-                            <tr class="total-row">
-                                <td colspan="3" class="left">TOTAL PRODUCCIÓN USUARIO</td>
-                                <td colspan="2">
-                                    {{ number_format($vueltasUsuario->sum('valor_vuelta'), 2) }}
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tr>
+                            <td style="border: none; padding: 2px;">
+                                <img src="https://cdn-icons-png.flaticon.com/16/1384/1384060.png" alt="YouTube">
+                            </td>
+                            <td style="border: none; padding: 2px;">@PrecisoGPS</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding: 2px;">
+                                <img src="https://cdn-icons-png.flaticon.com/16/3046/3046121.png" alt="TikTok">
+                            </td>
+                            <td style="border: none; padding: 2px;">@precisogps</td>
+                        </tr>
                     </table>
-                    
-                @endif
+                </td>
+                
+            </tr>
+        </table>
+    </div>
+    
 
-            </td>
-
-            <!-- GASTOS -->
-            <td style="vertical-align: top;" width="40%">
-                <table width="100%" class="gastos-table">
-                    <thead>
-                        <tr>
-                            <th colspan="2" style="height: 36px;">GASTOS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $totalGastos = 0; @endphp
-                        @foreach (['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'] as $tipo)
-                            @php
-                                $valor = $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
-                                $totalGastos += $valor;
-                            @endphp
-                            <tr>
-                                <td>{{ $tipo }}</td>
-                                <td>{{ $valor > 0 ? number_format($valor, 2) : '' }}</td>
-                            </tr>
-                        @endforeach
-                        <tr>
-                            <td class="total-row left">TOTAL GASTOS</td>
-                            <td class="total-row">{{ number_format($totalGastos, 2) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br>
-                <div class="signature">
-                    <p>______________________________</p>
-                    <p>Firma del responsable</p>
-                    <p><strong>{{ $user->NOMBRE }} {{ $user->APELLIDO }}</strong></p>
-                </div>
-                <br><br>
-                <table width="100%">
-                    <tr>
-                        <td class="total-row">TOTAL A DEPOSITAR</td>
-                        <td class="total-row">{{ number_format($totalProduccion - $totalGastos, 2) }}</td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table> --}}
 
 </body>
 

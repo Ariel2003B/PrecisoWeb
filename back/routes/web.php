@@ -13,6 +13,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\QrUnidadesController;
 use App\Http\Controllers\ReporteProduccionController;
 use App\Http\Controllers\SancionesController;
 use App\Http\Controllers\SimCardController;
@@ -49,7 +50,6 @@ Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
 
 Route::resource('equipos', EquipoAccesorioController::class);
-
 
 
 //rutas para el carrito
