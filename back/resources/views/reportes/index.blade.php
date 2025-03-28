@@ -26,11 +26,13 @@
                     </div>
                     <div class="col-md-3">
                         <label>Ruta</label>
-                        <input type="text" name="ruta" class="form-control" placeholder="Buscar ruta..." value="{{ request('ruta') }}">
+                        <input type="text" name="ruta" class="form-control" placeholder="Buscar ruta..."
+                            value="{{ request('ruta') }}">
                     </div>
                     <div class="col-md-3">
                         <label>Unidad</label>
-                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa..." value="{{ request('unidad') }}">
+                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa..."
+                            value="{{ request('unidad') }}">
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">Filtrar</button>
@@ -53,7 +55,11 @@
                                 <td>{{ $hoja->fecha }}</td>
                                 <td>{{ $hoja->tipo_dia }}</td>
                                 <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
-                                <td>{{ $hoja->unidad->placa ?? '-' }}</td>
+                                <td>{{ $hoja->unidad->placa . '(' . $hoja->unidad->numero_habilitacion . ')' ?? '-' }}</td>
+
+
+                                {{ $hoja->unidad->placa }}
+
                                 <td>
                                     <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">
                                         Registrar Reporte
