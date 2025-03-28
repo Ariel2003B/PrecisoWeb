@@ -192,7 +192,7 @@
                 <th colspan="2">GASTOS</th>
             </tr>
         </thead>
-        {{-- <tbody>
+        <tbody>
             @php $totalGastos = 0; @endphp
             @foreach (['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'] as $tipo)
                 @php
@@ -212,38 +212,28 @@
                 <td class="total-row left">TOTAL A DEPOSITAR</td>
                 <td class="total-row">{{ number_format($totalProduccion - $totalGastos, 2) }}</td>
             </tr>
-        </tbody> --}}
-        <tbody>
-            @php $totalGastos = 0; @endphp
-            @foreach (['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'] as $tipo)
-                @php
-                    $valor = $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
-                    $totalGastos += $valor;
-                @endphp
-                <tr>
-                    <td>{{ $tipo }}</td>
-                    <td>{{ $valor > 0 ? number_format($valor, 2) : '' }}</td>
-                </tr>
-
-                {{-- Mostrar imagen si es DIESEL u OTROS --}}
-                @if ($tipo === 'DIESEL' && !empty($imagenDiesel))
-                    <tr>
-                        <td colspan="2">
-                            <img src="{{ $imagenDiesel }}" alt="Imagen DIESEL" width="200">
-                        </td>
-                    </tr>
-                @endif
-
-                @if ($tipo === 'OTROS' && !empty($imagenOtros))
-                    <tr>
-                        <td colspan="2">
-                            <img src="{{ $imagenOtros }}" alt="Imagen OTROS" width="200">
-                        </td>
-                    </tr>
-                @endif
-            @endforeach
-
+        </tbody>
     </table>
+    @if ($imagenDiesel || $imagenOtros)
+        <div style="page-break-inside: avoid; margin-top: 20px;">
+            <h4 style="text-align: left; text-decoration: underline;">Anexos</h4>
+
+            @if ($imagenDiesel)
+                <div style="margin-bottom: 10px;">
+                    <strong>Comprobante DIESEL</strong><br>
+                    <img src="{{ $imagenDiesel }}" alt="Imagen DIESEL" style="max-width: 300px; max-height: 400px;">
+                </div>
+            @endif
+
+            @if ($imagenOtros)
+                <div>
+                    <strong>Comprobante OTROS</strong><br>
+                    <img src="{{ $imagenOtros }}" alt="Imagen OTROS" style="max-width: 300px; max-height: 400px;">
+                </div>
+            @endif
+        </div>
+    @endif
+
 
     <!-- FIRMA -->
     {{-- <div class="signature">
