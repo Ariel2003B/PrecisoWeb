@@ -78,7 +78,7 @@
     @endphp
 
     <script>
-        let contador = {{ $contador }};
+        let contador = {{ $contador-1 }};
 
         function agregarVuelta() {
             contador++;
