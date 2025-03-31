@@ -43,9 +43,10 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Fecha</th>
-                            <th>Tipo Día</th>
-                            <th>Ruta</th>
                             <th>Unidad</th>
+
+                            <th>Ruta</th>
+                            <th>Tipo Día</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -53,9 +54,10 @@
                         @forelse ($hojas as $hoja)
                             <tr>
                                 <td>{{ $hoja->fecha }}</td>
-                                <td>{{ $hoja->tipo_dia }}</td>
-                                <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                 <td>{{ $hoja->unidad->placa . '(' . $hoja->unidad->numero_habilitacion . ')' ?? '-' }}</td>
+
+                                <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
+                                <td>{{ $hoja->tipo_dia }}</td>
                                 <td>
                                     <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">
                                         Registrar Reporte
