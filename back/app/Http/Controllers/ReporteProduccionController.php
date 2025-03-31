@@ -33,7 +33,6 @@ class ReporteProduccionController extends Controller
         return view('reportes.index', compact('hojas'));
     }
     
-
     public function create($id)
     {
         $hoja = HojaTrabajo::with('unidad', 'ruta')->findOrFail($id);
@@ -44,8 +43,12 @@ class ReporteProduccionController extends Controller
             ->orderBy('nro_vuelta')
             ->get();
     
-        return view('reportes.create', compact('hoja', 'registros'));
+        // Calcular el contador inicial basándose en el último número de vuelta registrado
+        $contador = $registros->isEmpty() ? 1 : $registros->max('nro_vuelta') + 1;
+    
+        return view('reportes.create', compact('hoja', 'registros', 'contador'));
     }
+    
     
     public function store(Request $request)
     {

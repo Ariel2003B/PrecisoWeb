@@ -25,7 +25,7 @@
                     @csrf
                     <input type="hidden" name="id_hoja" value="{{ $hoja->id_hoja }}">
                     <div id="vueltasContainer">
-                        @php $contador = 0; @endphp
+                        @php $contador = $registros->isEmpty() ? 1 : $registros->count(); @endphp
                         @foreach ($registros as $registro)
                             <div class="vuelta mb-3">
                                 <h5>Vuelta #{{ $registro->nro_vuelta }}</h5>
@@ -78,25 +78,25 @@
     @endphp
 
     <script>
-        let contador = {{ $contador-1 }};
+        let contador = {{ $contador }};
 
         function agregarVuelta() {
             contador++;
             let html = `
-            <div class="vuelta mb-3">
-                <h5>Vuelta #${contador}</h5>
-                <input type="hidden" name="reportes[${contador - 1}][nro_vuelta]" value="${contador}">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label>Pasajes Completos</label>
-                        <input type="number" name="reportes[${contador - 1}][pasaje_completo]" class="form-control" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Pasajes Medios</label>
-                        <input type="number" name="reportes[${contador - 1}][pasaje_medio]" class="form-control" required>
-                    </div>
-                </div>
-            </div>`;
+    <div class="vuelta mb-3">
+        <h5>Vuelta #${contador}</h5>
+        <input type="hidden" name="reportes[${contador - 1}][nro_vuelta]" value="${contador}">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Pasajes Completos</label>
+                <input type="number" name="reportes[${contador - 1}][pasaje_completo]" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label>Pasajes Medios</label>
+                <input type="number" name="reportes[${contador - 1}][pasaje_medio]" class="form-control" required>
+            </div>
+        </div>
+    </div>`;
             document.getElementById('vueltasContainer').insertAdjacentHTML('beforeend', html);
         }
     </script>
