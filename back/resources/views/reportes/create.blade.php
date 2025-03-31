@@ -18,8 +18,10 @@
 
         <section class="section">
             <div class="container">
+                <h2>Unidad: {{$hoja->unidad->placa}} ({{$hoja->unidad->numero_habilitacion}})</h2>
                 <h4 class="mb-4">Reporte para la hoja del {{ $hoja->fecha }} - Ruta: {{ $hoja->ruta->descripcion ?? '' }}
                 </h4>
+
 
                 <form method="POST" action="{{ route('reportes.store') }}">
                     @csrf
