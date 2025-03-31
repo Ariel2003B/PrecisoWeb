@@ -15,8 +15,14 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\Mime\Part\Text\HtmlPart;
 use Symfony\Component\Mime\Part\TextPart;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class SimCardController extends Controller
 {
@@ -739,6 +745,110 @@ class SimCardController extends Controller
             DB::rollBack();
             return response()->json(["message" => "Error al actualizar las SIMCards: " . $e->getMessage()], 500);
         }
+    }
+
+
+
+    public function generarReporteExcel(Request $request)
+    {
+        $simcards = SIMCARD::with('v_e_h_i_c_u_l_o')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Reporte SIMCARD');
+
+        // Definir encabezados
+        $headers = [
+            'ID SIM',
+            'RUC',
+            'PROPIETARIO',
+            'CUENTA',
+            'NUMERO TELEFONO',
+            'TIPO PLAN',
+            'PLAN',
+            'ICC',
+            'ESTADO',
+            'GRUPO',
+            'ASIGNACION',
+            'EQUIPO',
+            'VEH_ID',
+            'IMEI'
+        ];
+
+        // Aplicar encabezados al Excel
+        $sheet->fromArray($headers, null, 'A1');
+
+        // Aplicar estilos a los encabezados
+        $sheet->getStyle('A1:N1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '007BFF']
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER
+            ],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+            ]
+        ]);
+
+        // Congelar la primera fila
+        $sheet->freezePane('A2');
+
+        // Insertar datos desde la base de datos
+        $row = 2;
+        foreach ($simcards as $simcard) {
+            $sheet->fromArray([
+                $simcard->ID_SIM,
+                $simcard->RUC,
+                $simcard->PROPIETARIO,
+                $simcard->CUENTA,
+                $simcard->NUMEROTELEFONO,
+                $simcard->TIPOPLAN,
+                $simcard->PLAN,
+                $simcard->ICC,
+                $simcard->ESTADO,
+                $simcard->GRUPO,
+                $simcard->ASIGNACION,
+                $simcard->EQUIPO,
+                $simcard->VEH_ID,
+                $simcard->IMEI
+            ], null, "A$row");
+
+            // Aplicar estilo condicional por estado
+            $colorFondo = $simcard->ESTADO === 'ACTIVA' ? 'D4EDDA' : 'F8D7DA';
+
+            $sheet->getStyle("A$row:N$row")->applyFromArray([
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => $colorFondo]
+                ],
+                'borders' => [
+                    'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER
+                ]
+            ]);
+
+            $row++;
+        }
+
+        // Ajustar automáticamente el ancho de las columnas
+        foreach (range('A', 'N') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Generar el archivo Excel
+        $writer = new Xlsx($spreadsheet);
+        $fileName = date("Y-m-d") . '_Reporte_SIMCARD.xlsx';
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 
 }

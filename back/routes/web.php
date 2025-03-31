@@ -122,6 +122,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/rutas', [MinutosCaidosController::class, 'index'])->name('rutas.index');
     Route::get('/rutas/minutos-caidos', [MinutosCaidosController::class, 'actualizarTabla'])->name('rutas.actualizar');
 
+    Route::get('/simcards/exportExcel', [SimCardController::class, 'generarReporteExcel'])->name('simcards.exportExcel');
 
 });
 
