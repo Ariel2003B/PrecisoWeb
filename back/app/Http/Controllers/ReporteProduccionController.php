@@ -34,8 +34,12 @@ class ReporteProduccionController extends Controller
     }
     public function create($id)
     {
+
+        $user = Auth::user();
+        $permisoLectura = $user->permisos()->where('DESCRIPCION', 'LECTURA')->exists();
+    
         $hoja = HojaTrabajo::with('unidad', 'ruta')->findOrFail($id);
-        
+    
         // Obtener vueltas que ya registró este usuario para esta hoja
         $registros = ProduccionUsuario::where('id_hoja', $id)
             ->where('usu_id', Auth::user()->USU_ID)
@@ -46,7 +50,7 @@ class ReporteProduccionController extends Controller
         $ultimoNumeroVuelta = $registros->max('nro_vuelta') ?? 0; 
         $contador = $ultimoNumeroVuelta + 1; // Este es el próximo número de vuelta disponible
     
-        return view('reportes.create', compact('hoja', 'registros', 'contador'));
+        return view('reportes.create', compact('hoja', 'registros', 'contador', 'permisoLectura'));
     }
     
     public function store(Request $request)

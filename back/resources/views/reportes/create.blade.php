@@ -36,17 +36,23 @@
                                     <div class="col-md-4">
                                         <label>Pasajes Completos</label>
                                         <input type="number" name="reportes[{{ $registro->nro_vuelta }}][pasaje_completo]"
-                                            class="form-control" value="{{ $registro->pasaje_completo }}" required>
+                                            class="form-control"
+                                            value="{{ $registro->pasaje_completo }}"
+                                            @if ($permisoLectura) readonly @endif
+                                            required>
                                     </div>
                                     <div class="col-md-4">
                                         <label>Pasajes Medios</label>
                                         <input type="number" name="reportes[{{ $registro->nro_vuelta }}][pasaje_medio]"
-                                            class="form-control" value="{{ $registro->pasaje_medio }}" required>
+                                            class="form-control"
+                                            value="{{ $registro->pasaje_medio }}"
+                                            @if ($permisoLectura) readonly @endif
+                                            required>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
-
+                    
                         @if ($registros->isEmpty())
                             <!-- Si no hay registros, inicia desde la vuelta #1 -->
                             <div class="vuelta mb-3">
@@ -55,18 +61,17 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <label>Pasajes Completos</label>
-                                        <input type="number" name="reportes[1][pasaje_completo]" class="form-control"
-                                            required>
+                                        <input type="number" name="reportes[1][pasaje_completo]" class="form-control" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label>Pasajes Medios</label>
-                                        <input type="number" name="reportes[1][pasaje_medio]" class="form-control"
-                                            required>
+                                        <input type="number" name="reportes[1][pasaje_medio]" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
                         @endif
                     </div>
+                    
 
 
                     <button type="button" class="btn btn-secondary mt-3" onclick="agregarVuelta()">+ Añadir vuelta</button>
