@@ -11,44 +11,43 @@ class ReporteProduccionController extends Controller
     public function index(Request $request)
     {
         $query = HojaTrabajo::with('unidad', 'ruta')->orderBy('fecha', 'desc');
-    
+
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
-    
+
         if ($request->filled('ruta')) {
             $query->whereHas('ruta', function ($q) use ($request) {
                 $q->where('descripcion', 'like', '%' . $request->ruta . '%');
             });
         }
-    
+
         if ($request->filled('unidad')) {
             $query->whereHas('unidad', function ($q) use ($request) {
                 $q->where('placa', 'like', '%' . $request->unidad . '%');
             });
         }
-    
+
         $hojas = $query->get();
-    
+
         return view('reportes.index', compact('hojas'));
     }
-    
     public function create($id)
     {
         $hoja = HojaTrabajo::with('unidad', 'ruta')->findOrFail($id);
-    
+        
         // Obtener vueltas que ya registró este usuario para esta hoja
         $registros = ProduccionUsuario::where('id_hoja', $id)
             ->where('usu_id', Auth::user()->USU_ID)
             ->orderBy('nro_vuelta')
             ->get();
-    
-        // Calcular el contador inicial basándose en el último número de vuelta registrado
-        $contador = $registros->isEmpty() ? 1 : $registros->max('nro_vuelta') + 1;
+        
+        // Si hay registros, obtener el último número de vuelta registrado, sino inicia desde 1
+        $ultimoNumeroVuelta = $registros->max('nro_vuelta') ?? 0; 
+        $contador = $ultimoNumeroVuelta + 1; // Este es el próximo número de vuelta disponible
     
         return view('reportes.create', compact('hoja', 'registros', 'contador'));
     }
-    
     
     public function store(Request $request)
     {
@@ -62,7 +61,7 @@ class ReporteProduccionController extends Controller
 
         foreach ($request->reportes as $reporte) {
             $valor = ($reporte['pasaje_completo'] * 0.35) + ($reporte['pasaje_medio'] * 0.17);
-        
+
             ProduccionUsuario::updateOrCreate(
                 [
                     'id_hoja' => $request->id_hoja,
@@ -76,7 +75,7 @@ class ReporteProduccionController extends Controller
                 ]
             );
         }
-        
+
 
         return redirect()->route('reportes.index')->with('success', 'Reporte guardado con éxito.');
     }
