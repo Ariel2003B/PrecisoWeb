@@ -53,7 +53,7 @@
                 </div>
                 <div class="filtros-simcards-container mb-3">
                     <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
-                    @if (Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'WIALON DATA'))
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'WIALON DATA'))
                         <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
                             <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
                         </button>
