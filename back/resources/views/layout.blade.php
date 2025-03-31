@@ -53,7 +53,7 @@
             <nav id="navmenu" class="navmenu">
                 <ul>
                     <li><a href="{{ route('home.inicio') }}" class="@yield('ActivarInicio')">Inicio</a></li>
-                    <li><a href="http://www.precisogps.online/" class="@yield('ActivarInicio')">Rastrea tu Vehiculo</a></li>
+                    <li><a href="http://www.precisogps.online/">Rastrea tu Vehiculo</a></li>
                     <li><a href="{{ route('home.servicios') }}" class="@yield('ActivarServicios')">Servicios</a></li>
                     <li><a href="{{ route('home.equipos') }}" class="@yield('ActivarEquipos')">Equipos y accesorios</a></li>
                     <li><a href="{{ route('home.planes') }}" class="@yield('ActivarPlanes')">Planes</a></li>

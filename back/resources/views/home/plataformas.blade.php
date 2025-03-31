@@ -16,10 +16,15 @@
                 </nav>
             </div>
         </div><!-- End Page Title -->
+        <!-- Animación de Bienvenida -->
+        <div id="welcomeAnimation" class="welcome-animation">
+            <h1>¡Nos alegra verte de nuevo, {{ Auth::user()->NOMBRE . ' ' . Auth::user()->APELLIDO }}! 😊</h1>
+            <p>¡Esperamos que tengas un día fantástico explorando nuestras plataformas! 🎉</p>
+        </div>
         <section class="section" id="plataformas">
             <div class="container">
                 <div class="row text-center">
-                    <h1>Gracias por estar aqui nuevamente {{Auth::user()->NOMBRE.' '.Auth::user()->APELLIDO.'😊'}}</h1>
+
                     {{-- FRASES ALEATOREAS CUANDO  SE LOGUEA EN PLATOFARMAS --}}
 
                     {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
@@ -320,6 +325,52 @@
                         </div>
                     </div>
                 </div>
+                <style>
+                    /* Estilos de la animación de bienvenida */
+                    /* Estilos de la animación de bienvenida */
+                    .welcome-animation {
+                        position: fixed;
+                        top: 20%;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background-color: #fff;
+                        padding: 30px;
+                        border-radius: 20px;
+                        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                        text-align: center;
+                        z-index: 9999;
+                        opacity: 0;
+                        /* Inicia oculto */
+                        visibility: hidden;
+                        /* Inicia invisible */
+                        transition: opacity 0.5s ease;
+                        /* Transición suave al aparecer */
+                    }
+
+
+
+                    @keyframes fadeIn {
+                        0% {
+                            opacity: 0;
+                            transform: translateY(-30px);
+                        }
+
+                        100% {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+
+                    @keyframes fadeOut {
+                        0% {
+                            opacity: 1;
+                        }
+
+                        100% {
+                            opacity: 0;
+                        }
+                    }
+                </style>
                 <script>
                     // Almacena el modal actualmente abierto
                     let modalAbierto = null;
@@ -384,6 +435,25 @@
                     function mostrarModalWialon(event) {
                         mostrarModal(event, 'modalWialon', -420);
                     }
+                </script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const animationElement = document.getElementById('welcomeAnimation');
+
+                        // Mostrar la animación correctamente al cargar la página
+                        setTimeout(() => {
+                            animationElement.style.visibility = 'visible';
+                            animationElement.style.opacity = '1';
+                        }, 100); // Pequeño retraso para asegurar la carga completa
+
+                        // Desaparecer la animación después de 4 segundos
+                        setTimeout(() => {
+                            animationElement.style.opacity = '0';
+                            setTimeout(() => {
+                                animationElement.style.display = 'none';
+                            }, 500); // Esperar a que termine la animación antes de ocultar el elemento
+                        }, 4000);
+                    });
                 </script>
             </div>
         </section>
