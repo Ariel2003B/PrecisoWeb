@@ -19,6 +19,9 @@
         <section class="section" id="plataformas">
             <div class="container">
                 <div class="row text-center">
+                    <h1>Gracias por estar aqui nuevamente {{Auth::user()->NOMBRE.' '.Auth::user()->APELLIDO.'😊'}}</h1>
+                    {{-- FRASES ALEATOREAS CUANDO  SE LOGUEA EN PLATOFARMAS --}}
+
                     {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
