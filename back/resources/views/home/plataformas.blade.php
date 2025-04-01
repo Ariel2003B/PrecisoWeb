@@ -27,7 +27,7 @@
 
                     {{-- FRASES ALEATOREAS CUANDO  SE LOGUEA EN PLATOFARMAS --}}
 
-                    {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -37,8 +37,8 @@
                             <a class="btn btn-success" href="https://nimbus.wialon.com/login" target="_blank">Visitar
                                 página</a>
                         </div>
-                    @endif --}}
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'RASTREA TU VEHICULO'))
+                    @endif
+                    {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'RASTREA TU VEHICULO'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -48,7 +48,7 @@
                             <a class="btn btn-success" href="http://www.precisogps.online/" target="_blank">Visitar
                                 página</a>
                         </div>
-                    @endif
+                    @endif --}}
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'MINUTOS CAIDOS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
@@ -451,8 +451,8 @@
                             animationElement.style.opacity = '0';
                             setTimeout(() => {
                                 animationElement.style.display = 'none';
-                            }, 700); // Esperar a que termine la animación antes de ocultar el elemento
-                        }, 6000);
+                            }, 600); // Esperar a que termine la animación antes de ocultar el elemento
+                        }, 5000);
                     });
                 </script>
             </div>
