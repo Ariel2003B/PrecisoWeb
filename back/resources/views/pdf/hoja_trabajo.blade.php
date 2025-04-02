@@ -260,6 +260,22 @@
         </div>
     @endif
 
+    @php
+        $totalProduccion = $hoja->producciones->sum('valor_vuelta');
+        $totalUsuario = $vueltasUsuario->sum('valor_vuelta');
+        $totalGastos = 0;
+
+        // Calcular total de gastos
+        foreach (['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'] as $tipo) {
+            $totalGastos += $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
+        }
+
+        // Seleccionar el mayor entre Total Producción y Total Usuario
+        $totalMayor = max($totalProduccion, $totalUsuario);
+
+        // Calcular Total a Depositar restando los gastos
+        $totalADepositar = $totalMayor - $totalGastos;
+    @endphp
 
     <!-- GASTOS Y TOTAL FINAL -->
     <table width="100%" class="gastos-table" style="margin-top: 20px;">
@@ -269,11 +285,9 @@
             </tr>
         </thead>
         <tbody>
-            @php $totalGastos = 0; @endphp
             @foreach (['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'] as $tipo)
                 @php
                     $valor = $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
-                    $totalGastos += $valor;
                 @endphp
                 <tr>
                     <td>{{ $tipo }}</td>
@@ -286,10 +300,11 @@
             </tr>
             <tr>
                 <td class="total-row-depot left">TOTAL A DEPOSITAR</td>
-                <td class="total-row-depot">{{ number_format($totalProduccion - $totalGastos, 2) }}</td>
+                <td class="total-row-depot">{{ number_format($totalADepositar, 2) }}</td>
             </tr>
         </tbody>
     </table>
+
     @if ($imagenDiesel || $imagenOtros)
         <div style="margin-top: 5px;">
             <h4 style="text-align: left; text-decoration: underline; margin-bottom: 5px;">Anexos</h4>
