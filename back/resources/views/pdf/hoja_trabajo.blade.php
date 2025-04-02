@@ -94,12 +94,12 @@
             <td style="width: 25%; text-align: left; border: none;">
                 <img src="http://precisogps.com/img/Precisogps.png" alt="Logo" width="150">
             </td>
-
-            <!-- Columna central: títulos centrados visualmente -->
+            <!-- Cambios en la cabecera para mostrar el número de hoja -->
             <td style="width: 50%; text-align: center; border: none;">
-                <h2 style="margin: 0;">HOJA DE TRABAJO</h2>
+                <h2 style="margin: 0;">HOJA DE TRABAJO No. {{ $hoja->numero_hoja ?? 'S/N' }}</h2>
                 <h3 style="margin: 0;">CÍA. TRANSMETROPOLI S.A.</h3>
             </td>
+
 
             <!-- Columna derecha: logo de Metropoli -->
             <td style="width: 25%; text-align: right; border: none;">
@@ -135,12 +135,12 @@
                     <thead>
                         <tr>
                             <th colspan="4" class="section-title" style="text-align:left;">
-                                DETALLE DE RECAUDO
+                                RECAUDO REPORTADO POR EL CONDUCTOR
                             </th>
                         </tr>
                         <tr>
                             <td colspan="4" class="bold" style="text-align:left; padding: 6px 0;">
-                                Conductor: {{ $hoja->conductor->nombre }} Ayudante: {{ $hoja->ayudante_nombre }}
+                                Conductor: {{ $hoja->conductor->nombre }}
                             </td>
                         </tr>
                         <tr>
@@ -178,12 +178,12 @@
                         <thead>
                             <tr>
                                 <th colspan="5" class="section-title" style="text-align:left;">
-                                    DETALLE PRODUCCIÓN USUARIO
+                                    REPORTE FISCALIZADOR
                                 </th>
                             </tr>
                             <tr>
                                 <td colspan="5" class="bold" style="text-align:center; padding: 6px 0;">
-                                    Registrado por: {{ $vueltasUsuario->first()->usuario->NOMBRE ?? '' }}
+                                    Fiscalizador: {{ $vueltasUsuario->first()->usuario->NOMBRE ?? '' }}
                                     {{ $vueltasUsuario->first()->usuario->APELLIDO ?? '' }}
                                 </td>
                             </tr>
@@ -203,22 +203,30 @@
                                     $diferencia = $valorChofer - $vu->valor_vuelta;
 
                                     $diferenciaTexto =
-                                        $diferencia > 0 ? "+$diferencia" : ($diferencia < 0 ? "$diferencia" : '0');
+                                        $diferencia > 0
+                                            ? '+' . number_format($diferencia, 2)
+                                            : ($diferencia < 0
+                                                ? number_format($diferencia, 2)
+                                                : '0');
+
+                                    $colorDiferencia =
+                                        $diferencia > 0 ? 'rgb(49, 115, 16)' : ($diferencia < 0 ? 'red' : 'black');
                                 @endphp
                                 <tr>
                                     <td>{{ $vu->nro_vuelta }}</td>
                                     <td>{{ $vu->pasaje_completo }}</td>
                                     <td>{{ $vu->pasaje_medio }}</td>
                                     <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
-                                    <td>{{ $diferenciaTexto }}</td>
+                                    <td><b style="color: {{ $colorDiferencia }}">{{ $diferenciaTexto }}</b></td>
                                 </tr>
                             @endforeach
                             <tr class="total-row">
-                                <td colspan="3" class="left">TOTAL USUARIO</td>
+                                <td colspan="3" class="left">TOTAL FISCALIZADOR</td>
                                 <td>{{ number_format($vueltasUsuario->sum('valor_vuelta'), 2) }}</td>
                                 <td></td>
                             </tr>
                         </tbody>
+
                     </table>
                 @endif
             </td>
@@ -237,14 +245,14 @@
                 <tr>
                     <td class="no-border bold" style="text-align: left;">
                         @if ($diferencia > 0)
-                            El chofer registró <span
+                            El conductor registró <span
                                 style="color: rgb(49, 115, 16);">{{ number_format($diferencia, 2) }} dólares
-                                más</span> que el conteo del usuario.
+                                más</span> que el conteo del fiscalizador.
                         @elseif ($diferencia < 0)
-                            El chofer registró <span style="color: red;">${{ number_format(abs($diferencia), 2) }}
-                                dólares menos</span> que el conteo del usuario.
+                            El conductor registró <span style="color: red;">${{ number_format(abs($diferencia), 2) }}
+                                dólares menos</span> que el conteo del fiscalizador.
                         @else
-                            El chofer y el usuario registraron la misma cantidad de dinero.
+                            El conductor y el fiscalizador registraron la misma cantidad de dinero.
                         @endif
                     </td>
                 </tr>

@@ -36,7 +36,8 @@ class HojaTrabajo extends Model
         'id_ayudante',
         'id_ruta',
         'id_unidad',
-        'ayudante_nombre' // nuevo campo para ayudante ingresado manualmente
+        'ayudante_nombre',
+        'numero_hoja' // Nuevo campo agregado
     ];
 
     public function conductor()

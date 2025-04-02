@@ -21,7 +21,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $ESTADO
  * @property string|null $TOKEN
  * @property int|null $DEPOT
- * 
+ * @property EMPRESA|null $empresa
  * @property PERFIL|null $p_e_r_f_i_l
  * @property \Illuminate\Database\Eloquent\Collection|PERMISO[] $permisos
  * @package App\Models
@@ -32,9 +32,10 @@ class USUARIO extends Authenticatable
 	protected $table = 'USUARIO';
 	protected $primaryKey = 'USU_ID';
 	public $timestamps = false;
-
+	
 	protected $casts = [
-		'PER_ID' => 'int'
+		'PER_ID' => 'int',
+		'EMP_ID' => 'int'
 	];
 
 	protected $fillable = [
@@ -45,7 +46,10 @@ class USUARIO extends Authenticatable
 		'CLAVE',
 		'ESTADO',
 		'DEPOT',
-		'TOKEN'
+		'TOKEN',
+		'EMP_ID',
+		'GENERO',
+		'CEDULA'
 	];
 
 	// Sobrescribir el campo de contraseña
@@ -74,5 +78,9 @@ class USUARIO extends Authenticatable
 	{
 		return $this->belongsToMany(PERMISO::class, 'USUARIOPERMISO', 'USU_ID', 'PRM_ID');
 	}
-
+	// Nueva relación con la tabla EMPRESA
+	public function empresa()
+	{
+		return $this->belongsTo(EMPRESA::class, 'EMP_ID');
+	}
 }
