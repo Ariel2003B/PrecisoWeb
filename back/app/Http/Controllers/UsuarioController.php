@@ -71,7 +71,7 @@ class UsuarioController extends Controller
             'CEDULA' => 'required|string|max:13',
             'permisos' => 'array'
         ]);
-
+    
         $usuario = USUARIO::create([
             'NOMBRE' => $request->NOMBRE,
             'APELLIDO' => $request->APELLIDO,
@@ -84,62 +84,67 @@ class UsuarioController extends Controller
             'CEDULA' => $request->CEDULA,
             'EMP_ID' => $request->EMP_ID
         ]);
-
+    
         $permisos = $request->has('permisos') ? PERMISO::whereIn('PRM_ID', $request->permisos)->pluck('DESCRIPCION')->toArray() : [];
         $listaPermisos = implode(", ", $permisos);
-
+    
         if ($request->has('permisos')) {
             $usuario->permisos()->sync($request->permisos);
         }
-
+    
         // Datos para el correo
         $para = $request->CORREO;
         $asunto = 'Bienvenido a PrecisoGPS - Credenciales de acceso';
-
+    
+        $logoUrl = "https://precisogps.com/img/Precisogps.png";
+    
         $mensaje = "
-    <html>
-    <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>
-        <div style='max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;'>
-            <h2 style='text-align: center; color: #007bff;'>Bienvenido a PrecisoGPS</h2>
-            <p>Hola, <strong>{$request->NOMBRE} {$request->APELLIDO}</strong>,</p>
-            <p>Gracias por registrarte en nuestra plataforma. A continuación te proporcionamos tus credenciales de acceso:</p>
-            <table style='width: 100%; margin-bottom: 20px; border-collapse: collapse;'>
-                <tr>
-                    <td style='padding: 8px; background-color: #f0f0f0;'>Usuario:</td>
-                    <td style='padding: 8px;'>{$request->CEDULA}</td>
-                </tr>
-                <tr>
-                    <td style='padding: 8px; background-color: #f0f0f0;'>Contraseña:</td>
-                    <td style='padding: 8px;'>{$request->CLAVE}</td>
-                </tr>
-            </table>
-            <h3>Tus servicios contratados son:</h3>
-            <ul style='padding-left: 20px;'>";
-
-        foreach ($permisos as $permiso) {
-            $mensaje .= "<li>{$permiso}</li>";
-        }
-
-        $mensaje .= "
-            </ul>
-            <p style='color: #555;'>Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos.</p>
-            <p style='text-align: center;'><strong>¡Te damos la bienvenida!</strong></p>
-        </div>
-    </body>
-    </html>
-    ";
-
+            <html>
+            <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>
+                <div style='max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;'>
+                    <div style='text-align: center;'>
+                        <img src='{$logoUrl}' alt='PrecisoGPS' style='width: 200px; margin-bottom: 20px;'>
+                    </div>
+                    <h2 style='text-align: center; color: #007bff;'>Bienvenido a PrecisoGPS</h2>
+                    <p>Hola, <strong>{$request->NOMBRE} {$request->APELLIDO}</strong>,</p>
+                    <p>Gracias por registrarte en nuestra plataforma. A continuación te proporcionamos tus credenciales de acceso:</p>
+                    <table style='width: 100%; margin-bottom: 20px; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px; background-color: #f0f0f0;'>Usuario:</td>
+                            <td style='padding: 8px;'>{$request->CEDULA}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px; background-color: #f0f0f0;'>Contraseña:</td>
+                            <td style='padding: 8px;'>{$request->CLAVE}</td>
+                        </tr>
+                    </table>
+                    <h3>Tus servicios contratados son:</h3>
+                    <ul style='padding-left: 20px;'>";
+    
+                foreach ($permisos as $permiso) {
+                    $mensaje .= "<li>{$permiso}</li>";
+                }
+    
+                $mensaje .= "
+                    </ul>
+                    <p style='color: #555;'>Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos.</p>
+                    <p style='text-align: center;'><strong>¡Te damos la bienvenida!</strong></p>
+                </div>
+            </body>
+            </html>
+        ";
+    
         $cabeceras = "MIME-Version: 1.0\r\n";
         $cabeceras .= "Content-type: text/html; charset=UTF-8\r\n";
         $cabeceras .= "From: suscripciones@soporte.precisogps.com\r\n";
         $cabeceras .= "Reply-To: suscripciones@soporte.precisogps.com\r\n";
-
+    
         // Enviar el correo
         mail($para, $asunto, $mensaje, $cabeceras);
-
+    
         return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente. Correo enviado.');
     }
-
+    
 
 
 
