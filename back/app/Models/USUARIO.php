@@ -21,6 +21,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $ESTADO
  * @property string|null $TOKEN
  * @property int|null $DEPOT
+ * @property string|null $TELEFONO
  * @property EMPRESA|null $empresa
  * @property PERFIL|null $p_e_r_f_i_l
  * @property \Illuminate\Database\Eloquent\Collection|PERMISO[] $permisos
@@ -49,7 +50,8 @@ class USUARIO extends Authenticatable
 		'TOKEN',
 		'EMP_ID',
 		'GENERO',
-		'CEDULA'
+		'CEDULA',
+		'TELEFONO'
 	];
 
 	// Sobrescribir el campo de contraseña

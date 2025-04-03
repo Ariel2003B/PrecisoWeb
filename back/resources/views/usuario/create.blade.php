@@ -52,6 +52,10 @@
                         <label for="CEDULA" class="form-label">Cédula</label>
                         <input type="text" name="CEDULA" id="CEDULA" class="form-control" placeholder="Cédula del usuario" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="TELEFONO" class="form-label">Telefono</label>
+                        <input type="text" name="TELEFONO" id="TELEFONO" class="form-control" placeholder="Telefono del usuario" required>
+                    </div>
 
                     <div class="mb-3">
                         <label for="EMP_ID" class="form-label">Empresa</label>
@@ -65,17 +69,17 @@
 
                     <div class="mb-3">
                         <label for="TOKEN" class="form-label">Token</label>
-                        <input type="text" name="TOKEN" id="TOKEN" class="form-control" placeholder="Token de Nimbus para operadoras">
+                        <input autocomplete="off" type="text" name="TOKEN" id="TOKEN" class="form-control" placeholder="Token de Nimbus para operadoras">
                     </div>
                     
                     <div class="mb-3">
                         <label for="DEPOT" class="form-label">Depot Id</label>
-                        <input type="number" name="DEPOT" id="DEPOT" class="form-control" placeholder="Depot Id de Nimbus para operadoras">
+                        <input autocomplete="off" type="number" name="DEPOT" id="DEPOT" class="form-control" placeholder="Depot Id de Nimbus para operadoras">
                     </div>
                     
                     <div class="mb-3">
                         <label for="CLAVE" class="form-label">Contraseña</label>
-                        <input type="password" name="CLAVE" id="CLAVE" class="form-control" placeholder="Contraseña" required>
+                        <input autocomplete="off" type="text" name="CLAVE" id="CLAVE" class="form-control" placeholder="Contraseña" required>
                     </div>
                     
                     <!-- Permisos -->

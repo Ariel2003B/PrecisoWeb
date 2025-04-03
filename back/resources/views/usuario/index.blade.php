@@ -35,8 +35,8 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Correo</th>
-                            <th>Perfil</th>
-                            <th>Estado</th>
+                            <th>Telefono</th>
+                            <th>Usuario</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -47,8 +47,8 @@
                                 <td>{{ $usuario->NOMBRE }}</td>
                                 <td>{{ $usuario->APELLIDO }}</td>
                                 <td>{{ $usuario->CORREO }}</td>
-                                <td>{{ $usuario->p_e_r_f_i_l->DESCRIPCION ?? 'Sin perfil' }}</td>
-                                <td>{{ $usuario->ESTADO }}</td>
+                                <td>{{ $usuario->TELEFONO }}</td>
+                                <td>{{ $usuario->CEDULA }}</td>
                                 <td>
                                     <a href="{{ route('usuario.edit', $usuario->USU_ID) }}"
                                         class="btn btn-primary btn-sm">Editar</a>

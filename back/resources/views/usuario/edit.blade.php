@@ -17,41 +17,53 @@
                 </nav>
             </div>
         </div><!-- End Page Title -->
-        
+
         <section class="section">
             <div class="container">
                 <form action="{{ route('usuario.update', $usuario->USU_ID) }}" method="POST">
                     @csrf
                     @method('PUT')
-                    
+
                     <div class="mb-3">
                         <label for="NOMBRE" class="form-label">Nombre</label>
-                        <input type="text" name="NOMBRE" id="NOMBRE" class="form-control" value="{{ old('NOMBRE', $usuario->NOMBRE) }}" required>
+                        <input type="text" name="NOMBRE" id="NOMBRE" class="form-control"
+                            value="{{ old('NOMBRE', $usuario->NOMBRE) }}" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="APELLIDO" class="form-label">Apellido</label>
-                        <input type="text" name="APELLIDO" id="APELLIDO" class="form-control" value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
+                        <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
+                            value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="CORREO" class="form-label">Correo Electrónico</label>
-                        <input type="email" name="CORREO" id="CORREO" class="form-control" value="{{ old('CORREO', $usuario->CORREO) }}" required>
+                        <input type="email" name="CORREO" id="CORREO" class="form-control"
+                            value="{{ old('CORREO', $usuario->CORREO) }}" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="GENERO" class="form-label">Género</label>
                         <select name="GENERO" id="GENERO" class="form-control" required>
                             <option value="">Seleccione el género</option>
-                            <option value="Masculino" {{ old('GENERO', $usuario->GENERO) == 'Masculino' ? 'selected' : '' }}>Masculino</option>
-                            <option value="Femenino" {{ old('GENERO', $usuario->GENERO) == 'Femenino' ? 'selected' : '' }}>Femenino</option>
-                            <option value="Otro" {{ old('GENERO', $usuario->GENERO) == 'Otro' ? 'selected' : '' }}>Otro</option>
+                            <option value="Masculino"
+                                {{ old('GENERO', $usuario->GENERO) == 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                            <option value="Femenino" {{ old('GENERO', $usuario->GENERO) == 'Femenino' ? 'selected' : '' }}>
+                                Femenino</option>
+                            <option value="Otro" {{ old('GENERO', $usuario->GENERO) == 'Otro' ? 'selected' : '' }}>Otro
+                            </option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="CEDULA" class="form-label">Cédula</label>
-                        <input type="text" name="CEDULA" id="CEDULA" class="form-control" value="{{ old('CEDULA', $usuario->CEDULA) }}" required>
+                        <input type="text" name="CEDULA" id="CEDULA" class="form-control"
+                            value="{{ old('CEDULA', $usuario->CEDULA) }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="TELEFONO" class="form-label">Telefono</label>
+                        <input type="text" name="TELEFONO" id="TELEFONO" class="form-control"
+                            placeholder="Telefono del usuario" required value="{{ old('TELEFONO', $usuario->TELEFONO) }}">
                     </div>
 
                     <div class="mb-3">
@@ -59,26 +71,31 @@
                         <select name="EMP_ID" id="EMP_ID" class="form-control">
                             <option value="">Seleccione la empresa</option>
                             @foreach ($empresas as $empresa)
-                                <option value="{{ $empresa->EMP_ID }}" {{ old('EMP_ID', $usuario->EMP_ID) == $empresa->EMP_ID ? 'selected' : '' }}>{{ $empresa->NOMBRE }}</option>
+                                <option value="{{ $empresa->EMP_ID }}"
+                                    {{ old('EMP_ID', $usuario->EMP_ID) == $empresa->EMP_ID ? 'selected' : '' }}>
+                                    {{ $empresa->NOMBRE }}</option>
                             @endforeach
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="TOKEN" class="form-label">Token</label>
-                        <input type="text" name="TOKEN" id="TOKEN" class="form-control" value="{{ old('TOKEN', $usuario->TOKEN) }}">
+                        <input type="text" name="TOKEN" id="TOKEN" class="form-control"
+                            value="{{ old('TOKEN', $usuario->TOKEN) }}">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="DEPOT" class="form-label">Depot Id</label>
-                        <input type="text" name="DEPOT" id="DEPOT" class="form-control" value="{{ old('DEPOT', $usuario->DEPOT) }}">
+                        <input type="text" name="DEPOT" id="DEPOT" class="form-control"
+                            value="{{ old('DEPOT', $usuario->DEPOT) }}">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="CLAVE" class="form-label">Contraseña</label>
-                        <input type="password" name="CLAVE" id="CLAVE" class="form-control" placeholder="Nueva contraseña (opcional)">
+                        <input type="password" name="CLAVE" id="CLAVE" class="form-control"
+                            placeholder="Nueva contraseña (opcional)">
                     </div>
-                    
+
                     <!-- Permisos -->
                     <div class="mb-3">
                         <label for="permisos" class="form-label">Permisos</label>
@@ -86,14 +103,9 @@
                             @foreach ($permisos as $permiso)
                                 <div class="col-md-4">
                                     <div class="form-check">
-                                        <input 
-                                            class="form-check-input" 
-                                            type="checkbox" 
-                                            name="permisos[]" 
-                                            value="{{ $permiso->PRM_ID }}" 
-                                            id="permiso{{ $permiso->PRM_ID }}"
-                                            @if(in_array($permiso->PRM_ID, $usuarioPermisos)) checked @endif
-                                        >
+                                        <input class="form-check-input" type="checkbox" name="permisos[]"
+                                            value="{{ $permiso->PRM_ID }}" id="permiso{{ $permiso->PRM_ID }}"
+                                            @if (in_array($permiso->PRM_ID, $usuarioPermisos)) checked @endif>
                                         <label class="form-check-label" for="permiso{{ $permiso->PRM_ID }}">
                                             {{ $permiso->DESCRIPCION }}
                                         </label>
