@@ -92,7 +92,7 @@ class AuthLoginController extends Controller
             return redirect()->route('home.plataformas')->with('success', 'Inicio de sesión exitoso.');
         }
 
-        return redirect()->route('login.form')->with('error', 'Correo o contraseña incorrectos.');
+        return redirect()->route('login.form')->with('error', 'Usuario o contraseña incorrectos.');
     }
     public function logout()
     {
