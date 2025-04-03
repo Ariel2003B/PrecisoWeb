@@ -241,7 +241,7 @@
                                 <i class="fas fa-building fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">GESTION DE EMPRESAS</h4>
-                            <a class="btn btn-success" href="{{ route('empresas.index') }}">Visitar
+                            <a class="btn btn-success" href="{{ route('empresa.index') }}">Visitar
                                 pagina</a>
                         </div>
                     @endif
