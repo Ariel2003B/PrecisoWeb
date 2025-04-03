@@ -87,12 +87,12 @@
                     <div class="mb-3">
                         <label for="DEPOT" class="form-label">Depot Id</label>
                         <input type="text" name="DEPOT" id="DEPOT" class="form-control"
-                            value="{{ old('DEPOT', $usuario->DEPOT) }}">
+                            value="{{ old('DEPOT', $usuario->DEPOT) }}" autocomplete="off">
                     </div>
 
                     <div class="mb-3">
                         <label for="CLAVE" class="form-label">Contraseña</label>
-                        <input type="password" name="CLAVE" id="CLAVE" class="form-control"
+                        <input type="text" autocomplete="off" name="CLAVE" id="CLAVE" class="form-control"
                             placeholder="Nueva contraseña (opcional)">
                     </div>
 
