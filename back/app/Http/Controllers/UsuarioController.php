@@ -135,7 +135,7 @@ class UsuarioController extends Controller
                         <h3 style='margin: 0; text-align: center;'>PrecisoGPS</h3>
                         <p style='margin: 0; text-align: center;'>E16 N53-209 y de los Cholanes<br>Quito, 170514</p>
                         <p style='margin: 0; text-align: center;'><strong>Celular:</strong> +593 99 045 3275</p>
-                        <p style='margin: 0; text-align: center;'><strong>Correo:</strong> ventas@precisogps.com</p>
+                        <p style='margin: 0; text-align: center; color: white;'><strong>Correo:</strong> <span style='color: white;'>ventas@precisogps.com</span></p>
                     </div>
                 </div>
             </body>
