@@ -69,7 +69,6 @@ class UsuarioController extends Controller
             'CLAVE' => 'required|min:6',
             'GENERO' => 'required|string',
             'CEDULA' => 'required|string|max:13',
-            'EMP_ID' => 'integer',
             'permisos' => 'array'
         ]);
 
@@ -163,7 +162,6 @@ class UsuarioController extends Controller
             'CLAVE' => 'nullable|min:6', // Permite clave nula
             'GENERO' => 'required|string',
             'CEDULA' => 'required|string|max:13',
-            'EMP_ID' => 'integer',
             'permisos' => 'array'
         ]);
 
