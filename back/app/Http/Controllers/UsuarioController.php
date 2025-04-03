@@ -131,7 +131,7 @@ class UsuarioController extends Controller
                     </ul>
                     <p style='color: #555;'>Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos.</p>
                     <p style='text-align: center;'><strong>¡Te damos la bienvenida!</strong></p>
-                    <div style='background-color: #000; color: #fff; padding: 20px; margin-top: 20px; border-radius: 8px;'>
+                    <div style='background-color: #005298; color: #fff; padding: 20px; margin-top: 20px; border-radius: 8px;'>
                         <h3 style='margin: 0; text-align: center;'>PrecisoGPS</h3>
                         <p style='margin: 0; text-align: center;'>E16 N53-209 y de los Cholanes<br>Quito, 170514</p>
                         <p style='margin: 0; text-align: center;'><strong>Celular:</strong> +593 99 045 3275</p>
