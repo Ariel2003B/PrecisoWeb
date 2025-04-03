@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CaracteristicaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\EquipoAccesorioController;
 use App\Http\Controllers\GeocercaController;
 use App\Http\Controllers\HomeController;
@@ -70,6 +71,8 @@ Route::get('/log-test', function () {
 
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
+    Route::resource('empresa', EmpresaController::class);
+
     Route::get('/reportes', [ReporteProduccionController::class, 'index'])->name('reportes.index');
     Route::get('/reportes/registrar/{id}', [ReporteProduccionController::class, 'create'])->name('reportes.create');
     Route::post('/reportes/guardar', [ReporteProduccionController::class, 'store'])->name('reportes.store');

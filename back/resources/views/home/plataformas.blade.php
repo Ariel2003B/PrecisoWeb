@@ -223,7 +223,7 @@
                                 pagina</a>
                         </div>
                     @endif
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE PERFILES'))
+                    {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE PERFILES'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -231,6 +231,17 @@
                             </span>
                             <h4 class="my-3">GESTION DE PERFILES</h4>
                             <a class="btn btn-success" href="{{ route('perfil.index') }}">Visitar
+                                pagina</a>
+                        </div>
+                    @endif --}}
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE EMPRESAS'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-building fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">GESTION DE EMPRESAS</h4>
+                            <a class="btn btn-success" href="{{ route('empresas.index') }}">Visitar
                                 pagina</a>
                         </div>
                     @endif
