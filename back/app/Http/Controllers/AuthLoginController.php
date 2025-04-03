@@ -72,20 +72,18 @@ class AuthLoginController extends Controller
         return view('login.index');
 
     }
-
-
     public function login(Request $request)
     {
         // Validar los campos del formulario
         $request->validate([
-            'CORREO' => 'required|email',
+            'CEDULA' => 'required',
             'CLAVE' => 'required'
         ]);
 
         // Extraer las credenciales
-        $credentials = $request->only('CORREO', 'CLAVE');
+        $credentials = $request->only('CEDULA', 'CLAVE');
         // Buscar el usuario manualmente
-        $user = USUARIO::where('CORREO', $credentials['CORREO'])->where('ESTADO', 'A')->first();
+        $user = USUARIO::where('CEDULA', $credentials['CEDULA'])->where('ESTADO', 'A')->first();
 
         if ($user && Hash::check($credentials['CLAVE'], $user->CLAVE)) {
             // Iniciar sesión manualmente

@@ -31,9 +31,9 @@
 
                     <!-- Campo Correo Electrónico -->
                     <div class="form-group">
-                        <label for="CORREO" class="form-label">Correo Electrónico</label>
-                        <input type="email" id="CORREO" name="CORREO" class="form-input"
-                            placeholder="Ej: ejemplo@correo.com" required>
+                        <label for="CEDULA" class="form-label">Correo Electrónico</label>
+                        <input type="text" id="CEDULA" name="CEDULA" class="form-input"
+                            placeholder="Ej: 1234567890" required>
                     </div>
 
                     <!-- Campo Contraseña -->
