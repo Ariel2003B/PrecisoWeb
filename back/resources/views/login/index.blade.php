@@ -31,7 +31,7 @@
 
                     <!-- Campo Correo Electrónico -->
                     <div class="form-group">
-                        <label for="CEDULA" class="form-label">Correo Electrónico</label>
+                        <label for="CEDULA" class="form-label">Usuario</label>
                         <input type="text" id="CEDULA" name="CEDULA" class="form-input"
                             placeholder="Ej: 1234567890" required>
                     </div>
