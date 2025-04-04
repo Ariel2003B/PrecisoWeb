@@ -280,6 +280,17 @@
                     </td>
                 </tr>
             </table>
+            <table width="100%" style="border: none;">
+                <tr>
+                    <td class="no-border bold" style="text-align: left;">
+                        @php
+                            $totalMedios = $vueltasUsuario->sum('pasaje_medio');
+                            $totalCompletos = $vueltasUsuario->sum('pasaje_completo');
+                        @endphp
+                        El total de pasajes completos son <b>{{ $totalCompletos }}</b> y pasajes medios son <b>{{ $totalMedios }}</b> dando un total de {{$totalMedios + $totalCompletos}} pasajes.
+                    </td>
+                </tr>
+            </table>
         </div>
     @endif
 
