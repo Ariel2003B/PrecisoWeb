@@ -14,7 +14,6 @@ class HojaChoferController extends Controller
     public function buscarPorUnidad($id_unidad)
     {
         $fecha = Carbon::now('America/Guayaquil')->format('Y-m-d');
-
         $hoja = HojaTrabajo::with(['ruta', 'conductor', 'gastos', 'producciones'])
             ->where('id_unidad', $id_unidad)
             ->where('fecha', $fecha)
@@ -82,8 +81,7 @@ class HojaChoferController extends Controller
                         return 'FERIADO';
                     }
                 }
-
-                $dia = Carbon::now()->dayOfWeek;
+                $dia = Carbon::now('America/Guayaquil')->dayOfWeek;
                 if ($dia === 0)
                     return 'DOMINGO';
                 if ($dia === 6)
