@@ -130,12 +130,12 @@
     <table width="100%" class="prod-table">
         <tr>
             <!-- PRODUCCIÓN CHOFER -->
-            <td width="60%" style="vertical-align: top;">
+            <td width="45%" style="vertical-align: top;">
                 <table width="100%">
                     <thead>
                         <tr>
                             <th colspan="4" class="section-title" style="text-align:left;">
-                                RECAUDO REPORTADO POR EL CONDUCTOR
+                                REPORTE CONDUCTOR
                             </th>
                         </tr>
                         <tr>
@@ -144,10 +144,10 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>No. de vuelta</th>
+                            <th>No.</th>
                             <th>Hora Inicio</th>
                             <th>Hora Fin</th>
-                            <th>Total por Vuelta</th>
+                            <th>Valor</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -172,17 +172,17 @@
             </td>
 
             <!-- DETALLE USUARIO -->
-            <td width="40%" style="vertical-align: top;">
+            <td width="45%" style="vertical-align: top;">
                 @if ($vueltasUsuario && $vueltasUsuario->count())
                     <table width="100%">
                         <thead>
                             <tr>
-                                <th colspan="5" class="section-title" style="text-align:left;">
+                                <th colspan="4" class="section-title" style="text-align:left;">
                                     REPORTE FISCALIZADOR
                                 </th>
                             </tr>
                             <tr>
-                                <td colspan="5" class="bold" style="text-align:center; padding: 6px 0;">
+                                <td colspan="4" class="bold" style="text-align:center; padding: 6px 0;">
                                     Fiscalizador: {{ $vueltasUsuario->first()->usuario->NOMBRE ?? '' }}
                                     {{ $vueltasUsuario->first()->usuario->APELLIDO ?? '' }}
                                 </td>
@@ -192,45 +192,68 @@
                                 <th>Completos</th>
                                 <th>Medios</th>
                                 <th>Valor</th>
-                                <th>Diferencia</th> <!-- Nueva columna -->
+                                {{-- <th>Diferencia</th> --}}
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($vueltasUsuario as $vu)
-                                @php
-                                    $produccionChofer = $hoja->producciones->firstWhere('nro_vuelta', $vu->nro_vuelta);
-                                    $valorChofer = $produccionChofer ? $produccionChofer->valor_vuelta : 0;
-                                    $diferencia = $valorChofer - $vu->valor_vuelta;
-
-                                    $diferenciaTexto =
-                                        $diferencia > 0
-                                            ? '+' . number_format($diferencia, 2)
-                                            : ($diferencia < 0
-                                                ? number_format($diferencia, 2)
-                                                : '0');
-
-                                    $colorDiferencia =
-                                        $diferencia > 0 ? 'rgb(49, 115, 16)' : ($diferencia < 0 ? 'red' : 'black');
-                                @endphp
                                 <tr>
                                     <td>{{ $vu->nro_vuelta }}</td>
                                     <td>{{ $vu->pasaje_completo }}</td>
                                     <td>{{ $vu->pasaje_medio }}</td>
                                     <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
-                                    <td><b style="color: {{ $colorDiferencia }}">{{ $diferenciaTexto }}</b></td>
                                 </tr>
                             @endforeach
                             <tr class="total-row">
                                 <td colspan="3" class="left">TOTAL FISCALIZADOR</td>
                                 <td>{{ number_format($vueltasUsuario->sum('valor_vuelta'), 2) }}</td>
-                                <td></td>
                             </tr>
                         </tbody>
 
                     </table>
                 @endif
             </td>
+            <td width="10%" style="vertical-align: top;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="1" class="section-title" style="text-align:left;">
+                                DIFERENCIA
+                            </th>
+                        </tr>
+                        <tr>
+                            <td colspan="1" class="bold" style="text-align:center; padding: 6px 0;">
+                                {{ '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($vueltasUsuario as $vu)
+                            @php
+                                $produccionChofer = $hoja->producciones->firstWhere('nro_vuelta', $vu->nro_vuelta);
+                                $valorChofer = $produccionChofer ? $produccionChofer->valor_vuelta : 0;
+                                $diferencia = $valorChofer - $vu->valor_vuelta;
 
+                                $diferenciaTexto =
+                                    $diferencia > 0
+                                        ? '+' . number_format($diferencia, 2)
+                                        : ($diferencia < 0
+                                            ? number_format($diferencia, 2)
+                                            : '0');
+
+                                $colorDiferencia =
+                                    $diferencia > 0 ? 'rgb(49, 115, 16)' : ($diferencia < 0 ? 'red' : 'black');
+                            @endphp
+                            <tr>
+                                <td><b style="color: {{ $colorDiferencia }}">{{ $diferenciaTexto }}</b></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </td>
         </tr>
     </table>
 

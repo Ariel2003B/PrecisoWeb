@@ -24,42 +24,6 @@ class UsuarioController extends Controller
 
         return view('usuario.create', compact('perfiles', 'permisos', 'empresas'));
     }
-
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'NOMBRE' => 'required|string|max:255',
-    //         'APELLIDO' => 'nullable|string|max:255',
-    //         'CORREO' => 'required|email|unique:USUARIO,CORREO',
-    //         'CLAVE' => 'required|min:6',
-    //         'GENERO' => 'required|string',
-    //         'CEDULA' => 'required|string|max:13',
-    //         'EMP_ID' => 'integer',
-    //         'permisos' => 'array'
-    //     ]);
-
-    //     $usuario = USUARIO::create([
-    //         'NOMBRE' => $request->NOMBRE,
-    //         'APELLIDO' => $request->APELLIDO,
-    //         'CORREO' => $request->CORREO,
-    //         'CLAVE' => $request->CLAVE,
-    //         'ESTADO' => 'A',
-    //         'TOKEN' => $request->TOKEN,
-    //         'DEPOT' => $request->DEPOT,
-    //         'GENERO' => $request->GENERO,
-    //         'CEDULA' => $request->CEDULA,
-    //         'EMP_ID' => $request->EMP_ID
-    //     ]);
-
-    //     if ($request->has('permisos')) {
-    //         $usuario->permisos()->sync($request->permisos);
-    //     }
-
-    //     return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente.');
-    // }
-
-
     public function store(Request $request)
     {
         $request->validate([
@@ -107,7 +71,7 @@ class UsuarioController extends Controller
                     <div style='text-align: center;'>
                         <img src='{$logoUrl}' alt='PrecisoGPS' style='width: 200px; margin-bottom: 20px;'>
                     </div>
-                    <h2 style='text-align: center; color: #007bff;'>Bienvenido a PrecisoGPS</h2>
+                    <h2 style='text-align: center; color: #005298;'>Bienvenido a PrecisoGPS</h2>
                     <p>Hola, <strong>{$request->NOMBRE} {$request->APELLIDO}</strong>,</p>
                     <p>Gracias por registrarte en nuestra plataforma. A continuación te proporcionamos tus credenciales de acceso:</p>
                     <table style='width: 100%; margin-bottom: 20px; border-collapse: collapse;'>
@@ -118,7 +82,7 @@ class UsuarioController extends Controller
                         <tr>
                             <td style='padding: 8px; background-color: #f0f0f0;'>Contraseña:</td>
                             <td style='padding: 8px;'>{$request->CLAVE}</td>
-                        </tr>
+                        </tr>   
                     </table>
                     <h3>Tus servicios activos son:</h3>
                     <ul style='padding-left: 20px;'>";
