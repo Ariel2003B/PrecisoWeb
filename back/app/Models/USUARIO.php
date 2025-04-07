@@ -24,7 +24,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $TELEFONO
  * @property EMPRESA|null $empresa
  * @property PERFIL|null $p_e_r_f_i_l
- * @property \Illuminate\Database\Eloquent\Collection|PERMISO[] $permisos
+ * @property PERMISO[] $permisos
  * @package App\Models
  */
 class USUARIO extends Authenticatable

@@ -11,7 +11,6 @@
                     <ol>
                         <li><a href="{{ route('home.inicio') }}">Inicio</a></li>
                         <li><a href="{{ route('home.plataformas') }}">Plataformas</a></li>
-                        <li><a href="{{ route('empresa.index') }}">Empresas</a></li>
                         <li class="current">Hoja de Trabajo</li>
                     </ol>
                 </nav>

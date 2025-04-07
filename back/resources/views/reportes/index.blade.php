@@ -31,7 +31,7 @@
                     </div>
                     <div class="col-md-3">
                         <label>Unidad</label>
-                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa..."
+                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa o habilitación..."
                             value="{{ request('unidad') }}">
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
@@ -44,7 +44,6 @@
                         <tr>
                             <th>Fecha</th>
                             <th>Unidad</th>
-
                             <th>Ruta</th>
                             <th>Tipo Día</th>
                             <th>Acciones</th>
@@ -54,17 +53,12 @@
                         @forelse ($hojas as $hoja)
                             <tr>
                                 <td>{{ $hoja->fecha }}</td>
-                                <td>{{ $hoja->unidad->placa . '(' . $hoja->unidad->numero_habilitacion . ')' ?? '-' }}</td>
-
+                                <td>{{ $hoja->unidad->placa ?? '-' }} ({{ $hoja->unidad->numero_habilitacion ?? '-' }})</td>
                                 <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
-                                <td>{{ $hoja->tipo_dia }}</td>
+                                <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                 <td>
-                                    <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">
-                                        Registrar Reporte
-                                    </a>
-                                    <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">
-                                        Ver Registros
-                                    </a>
+                                    <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">Registrar Reporte</a>
+                                    <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Ver Registros</a>
                                 </td>
                             </tr>
                         @empty

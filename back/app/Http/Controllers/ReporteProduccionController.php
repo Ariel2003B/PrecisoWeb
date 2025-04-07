@@ -10,28 +10,34 @@ class ReporteProduccionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = HojaTrabajo::with('unidad', 'ruta')->orderBy('fecha', 'desc');
-
+        $query = HojaTrabajo::with('unidad', 'ruta');
+    
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
-
+    
         if ($request->filled('ruta')) {
             $query->whereHas('ruta', function ($q) use ($request) {
                 $q->where('descripcion', 'like', '%' . $request->ruta . '%');
             });
         }
-
+    
         if ($request->filled('unidad')) {
             $query->whereHas('unidad', function ($q) use ($request) {
                 $q->where('placa', 'like', '%' . $request->unidad . '%');
             });
         }
-
-        $hojas = $query->get();
-
+    
+        // Ordenar por el número de habilitación de la unidad
+        $hojas = $query->get()->sortBy(function ($hoja) {
+            // Si número de habilitación tiene un número al inicio, lo extrae y lo convierte a número
+            preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
+            return $matches[1] ?? 0;
+        });
+    
         return view('reportes.index', compact('hojas'));
     }
+    
     public function create($id)
     {
 
