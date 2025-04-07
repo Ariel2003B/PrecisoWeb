@@ -8,6 +8,7 @@ use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\EquipoAccesorioController;
 use App\Http\Controllers\GeocercaController;
+use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MinutosCaidosController;
 use App\Http\Controllers\NewsletterController;
@@ -126,6 +127,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/rutas/minutos-caidos', [MinutosCaidosController::class, 'actualizarTabla'])->name('rutas.actualizar');
 
     Route::get('/simcards/exportExcel', [SimCardController::class, 'generarReporteExcel'])->name('simcards.exportExcel');
+    Route::get('/hoja-trabajo/{id}', [HojaTrabajoController::class, 'verHojaTrabajo'])->name('hoja.ver');
 
 });
 

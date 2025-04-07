@@ -62,6 +62,9 @@
                                     <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">
                                         Registrar Reporte
                                     </a>
+                                    <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">
+                                        Ver Registros
+                                    </a>
                                 </td>
                             </tr>
                         @empty

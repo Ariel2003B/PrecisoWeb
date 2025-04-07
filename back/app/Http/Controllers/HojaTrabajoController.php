@@ -251,4 +251,107 @@ class HojaTrabajoController extends Controller
         }
     }
 
+
+    public function generarPDFWeb($id)
+    {
+
+        //$user = Auth::user(); // gracias a Sanctum
+        Log::info('Usuario autenticado para generar PDF', ['user_id' => $user->id ?? 'No autenticado']);
+
+        try {
+            $vueltasUsuario = ProduccionUsuario::with('usuario')
+                ->where('id_hoja', $id)
+                ->orderBy('nro_vuelta')
+                ->get();
+
+            $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+            $gastoDiesel = $hoja->gastos->firstWhere('tipo_gasto', 'DIESEL');
+            $gastoOtros = $hoja->gastos->firstWhere('tipo_gasto', 'OTROS');
+
+            // Construir la URL pública
+            $baseUrl = "http://precisogps.com/back/storage/app/public/";
+            $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
+            $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
+
+            Log::info('Hoja de trabajo encontrada', ['id' => $id]);
+
+            $html = view('pdf.hoja_trabajo', compact('hoja',  'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            Log::info('Vista HTML renderizada correctamente.');
+
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('chroot', public_path());
+
+            $pdf = new Dompdf($options);
+            $pdf->loadHtml($html);
+            $pdf->setPaper('A4');
+            $pdf->render();
+            Log::info('PDF renderizado correctamente.');
+
+            $pdfPath = storage_path('app/public/pdf/hoja_trabajo_' . $id . '.pdf');
+            file_put_contents($pdfPath, $pdf->output());
+            Log::info('PDF guardado correctamente', ['path' => $pdfPath]);
+
+            return response()->download($pdfPath);
+
+        } catch (\Exception $e) {
+            Log::error('Error al generar PDF', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'error' => 'Error generando PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function verHojaTrabajo($id)
+    {
+        try {
+            $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+            $vueltasUsuario = ProduccionUsuario::with('usuario')
+                ->where('id_hoja', $id)
+                ->orderBy('nro_vuelta')
+                ->get();
+
+            // Calcular totales
+            $totalProduccion = $hoja->producciones->sum('valor_vuelta');
+            $totalUsuario = $vueltasUsuario->sum('valor_vuelta');
+
+            // Calcular total de gastos por tipo
+            $tiposGastos = ['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'];
+            $gastos = [];
+            $totalGastos = 0;
+
+            foreach ($tiposGastos as $tipo) {
+                $valor = $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
+                $gastos[$tipo] = $valor;
+                $totalGastos += $valor;
+            }
+
+            // Seleccionar el mayor entre Total Producción y Total Usuario
+            $totalMayor = max($totalProduccion, $totalUsuario);
+
+            // Calcular Total a Depositar restando los gastos
+            $totalADepositar = $totalMayor - $totalGastos;
+
+            return view('hoja_trabajo.ver', compact(
+                'hoja',
+                'vueltasUsuario',
+                'totalProduccion',
+                'totalUsuario',
+                'gastos',
+                'totalGastos',
+                'totalADepositar'
+            ));
+        } catch (\Exception $e) {
+            return redirect()->route('home.inicio')->with('error', 'No se pudo cargar la hoja de trabajo.');
+        }
+    }
+
 }
