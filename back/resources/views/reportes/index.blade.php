@@ -14,12 +14,12 @@
                 </nav>
             </div>
         </div>
-        
+
         <section class="section">
             <!-- Añadir botón para abrir el modal -->
             <div class="container mb-4">
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reporteGlobalModal">
-                    Reporte Recaudo Flota 
+                    Reporte Recaudo Flota
                 </button>
             </div>
             <div class="container">
@@ -45,9 +45,9 @@
 
                 </form>
 
-                
 
 
+                {{-- 
                 <script>
                     function generarReporte() {
                         const fecha = document.getElementById('fecha_reporte').value;
@@ -73,7 +73,7 @@
                             })
                             .catch(error => console.error('Error:', error));
                     }
-                </script>
+                </script> --}}
 
                 <!-- Modal -->
                 <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
@@ -187,4 +187,89 @@
             white-space: nowrap;
         }
     </style>
+
+
+
+
+    <script>
+        function generarReporte() {
+            const fecha = document.getElementById('fecha_reporte').value;
+
+            if (!fecha) {
+                alert('Por favor selecciona una fecha.');
+                return;
+            }
+
+            fetch("{{ route('reporte.global') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        fecha
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('reporteGlobalResultado').innerHTML = data.html;
+
+                    // Inicializar DataTables después de cargar la tabla
+                    $('#tablaProduccion').DataTable({
+                        "order": [
+                            [2, "desc"]
+                        ], // Ordenar inicialmente por Producción ($) de mayor a menor
+                        "paging": false, // Desactiva la paginación
+                        "searching": false, // Desactiva el campo de búsqueda
+                        "info": false, // Desactiva la información de registros
+                        "lengthChange": false, // Desactiva la opción de cambiar el número de registros mostrados
+                        "ordering": true, // Mantiene la opción de ordenar por columnas
+                        "language": {
+                            "paginate": {
+                                "next": "Siguiente",
+                                "previous": "Anterior"
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#tablaProduccion').DataTable({
+                "order": [
+                    [2, "desc"]
+                ], // Ordenar inicialmente por Producción ($) de mayor a menor
+                "paging": false,
+                "searching": false,
+                "info": false,
+                "orderFixed": [
+                    [2, "desc"]
+                ], // Fijar el orden por Producción ($)
+                "columnDefs": [{
+                        "orderable": false,
+                        "targets": '_all'
+                    } // Evitar que el Total se ordene
+                ],
+                "drawCallback": function(settings) {
+                    var api = this.api();
+                    var totalRow = $('#tablaProduccion tfoot tr')
+                .detach(); // Remover la fila de total temporalmente
+                    $('#tablaProduccion tbody').append(totalRow); // Reinsertar al final siempre
+                }
+            });
+        });
+    </script>
+
+    <!-- CSS de DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- JS de DataTables -->
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+
 @endsection
