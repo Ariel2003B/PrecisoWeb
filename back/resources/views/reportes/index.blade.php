@@ -19,7 +19,7 @@
             <!-- Añadir botón para abrir el modal -->
             <div class="container mb-4">
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reporteGlobalModal">
-                    Visualizar Reporte Global
+                    Reporte Recaudo Flota 
                 </button>
             </div>
             <div class="container">
@@ -81,7 +81,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="reporteGlobalLabel">Reporte Global de Producción</h5>
+                                <h5 class="modal-title" id="reporteGlobalLabel">Reporte de Recaudo Flota</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
