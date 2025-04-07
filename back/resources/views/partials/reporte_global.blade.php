@@ -3,7 +3,7 @@
         <tr>
             <th>Vueltas</th>
             <th>Unidad</th>
-            <th>Total Producción ($)</th>
+            <th>Producción ($)</th>
             
         </tr>
     </thead>
