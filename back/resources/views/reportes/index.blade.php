@@ -72,8 +72,11 @@
                                     <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                     <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                     <td>
-                                        <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">Registrar Reporte</a>
-                                        <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Ver Registros</a>
+                                        <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">Fiscalizador</a>
+                                        <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Visualizacion</a>
+                                        {{-- <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Visualizacion</a> --}}
+                                        <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
+                                            class="btn btn-danger" target="_blank">Descargar PDF</a>
                                     </td>
                                 </tr>
                             @endforeach
