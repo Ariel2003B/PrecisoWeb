@@ -19,7 +19,7 @@
             <!-- Añadir botón para abrir el modal -->
             <div class="container mb-4">
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reporteGlobalModal">
-                    Reporte Recaudo Flota
+                    Recaudo de la Flota
                 </button>
             </div>
             <div class="container">
@@ -44,44 +44,13 @@
                     </div>
 
                 </form>
-
-
-
-                {{-- 
-                <script>
-                    function generarReporte() {
-                        const fecha = document.getElementById('fecha_reporte').value;
-
-                        if (!fecha) {
-                            alert('Por favor selecciona una fecha.');
-                            return;
-                        }
-
-                        fetch("{{ route('reporte.global') }}", {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({
-                                    fecha
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                document.getElementById('reporteGlobalResultado').innerHTML = data.html;
-                            })
-                            .catch(error => console.error('Error:', error));
-                    }
-                </script> --}}
-
                 <!-- Modal -->
                 <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="reporteGlobalLabel">Reporte de Recaudo Flota</h5>
+                                <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
