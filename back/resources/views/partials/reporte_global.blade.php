@@ -8,18 +8,20 @@
         </tr>
     </thead>
     <tbody>
-        <th>{{ $totalVueltasGlobal }}</th>
+        
         @foreach ($produccionPorUnidad as $unidad => $datos)
             <tr>
+                 <td>{{ $datos['total_vueltas'] }}</td>
                 <td>{{ $unidad }}</td>
                 <td>${{ number_format($datos['total_produccion'], 2) }}</td>
-                <td>{{ $datos['total_vueltas'] }}</td>
+               
             </tr>
         @endforeach
         <tr class="table-success">
-            <th>Total Global</th>
+            <th></th>
+            <th>Total</th>
             <th>${{ number_format($totalGlobal, 2) }}</th>
-           
         </tr>
+        
     </tbody>
 </table>
