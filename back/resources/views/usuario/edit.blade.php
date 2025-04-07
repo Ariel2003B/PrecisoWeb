@@ -96,6 +96,15 @@
                             placeholder="Nueva contraseña (opcional)">
                     </div>
 
+                    <div class="mb-3">
+                        <label for="ESTADO" class="form-label">Estado</label>
+                        <select name="ESTADO" id="EMP_ID" class="form-control">
+
+                            <option value="A">Activo
+                            </option>
+                            <option value="I">Inactivo</option>
+                        </select>
+                    </div>
                     <!-- Permisos -->
                     <div class="mb-3">
                         <label for="permisos" class="form-label">Permisos</label>

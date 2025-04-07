@@ -39,7 +39,7 @@ class HojaChoferController extends Controller
             ]);
         }
 
-        return response()->json($hoja);
+        return response()->json($hoja); 
     }
 
     // 2. Actualizar producción (el chofer solo puede actualizar vueltas)

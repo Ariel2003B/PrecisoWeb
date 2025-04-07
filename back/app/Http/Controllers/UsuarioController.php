@@ -12,7 +12,7 @@ class UsuarioController extends Controller
 {
     public function index()
     {
-        $usuarios = USUARIO::with('p_e_r_f_i_l')->get();
+        $usuarios = USUARIO::with(['p_e_r_f_i_l','empresa'])->where('ESTADO', 'A')->get();
         return view('usuario.index', compact('usuarios'));
     }
 
@@ -34,7 +34,7 @@ class UsuarioController extends Controller
             'GENERO' => 'required|string',
             'CEDULA' => 'required|string|max:13',
             'permisos' => 'array',
-            'TELEFONO'=>'required|string'
+            'TELEFONO' => 'required|string'
         ]);
 
         $usuario = USUARIO::create([
@@ -151,7 +151,8 @@ class UsuarioController extends Controller
             'GENERO' => $request->GENERO,
             'CEDULA' => $request->CEDULA,
             'EMP_ID' => $request->EMP_ID,
-            'TELEFONO' => $request->TELEFONO
+            'TELEFONO' => $request->TELEFONO,
+            'ESTADO' => $request->ESTADO
         ];
 
         if ($request->filled('CLAVE')) {

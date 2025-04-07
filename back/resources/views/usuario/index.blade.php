@@ -37,6 +37,7 @@
                             <th>Correo</th>
                             <th>Telefono</th>
                             <th>Usuario</th>
+                            <th>Empresa</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -49,16 +50,18 @@
                                 <td>{{ $usuario->CORREO }}</td>
                                 <td>{{ $usuario->TELEFONO }}</td>
                                 <td>{{ $usuario->CEDULA }}</td>
+                                <td>{{ $usuario->empresa->NOMBRE ?? 'Sin empresa' }}</td>
+
                                 <td>
                                     <a href="{{ route('usuario.edit', $usuario->USU_ID) }}"
                                         class="btn btn-primary btn-sm">Editar</a>
-                                    <form action="{{ route('usuario.destroy', $usuario->USU_ID) }}" method="POST"
+                                    {{-- <form action="{{ route('usuario.destroy', $usuario->USU_ID) }}" method="POST"
                                         class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-danger btn-sm"
                                             onclick="return confirm('¿Está seguro de eliminar este usuario?')">Eliminar</button>
-                                    </form>
+                                    </form> --}}
                                 </td>
                             </tr>
                         @endforeach
