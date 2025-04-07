@@ -17,8 +17,6 @@
 
         <section class="section">
             <div class="container">
-                <h4 class="mb-4">Filtrar hojas de trabajo</h4>
-
                 <form method="GET" class="row g-3 mb-4">
                     <div class="col-md-3">
                         <label>Fecha</label>
@@ -26,8 +24,8 @@
                     </div>
                     <div class="col-md-3">
                         <label>Unidad</label>
-                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa o habilitación..."
-                        value="{{ request('unidad') }}">
+                        <input type="text" name="unidad" class="form-control"
+                            placeholder="Buscar placa o habilitación..." value="{{ request('unidad') }}">
                     </div>
                     <div class="col-md-3">
                         <label>Ruta</label>
@@ -52,7 +50,7 @@
                         @php
                             $groupedHojas = $hojas->groupBy('fecha');
                         @endphp
-                
+
                         @forelse ($groupedHojas as $fecha => $hojasFecha)
                             @php
                                 // Ordenar las hojas por número de habilitación dentro del mismo grupo de fecha
@@ -64,19 +62,23 @@
                                     return PHP_INT_MAX;
                                 });
                             @endphp
-                
+
                             @foreach ($hojasOrdenadas as $hoja)
                                 <tr>
                                     <td>{{ $hoja->fecha }}</td>
-                                    <td>({{ $hoja->unidad->numero_habilitacion ?? '-' }}) {{ $hoja->unidad->placa ?? '-' }} </td>
+                                    <td>({{ $hoja->unidad->numero_habilitacion ?? '-' }}) {{ $hoja->unidad->placa ?? '-' }}
+                                    </td>
                                     <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                     <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                     <td>
-                                        <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">Fiscalizador</a>
-                                        <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Visualizar</a>
-                                        {{-- <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Visualizacion</a> --}}
-                                        <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
-                                            class="btn btn-danger" target="_blank">PDF</a>
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <a href="{{ route('reportes.create', $hoja->id_hoja) }}"
+                                                class="btn btn-primary btn-sm me-1">Fiscalizador</a>
+                                            <a href="{{ route('hoja.ver', $hoja->id_hoja) }}"
+                                                class="btn btn-success btn-sm me-1">Visualizar</a>
+                                            <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
+                                                class="btn btn-danger btn-sm" target="_blank">PDF</a>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -87,8 +89,17 @@
                         @endforelse
                     </tbody>
                 </table>
-                
+
             </div>
         </section>
     </main>
+    <style>
+        .d-flex.gap-1>* {
+            margin-right: 5px;
+        }
+
+        .d-flex.gap-1>*:last-child {
+            margin-right: 0;
+        }
+    </style>
 @endsection
