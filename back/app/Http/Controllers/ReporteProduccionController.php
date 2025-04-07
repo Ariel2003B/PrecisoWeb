@@ -111,23 +111,45 @@ class ReporteProduccionController extends Controller
 
         $produccionPorUnidad = [];
         $totalGlobal = 0;
+        $totalVueltasGlobal = 0;
 
         foreach ($hojas as $hoja) {
             $unidadKey = $hoja->unidad->placa . ' (' . $hoja->unidad->numero_habilitacion . ')';
-            $totalUnidad = $hoja->producciones->sum('valor_vuelta');
 
-            if (!isset($produccionPorUnidad[$unidadKey])) {
-                $produccionPorUnidad[$unidadKey] = 0;
+            $totalUnidad = 0;
+            $totalVueltas = 0;
+            $ultimaVuelta = 0;
+
+            foreach ($hoja->producciones as $produccion) {
+                $totalUnidad += $produccion->valor_vuelta;
+                $totalVueltas++;
+                $totalVueltasGlobal++;
+
+                if ($produccion->nro_vuelta > $ultimaVuelta) {
+                    $ultimaVuelta = $produccion->nro_vuelta;
+                }
             }
 
-            $produccionPorUnidad[$unidadKey] += $totalUnidad;
+            if (!isset($produccionPorUnidad[$unidadKey])) {
+                $produccionPorUnidad[$unidadKey] = [
+                    'total_produccion' => 0,
+                    'total_vueltas' => 0,
+                    'ultima_vuelta' => 0
+                ];
+            }
+
+            $produccionPorUnidad[$unidadKey]['total_produccion'] += $totalUnidad;
+            $produccionPorUnidad[$unidadKey]['total_vueltas'] += $totalVueltas;
+            $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = $ultimaVuelta;
+
             $totalGlobal += $totalUnidad;
         }
 
-        $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal'))->render();
+        $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
 
         return response()->json(['html' => $result]);
     }
+
 
 
 }
