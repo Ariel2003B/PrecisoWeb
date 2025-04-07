@@ -4,7 +4,6 @@
             <th>Unidad</th>
             <th>Total Producción ($)</th>
             <th>Total Vueltas</th>
-            <th>Última Vuelta Registrada</th>
         </tr>
     </thead>
     <tbody>
