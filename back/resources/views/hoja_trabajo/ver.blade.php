@@ -25,19 +25,20 @@
                 <table class="table table-bordered mb-4">
                     <tr>
                         <th>Fecha</th>
-                        <td>{{ $hoja->fecha }}</td>
+                        <td>{{ $hoja->fecha ?? 'Sin fecha disponible' }}</td>
                     </tr>
                     <tr>
                         <th>Tipo de Día</th>
-                        <td>{{ $hoja->tipo_dia }}</td>
+                        <td>{{ $hoja->tipo_dia ?? 'Sin tipo de día' }}</td>
                     </tr>
                     <tr>
                         <th>Ruta</th>
-                        <td>{{ $hoja->ruta->descripcion }}</td>
+                        <td>{{ $hoja->ruta->descripcion ?? 'Sin descripción de ruta' }}</td>
                     </tr>
                     <tr>
                         <th>Unidad</th>
-                        <td>{{ $hoja->unidad->placa }} ({{ $hoja->unidad->numero_habilitacion }})</td>
+                        <td>{{ $hoja->unidad->placa ?? 'Sin placa' }}
+                            ({{ $hoja->unidad->numero_habilitacion ?? 'Sin número de habilitación' }})</td>
                     </tr>
                 </table>
 
@@ -52,17 +53,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($hoja->producciones as $prod)
+                        @forelse ($hoja->producciones as $prod)
                             <tr>
-                                <td>{{ $prod->nro_vuelta }}</td>
-                                <td>{{ $prod->hora_subida }}</td>
-                                <td>{{ $prod->hora_bajada }}</td>
-                                <td>{{ number_format($prod->valor_vuelta, 2) }}</td>
+                                <td>{{ $prod->nro_vuelta ?? 'N/A' }}</td>
+                                <td>{{ $prod->hora_subida ?? 'Sin hora' }}</td>
+                                <td>{{ $prod->hora_bajada ?? 'Sin hora' }}</td>
+                                <td>{{ $prod->valor_vuelta ? number_format($prod->valor_vuelta, 2) : '0.00' }}</td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="4">No hay registros de producción.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
-                <p><strong>Total Producción: ${{ number_format($totalProduccion, 2) }}</strong></p>
+                <p><strong>Total Producción: ${{ number_format($totalProduccion ?? 0, 2) }}</strong></p>
 
                 <h3>Reporte Fiscalizador</h3>
                 <table class="table table-bordered">
@@ -75,17 +80,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($vueltasUsuario as $vu)
+                        @forelse ($vueltasUsuario as $vu)
                             <tr>
-                                <td>{{ $vu->nro_vuelta }}</td>
-                                <td>{{ $vu->pasaje_completo }}</td>
-                                <td>{{ $vu->pasaje_medio }}</td>
-                                <td>{{ number_format($vu->valor_vuelta, 2) }}</td>
+                                <td>{{ $vu->nro_vuelta ?? 'N/A' }}</td>
+                                <td>{{ $vu->pasaje_completo ?? 0 }}</td>
+                                <td>{{ $vu->pasaje_medio ?? 0 }}</td>
+                                <td>{{ $vu->valor_vuelta ? number_format($vu->valor_vuelta, 2) : '0.00' }}</td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="4">No hay registros del fiscalizador.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
-                <p><strong>Total Fiscalizador: ${{ number_format($totalUsuario, 2) }}</strong></p>
+                <p><strong>Total Fiscalizador: ${{ number_format($totalUsuario ?? 0, 2) }}</strong></p>
 
                 <h3>Gastos</h3>
                 <table class="table table-bordered">
@@ -96,15 +105,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($gastos as $tipo => $valor)
+                        @forelse ($gastos as $tipo => $valor)
                             <tr>
                                 <td>{{ $tipo }}</td>
-                                <td>{{ number_format($valor, 2) }}</td>
+                                <td>{{ $valor ? number_format($valor, 2) : '0.00' }}</td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="2">No hay gastos registrados.</td>
+                            </tr>
+                        @endforelse
                         <tr>
                             <td><strong>Total de Gastos</strong></td>
-                            <td><strong>{{ number_format($totalGastos, 2) }}</strong></td>
+                            <td><strong>{{ number_format($totalGastos ?? 0, 2) }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -112,19 +125,18 @@
                 <h3>Cálculos Finales</h3>
                 <table class="table table-bordered">
                     <tr>
-                        <th>Total Recaudo </th>
-                        <td>{{ number_format(max($totalProduccion, $totalUsuario), 2) }}</td>
+                        <th>Total Recaudo</th>
+                        <td>{{ number_format(max($totalProduccion ?? 0, $totalUsuario ?? 0), 2) }}</td>
                     </tr>
                     <tr>
                         <th>Total a Depositar</th>
-                        <td>{{ number_format($totalADepositar, 2) }}</td>
+                        <td>{{ number_format($totalADepositar ?? 0, 2) }}</td>
                     </tr>
                 </table>
 
                 <a href="{{ route('reportes.index') }}" class="btn btn-secondary">Regresar</a>
-                <a href="{{ url('/api/hojas-trabajo/' . $hoja->id_hoja . '/generar-pdfWeb') }}" class="btn btn-danger"
-                    target="_blank">Descargar PDF</a>
-
+                <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
+                    class="btn btn-danger" target="_blank">Descargar PDF</a>
             </div>
         </section>
     </main>
