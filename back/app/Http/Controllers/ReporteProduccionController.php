@@ -11,54 +11,62 @@ class ReporteProduccionController extends Controller
     public function index(Request $request)
     {
         $query = HojaTrabajo::with('unidad', 'ruta');
-    
+
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
-    
+
         if ($request->filled('ruta')) {
             $query->whereHas('ruta', function ($q) use ($request) {
                 $q->where('descripcion', 'like', '%' . $request->ruta . '%');
             });
         }
-    
+
         if ($request->filled('unidad')) {
             $query->whereHas('unidad', function ($q) use ($request) {
-                $q->where('placa', 'like', '%' . $request->unidad . '%');
+                $q->where('placa', 'like', '%' . $request->unidad . '%')
+                    ->orWhere('numero_habilitacion', 'like', '%' . $request->unidad . '%');
             });
         }
-    
-        // Ordenar por el número de habilitación de la unidad
-        $hojas = $query->get()->sortBy(function ($hoja) {
-            // Si número de habilitación tiene un número al inicio, lo extrae y lo convierte a número
-            preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
-            return $matches[1] ?? 0;
+
+        // Ordenar primero por fecha (descendente)
+        $hojas = $query->orderBy('fecha', 'desc')->get();
+
+        // Luego ordenar cada grupo de la misma fecha por número de habilitación
+        $hojas = $hojas->sortBy(function ($hoja) {
+            if ($hoja->unidad && $hoja->unidad->numero_habilitacion) {
+                // Extraer el número al inicio de la habilitación
+                preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
+                return $matches[1] ?? PHP_INT_MAX; // Si no encuentra número, lo manda al final
+            }
+            return PHP_INT_MAX;
         });
-    
+
         return view('reportes.index', compact('hojas'));
     }
-    
+
+
     public function create($id)
     {
 
         $user = Auth::user();
         $permisoLectura = $user->permisos()->where('DESCRIPCION', 'LECTURA')->exists();
-    
+
         $hoja = HojaTrabajo::with('unidad', 'ruta')->findOrFail($id);
-    
+
         // Obtener vueltas que ya registró este usuario para esta hoja
         $registros = ProduccionUsuario::where('id_hoja', $id)
             ->where('usu_id', Auth::user()->USU_ID)
             ->orderBy('nro_vuelta')
             ->get();
-        
+
         // Si hay registros, obtener el último número de vuelta registrado, sino inicia desde 1
-        $ultimoNumeroVuelta = $registros->max('nro_vuelta') ?? 0; 
+        $ultimoNumeroVuelta = $registros->max('nro_vuelta') ?? 0;
         $contador = $ultimoNumeroVuelta + 1; // Este es el próximo número de vuelta disponible
-    
+
         return view('reportes.create', compact('hoja', 'registros', 'contador', 'permisoLectura'));
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
