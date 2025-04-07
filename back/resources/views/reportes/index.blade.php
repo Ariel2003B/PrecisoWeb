@@ -68,7 +68,7 @@
                             @foreach ($hojasOrdenadas as $hoja)
                                 <tr>
                                     <td>{{ $hoja->fecha }}</td>
-                                    <td>{{ $hoja->unidad->placa ?? '-' }} ({{ $hoja->unidad->numero_habilitacion ?? '-' }})</td>
+                                    <td>({{ $hoja->unidad->numero_habilitacion ?? '-' }}) {{ $hoja->unidad->placa ?? '-' }} </td>
                                     <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                     <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                     <td>
