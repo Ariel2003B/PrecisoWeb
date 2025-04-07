@@ -25,17 +25,17 @@
                         <input type="date" name="fecha" class="form-control" value="{{ request('fecha') }}">
                     </div>
                     <div class="col-md-3">
+                        <label>Unidad</label>
+                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa o habilitación..."
+                        value="{{ request('unidad') }}">
+                    </div>
+                    <div class="col-md-3">
                         <label>Ruta</label>
                         <input type="text" name="ruta" class="form-control" placeholder="Buscar ruta..."
                             value="{{ request('ruta') }}">
                     </div>
-                    <div class="col-md-3">
-                        <label>Unidad</label>
-                        <input type="text" name="unidad" class="form-control" placeholder="Buscar placa o habilitación..."
-                            value="{{ request('unidad') }}">
-                    </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
                     </div>
                 </form>
                 <table class="table table-bordered text-center align-middle">
@@ -76,7 +76,7 @@
                                         <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Visualizacion</a>
                                         {{-- <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Visualizacion</a> --}}
                                         <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
-                                            class="btn btn-danger" target="_blank">Descargar PDF</a>
+                                            class="btn btn-danger" target="_blank">PDF</a>
                                     </td>
                                 </tr>
                             @endforeach
