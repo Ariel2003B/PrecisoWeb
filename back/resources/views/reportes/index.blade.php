@@ -71,15 +71,16 @@
                                     <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                     <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                     <td>
-                                        <div class="d-flex justify-content-center gap-1">
+                                        <div class="d-grid gap-2">
                                             <a href="{{ route('reportes.create', $hoja->id_hoja) }}"
-                                                class="btn btn-primary btn-sm me-1">Fiscalizador</a>
+                                                class="btn btn-primary btn-sm">Fiscalizador</a>
                                             <a href="{{ route('hoja.ver', $hoja->id_hoja) }}"
-                                                class="btn btn-success btn-sm me-1">Visualizar</a>
+                                                class="btn btn-success btn-sm">Visualizar</a>
                                             <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
                                                 class="btn btn-danger btn-sm" target="_blank">PDF</a>
                                         </div>
                                     </td>
+
                                 </tr>
                             @endforeach
                         @empty
@@ -94,12 +95,13 @@
         </section>
     </main>
     <style>
-        .d-flex.gap-1>* {
-            margin-right: 5px;
+        .d-grid.gap-2>a {
+            margin-bottom: 5px;
+            width: 100%;
         }
 
-        .d-flex.gap-1>*:last-child {
-            margin-right: 0;
+        .d-grid.gap-2>a:last-child {
+            margin-bottom: 0;
         }
     </style>
 @endsection
