@@ -38,7 +38,6 @@
                         <button type="submit" class="btn btn-primary w-100">Filtrar</button>
                     </div>
                 </form>
-
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -50,17 +49,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($hojas as $hoja)
-                            <tr>
-                                <td>{{ $hoja->fecha }}</td>
-                                <td>{{ $hoja->unidad->placa ?? '-' }} ({{ $hoja->unidad->numero_habilitacion ?? '-' }})</td>
-                                <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
-                                <td>{{ $hoja->tipo_dia ?? '-' }}</td>
-                                <td>
-                                    <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">Registrar Reporte</a>
-                                    <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Ver Registros</a>
-                                </td>
-                            </tr>
+                        @php
+                            $groupedHojas = $hojas->groupBy('fecha');
+                        @endphp
+                
+                        @forelse ($groupedHojas as $fecha => $hojasFecha)
+                            @php
+                                // Ordenar las hojas por número de habilitación dentro del mismo grupo de fecha
+                                $hojasOrdenadas = $hojasFecha->sortBy(function ($hoja) {
+                                    if ($hoja->unidad && $hoja->unidad->numero_habilitacion) {
+                                        preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
+                                        return $matches[1] ?? PHP_INT_MAX; // Si no encuentra número, lo manda al final
+                                    }
+                                    return PHP_INT_MAX;
+                                });
+                            @endphp
+                
+                            @foreach ($hojasOrdenadas as $hoja)
+                                <tr>
+                                    <td>{{ $hoja->fecha }}</td>
+                                    <td>{{ $hoja->unidad->placa ?? '-' }} ({{ $hoja->unidad->numero_habilitacion ?? '-' }})</td>
+                                    <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
+                                    <td>{{ $hoja->tipo_dia ?? '-' }}</td>
+                                    <td>
+                                        <a href="{{ route('reportes.create', $hoja->id_hoja) }}" class="btn btn-primary btn-sm">Registrar Reporte</a>
+                                        <a href="{{ route('hoja.ver', $hoja->id_hoja) }}" class="btn btn-success btn-sm">Ver Registros</a>
+                                    </td>
+                                </tr>
+                            @endforeach
                         @empty
                             <tr>
                                 <td colspan="5">No se encontraron hojas de trabajo con los filtros aplicados.</td>
@@ -68,6 +84,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                
             </div>
         </section>
     </main>
