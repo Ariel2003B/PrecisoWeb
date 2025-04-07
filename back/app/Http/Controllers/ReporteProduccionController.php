@@ -11,39 +11,39 @@ class ReporteProduccionController extends Controller
     public function index(Request $request)
     {
         $query = HojaTrabajo::with('unidad', 'ruta');
-
+    
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
-
+    
         if ($request->filled('ruta')) {
             $query->whereHas('ruta', function ($q) use ($request) {
                 $q->where('descripcion', 'like', '%' . $request->ruta . '%');
             });
         }
-
+    
         if ($request->filled('unidad')) {
             $query->whereHas('unidad', function ($q) use ($request) {
                 $q->where('placa', 'like', '%' . $request->unidad . '%')
-                    ->orWhere('numero_habilitacion', 'like', '%' . $request->unidad . '%');
+                  ->orWhere('numero_habilitacion', 'like', '%' . $request->unidad . '%');
             });
         }
-
-        // Ordenar primero por fecha (descendente)
-        $hojas = $query->orderBy('fecha', 'desc')->get();
-
-        // Luego ordenar cada grupo de la misma fecha por número de habilitación
-        $hojas = $hojas->sortBy(function ($hoja) {
-            if ($hoja->unidad && $hoja->unidad->numero_habilitacion) {
-                // Extraer el número al inicio de la habilitación
-                preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
-                return $matches[1] ?? PHP_INT_MAX; // Si no encuentra número, lo manda al final
-            }
-            return PHP_INT_MAX;
-        });
-
+    
+        // Ordenar por fecha descendente y por número de habilitación ascendente
+        $hojas = $query->get()->sortBy([
+            ['fecha', 'desc'],
+            [function ($hoja) {
+                if ($hoja->unidad && $hoja->unidad->numero_habilitacion) {
+                    preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
+                    return intval($matches[1] ?? PHP_INT_MAX);
+                }
+                return PHP_INT_MAX;
+            }]
+        ]);
+    
         return view('reportes.index', compact('hojas'));
     }
+    
 
 
     public function create($id)
