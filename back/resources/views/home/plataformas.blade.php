@@ -302,7 +302,7 @@
                         </div>
                     @endif
                     {{-- <i class="fa-solid fa-blog"></i> --}}
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'REGISTRAR CONTEO PASAJEROS'))
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'PASAJEROS CONTEO Y REPORTES'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
