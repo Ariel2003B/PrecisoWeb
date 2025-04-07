@@ -71,7 +71,7 @@
                                     <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
                                     <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                     <td>
-                                        <div class="d-grid gap-2">
+                                        <div class="btn-group" role="group" aria-label="Acciones">
                                             <a href="{{ route('reportes.create', $hoja->id_hoja) }}"
                                                 class="btn btn-primary btn-sm">Fiscalizador</a>
                                             <a href="{{ route('hoja.ver', $hoja->id_hoja) }}"
@@ -80,6 +80,7 @@
                                                 class="btn btn-danger btn-sm" target="_blank">PDF</a>
                                         </div>
                                     </td>
+
 
                                 </tr>
                             @endforeach
@@ -95,13 +96,31 @@
         </section>
     </main>
     <style>
-        .d-grid.gap-2>a {
-            margin-bottom: 5px;
-            width: 100%;
+        .btn-group .btn {
+            margin-right: 5px;
         }
 
-        .d-grid.gap-2>a:last-child {
-            margin-bottom: 0;
+        .btn-group .btn:last-child {
+            margin-right: 0;
         }
+
+        .table-bordered th,
+        .table-bordered td {
+            padding: 6px;
+            /* Reducido desde 12px o más a 6px */
+        }
+
+        .table th,
+        .table td {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        /* Reducir el ancho de la columna de Acciones */
+        .table th:last-child,
+        .table td:last-child {
+            width: 1%;
+            white-space: nowrap;
+        }   
     </style>
 @endsection
