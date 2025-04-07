@@ -14,13 +14,20 @@
                 </nav>
             </div>
         </div>
-
+        
         <section class="section">
+            <!-- Añadir botón para abrir el modal -->
+            <div class="container mb-4">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reporteGlobalModal">
+                    Visualizar Reporte Global
+                </button>
+            </div>
             <div class="container">
                 <form method="GET" class="row g-3 mb-4">
                     <div class="col-md-3">
                         <label>Fecha</label>
                         <input type="date" name="fecha" class="form-control" value="{{ request('fecha') }}">
+
                     </div>
                     <div class="col-md-3">
                         <label>Unidad</label>
@@ -35,7 +42,64 @@
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">Buscar</button>
                     </div>
+
                 </form>
+
+                
+
+
+                <script>
+                    function generarReporte() {
+                        const fecha = document.getElementById('fecha_reporte').value;
+
+                        if (!fecha) {
+                            alert('Por favor selecciona una fecha.');
+                            return;
+                        }
+
+                        fetch("{{ route('reporte.global') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    fecha
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('reporteGlobalResultado').innerHTML = data.html;
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                </script>
+
+                <!-- Modal -->
+                <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reporteGlobalLabel">Reporte Global de Producción</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="reporteGlobalForm">
+                                    <div class="mb-3">
+                                        <label for="fecha_reporte" class="form-label">Seleccionar Fecha</label>
+                                        <input type="date" name="fecha" id="fecha_reporte" class="form-control"
+                                            required>
+                                    </div>
+                                    <button type="button" class="btn btn-primary w-100"
+                                        onclick="generarReporte()">Visualizar Reporte</button>
+                                </form>
+                                <div id="reporteGlobalResultado" class="mt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -65,7 +129,7 @@
 
                             @foreach ($hojasOrdenadas as $hoja)
                                 <tr>
-                                    <td>{{ $hoja->fecha }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($hoja->fecha)->format('d/m/Y') }}</td>
                                     <td>({{ $hoja->unidad->numero_habilitacion ?? '-' }}) {{ $hoja->unidad->placa ?? '-' }}
                                     </td>
                                     <td>{{ $hoja->ruta->descripcion ?? '-' }}</td>
@@ -121,6 +185,6 @@
         .table td:last-child {
             width: 1%;
             white-space: nowrap;
-        }   
+        }
     </style>
 @endsection

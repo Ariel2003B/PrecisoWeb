@@ -128,6 +128,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/simcards/exportExcel', [SimCardController::class, 'generarReporteExcel'])->name('simcards.exportExcel');
     Route::get('/hoja-trabajo/{id}', [HojaTrabajoController::class, 'verHojaTrabajo'])->name('hoja.ver');
+    //Route::get('/reporte-global', [ReporteProduccionController::class, 'verReporteGlobal'])->name('reporte.global');
+    Route::post('/generar-reporte-global', [ReporteProduccionController::class, 'generarReporteGlobal'])->name('reporte.global');
 
 });
 

@@ -11,39 +11,41 @@ class ReporteProduccionController extends Controller
     public function index(Request $request)
     {
         $query = HojaTrabajo::with('unidad', 'ruta');
-    
+
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
-    
+
         if ($request->filled('ruta')) {
             $query->whereHas('ruta', function ($q) use ($request) {
                 $q->where('descripcion', 'like', '%' . $request->ruta . '%');
             });
         }
-    
+
         if ($request->filled('unidad')) {
             $query->whereHas('unidad', function ($q) use ($request) {
                 $q->where('placa', 'like', '%' . $request->unidad . '%')
-                  ->orWhere('numero_habilitacion', 'like', '%' . $request->unidad . '%');
+                    ->orWhere('numero_habilitacion', 'like', '%' . $request->unidad . '%');
             });
         }
-    
+
         // Ordenar por fecha descendente y por número de habilitación ascendente
         $hojas = $query->get()->sortBy([
             ['fecha', 'desc'],
-            [function ($hoja) {
-                if ($hoja->unidad && $hoja->unidad->numero_habilitacion) {
-                    preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
-                    return intval($matches[1] ?? PHP_INT_MAX);
+            [
+                function ($hoja) {
+                    if ($hoja->unidad && $hoja->unidad->numero_habilitacion) {
+                        preg_match('/^(\d+)/', $hoja->unidad->numero_habilitacion, $matches);
+                        return intval($matches[1] ?? PHP_INT_MAX);
+                    }
+                    return PHP_INT_MAX;
                 }
-                return PHP_INT_MAX;
-            }]
+            ]
         ]);
-    
+
         return view('reportes.index', compact('hojas'));
     }
-    
+
 
 
     public function create($id)
@@ -97,4 +99,35 @@ class ReporteProduccionController extends Controller
 
         return redirect()->route('reportes.index')->with('success', 'Reporte guardado con éxito.');
     }
+
+
+    public function generarReporteGlobal(Request $request)
+    {
+        $fecha = $request->input('fecha');
+
+        $hojas = HojaTrabajo::with(['unidad', 'producciones'])
+            ->whereDate('fecha', $fecha)
+            ->get();
+
+        $produccionPorUnidad = [];
+        $totalGlobal = 0;
+
+        foreach ($hojas as $hoja) {
+            $unidadKey = $hoja->unidad->placa . ' (' . $hoja->unidad->numero_habilitacion . ')';
+            $totalUnidad = $hoja->producciones->sum('valor_vuelta');
+
+            if (!isset($produccionPorUnidad[$unidadKey])) {
+                $produccionPorUnidad[$unidadKey] = 0;
+            }
+
+            $produccionPorUnidad[$unidadKey] += $totalUnidad;
+            $totalGlobal += $totalUnidad;
+        }
+
+        $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal'))->render();
+
+        return response()->json(['html' => $result]);
+    }
+
+
 }

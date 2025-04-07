@@ -44,6 +44,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', [LoginController::class, 'user']);
 
-   
 
 });
