@@ -45,7 +45,7 @@
 
                 </form>
                 <!-- Modal -->
-                <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
+                {{-- <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -68,7 +68,42 @@
                             </div>
                         </div>
                     </div>
+                </div> --}}
+                <!-- Modal -->
+                <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="reporteGlobalForm">
+                                    <div class="mb-3">
+                                        <label for="fecha_reporte" class="form-label">Seleccionar Fecha</label>
+                                        <input type="date" name="fecha" id="fecha_reporte" class="form-control"
+                                            required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="ruta_reporte" class="form-label">Seleccionar Ruta</label>
+                                        <select name="ruta" id="ruta_reporte" class="form-control">
+                                            <option value="">Todas las rutas</option>
+                                            @foreach ($rutas as $ruta)
+                                                <option value="{{ $ruta->id_ruta }}">{{ $ruta->descripcion }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-primary w-100"
+                                        onclick="generarReporte()">Visualizar Reporte</button>
+                                </form>
+                                <div id="reporteGlobalResultado" class="mt-4"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -163,7 +198,7 @@
     <script>
         function generarReporte() {
             const fecha = document.getElementById('fecha_reporte').value;
-
+            const rutaId = document.getElementById('ruta_reporte').value;
             if (!fecha) {
                 alert('Por favor selecciona una fecha.');
                 return;
@@ -176,7 +211,8 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
-                        fecha
+                        fecha,
+                        ruta: rutaId
                     })
                 })
                 .then(response => response.json())
@@ -225,7 +261,7 @@
                 "drawCallback": function(settings) {
                     var api = this.api();
                     var totalRow = $('#tablaProduccion tfoot tr')
-                .detach(); // Remover la fila de total temporalmente
+                        .detach(); // Remover la fila de total temporalmente
                     $('#tablaProduccion tbody').append(totalRow); // Reinsertar al final siempre
                 }
             });

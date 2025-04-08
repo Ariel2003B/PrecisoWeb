@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\HojaTrabajo;
 use App\Models\ProduccionUsuario;
+use App\Models\Ruta;
 use Illuminate\Support\Facades\Auth;
 
 class ReporteProduccionController extends Controller
@@ -43,7 +44,9 @@ class ReporteProduccionController extends Controller
             ]
         ]);
 
-        return view('reportes.index', compact('hojas'));
+         $rutas = Ruta::all();
+
+        return view('reportes.index', compact('hojas','rutas'));
     }
 
 
@@ -101,13 +104,69 @@ class ReporteProduccionController extends Controller
     }
 
 
+    // public function generarReporteGlobal(Request $request)
+    // {
+    //     $fecha = $request->input('fecha');
+
+    //     $hojas = HojaTrabajo::with(['unidad', 'producciones'])
+    //         ->whereDate('fecha', $fecha)
+    //         ->get();
+
+    //     $produccionPorUnidad = [];
+    //     $totalGlobal = 0;
+    //     $totalVueltasGlobal = 0;
+
+    //     foreach ($hojas as $hoja) {
+    //         $unidadKey = $hoja->unidad->placa . ' (' . $hoja->unidad->numero_habilitacion . ')';
+
+    //         $totalUnidad = 0;
+    //         $totalVueltas = 0;
+    //         $ultimaVuelta = 0;
+
+    //         foreach ($hoja->producciones as $produccion) {
+    //             $totalUnidad += $produccion->valor_vuelta;
+    //             $totalVueltas++;
+    //             $totalVueltasGlobal++;
+
+    //             if ($produccion->nro_vuelta > $ultimaVuelta) {
+    //                 $ultimaVuelta = $produccion->nro_vuelta;
+    //             }
+    //         }
+
+    //         if (!isset($produccionPorUnidad[$unidadKey])) {
+    //             $produccionPorUnidad[$unidadKey] = [
+    //                 'total_produccion' => 0,
+    //                 'total_vueltas' => 0,
+    //                 'ultima_vuelta' => 0
+    //             ];
+    //         }
+
+    //         $produccionPorUnidad[$unidadKey]['total_produccion'] += $totalUnidad;
+    //         $produccionPorUnidad[$unidadKey]['total_vueltas'] += $totalVueltas;
+    //         $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = $ultimaVuelta;
+
+    //         $totalGlobal += $totalUnidad;
+    //     }
+
+    //     $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
+
+    //     return response()->json(['html' => $result]);
+    // }
+
+
     public function generarReporteGlobal(Request $request)
     {
         $fecha = $request->input('fecha');
+        $rutaId = $request->input('ruta');
 
-        $hojas = HojaTrabajo::with(['unidad', 'producciones'])
-            ->whereDate('fecha', $fecha)
-            ->get();
+        $query = HojaTrabajo::with(['unidad', 'producciones', 'ruta'])
+            ->whereDate('fecha', $fecha);
+
+        if ($rutaId) {
+            $query->where('id_ruta', $rutaId);
+        }
+
+        $hojas = $query->get();
 
         $produccionPorUnidad = [];
         $totalGlobal = 0;
@@ -149,7 +208,6 @@ class ReporteProduccionController extends Controller
 
         return response()->json(['html' => $result]);
     }
-
 
 
 }
