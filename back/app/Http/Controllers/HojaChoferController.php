@@ -45,10 +45,6 @@ class HojaChoferController extends Controller
     // 2. Actualizar producción (el chofer solo puede actualizar vueltas)
     public function actualizarProduccion(Request $request, $id)
     {
-        $request->validate([
-            'produccion' => 'required|array',
-        ]);
-
         foreach ($request->produccion as $vuelta) {
             Produccion::updateOrCreate(
                 ['id_hoja' => $id, 'nro_vuelta' => $vuelta['nro_vuelta']],
@@ -60,7 +56,6 @@ class HojaChoferController extends Controller
 
             );
         }
-
         return response()->json(['message' => 'Producción actualizada correctamente']);
     }
 
