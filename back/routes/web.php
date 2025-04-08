@@ -130,6 +130,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/hoja-trabajo/{id}', [HojaTrabajoController::class, 'verHojaTrabajo'])->name('hoja.ver');
     //Route::get('/reporte-global', [ReporteProduccionController::class, 'verReporteGlobal'])->name('reporte.global');
     Route::post('/generar-reporte-global', [ReporteProduccionController::class, 'generarReporteGlobal'])->name('reporte.global');
+    Route::get('/reporte/global/excel', [ReporteProduccionController::class, 'generarExcel'])->name('reporte.global.excel');
+    Route::get('/reporte/global/pdf', [ReporteProduccionController::class, 'generarPDF'])->name('reporte.global.pdf');
 
 });
 

@@ -6,7 +6,15 @@ use App\Models\HojaTrabajo;
 use App\Models\ProduccionUsuario;
 use App\Models\Ruta;
 use Illuminate\Support\Facades\Auth;
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\View;
 class ReporteProduccionController extends Controller
 {
     public function index(Request $request)
@@ -44,9 +52,9 @@ class ReporteProduccionController extends Controller
             ]
         ]);
 
-         $rutas = Ruta::all();
+        $rutas = Ruta::all();
 
-        return view('reportes.index', compact('hojas','rutas'));
+        return view('reportes.index', compact('hojas', 'rutas'));
     }
 
 
@@ -103,57 +111,6 @@ class ReporteProduccionController extends Controller
         return redirect()->route('reportes.index')->with('success', 'Reporte guardado con éxito.');
     }
 
-
-    // public function generarReporteGlobal(Request $request)
-    // {
-    //     $fecha = $request->input('fecha');
-
-    //     $hojas = HojaTrabajo::with(['unidad', 'producciones'])
-    //         ->whereDate('fecha', $fecha)
-    //         ->get();
-
-    //     $produccionPorUnidad = [];
-    //     $totalGlobal = 0;
-    //     $totalVueltasGlobal = 0;
-
-    //     foreach ($hojas as $hoja) {
-    //         $unidadKey = $hoja->unidad->placa . ' (' . $hoja->unidad->numero_habilitacion . ')';
-
-    //         $totalUnidad = 0;
-    //         $totalVueltas = 0;
-    //         $ultimaVuelta = 0;
-
-    //         foreach ($hoja->producciones as $produccion) {
-    //             $totalUnidad += $produccion->valor_vuelta;
-    //             $totalVueltas++;
-    //             $totalVueltasGlobal++;
-
-    //             if ($produccion->nro_vuelta > $ultimaVuelta) {
-    //                 $ultimaVuelta = $produccion->nro_vuelta;
-    //             }
-    //         }
-
-    //         if (!isset($produccionPorUnidad[$unidadKey])) {
-    //             $produccionPorUnidad[$unidadKey] = [
-    //                 'total_produccion' => 0,
-    //                 'total_vueltas' => 0,
-    //                 'ultima_vuelta' => 0
-    //             ];
-    //         }
-
-    //         $produccionPorUnidad[$unidadKey]['total_produccion'] += $totalUnidad;
-    //         $produccionPorUnidad[$unidadKey]['total_vueltas'] += $totalVueltas;
-    //         $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = $ultimaVuelta;
-
-    //         $totalGlobal += $totalUnidad;
-    //     }
-
-    //     $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
-
-    //     return response()->json(['html' => $result]);
-    // }
-
-
     public function generarReporteGlobal(Request $request)
     {
         $fecha = $request->input('fecha');
@@ -203,11 +160,147 @@ class ReporteProduccionController extends Controller
 
             $totalGlobal += $totalUnidad;
         }
+        // Guardar la consulta en sesión para generar PDF o Excel posteriormente
+        session(['reporte_global_data' => $hojas]);
 
         $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
 
         return response()->json(['html' => $result]);
     }
 
+
+
+    public function generarExcel()
+    {
+        $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
+
+        if (!$hojas) {
+            return redirect()->back()->with('error', 'No hay datos para exportar.');
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Reporte Global');
+
+        // Encabezados
+        $headers = ['Fecha', 'Unidad (Placa - Habilitación)', 'Ruta', 'Tipo Día', 'Vueltas', 'Producción ($)'];
+        $sheet->fromArray($headers, null, 'A1');
+
+        // Aplicar estilo a los encabezados
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:F1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFCCCCCC');
+        $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $row = 2;
+        $totalGlobal = 0;
+
+        foreach ($hojas as $hoja) {
+            $produccionTotal = 0;
+            $vueltas = 0;
+
+            if ($hoja->producciones) {
+                foreach ($hoja->producciones as $produccion) {
+                    $produccionTotal += $produccion->valor_vuelta;
+                    $vueltas++;
+                }
+            }
+
+            // Concatenar Placa y Habilitación correctamente
+            $unidad = ($hoja->unidad->placa ?? '-') . ' (' . ($hoja->unidad->numero_habilitacion ?? '-') . ')';
+
+            $sheet->setCellValue('A' . $row, $hoja->fecha);
+            $sheet->setCellValue('B' . $row, $unidad);
+            $sheet->setCellValue('C' . $row, $hoja->ruta->descripcion ?? '-');
+            $sheet->setCellValue('D' . $row, $hoja->tipo_dia ?? '-');
+            $sheet->setCellValue('E' . $row, $vueltas);
+            $sheet->setCellValue('F' . $row, $produccionTotal);
+
+            $totalGlobal += $produccionTotal;
+            $row++;
+        }
+
+        // Total de Producción en la última fila
+        $sheet->setCellValue('E' . $row, 'Total');
+        $sheet->setCellValue('F' . $row, $totalGlobal);
+
+        // Estilo para el total
+        $sheet->getStyle('E' . $row . ':F' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('E' . $row . ':F' . $row)->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setARGB('FFCCFFCC');
+
+        // Bordes para toda la tabla
+        $sheet->getStyle('A1:F' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Alineación al centro para columnas específicas
+        $sheet->getStyle('A1:F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('F1:F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        // Ajustar tamaño de columnas automáticamente
+        foreach (range('A', 'F') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Establecer el nombre del archivo
+        $filename = 'reporte_recaudo.xlsx';
+
+        // Configuración de cabeceras HTTP para la descarga
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+
+
+    public function generarPDF()
+    {
+        $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
+    
+        if (!$hojas) {
+            return redirect()->back()->with('error', 'No hay datos para exportar.');
+        }
+    
+        $totalGlobal = 0;
+        $datos = [];
+    
+        foreach ($hojas as $hoja) {
+            $produccionTotal = 0;
+            $vueltas = 0;
+    
+            if ($hoja->producciones) {
+                foreach ($hoja->producciones as $produccion) {
+                    $produccionTotal += $produccion->valor_vuelta;
+                    $vueltas++;
+                }
+            }
+    
+            $unidad = ($hoja->unidad->placa ?? '-') . ' (' . ($hoja->unidad->numero_habilitacion ?? '-') . ')';
+            
+            $datos[] = [
+                'fecha' => $hoja->fecha,
+                'unidad' => $unidad,
+                'ruta' => $hoja->ruta->descripcion ?? '-',
+                'tipo_dia' => $hoja->tipo_dia ?? '-',
+                'vueltas' => $vueltas,
+                'produccion' => $produccionTotal
+            ];
+    
+            $totalGlobal += $produccionTotal;
+        }
+    
+        $pdf = new Dompdf();
+        $pdf->setPaper('A4', 'landscape');
+    
+        $view = View::make('pdf.reporte_global_pdf', compact('datos', 'totalGlobal'))->render();
+        $pdf->loadHtml($view);
+    
+        $pdf->render();
+        return $pdf->stream('reporte_recaudo.pdf');
+    }
 
 }

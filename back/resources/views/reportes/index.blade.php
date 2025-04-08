@@ -95,14 +95,21 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <button type="button" class="btn btn-primary w-100"
-                                        onclick="generarReporte()">Visualizar Reporte</button>
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="button" class="btn btn-primary" onclick="generarReporte()">Visualizar
+                                            Reporte</button>
+                                        <button type="button" class="btn btn-success" onclick="generarExcel()">Generar
+                                            Excel</button>
+                                        <button type="button" class="btn btn-danger" onclick="generarPDF()">Generar
+                                            PDF</button>
+                                    </div>
                                 </form>
                                 <div id="reporteGlobalResultado" class="mt-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-dark">
@@ -238,6 +245,14 @@
                     });
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+        function generarExcel() {
+            window.location.href = "{{ route('reporte.global.excel') }}";
+        }
+
+        function generarPDF() {
+            window.location.href = "{{ route('reporte.global.pdf') }}";
         }
     </script>
 
