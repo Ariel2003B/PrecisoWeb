@@ -105,8 +105,7 @@ class HojaTrabajoController extends Controller
             'id_conductor' => 'required|exists:personal,id_personal',
             'id_ruta' => 'required|exists:rutas,id_ruta',
             'id_unidad' => 'required|exists:unidades,id_unidad',
-            'gastos' => 'array',
-            'produccion' => 'array'
+            'gastos' => 'array'
         ]);
 
         $hoja = HojaTrabajo::with(['gastos', 'producciones'])->findOrFail($id);
