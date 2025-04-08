@@ -152,16 +152,21 @@ class HojaTrabajoController extends Controller
         // $hoja->producciones()->delete();
 
         // Producción: actualizar si existe, crear si no
-        foreach ($request->produccion as $prod) {
-            $hoja->producciones()->updateOrCreate(
-                ['nro_vuelta' => $prod['nro_vuelta']],
-                [
-                    'hora_subida' => $prod['hora_subida'],
-                    'hora_bajada' => $prod['hora_bajada'],
-                    'valor_vuelta' => $prod['valor_vuelta'],
-                ]
-            );
+        if (!empty($request->produccion) && is_array($request->produccion)) { // Verificar que producción no esté vacío y sea un array
+            foreach ($request->produccion as $prod) {
+                if (isset($prod['nro_vuelta']) && isset($prod['hora_subida']) && isset($prod['hora_bajada']) && isset($prod['valor_vuelta'])) {
+                    $hoja->producciones()->updateOrCreate(
+                        ['nro_vuelta' => $prod['nro_vuelta']],
+                        [
+                            'hora_subida' => $prod['hora_subida'],
+                            'hora_bajada' => $prod['hora_bajada'],
+                            'valor_vuelta' => $prod['valor_vuelta'],
+                        ]
+                    );
+                }
+            }
         }
+        
 
 
         return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
