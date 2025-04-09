@@ -33,7 +33,7 @@ class USUARIO extends Authenticatable
 	protected $table = 'USUARIO';
 	protected $primaryKey = 'USU_ID';
 	public $timestamps = false;
-	
+
 	protected $casts = [
 		'PER_ID' => 'int',
 		'EMP_ID' => 'int'
@@ -85,4 +85,9 @@ class USUARIO extends Authenticatable
 	{
 		return $this->belongsTo(EMPRESA::class, 'EMP_ID');
 	}
+	public function unidades()
+	{
+		return $this->hasMany(Unidad::class, 'usu_id');
+	}
+
 }

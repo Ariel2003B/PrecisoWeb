@@ -88,14 +88,41 @@ class HojaTrabajoController extends Controller
 
     public function index(Request $request)
     {
+        $authHeader = $request->header('Authorization');
+    
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return response()->json(['error' => 'Token no proporcionado'], 401);
+        }
+    
+        $token = substr($authHeader, 7);
+        $accessToken = PersonalAccessToken::findToken($token);
+    
+        if (!$accessToken) {
+            return response()->json(['error' => 'Token inválido'], 401);
+        }
+    
+        $user = $accessToken->tokenable; // Usuario autenticado
+    
+        // Consultar el perfil si lo tienes relacionado (puedes ajustar esto según tu modelo)
+        $esAdmin = optional($user->p_e_r_f_i_l)->nombre === 'admin';
+    
         $query = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones']);
-
+    
+        // Si no es admin, filtra por unidades del usuario
+        if (!$esAdmin) {
+            $query->whereHas('unidad', function ($q) use ($user) {
+                $q->where('usu_id', $user->USU_ID);
+            });
+        }
+    
+        // Filtro opcional por fecha
         if ($request->has('fecha')) {
             $query->where('fecha', $request->input('fecha'));
         }
+    
         return response()->json($query->get());
     }
-
+    
 
     public function update(Request $request, $id)
     {
@@ -147,10 +174,6 @@ class HojaTrabajoController extends Controller
                 ]
             );
         }
-
-        // Eliminar y reemplazar producción (puedes modificarlo para actualizar también si prefieres)
-        // $hoja->producciones()->delete();
-
         // Producción: actualizar si existe, crear si no
         if (!empty($request->produccion) && is_array($request->produccion)) { // Verificar que producción no esté vacío y sea un array
             foreach ($request->produccion as $prod) {

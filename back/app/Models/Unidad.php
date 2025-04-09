@@ -37,11 +37,16 @@ class Unidad extends Model
         'tipo_especial',
         'capacidad_pasajeros',
         'puertas_ingreso',
-        'puertas_izquierdas'
+        'puertas_izquierdas',
+        'usu_id' // ← nuevo campo agregado
     ];
 
     public function hojas_trabajo()
     {
         return $this->hasMany(HojaTrabajo::class, 'id_unidad');
+    }
+    public function usuario()
+    {
+        return $this->belongsTo(USUARIO::class, 'usu_id');
     }
 }
