@@ -89,40 +89,40 @@ class HojaTrabajoController extends Controller
     public function index(Request $request)
     {
         $authHeader = $request->header('Authorization');
-    
+
         if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
             return response()->json(['error' => 'Token no proporcionado'], 401);
         }
-    
+
         $token = substr($authHeader, 7);
         $accessToken = PersonalAccessToken::findToken($token);
-    
+
         if (!$accessToken) {
             return response()->json(['error' => 'Token inválido'], 401);
         }
-    
+
         $user = $accessToken->tokenable; // Usuario autenticado
-    
+
         // Consultar el perfil si lo tienes relacionado (puedes ajustar esto según tu modelo)
         $esAdmin = optional($user->p_e_r_f_i_l)->DESCRIPCION === 'admin';
-    
+
         $query = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones']);
-    
+
         // Si no es admin, filtra por unidades del usuario
         if (!$esAdmin) {
             $query->whereHas('unidad', function ($q) use ($user) {
                 $q->where('usu_id', $user->USU_ID);
             });
         }
-    
+
         // Filtro opcional por fecha
         if ($request->has('fecha')) {
             $query->where('fecha', $request->input('fecha'));
         }
-    
+
         return response()->json($query->get());
     }
-    
+
 
     public function update(Request $request, $id)
     {
@@ -189,7 +189,7 @@ class HojaTrabajoController extends Controller
                 }
             }
         }
-        
+
 
 
         return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
@@ -302,7 +302,7 @@ class HojaTrabajoController extends Controller
 
             Log::info('Hoja de trabajo encontrada', ['id' => $id]);
 
-            $html = view('pdf.hoja_trabajo', compact('hoja',  'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            $html = view('pdf.hoja_trabajo', compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
             Log::info('Vista HTML renderizada correctamente.');
 
             $options = new Options();
@@ -378,6 +378,53 @@ class HojaTrabajoController extends Controller
             ));
         } catch (\Exception $e) {
             return redirect()->route('home.inicio')->with('error', 'No se pudo cargar la hoja de trabajo.');
+        }
+    }
+
+
+    public function verHojaTrabajoApi($id)
+    {
+        try {
+            $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+
+            $vueltasUsuario = ProduccionUsuario::with('usuario')
+                ->where('id_hoja', $id)
+                ->orderBy('nro_vuelta')
+                ->get();
+
+            // Calcular totales
+            $totalProduccion = $hoja->producciones->sum('valor_vuelta');
+            $totalUsuario = $vueltasUsuario->sum('valor_vuelta');
+
+            // Calcular total de gastos por tipo
+            $tiposGastos = ['DIESEL', 'CONDUCTOR', 'AYUDANTE', 'ALIMENTACION', 'OTROS'];
+            $gastos = [];
+            $totalGastos = 0;
+
+            foreach ($tiposGastos as $tipo) {
+                $valor = $hoja->gastos->where('tipo_gasto', $tipo)->sum('valor');
+                $gastos[] = [
+                    'tipo' => $tipo,
+                    'valor' => $valor
+                ];
+                $totalGastos += $valor;
+            }
+
+            $totalMayor = max($totalProduccion, $totalUsuario);
+            $totalADepositar = $totalMayor - $totalGastos;
+
+            return response()->json([
+                'hoja' => $hoja,
+                'produccion_conductor' => $hoja->producciones,
+                'produccion_fiscalizador' => $vueltasUsuario,
+                'gastos' => $gastos,
+                'total_produccion' => $totalProduccion,
+                'total_fiscalizador' => $totalUsuario,
+                'total_gastos' => $totalGastos,
+                'total_a_depositar' => $totalADepositar,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'No se pudo obtener la hoja de trabajo.'], 500);
         }
     }
 

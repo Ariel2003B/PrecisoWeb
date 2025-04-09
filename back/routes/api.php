@@ -24,6 +24,7 @@ Route::get('/hoja-chofer/{id_unidad}', [HojaChoferController::class, 'buscarPorU
 
 // Actualizar las vueltas (producción) de la hoja de trabajo del día
 Route::put('/hoja-chofer/{id_hoja}/produccion', [HojaChoferController::class, 'actualizarProduccion']);
+Route::get('/hoja-trabajo/{id}', [HojaTrabajoController::class, 'verHojaTrabajoApi']);
 
 Route::get('/hojas', [HojaTrabajoController::class, 'index']);
 Route::put('/hojas/{id}', [HojaTrabajoController::class, 'update']);
