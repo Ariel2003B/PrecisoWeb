@@ -104,7 +104,7 @@ class HojaTrabajoController extends Controller
         $user = $accessToken->tokenable; // Usuario autenticado
     
         // Consultar el perfil si lo tienes relacionado (puedes ajustar esto según tu modelo)
-        $esAdmin = optional($user->p_e_r_f_i_l)->nombre === 'admin';
+        $esAdmin = optional($user->p_e_r_f_i_l)->DESCRIPCION === 'admin';
     
         $query = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones']);
     
