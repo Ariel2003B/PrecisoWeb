@@ -132,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/generar-reporte-global', [ReporteProduccionController::class, 'generarReporteGlobal'])->name('reporte.global');
     Route::get('/reporte/global/excel', [ReporteProduccionController::class, 'generarExcel'])->name('reporte.global.excel');
     Route::get('/reporte/global/pdf', [ReporteProduccionController::class, 'generarPDF'])->name('reporte.global.pdf');
+    Route::get('/reporte-pdf-rango', [HojaTrabajoController::class, 'reportePorRango'])->name('reporte.pdf.rango');
 
 });
 

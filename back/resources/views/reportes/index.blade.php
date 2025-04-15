@@ -22,6 +22,39 @@
                     Recaudo de la Flota
                 </button>
             </div>
+
+            <div class="container mb-4 border rounded p-3 bg-light">
+                <h5>Generar Reporte PDF por Rango de Fechas</h5>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="fecha_inicio" class="form-label">Fecha Desde</label>
+                        <input type="date" id="fecha_inicio" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fecha_fin" class="form-label">Fecha Hasta</label>
+                        <input type="date" id="fecha_fin" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-danger w-100" onclick="generarPDFRango()">
+                            Generar PDF por Rango
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function generarPDFRango() {
+                    const inicio = document.getElementById('fecha_inicio').value;
+                    const fin = document.getElementById('fecha_fin').value;
+
+                    if (!inicio || !fin) {
+                        alert('Por favor selecciona ambas fechas.');
+                        return;
+                    }
+
+                    window.open(`/reporte-pdf-rango?fecha_inicio=${inicio}&fecha_fin=${fin}`, '_blank');
+                }
+            </script>
+
             <div class="container">
                 <form method="GET" class="row g-3 mb-4">
                     <div class="col-md-3">

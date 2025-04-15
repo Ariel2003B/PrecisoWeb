@@ -140,7 +140,7 @@
                         </tr>
                         <tr>
                             <td colspan="4" class="bold" style="text-align:left; padding: 6px 0;">
-                                Conductor: {{ $hoja->conductor->nombre }}
+                                Conductor: {{ $hoja->conductor->nombre ?? "sin conductor" }}
                             </td>
                         </tr>
                         <tr>

@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 use PDF;
-
+use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Facades\File;
 class HojaTrabajoController extends Controller
 {
     public function store(Request $request)
@@ -336,6 +337,58 @@ class HojaTrabajoController extends Controller
         }
     }
 
+
+
+
+    public function ReportePorRango(Request $request)
+    {
+        $request->validate([
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+        ]);
+
+        $inicio = $request->fecha_inicio;
+        $fin = $request->fecha_fin;
+
+        $hojas = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones'])
+            ->whereBetween('fecha', [$inicio, $fin])
+            ->orderBy('fecha')
+            ->orderBy('id_unidad')
+            ->get();
+
+        $htmlCompleto = '';
+
+        foreach ($hojas as $hoja) {
+            $vueltasUsuario = ProduccionUsuario::with('usuario')
+                ->where('id_hoja', $hoja->id_hoja)
+                ->orderBy('nro_vuelta')
+                ->get();
+
+            $gastoDiesel = $hoja->gastos->firstWhere('tipo_gasto', 'DIESEL');
+            $gastoOtros = $hoja->gastos->firstWhere('tipo_gasto', 'OTROS');
+
+            $baseUrl = "http://precisogps.com/back/storage/app/public/";
+            $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
+            $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
+
+            // Renderiza UNA HOJA con su vista
+            $htmlHoja = view('pdf.hoja_trabajo', compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+
+            // Separamos con salto de página
+            $htmlCompleto .= '<div style="page-break-after: always;">' . $htmlHoja . '</div>';
+        }
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $pdf = new Dompdf($options);
+        $pdf->loadHtml($htmlCompleto);
+        $pdf->setPaper('A4');
+        $pdf->render();
+
+        return $pdf->stream("reporte_rango_{$inicio}_{$fin}.pdf");
+    }
 
     public function verHojaTrabajo($id)
     {
