@@ -343,6 +343,7 @@ class HojaTrabajoController extends Controller
     public function ReportePorRango(Request $request)
     {
         ini_set('memory_limit', '1024M'); // o más, como '1024M'
+        ini_set('max_execution_time', 300); // 300 segundos = 5 minutos
 
         $request->validate([
             'fecha_inicio' => 'required|date',
