@@ -91,9 +91,9 @@
     <table width="100%" style="border: none; margin-bottom: 10px;">
         <tr>
             <!-- Columna izquierda: logo -->
-            <td style="width: 25%; text-align: left; border: none;">
+            {{-- <td style="width: 25%; text-align: left; border: none;">
                 <img src="http://precisogps.com/img/Precisogps.png" alt="Logo" width="150">
-            </td>
+            </td> --}}
             <!-- Cambios en la cabecera para mostrar el número de hoja -->
             <td style="width: 50%; text-align: center; border: none;">
                 <h2 style="margin: 0;">HOJA DE TRABAJO No. {{ $hoja->numero_hoja ?? 'S/N' }}</h2>
@@ -101,9 +101,9 @@
             </td>
             
             <!-- Columna derecha: logo de Metropoli -->
-            <td style="width: 25%; text-align: right; border: none;">
+            {{-- <td style="width: 25%; text-align: right; border: none;">
                 <img src="http://precisogps.com/img/clients/metropoli.png" alt="Logo Metropoli" width="100">
-            </td>
+            </td> --}}
 
         </tr>
     </table>
@@ -119,9 +119,9 @@
             <td class="no-border bold">FECHA: {{ $hoja->fecha }}</td>
         </tr>
         <tr>
-            <td colspan="3" class="no-border bold">RUTA: {{ $hoja->ruta->descripcion }}</td>
-            <td colspan="2" class="no-border bold">UNIDAD No.: {{ $hoja->unidad->placa }}
-                ({{ $hoja->unidad->numero_habilitacion }})</td>
+            <td colspan="3" class="no-border bold">RUTA: {{ $hoja->ruta->descripcion ?? "Sin ruta"}} </td>
+            <td colspan="2" class="no-border bold">UNIDAD No.: {{ $hoja->unidad->placa ?? "Sin Unidad" }}
+                ({{ $hoja->unidad->numero_habilitacion ?? ""}})</td>
         </tr>
 
     </table>
@@ -338,7 +338,7 @@
         </tbody>
     </table>
 
-    @if ($imagenDiesel || $imagenOtros)
+    {{-- @if ($imagenDiesel || $imagenOtros)
         <div style="margin-top: 5px;">
             <h4 style="text-align: left; text-decoration: underline; margin-bottom: 5px;">Anexos</h4>
             <table width="100%" style="border: none;">
@@ -360,7 +360,7 @@
                 </tr>
             </table>
         </div>
-    @endif
+    @endif --}}
 
     <div class="footer">
         <hr style="margin-bottom: 10px; border: none; border-top: 1px solid #ccc;">

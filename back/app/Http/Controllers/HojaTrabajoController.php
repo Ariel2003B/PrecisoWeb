@@ -372,7 +372,7 @@ class HojaTrabajoController extends Controller
             $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
 
             // Renderiza UNA HOJA con su vista
-            $htmlHoja = view('pdf.hoja_trabajo', compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            $htmlHoja = view('pdf.hojaTrabajoBulk', compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
 
             // Separamos con salto de página
             $htmlCompleto .= '<div style="page-break-after: always;">' . $htmlHoja . '</div>';
