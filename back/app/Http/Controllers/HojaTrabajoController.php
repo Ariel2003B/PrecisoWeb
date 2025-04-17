@@ -352,7 +352,7 @@ class HojaTrabajoController extends Controller
 
         $inicio = $request->fecha_inicio;
         $fin = $request->fecha_fin;
-
+        $esUnSoloDia = $inicio === $fin;
         $hojas = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones'])
             ->whereBetween('fecha', [$inicio, $fin])
             ->orderBy('fecha')
@@ -375,7 +375,9 @@ class HojaTrabajoController extends Controller
             $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
 
             // Renderiza UNA HOJA con su vista
-            $htmlHoja = view('pdf.hojaTrabajoBulk', compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            $vista = $esUnSoloDia ? 'pdf.hoja_trabajo' : 'pdf.hojaTrabajoBulk';
+
+            $htmlHoja = view($vista, compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
 
             // Separamos con salto de página
             $htmlCompleto .= '<div style="page-break-after: always;">' . $htmlHoja . '</div>';
