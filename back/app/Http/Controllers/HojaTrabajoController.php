@@ -110,7 +110,18 @@ class HojaTrabajoController extends Controller
         $query = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones']);
 
         // Si no es admin, filtra por unidades del usuario
-        if (!$esAdmin) {
+        // if (!$esAdmin) {
+        //     $query->whereHas('unidad', function ($q) use ($user) {
+        //         $q->where('usu_id', $user->USU_ID);
+        //     });
+        // }
+        if ($esAdmin) {
+            // Solo hojas donde la ruta pertenece a su empresa
+            $query->whereHas('ruta', function ($q) use ($user) {
+                $q->where('EMP_ID', $user->EMP_ID);
+            });
+        } else {
+            // Hojas asociadas a sus propias unidades
             $query->whereHas('unidad', function ($q) use ($user) {
                 $q->where('usu_id', $user->USU_ID);
             });
