@@ -19,7 +19,15 @@ class ReporteProduccionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = HojaTrabajo::with('unidad', 'ruta');
+
+        $user = auth()->user();
+
+        $query = HojaTrabajo::with('unidad', 'ruta')
+            ->whereHas('ruta', function ($q) use ($user) {
+                $q->where('EMP_ID', $user->EMP_ID);
+            });
+
+      //  $query = HojaTrabajo::with('unidad', 'ruta');
 
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
@@ -260,27 +268,27 @@ class ReporteProduccionController extends Controller
     public function generarPDF()
     {
         $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
-    
+
         if (!$hojas) {
             return redirect()->back()->with('error', 'No hay datos para exportar.');
         }
-    
+
         $totalGlobal = 0;
         $datos = [];
-    
+
         foreach ($hojas as $hoja) {
             $produccionTotal = 0;
             $vueltas = 0;
-    
+
             if ($hoja->producciones) {
                 foreach ($hoja->producciones as $produccion) {
                     $produccionTotal += $produccion->valor_vuelta;
                     $vueltas++;
                 }
             }
-    
+
             $unidad = ($hoja->unidad->placa ?? '-') . ' (' . ($hoja->unidad->numero_habilitacion ?? '-') . ')';
-            
+
             $datos[] = [
                 'fecha' => $hoja->fecha,
                 'unidad' => $unidad,
@@ -289,16 +297,16 @@ class ReporteProduccionController extends Controller
                 'vueltas' => $vueltas,
                 'produccion' => $produccionTotal
             ];
-    
+
             $totalGlobal += $produccionTotal;
         }
-    
+
         $pdf = new Dompdf();
         $pdf->setPaper('A4', 'landscape');
-    
+
         $view = View::make('pdf.reporte_global_pdf', compact('datos', 'totalGlobal'))->render();
         $pdf->loadHtml($view);
-    
+
         $pdf->render();
         return $pdf->stream('reporte_recaudo.pdf');
     }
