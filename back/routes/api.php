@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RutaController;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\HojaChoferController;
 use App\Http\Controllers\HojaTrabajoController;
@@ -39,11 +40,14 @@ Route::prefix('conductores')->group(function () {
 Route::post('/auth', [LoginController::class, 'auth']);
 Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
 Route::get('/hojas-trabajo/{id}/generar-pdfWeb', [HojaTrabajoController::class, 'generarPDFWeb']);
+Route::get('/empresa/rutas', [RutaController::class, 'rutasPorEmpresa']);
+
+
+
 Route::middleware('auth:sanctum')->group(function () {
     //Route::post('/auth', LoginController::class, 'Auth');
     Route::post('/hojas-trabajo', [HojaTrabajoController::class, 'store']);
 
     Route::get('/user', [LoginController::class, 'user']);
-
 
 });

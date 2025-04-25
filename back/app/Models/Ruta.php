@@ -19,11 +19,18 @@ class Ruta extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'descripcion'
+        'descripcion',
+        'EMP_ID'
     ];
 
     public function hojas_trabajo()
     {
         return $this->hasMany(HojaTrabajo::class, 'id_ruta');
     }
+
+    public function empresa()
+    {
+        return $this->belongsTo(EMPRESA::class, 'EMP_ID');
+    }
+
 }

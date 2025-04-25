@@ -4,30 +4,43 @@ from fpdf import FPDF
 
 # Datos de ejemplo
 unidades = [
-    {"id_unidad": 3, "placa": "PUH0688 (49/0349)"},
-    {"id_unidad": 4, "placa": "PUH0721 (50/0350)"},
-    {"id_unidad": 5, "placa": "PAA4065 (51/0351)"},
-    {"id_unidad": 6, "placa": "PAZQ0506 (52/0352)"},
-    {"id_unidad": 7, "placa": "PZZ0309 (53/0353)"},
-    {"id_unidad": 8, "placa": "PZU0391 (54/0354)"},
-    {"id_unidad": 9, "placa": "PAB6013 (55/0355)"},
-    {"id_unidad": 10, "placa": "PUC0946 (56/0356)"},
-    {"id_unidad": 11, "placa": "PAC7917 (57/0357)"},
-    {"id_unidad": 12, "placa": "PAC3160 (59/0359)"},
-    {"id_unidad": 13, "placa": "TAA1440 (60/0360)"},
-    {"id_unidad": 14, "placa": "PAA9357 (61/0361)"},
-    {"id_unidad": 15, "placa": "PAB6444 (62/0362)"},
-    {"id_unidad": 16, "placa": "PAU0480 (63/0363)"},
-    {"id_unidad": 17, "placa": "EAI0493 (64/0364)"},
-    {"id_unidad": 18, "placa": "PAA9642 (65/0365)"},
-    {"id_unidad": 19, "placa": "PAC9156 (66/0366)"},
-    {"id_unidad": 20, "placa": "PZQ0576 (67/0367)"},
-    {"id_unidad": 21, "placa": "PAC1026 (68/0368)"},
-    {"id_unidad": 22, "placa": "PZU0195 (03/0303)"},
-    {"id_unidad": 23, "placa": "PAQ0712 (06/0306)"},
-    {"id_unidad": 24, "placa": "PUD0547 (07/0307)"},
-    {"id_unidad": 25, "placa": "PZU0483 (08/0308)"},
-    {"id_unidad": 26, "placa": "PZV0698 (09/0309)"},
+    # {"id_unidad": 3, "placa": "PUH0688 (49/0349)"},
+    # {"id_unidad": 4, "placa": "PUH0721 (50/0350)"},
+    # {"id_unidad": 5, "placa": "PAA4065 (51/0351)"},
+    # {"id_unidad": 6, "placa": "PAZQ0506 (52/0352)"},
+    # {"id_unidad": 7, "placa": "PZZ0309 (53/0353)"},
+    # {"id_unidad": 8, "placa": "PZU0391 (54/0354)"},
+    # {"id_unidad": 9, "placa": "PAB6013 (55/0355)"},
+    # {"id_unidad": 10, "placa": "PUC0946 (56/0356)"},
+    # {"id_unidad": 11, "placa": "PAC7917 (57/0357)"},
+    # {"id_unidad": 12, "placa": "PAC3160 (59/0359)"},
+    # {"id_unidad": 13, "placa": "TAA1440 (60/0360)"},
+    # {"id_unidad": 14, "placa": "PAA9357 (61/0361)"},
+    # {"id_unidad": 15, "placa": "PAB6444 (62/0362)"},
+    # {"id_unidad": 16, "placa": "PAU0480 (63/0363)"},
+    # {"id_unidad": 17, "placa": "EAI0493 (64/0364)"},
+    # {"id_unidad": 18, "placa": "PAA9642 (65/0365)"},
+    # {"id_unidad": 19, "placa": "PAC9156 (66/0366)"},
+    # {"id_unidad": 20, "placa": "PZQ0576 (67/0367)"},
+    # {"id_unidad": 21, "placa": "PAC1026 (68/0368)"},
+    # {"id_unidad": 22, "placa": "PZU0195 (03/0303)"},
+    # {"id_unidad": 23, "placa": "PAQ0712 (06/0306)"},
+    # {"id_unidad": 24, "placa": "PUD0547 (07/0307)"},
+    # {"id_unidad": 25, "placa": "PZU0483 (08/0308)"},
+    # {"id_unidad": 26, "placa": "PZV0698 (09/0309)"},
+  {"id_unidad": 27, "placa": "PAE1849 (2310)"},
+  {"id_unidad": 28, "placa": "PAE1850 (2311)"},
+  {"id_unidad": 29, "placa": "PAE1854 (2342)"},
+  {"id_unidad": 30, "placa": "PAE1853 (2346)"},
+  {"id_unidad": 31, "placa": "PAB3662 (3742)"},
+  {"id_unidad": 32, "placa": "PAC9210 (3744)"},
+  {"id_unidad": 33, "placa": "PAB3651 (2347)"},
+  {"id_unidad": 34, "placa": "PAB3695 (3737)"},
+  {"id_unidad": 35, "placa": "PAB3661 (3738)"},
+  {"id_unidad": 36, "placa": "PAB3685 (3739)"},
+  {"id_unidad": 37, "placa": "PAB3660 (3740)"},
+  {"id_unidad": 38, "placa": "PCX7184 (3741)"},
+  {"id_unidad": 39, "placa": "PAB4483 (3743)"}
 
 ]
 
@@ -93,7 +106,7 @@ for unidad in unidades:
     )
 
     # Texto TRANSMETROPOLI y PLACA dentro del rectángulo negro
-    text1 = f"TRANSMETROPOLI - {unidad['placa']}"
+    text1 = f"URBANQUITO - {unidad['placa']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2
@@ -115,5 +128,5 @@ for unidad in unidades:
     pdf.image(image_path, x=40, y=30, w=100)
 
 # Guardar PDF final
-pdf.output("qrs_con_placas_transmetropoli.pdf")
+pdf.output("qrs_con_placas_urbanquito.pdf")
 print("PDF generado exitosamente ✅")

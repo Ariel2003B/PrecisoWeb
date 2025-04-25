@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class EMPRESA extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'EMPRESA';
     protected $primaryKey = 'EMP_ID';
     public $timestamps = false;
@@ -46,4 +46,10 @@ class EMPRESA extends Model
     {
         return $this->hasMany(USUARIO::class, 'EMP_ID');
     }
+
+    public function rutas()
+    {
+        return $this->hasMany(Ruta::class, 'EMP_ID');
+    }
+
 }
