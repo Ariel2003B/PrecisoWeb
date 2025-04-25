@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HojaTrabajo;
 use App\Models\Produccion;
+use App\Models\Unidad;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -21,8 +22,19 @@ class HojaChoferController extends Controller
 
         if (!$hoja) {
             // Obtener el último número de hoja no nulo y sumarle 1
+            // $ultimoNumeroHoja = HojaTrabajo::whereNotNull('numero_hoja')
+            //     ->orderBy('numero_hoja', 'desc')
+            //     ->value('numero_hoja');
+            // 🔗 Obtener EMP_ID a través de unidad → usuario → empresa
+            $unidad = Unidad::with('usuario.empresa')->findOrFail($id_unidad);
+            $empresaId = optional(optional($unidad->usuario)->empresa)->EMP_ID;
+
+            // 🔄 Calcular el número de hoja de forma escalada por empresa
             $ultimoNumeroHoja = HojaTrabajo::whereNotNull('numero_hoja')
-                ->orderBy('numero_hoja', 'desc')
+                ->whereHas('unidad.usuario', function ($q) use ($empresaId) {
+                    $q->where('EMP_ID', $empresaId);
+                })
+                ->orderByDesc('numero_hoja')
                 ->value('numero_hoja');
 
             $nuevoNumeroHoja = ($ultimoNumeroHoja ?? 0) + 1;
@@ -39,7 +51,7 @@ class HojaChoferController extends Controller
             ]);
         }
 
-        return response()->json($hoja); 
+        return response()->json($hoja);
     }
 
     // 2. Actualizar producción (el chofer solo puede actualizar vueltas)

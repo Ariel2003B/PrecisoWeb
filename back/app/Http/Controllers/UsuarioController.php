@@ -36,8 +36,7 @@ class UsuarioController extends Controller
             'permisos' => 'array',
             'TELEFONO' => 'required|string'
         ]);
-
-        $usuario = USUARIO::create([
+        $datos = [
             'NOMBRE' => $request->NOMBRE,
             'APELLIDO' => $request->APELLIDO,
             'CORREO' => $request->CORREO,
@@ -49,8 +48,15 @@ class UsuarioController extends Controller
             'CEDULA' => $request->CEDULA,
             'EMP_ID' => $request->EMP_ID,
             'TELEFONO' => $request->TELEFONO
-        ]);
-
+        ];
+        
+        // Solo guardar el perfil si se envió
+        if ($request->filled('PER_ID')) {
+            $datos['PER_ID'] = $request->PER_ID;
+        }
+        
+        $usuario = USUARIO::create($datos);
+        
         $permisos = $request->has('permisos') ? PERMISO::whereIn('PRM_ID', $request->permisos)->pluck('DESCRIPCION')->toArray() : [];
         $listaPermisos = implode(", ", $permisos);
 
@@ -154,7 +160,10 @@ class UsuarioController extends Controller
             'TELEFONO' => $request->TELEFONO,
             'ESTADO' => $request->ESTADO
         ];
-
+        if ($request->filled('PER_ID')) {
+            $updateData['PER_ID'] = $request->PER_ID;
+        }
+        
         if ($request->filled('CLAVE')) {
             $updateData['CLAVE'] = $request->CLAVE;
         }

@@ -254,9 +254,23 @@ class HojaTrabajoController extends Controller
             $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
             $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
 
+
+            $logoEmpresa = $hoja->ruta->empresa->IMAGEN
+                ? $baseUrl . $hoja->ruta->empresa->IMAGEN
+                : null;
+
+            $nombreEmpresa = $hoja->ruta->empresa->NOMBRE ?? 'EMPRESA SIN NOMBRE';
             Log::info('Hoja de trabajo encontrada', ['id' => $id]);
 
-            $html = view('pdf.hoja_trabajo', compact('hoja', 'user', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            $html = view('pdf.hoja_trabajo', compact(
+                'hoja',
+                'user',
+                'vueltasUsuario',
+                'imagenDiesel',
+                'imagenOtros',
+                'logoEmpresa',
+                'nombreEmpresa'
+            ))->render();
             Log::info('Vista HTML renderizada correctamente.');
 
             $options = new Options();

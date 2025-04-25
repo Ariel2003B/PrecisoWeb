@@ -97,7 +97,7 @@
             <!-- Cambios en la cabecera para mostrar el número de hoja -->
             <td style="width: 50%; text-align: center; border: none;">
                 <h2 style="margin: 0;">HOJA DE TRABAJO No. {{ $hoja->numero_hoja ?? 'S/N' }}</h2>
-                <h3 style="margin: 0;">CÍA. TRANSMETROPOLI S.A.</h3>
+                <h3 style="margin: 0;">{{ $nombreEmpresa }}</h3>
             </td>
             
             <!-- Columna derecha: logo de Metropoli -->

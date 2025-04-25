@@ -123,6 +123,54 @@
                             @endforeach
                         </div>
                     </div>
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggleRecaudo"
+                            {{ old('PER_ID', $usuario->PER_ID) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="toggleRecaudo">
+                            ¿Este usuario es para el aplicativo de recaudo?
+                        </label>
+                    </div>
+
+                    <div class="mb-3" id="perfilAplicacion" style="display: none;">
+                        <label for="PER_ID" class="form-label">Perfil aplicación</label>
+                        <select id="PER_ID" class="form-control">
+                            <option value="8" {{ old('PER_ID', $usuario->PER_ID) == 8 ? 'selected' : '' }}>
+                                Administrador</option>
+                            <option value="9" {{ old('PER_ID', $usuario->PER_ID) == 9 ? 'selected' : '' }}>Conductor
+                            </option>
+                            <option value="10" {{ old('PER_ID', $usuario->PER_ID) == 10 ? 'selected' : '' }}>
+                                Accionista</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" name="es_recaudo" id="es_recaudo"
+                        value="{{ old('PER_ID', $usuario->PER_ID) ? 1 : 0 }}">
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const toggle = document.getElementById('toggleRecaudo');
+                            const perfilBox = document.getElementById('perfilAplicacion');
+                            const esRecaudoInput = document.getElementById('es_recaudo');
+                            const selectPerfil = document.getElementById('PER_ID');
+
+                            const inicialActivo = toggle.checked;
+                            perfilBox.style.display = inicialActivo ? 'block' : 'none';
+                            if (!inicialActivo) selectPerfil.removeAttribute('name');
+                            else selectPerfil.setAttribute('name', 'PER_ID');
+
+                            toggle.addEventListener('change', function() {
+                                const activo = this.checked;
+                                perfilBox.style.display = activo ? 'block' : 'none';
+                                esRecaudoInput.value = activo ? '1' : '0';
+
+                                if (activo) {
+                                    selectPerfil.setAttribute('name', 'PER_ID');
+                                } else {
+                                    selectPerfil.removeAttribute('name');
+                                }
+                            });
+                        });
+                    </script>
+
 
                     <button type="submit" class="btn btn-success">Actualizar</button>
                     <a href="{{ route('usuario.index') }}" class="btn btn-secondary">Cancelar</a>
