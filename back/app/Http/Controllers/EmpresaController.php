@@ -19,17 +19,28 @@ class EmpresaController extends Controller
     }
 
     public function store(Request $request)
-    {   
+    {
         $request->validate([
             'NOMBRE' => 'required|string|max:500',
             'RUC' => 'required|string|max:13|unique:EMPRESA,RUC',
             'DIRECCION' => 'nullable|string|max:500',
             'TELEFONO' => 'nullable|string|max:20',
             'CORREO' => 'nullable|email|max:600',
-            'ESTADO' => 'required|string|max:1'
+            'ESTADO' => 'required|string|max:1',
+            'IMAGEN' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         ]);
 
-        EMPRESA::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('IMAGEN')) {
+            $file = $request->file('IMAGEN');
+            $ruta = $file->store('empresa', 'public');
+            $data['IMAGEN'] = $ruta;
+        }
+
+        EMPRESA::create($data);
+
 
         return redirect()->route('empresa.index')->with('success', 'Empresa creada exitosamente.');
     }
@@ -47,10 +58,20 @@ class EmpresaController extends Controller
             'DIRECCION' => 'nullable|string|max:500',
             'TELEFONO' => 'nullable|string|max:20',
             'CORREO' => 'nullable|email|max:600',
-            'ESTADO' => 'required|string|max:1'
+            'ESTADO' => 'required|string|max:1',
+            'IMAGEN' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         ]);
 
-        $empresa->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('IMAGEN')) {
+            $file = $request->file('IMAGEN');
+            $ruta = $file->store('empresa', 'public');
+            $data['IMAGEN'] = $ruta;
+        }
+
+        $empresa->update($data);
 
         return redirect()->route('empresa.index')->with('success', 'Empresa actualizada exitosamente.');
     }

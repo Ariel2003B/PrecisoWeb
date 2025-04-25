@@ -38,7 +38,8 @@ class EMPRESA extends Model
         'DIRECCION',
         'TELEFONO',
         'CORREO',
-        'ESTADO'
+        'ESTADO',
+        'IMAGEN'
     ];
 
     // Relación con USUARIO

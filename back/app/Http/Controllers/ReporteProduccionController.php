@@ -27,7 +27,7 @@ class ReporteProduccionController extends Controller
                 $q->where('EMP_ID', $user->EMP_ID);
             });
 
-      //  $query = HojaTrabajo::with('unidad', 'ruta');
+        //  $query = HojaTrabajo::with('unidad', 'ruta');
 
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
@@ -60,7 +60,7 @@ class ReporteProduccionController extends Controller
             ]
         ]);
 
-        $rutas = Ruta::all();
+        $rutas = Ruta::where('EMP_ID', $user->EMP_ID)->get();
 
         return view('reportes.index', compact('hojas', 'rutas'));
     }
@@ -121,11 +121,16 @@ class ReporteProduccionController extends Controller
 
     public function generarReporteGlobal(Request $request)
     {
+        $user = auth()->user();
+
         $fecha = $request->input('fecha');
         $rutaId = $request->input('ruta');
 
         $query = HojaTrabajo::with(['unidad', 'producciones', 'ruta'])
             ->whereDate('fecha', $fecha);
+        $query->whereHas('ruta', function ($q) use ($user) {
+            $q->where('EMP_ID', $user->EMP_ID);
+        });
 
         if ($rutaId) {
             $query->where('id_ruta', $rutaId);

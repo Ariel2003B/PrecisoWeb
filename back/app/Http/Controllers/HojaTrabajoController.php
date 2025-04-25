@@ -303,7 +303,7 @@ class HojaTrabajoController extends Controller
                 ->orderBy('nro_vuelta')
                 ->get();
 
-            $hoja = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
+            $hoja = HojaTrabajo::with(['unidad', 'ruta.empresa', 'conductor', 'ayudante', 'gastos', 'producciones'])->findOrFail($id);
             $gastoDiesel = $hoja->gastos->firstWhere('tipo_gasto', 'DIESEL');
             $gastoOtros = $hoja->gastos->firstWhere('tipo_gasto', 'OTROS');
 
@@ -312,9 +312,22 @@ class HojaTrabajoController extends Controller
             $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
             $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
 
+            $logoEmpresa = $hoja->ruta->empresa->IMAGEN
+                ? $baseUrl . $hoja->ruta->empresa->IMAGEN
+                : null;
+
+            $nombreEmpresa = $hoja->ruta->empresa->NOMBRE ?? 'EMPRESA SIN NOMBRE';
+
             Log::info('Hoja de trabajo encontrada', ['id' => $id]);
 
-            $html = view('pdf.hoja_trabajo', compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            $html = view('pdf.hoja_trabajo', compact(
+                'hoja',
+                'vueltasUsuario',
+                'imagenDiesel',
+                'imagenOtros',
+                'logoEmpresa',
+                'nombreEmpresa'
+            ))->render();
             Log::info('Vista HTML renderizada correctamente.');
 
             $options = new Options();

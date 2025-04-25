@@ -97,12 +97,18 @@
             <!-- Cambios en la cabecera para mostrar el número de hoja -->
             <td style="width: 50%; text-align: center; border: none;">
                 <h2 style="margin: 0;">HOJA DE TRABAJO No. {{ $hoja->numero_hoja ?? 'S/N' }}</h2>
-                <h3 style="margin: 0;">CÍA. TRANSMETROPOLI S.A.</h3>
+                {{-- <h3 style="margin: 0;">CÍA. TRANSMETROPOLI S.A.</h3> --}}
+                <h3 style="margin: 0;">{{ $nombreEmpresa }}</h3>
+
             </td>
-            
+
             <!-- Columna derecha: logo de Metropoli -->
             <td style="width: 25%; text-align: right; border: none;">
-                <img src="http://precisogps.com/img/clients/metropoli.png" alt="Logo Metropoli" width="100">
+                {{-- <img src="http://precisogps.com/img/clients/metropoli.png" alt="Logo Empresa" width="100"> --}}
+                @if ($logoEmpresa)
+                    <img src="{{ $logoEmpresa }}" alt="Logo Empresa" width="100">
+                @endif
+
             </td>
 
         </tr>
@@ -139,7 +145,7 @@
                         </tr>
                         <tr>
                             <td colspan="4" class="bold" style="text-align:left; padding: 6px 0;">
-                                Conductor: {{ $hoja->conductor->nombre ?? "sin conductor" }}
+                                Conductor: {{ $hoja->conductor->nombre ?? 'sin conductor' }}
                             </td>
                         </tr>
                         <tr>
@@ -286,7 +292,8 @@
                             $totalMedios = $vueltasUsuario->sum('pasaje_medio');
                             $totalCompletos = $vueltasUsuario->sum('pasaje_completo');
                         @endphp
-                        El total de pasajes completos son <b>{{ $totalCompletos }}</b> y pasajes medios son <b>{{ $totalMedios }}</b> dando un total de {{$totalMedios + $totalCompletos}} pasajes.
+                        El total de pasajes completos son <b>{{ $totalCompletos }}</b> y pasajes medios son
+                        <b>{{ $totalMedios }}</b> dando un total de {{ $totalMedios + $totalCompletos }} pasajes.
                     </td>
                 </tr>
             </table>

@@ -20,7 +20,7 @@
 
         <section class="section">
             <div class="container">
-                <form action="{{ route('empresa.update', $empresa->EMP_ID) }}" method="POST">
+                <form action="{{ route('empresa.update', $empresa->EMP_ID) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -63,6 +63,11 @@
                             </option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="IMAGEN" class="form-label">Logo o Imagen de la Empresa</label>
+                        <input type="file" name="IMAGEN" id="IMAGEN" class="form-control" accept="image/*">
+                    </div>
+
 
                     <button type="submit" class="btn btn-success">Actualizar</button>
                     <a href="{{ route('empresa.index') }}" class="btn btn-secondary">Cancelar</a>
