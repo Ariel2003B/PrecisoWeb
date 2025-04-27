@@ -462,8 +462,8 @@
                             animationElement.style.opacity = '0';
                             setTimeout(() => {
                                 animationElement.style.display = 'none';
-                            }, 300); // Esperar a que termine la animación antes de ocultar el elemento
-                        }, 2000);
+                            }, 250); // Esperar a que termine la animación antes de ocultar el elemento
+                        }, 1500);
                     });
                 </script>
             </div>
