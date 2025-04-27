@@ -244,7 +244,7 @@
                                 pagina</a>
                         </div>
                     @endif
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SANCIONES'))
+                    {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'SANCIONES'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -255,7 +255,7 @@
                                 target="_blank">Visitar
                                 página</a>
                         </div>
-                    @endif
+                    @endif --}}
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE PLANES'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
