@@ -115,6 +115,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="mb-3" id="perfilAplicacion" style="display: none;">
+                            <label for="PER_ID" class="form-label">Permisos de la aplicación</label>
+                            <div style="max-width: 400px;">
+                                <select name="PER_ID" id="PER_ID" class="form-control">
+                                    <option value="8">Administrador</option>
+                                    <option value="9" selected>Conductor</option>
+                                    <option value="10">Accionista</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     {{-- <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="toggleRecaudo">
@@ -123,14 +133,7 @@
                         </label>
                     </div> --}}
 
-                    <div class="mb-3" id="perfilAplicacion" style="display: none;">
-                        <label for="PER_ID" class="form-label">Perfil aplicación</label>
-                        <select name="PER_ID" id="PER_ID" class="form-control">
-                            <option value="8">Administrador</option>
-                            <option value="9">Conductor</option>
-                            <option value="10">Accionista</option>
-                        </select>
-                    </div>
+
 
                     <input type="hidden" name="es_recaudo" id="es_recaudo" value="0">
 
@@ -140,33 +143,7 @@
             </div>
         </section>
     </main>
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.getElementById('toggleRecaudo');
-            const perfilBox = document.getElementById('perfilAplicacion');
-            const esRecaudoInput = document.getElementById('es_recaudo');
-            const selectPerfil = document.getElementById('PER_ID');
 
-            toggle.addEventListener('change', function() {
-                const activo = this.checked;
-                perfilBox.style.display = activo ? 'block' : 'none';
-                esRecaudoInput.value = activo ? '1' : '0';
-
-                if (!activo) {
-                    // Eliminar el atributo name para que NO se envíe
-                    selectPerfil.removeAttribute('name');
-                } else {
-                    // Restaurar el atributo name
-                    selectPerfil.setAttribute('name', 'PER_ID');
-                }
-            });
-
-            // Asegura que si al cargar la página el switch está apagado, no se envíe PER_ID
-            if (!toggle.checked) {
-                selectPerfil.removeAttribute('name');
-            }
-        });
-    </script> --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggle = document.getElementById('toggleRecaudo');
@@ -192,7 +169,6 @@
             }
         });
     </script>
-
 
 @endsection
 
