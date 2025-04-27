@@ -26,7 +26,6 @@
                 <div class="row text-center">
 
                     {{-- FRASES ALEATOREAS CUANDO  SE LOGUEA EN PLATOFARMAS --}}
-
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'PRECISO BUS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
@@ -104,7 +103,7 @@
                                 página</a>
                         </div>
                     @endif
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'E-DRIVERS'))
+                    {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'E-DRIVERS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
@@ -114,7 +113,7 @@
                             <a class="btn btn-success" href="http://159.223.161.160:3020/forms" target="_blank">Visitar
                                 página</a>
                         </div>
-                    @endif
+                    @endif --}}
                     {{-- @if (!Auth::check())
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
