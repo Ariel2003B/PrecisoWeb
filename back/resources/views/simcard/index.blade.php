@@ -60,7 +60,6 @@
                             onclick="actualizarSimCardsDesdeWialon()" style="color: white">
                             <i class="fas fa-sync-alt"></i> Sincronizar datos
                         </button>
-                        <span id="cargando-wialon" style="display:none; color: #005298;">Espera...</span>
                     @endif
 
                     <a class="btn btn-primary mt-2" href="{{ route('simcards.exportExcel') }}">Descargar reporte</a>
@@ -215,7 +214,7 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
 
             // Deshabilitar el botón y mostrar "Cargando..."
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando...';
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando datos...';
             cargandoTexto.style.display = "inline";
 
             // Hacer la petición AJAX a Laravel
@@ -226,14 +225,14 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
                 .then(data => {
                     alert(data.message); // Muestra el mensaje de éxito o error
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Números en Wialon';
+                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Sincronizar datos';
                     cargandoTexto.style.display = "none";
                 })
                 .catch(error => {
                     console.error("Error en la actualización:", error);
                     alert("Hubo un error en la actualización.");
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Números en Wialon';
+                    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Sincronizar datos';
                     cargandoTexto.style.display = "none";
                 });
         }
