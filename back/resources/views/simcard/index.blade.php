@@ -216,7 +216,7 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             // Deshabilitar el botón y mostrar "Cargando..."
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando...';
-            cargandoTexto.style.display = "inline";
+            cargandoTexto.style.display = "none";
 
             // Hacer la petición AJAX a Laravel
             fetch("{{ route('simcards.updateWialonPhones') }}", {
@@ -247,7 +247,7 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             // Deshabilitar el botón y mostrar "Cargando..."
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Actualizando...';
-            cargandoTexto.style.display = "inline";
+            cargandoTexto.style.display = "none";
 
             // Hacer la petición AJAX a Laravel
             fetch("{{ route('simcards.updateSimCardFromWialon') }}", {
