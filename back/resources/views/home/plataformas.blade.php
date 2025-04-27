@@ -33,7 +33,7 @@
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                                 <i class="fas fa-bus fa-stack-1x fa-inverse"></i>
                             </span>
-                            <h4 class="my-3">PRECISO BUS</h4>
+                            <h4 class="my-3">PRECISOBUS</h4>
                             <a class="btn btn-success" href="https://nimbus.wialon.com/login" target="_blank">Visitar
                                 página</a>
                         </div>
