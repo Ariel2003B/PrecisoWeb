@@ -106,14 +106,22 @@
                                     </div>
                                 </div>
                             @endforeach
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="toggleRecaudo">
+                                    <label class="form-check-label" for="toggleRecaudo">
+                                        APLICACION CONTEO Y RECAUDO
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-3 form-check form-switch">
+                    {{-- <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="toggleRecaudo">
                         <label class="form-check-label" for="toggleRecaudo">
                             ¿Este usuario es para el aplicativo de recaudo?
                         </label>
-                    </div>
+                    </div> --}}
 
                     <div class="mb-3" id="perfilAplicacion" style="display: none;">
                         <label for="PER_ID" class="form-label">Perfil aplicación</label>
@@ -132,7 +140,7 @@
             </div>
         </section>
     </main>
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggle = document.getElementById('toggleRecaudo');
             const perfilBox = document.getElementById('perfilAplicacion');
@@ -158,19 +166,33 @@
                 selectPerfil.removeAttribute('name');
             }
         });
-    </script>
-
-    {{-- <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
+    </script> --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
             const toggle = document.getElementById('toggleRecaudo');
-            if (!toggle.checked) {
-                const perIdSelect = document.getElementById('PER_ID');
-                if (perIdSelect) {
-                    perIdSelect.disabled = true;
+            const perfilBox = document.getElementById('perfilAplicacion');
+            const esRecaudoInput = document.getElementById('es_recaudo');
+            const selectPerfil = document.getElementById('PER_ID');
+
+            toggle.addEventListener('change', function() {
+                const activo = this.checked;
+                perfilBox.style.display = activo ? 'block' : 'none';
+                esRecaudoInput.value = activo ? '1' : '0';
+
+                if (!activo) {
+                    selectPerfil.removeAttribute('name');
+                } else {
+                    selectPerfil.setAttribute('name', 'PER_ID');
                 }
+            });
+
+            // Si al cargar, no está marcado, quita name
+            if (!toggle.checked) {
+                selectPerfil.removeAttribute('name');
             }
         });
-    </script> --}}
+    </script>
+
 
 @endsection
 

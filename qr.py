@@ -28,19 +28,45 @@ unidades = [
     # {"id_unidad": 24, "placa": "PUD0547 (07/0307)"},
     # {"id_unidad": 25, "placa": "PZU0483 (08/0308)"},
     # {"id_unidad": 26, "placa": "PZV0698 (09/0309)"},
-  {"id_unidad": 27, "placa": "PAE1849 (2310)"},
-  {"id_unidad": 28, "placa": "PAE1850 (2311)"},
-  {"id_unidad": 29, "placa": "PAE1854 (2342)"},
-  {"id_unidad": 30, "placa": "PAE1853 (2346)"},
-  {"id_unidad": 31, "placa": "PAB3662 (3742)"},
-  {"id_unidad": 32, "placa": "PAC9210 (3744)"},
-  {"id_unidad": 33, "placa": "PAB3651 (2347)"},
-  {"id_unidad": 34, "placa": "PAB3695 (3737)"},
-  {"id_unidad": 35, "placa": "PAB3661 (3738)"},
-  {"id_unidad": 36, "placa": "PAB3685 (3739)"},
-  {"id_unidad": 37, "placa": "PAB3660 (3740)"},
-  {"id_unidad": 38, "placa": "PCX7184 (3741)"},
-  {"id_unidad": 39, "placa": "PAB4483 (3743)"}
+#   {"id_unidad": 27, "placa": "PAE1849 (2310)"},
+#   {"id_unidad": 28, "placa": "PAE1850 (2311)"},
+#   {"id_unidad": 29, "placa": "PAE1854 (2342)"},
+#   {"id_unidad": 30, "placa": "PAE1853 (2346)"},
+#   {"id_unidad": 31, "placa": "PAB3662 (3742)"},
+#   {"id_unidad": 32, "placa": "PAC9210 (3744)"},
+#   {"id_unidad": 33, "placa": "PAB3651 (2347)"},
+#   {"id_unidad": 34, "placa": "PAB3695 (3737)"},
+#   {"id_unidad": 35, "placa": "PAB3661 (3738)"},
+#   {"id_unidad": 36, "placa": "PAB3685 (3739)"},
+#   {"id_unidad": 37, "placa": "PAB3660 (3740)"},
+#   {"id_unidad": 38, "placa": "PCX7184 (3741)"},
+#   {"id_unidad": 39, "placa": "PAB4483 (3743)"}
+    
+  {"id_unidad": 40, "placa": "PAB6135 (29/0908)"},
+  {"id_unidad": 41, "placa": "PAC8833 (35/0916)"},
+  {"id_unidad": 42, "placa": "PAB4162 (07/3806)"},
+  {"id_unidad": 43, "placa": "PUH0413 (13/0939)"},
+  {"id_unidad": 44, "placa": "PAC7116 (30/0936)"},
+  {"id_unidad": 45, "placa": "PAC2223 (01/0934)"},
+  {"id_unidad": 46, "placa": "PAC5220 (05/0918)"},
+  {"id_unidad": 47, "placa": "PAB8651 (15/0923)"},
+  {"id_unidad": 48, "placa": "PAC1838 (14/0940)"},
+  {"id_unidad": 49, "placa": "PAC7944 (10/0925)"},
+  {"id_unidad": 50, "placa": "PAC4117 (16/0909)"},
+  {"id_unidad": 51, "placa": "PAC3683 (03/0935)"},
+  {"id_unidad": 52, "placa": "PAC3124 (12/0911)"},
+  {"id_unidad": 53, "placa": "PAC3207 (06/0933)"},
+  {"id_unidad": 54, "placa": "PAC5668 (23/0929)"},
+  {"id_unidad": 55, "placa": "PAC7786 (09/0931)"},
+  {"id_unidad": 56, "placa": "PAE3721 (26/0926)"},
+  {"id_unidad": 57, "placa": "PAC3908 (19/0924)"},
+  {"id_unidad": 58, "placa": "PAC8458 (08/0922)"},
+  {"id_unidad": 59, "placa": "PAE3821 (22/0927)"},
+  {"id_unidad": 60, "placa": "PAC3513 (31/0913)"},
+  {"id_unidad": 61, "placa": "PAC3396 (34/0912)"},
+  {"id_unidad": 62, "placa": "PAC3174 (24/0921)"},
+  {"id_unidad": 63, "placa": "PAC7856 (25/0915)"}
+
 
 ]
 
@@ -106,7 +132,7 @@ for unidad in unidades:
     )
 
     # Texto TRANSMETROPOLI y PLACA dentro del rectángulo negro
-    text1 = f"URBANQUITO - {unidad['placa']}"
+    text1 = f"SEMGYLLFOR - {unidad['placa']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2
@@ -128,5 +154,5 @@ for unidad in unidades:
     pdf.image(image_path, x=40, y=30, w=100)
 
 # Guardar PDF final
-pdf.output("qrs_con_placas_urbanquito.pdf")
+pdf.output("qrs_con_placas_semgyllfor.pdf")
 print("PDF generado exitosamente ✅")
