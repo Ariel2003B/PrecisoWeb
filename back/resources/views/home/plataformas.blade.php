@@ -314,13 +314,13 @@
                         </div>
                     @endif
                     {{-- <i class="fa-solid fa-blog"></i> --}}
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'PASAJEROS CONTEO Y REPORTES'))
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'CONTEO Y RECAUDO'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                                 <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
                             </span>
-                            <h4 class="my-3">PASAJEROS CONTEO Y REPORTES</h4>
+                            <h4 class="my-3">CONTEO Y RECAUDO</h4>
                             <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
                                 página</a>
                         </div>
