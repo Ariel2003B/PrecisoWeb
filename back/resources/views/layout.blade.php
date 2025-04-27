@@ -53,7 +53,7 @@
             <nav id="navmenu" class="navmenu">
                 <ul>
                     <li><a href="{{ route('home.inicio') }}" class="@yield('ActivarInicio')">Inicio</a></li>
-                    <li><a href="http://www.precisogps.online/">Rastrea tu Vehiculo</a></li>
+
                     <li><a href="{{ route('home.servicios') }}" class="@yield('ActivarServicios')">Servicios</a></li>
                     <li><a href="{{ route('home.equipos') }}" class="@yield('ActivarEquipos')">Equipos y accesorios</a></li>
                     <li><a href="{{ route('home.planes') }}" class="@yield('ActivarPlanes')">Planes</a></li>
@@ -175,15 +175,20 @@
     <!-- Botón flotante de WhatsApp con mensaje predefinido -->
     <a href="https://wa.me/593990453275?text=Hola%2C%20me%20interesa%20asesoramiento%20sobre%20el%20rastreo%20vehicular.%20¿Podrías%20darme%20más%20información%3F"
         target="_blank" class="whatsapp-float">
+        <span class="whatsapp-float-text">¡Comunícate ya!</span>
         <i class="bi bi-whatsapp"></i>
+        
     </a>
+
+
+
     <a href="http://www.precisogps.online/" target="_blank" class="custom-float">
         <span class="custom-float-text">Rastrea tu vehículo</span>
         <div class="custom-float-circle">
             <img src="https://precisogps.com/img/precisoimg/logoPreciso.jpg" alt="Logo" class="custom-float-img">
         </div>
     </a>
-    
+
 
 
     <!-- Preloader -->
