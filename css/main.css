@@ -3853,9 +3853,9 @@ section.hero .masthead-video {
   white-space: nowrap;
   margin-right: 10px;
   /* 🔥 Ahora el espacio es a la DERECHA */
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease;
+  opacity: 1;
+  transform: translateX(0);
+  transition: none;
   pointer-events: none;
 }
 
