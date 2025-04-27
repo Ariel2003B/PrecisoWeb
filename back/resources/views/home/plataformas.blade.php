@@ -81,6 +81,49 @@
                                 página</a>
                         </div>
                     @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'CONTEO Y RECAUDO'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">CONTEO Y RECAUDO</h4>
+                            <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SIMCARDS'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">SIMCARDS</h4>
+                            <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SISTEMA CONTABLE'))
+                        <div class="col-md-4 text-center">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-file-invoice fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">SISTEMA CONTABLE</h4>
+                            <a class="btn btn-success" target="_blank" href="https://fws.com.ec">Visitar
+                                pagina</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'REPLICAR GEOCERCAS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">REPLICAR GEOCERCAS</h4>
+                            <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'SECRETARIA DE MOVILIDAD'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
@@ -137,16 +180,7 @@
                             <a class="btn btn-success" href="{{ route('login.form') }}">Iniciar sesion</a>
                         </div>
                     @else --}}
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SIMCARDS'))
-                        <div class="col-md-4 text-center">
-                            <span class="fa-stack fa-4x">
-                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                <i class="fas fa-sim-card fa-stack-1x fa-inverse"></i>
-                            </span>
-                            <h4 class="my-3">SIMCARDS</h4>
-                            <button class="btn btn-success" onclick="mostrarModalClaro(event)">Opciones</button>
-                        </div>
-                    @endif
+
                     <!-- Modal para CLARO -->
                     <div id="modalClaro"
                         class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
@@ -213,17 +247,7 @@
                                 pagina</a>
                         </div>
                     @endif
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SISTEMA CONTABLE'))
-                        <div class="col-md-4 text-center">
-                            <span class="fa-stack fa-4x">
-                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                <i class="fas fa-file-invoice fa-stack-1x fa-inverse"></i>
-                            </span>
-                            <h4 class="my-3">SISTEMA CONTABLE</h4>
-                            <a class="btn btn-success" target="_blank" href="https://fws.com.ec">Visitar
-                                pagina</a>
-                        </div>
-                    @endif
+
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE USUARIOS'))
                         <div class="col-md-4 text-center">
                             <span class="fa-stack fa-4x">
@@ -302,29 +326,9 @@
                                 página</a>
                         </div>
                     @endif
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'EXPORTAR GEOCERCAS DESDE NIMBUS'))
-                        <div class="col-md-4">
-                            <span class="fa-stack fa-4x">
-                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
-                            </span>
-                            <h4 class="my-3">EXPORTAR GEOCERCAS DESDE NIMBUS</h4>
-                            <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
-                                página</a>
-                        </div>
-                    @endif
+
                     {{-- <i class="fa-solid fa-blog"></i> --}}
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'CONTEO Y RECAUDO'))
-                        <div class="col-md-4">
-                            <span class="fa-stack fa-4x">
-                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
-                                <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
-                            </span>
-                            <h4 class="my-3">CONTEO Y RECAUDO</h4>
-                            <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
-                                página</a>
-                        </div>
-                    @endif
+
                     <!-- Modal para WIALON -->
                     <div id="modalWialon"
                         class="custom-modal position-absolute bg-white border rounded shadow p-3 text-center"
