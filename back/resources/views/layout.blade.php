@@ -177,6 +177,14 @@
         target="_blank" class="whatsapp-float">
         <i class="bi bi-whatsapp"></i>
     </a>
+    <a href="http://www.precisogps.online/" target="_blank" class="custom-float">
+        <span class="custom-float-text">Rastrea tu vehículo</span>
+        <div class="custom-float-circle">
+            <img src="https://precisogps.com/img/precisoimg/logoPreciso.jpg" alt="Logo" class="custom-float-img">
+        </div>
+    </a>
+    
+
 
     <!-- Preloader -->
     <div id="preloader"></div>

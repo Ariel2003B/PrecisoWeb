@@ -3785,6 +3785,7 @@ section.hero .masthead-video {
 .rutas-buttons button:hover {
   background-color: #1d3557;
 }
+
 /* 🔹 Alternar colores en las filas */
 .table-rutas tbody tr:nth-child(even) td {
   background-color: #f1f1f1;
@@ -3796,8 +3797,9 @@ section.hero .masthead-video {
 
 /* 🔹 Cambio de color al pasar el cursor sobre una fila */
 .table-rutas tbody tr:hover td {
-  background-color:  rgba(114, 154, 210, 0.5) !important;
+  background-color: rgba(114, 154, 210, 0.5) !important;
 }
+
 /* Reducir el ancho de las columnas Plan, Eje y Dif */
 /* Reducir el ancho de las columnas "Plan", "Eje" y "Dif" */
 .col-peq {
@@ -3806,4 +3808,79 @@ section.hero .masthead-video {
   font-size: 11px;
   padding: 3px;
   text-align: center;
+}
+
+.custom-float {
+  position: fixed;
+  bottom: 160px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+/* Círculo */
+.custom-float-circle {
+  background-color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  animation: blinkCustom 1.5s infinite;
+}
+
+/* Imagen */
+.custom-float-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Texto (oculto inicialmente) */
+.custom-float-text {
+  background-color: #005298;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+  margin-right: 10px;
+  /* 🔥 Ahora el espacio es a la DERECHA */
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Hover: muestra el texto a la izquierda */
+.custom-float:hover .custom-float-text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Parpadeo */
+@keyframes blinkCustom {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Hover en el círculo */
+.custom-float:hover .custom-float-circle {
+  transform: scale(1.1);
 }
