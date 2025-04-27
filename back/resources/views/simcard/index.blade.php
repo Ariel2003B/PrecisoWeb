@@ -47,26 +47,25 @@
                 </form>
 
 
-                <div class="descargar-plantilla-container">
-                    <p>¿No tienes la plantilla? <a href="{{ route('simcards.template') }}" class="btn-descargar">DESCARGAR
-                            PLANTILLA</a></p>
-                </div>
+
                 <div class="filtros-simcards-container mb-3">
                     <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'WIALON DATA'))
                         <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
                             <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
                         </button>
-                        <span id="cargando-texto" style="display:none; color: #005298;">Actualizando... Por favor, espera.</span>
+                        <span id="cargando-texto" style="display:none; color: #005298;">Actualizando... Por favor,
+                            espera.</span>
                         <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
                             onclick="actualizarSimCardsDesdeWialon()">
                             <i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon
                         </button>
-                        <span id="cargando-wialon" style="display:none; color: #005298;">Actualizando... Por favor, espera.</span>
+                        <span id="cargando-wialon" style="display:none; color: #005298;">Actualizando... Por favor,
+                            espera.</span>
                     @endif
 
-                    <a href="{{route('simcards.exportExcel')}}">Descargar reporte</a>
-                
+                    <a href="{{ route('simcards.exportExcel') }}">Descargar reporte</a>
+
                     <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                         <input type="text" name="search" id="filtro" class="filtros-simcards-input"
                             placeholder="Busqueda avanzada..." value="{{ request('search') }}">
@@ -178,12 +177,20 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
                 </pre>
                     <p>Nota: Asegúrese de que las celdas no contengan comillas adicionales ni estén vacías para columnas
                         obligatorias.</p>
+
+                    <div class="descargar-plantilla-container">
+                        <p>¿No tienes la plantilla? <a href="{{ route('simcards.template') }}"
+                                class="btn-descargar">DESCARGAR
+                                PLANTILLA</a></p>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
+
             </div>
         </div>
+
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
