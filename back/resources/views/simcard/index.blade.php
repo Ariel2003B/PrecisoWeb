@@ -60,8 +60,7 @@
                             onclick="actualizarSimCardsDesdeWialon()" style="color: white">
                             <i class="fas fa-sync-alt"></i> Sincronizar datos
                         </button>
-                        <span id="cargando-wialon" style="display:none; color: #005298;">Actualizando... Por favor,
-                            espera.</span>
+                        <span id="cargando-wialon" style="display:none; color: #005298;">Espera...</span>
                     @endif
 
                     <a class="btn btn-primary mt-2" href="{{ route('simcards.exportExcel') }}">Descargar reporte</a>
