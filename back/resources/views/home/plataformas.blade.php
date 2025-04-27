@@ -103,6 +103,17 @@
                                 página</a>
                         </div>
                     @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'KARI LA PRECISA'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fa-solid fa-car-side fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">KARI LA PRECISA<h4>
+                            <a class="btn btn-success" href="https://apigatewaycenter.com/login" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
                     {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'E-DRIVERS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
