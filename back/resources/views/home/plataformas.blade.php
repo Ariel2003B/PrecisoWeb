@@ -302,13 +302,13 @@
                                 página</a>
                         </div>
                     @endif
-                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'CREAR GEOCERCAS EN WIALON'))
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'EXPORTAR GEOCERCAS DESDE NIMBUS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                                 <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
                             </span>
-                            <h4 class="my-3">CREAR GEOCERCAS EN WIALON</h4>
+                            <h4 class="my-3">EXPORTAR GEOCERCAS DESDE NIMBUS</h4>
                             <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
                                 página</a>
                         </div>
