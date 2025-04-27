@@ -51,20 +51,21 @@
                 <div class="filtros-simcards-container mb-3">
                     <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'WIALON DATA'))
-                        <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
+                        {{-- <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
                             <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
                         </button>
                         <span id="cargando-texto" style="display:none; color: #005298;">Actualizando... Por favor,
-                            espera.</span>
+                            espera.</span> --}}
                         <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
-                            onclick="actualizarSimCardsDesdeWialon()">
-                            <i class="fas fa-sync-alt"></i> Actualizar SIM Cards desde Wialon
+                            onclick="actualizarSimCardsDesdeWialon()" style="color: white">
+                            <i class="fas fa-sync-alt"></i> Sincronizar datos
                         </button>
                         <span id="cargando-wialon" style="display:none; color: #005298;">Actualizando... Por favor,
                             espera.</span>
                     @endif
 
-                    <a href="{{ route('simcards.exportExcel') }}">Descargar reporte</a>
+                    <a class="btn btn-primary mt-2" href="{{ route('simcards.exportExcel') }}">Descargar reporte</a>
+
 
                     <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                         <input type="text" name="search" id="filtro" class="filtros-simcards-input"

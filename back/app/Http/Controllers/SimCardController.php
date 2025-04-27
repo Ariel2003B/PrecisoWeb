@@ -433,7 +433,7 @@ class SimCardController extends Controller
 
 
 
-    public function updateWialonPhones(Request $request)
+    public function updateWialonPhones()
     {
         $wialon_api_url = "https://hst-api.wialon.com/wialon/ajax.html";
         $token = "a21e2472955b1cb0847730f34edcf3e804692BDC51F76DAA7CC69358123221016F111F39";
@@ -533,45 +533,46 @@ class SimCardController extends Controller
         }
 
         // 6. Generar el PDF con los números actualizados
-        try {
-            $html = view('pdf.reporteactualizacion', ['updatedSimcards' => $updatedSimcards])->render();
+        // try {
+        //     $html = view('pdf.reporteactualizacion', ['updatedSimcards' => $updatedSimcards])->render();
 
-            $options = new Options();
-            $options->set('isRemoteEnabled', true);
-            $options->set('isHtml5ParserEnabled', true);
+        //     $options = new Options();
+        //     $options->set('isRemoteEnabled', true);
+        //     $options->set('isHtml5ParserEnabled', true);
 
-            $pdf = new Dompdf($options);
-            $pdf->loadHtml($html);
-            $pdf->setPaper('A4');
-            $pdf->render();
+        //     $pdf = new Dompdf($options);
+        //     $pdf->loadHtml($html);
+        //     $pdf->setPaper('A4');
+        //     $pdf->render();
 
-            // Guardar el PDF en storage/app/public/pdf/
-            $pdfPath = storage_path('app/public/pdf/actualizacion_numeros.pdf');
-            file_put_contents($pdfPath, $pdf->output());
+        //     // Guardar el PDF en storage/app/public/pdf/
+        //     $pdfPath = storage_path('app/public/pdf/actualizacion_numeros.pdf');
+        //     file_put_contents($pdfPath, $pdf->output());
 
-            // Verificar si el archivo se guardó correctamente
-
-
-            // Enviar el PDF por correo
-
-            Mail::send([], [], function ($message) use ($pdfPath) {
-                $message->to("cesar.vargas@precisogps.com")
-                    ->subject("Reporte de Actualización en Wialon")
-                    ->html('<h3>Reporte de Actualización</h3><p>Adjunto encontrarás el reporte de actualización de números en Wialon.</p>')
-                    ->attach($pdfPath, [
-                        'as' => 'reporte_actualizacion.pdf',
-                        'mime' => 'application/pdf',
-                    ]);
-            });
+        //     // Verificar si el archivo se guardó correctamente
 
 
+        //     // Enviar el PDF por correo
 
-            Log::info("🔹 Enviado al correo electronico");
-            return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
+        //     Mail::send([], [], function ($message) use ($pdfPath) {
+        //         $message->to("cesar.vargas@precisogps.com")
+        //             ->subject("Reporte de Actualización en Wialon")
+        //             ->html('<h3>Reporte de Actualización</h3><p>Adjunto encontrarás el reporte de actualización de números en Wialon.</p>')
+        //             ->attach($pdfPath, [
+        //                 'as' => 'reporte_actualizacion.pdf',
+        //                 'mime' => 'application/pdf',
+        //             ]);
+        //     });
 
-        } catch (\Exception $th) {
-            return response()->json(["message" => "Error generando PDF: " . $th->getMessage()], 500);
-        }
+
+
+        //     Log::info("🔹 Enviado al correo electronico");
+        //     return response()->json(["message" => "Actualización completada. Se enviaron " . count($updatedSimcards) . " cambios."]);
+
+        // } catch (\Exception $th) {
+        //     return response()->json(["message" => "Error generando PDF: " . $th->getMessage()], 500);
+        // }
+
     }
 
 
@@ -657,7 +658,7 @@ class SimCardController extends Controller
 
     public function updateSimCardFromWialon()
     {
-        set_time_limit(300); // Evita que Laravel cierre la ejecución si tarda
+        set_time_limit(seconds: 400); // Evita que Laravel cierre la ejecución si tarda
 
         $sid = $this->getWialonSid();
         if (!$sid) {
@@ -740,7 +741,13 @@ class SimCardController extends Controller
             }
 
             DB::commit();
-            return response()->json(["message" => "Actualización de SIMCards completada."]);
+            try {
+                $this->updateWialonPhones();
+                return response()->json(["message" => "Actualización de SIMCards completada."]);
+
+            } catch (\Exception $e) {
+                return response()->json(["message" => "Error al actualizar las SIMCards: " . $e->getMessage()], 500);
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(["message" => "Error al actualizar las SIMCards: " . $e->getMessage()], 500);
