@@ -9,20 +9,20 @@
             <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
                 <div class="carousel-item active">
-                    <img src="{{asset('img/precisoimg/carousel-2.jpg')}}" alt="">
+                    <img src="{{ asset('img/precisoimg/carousel-2.jpg') }}" alt="">
                     <div class="container">
                         <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
                     </div>
                 </div><!-- End Carousel Item -->
 
                 <div class="carousel-item">
-                    <img src="{{asset('img/precisoimg/carousel-3.jpg')}}" alt="">
+                    <img src="{{ asset('img/precisoimg/carousel-3.jpg') }}" alt="">
                     <div class="container">
                         <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
                     </div>
                 </div><!-- End Carousel Item -->
                 <div class="carousel-item">
-                    <img src="{{asset('img/precisoimg/carousel-5.jpg')}}" alt="">
+                    <img src="{{ asset('img/precisoimg/carousel-5.jpg') }}" alt="">
                     <div class="container">
                         <h3 class="visitor-counter"><b><span class="contador-visitas">Cargando...</span></b></h3>
                     </div>
@@ -63,7 +63,21 @@
             </div>
         </div>
     </div>
+    <a href="https://wa.me/593990453275?text=Hola%2C%20me%20interesa%20asesoramiento%20sobre%20el%20rastreo%20vehicular.%20¿Podrías%20darme%20más%20información%3F"
+        target="_blank" class="whatsapp-float">
+        <span class="whatsapp-float-text">¡Comunícate ya!</span>
+        <i class="bi bi-whatsapp"></i>
 
+    </a>
+
+
+
+    <a href="http://www.precisogps.online/" target="_blank" class="custom-float">
+        <span class="custom-float-text">Rastrea tu vehículo</span>
+        <div class="custom-float-circle">
+            <img src="https://precisogps.com/img/precisoimg/logoPreciso.jpg" alt="Logo" class="custom-float-img">
+        </div>
+    </a>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const modalElement = document.getElementById('tiktokModal');

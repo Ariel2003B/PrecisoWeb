@@ -173,21 +173,7 @@
             class="bi bi-arrow-up-short"></i></a>
     <!-- Botón flotante de WhatsApp -->
     <!-- Botón flotante de WhatsApp con mensaje predefinido -->
-    <a href="https://wa.me/593990453275?text=Hola%2C%20me%20interesa%20asesoramiento%20sobre%20el%20rastreo%20vehicular.%20¿Podrías%20darme%20más%20información%3F"
-        target="_blank" class="whatsapp-float">
-        <span class="whatsapp-float-text">¡Comunícate ya!</span>
-        <i class="bi bi-whatsapp"></i>
-        
-    </a>
-
-
-
-    <a href="http://www.precisogps.online/" target="_blank" class="custom-float">
-        <span class="custom-float-text">Rastrea tu vehículo</span>
-        <div class="custom-float-circle">
-            <img src="https://precisogps.com/img/precisoimg/logoPreciso.jpg" alt="Logo" class="custom-float-img">
-        </div>
-    </a>
+  
 
 
 
