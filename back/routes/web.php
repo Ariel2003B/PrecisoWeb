@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AplicacionController;
+use App\Http\Controllers\AsignacionUnidadController;
 use App\Http\Controllers\AuthLoginController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CaracteristicaController;
@@ -17,8 +19,10 @@ use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\QrUnidadesController;
 use App\Http\Controllers\ReporteProduccionController;
+use App\Http\Controllers\RutaController;
 use App\Http\Controllers\SancionesController;
 use App\Http\Controllers\SimCardController;
+use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\VisitasController;
@@ -41,6 +45,12 @@ Route::get('/incrementar-visitas', [VisitasController::class, 'incrementarVisita
 Route::get('/obtener-visitas', [VisitasController::class, 'obtenerVisitas']);
 
 
+Route::get ('/aplicacion',[AplicacionController::class, 'index'])->name('aplicacion.index');
+
+Route::resource('unidades', UnidadController::class);
+Route::resource('rutasapp', RutaController::class);
+Route::get('asignacion', [AsignacionUnidadController::class, 'index'])->name('asignacion.index');
+Route::post('asignacion/asignar', [AsignacionUnidadController::class, 'asignar'])->name('asignacion.asignar');
 
 //routes for login process
 // Mostrar el formulario de login
@@ -134,7 +144,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reporte/global/pdf', [ReporteProduccionController::class, 'generarPDF'])->name('reporte.global.pdf');
     Route::get('/reporte-pdf-rango', [HojaTrabajoController::class, 'reportePorRango'])->name('reporte.pdf.rango');
 
-});
+}); 
 
 
 

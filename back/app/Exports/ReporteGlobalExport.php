@@ -4,7 +4,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Session;
 
-public function generarExcel()
+function generarExcel()
 {
     $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
 

@@ -34,13 +34,13 @@ unidades = [
 #   {"id_unidad": 30, "placa": "PAE1853 (2346)"},
 #   {"id_unidad": 31, "placa": "PAB3662 (3742)"},
 #   {"id_unidad": 32, "placa": "PAC9210 (3744)"},
-#   {"id_unidad": 33, "placa": "PAB3651 (2347)"},
-#   {"id_unidad": 34, "placa": "PAB3695 (3737)"},
-#   {"id_unidad": 35, "placa": "PAB3661 (3738)"},
-#   {"id_unidad": 36, "placa": "PAB3685 (3739)"},
-#   {"id_unidad": 37, "placa": "PAB3660 (3740)"},
-#   {"id_unidad": 38, "placa": "PCX7184 (3741)"},
-#   {"id_unidad": 39, "placa": "PAB4483 (3743)"}
+  {"id_unidad": 33, "placa": "PAB3651 (2347)"},
+  {"id_unidad": 34, "placa": "PAB3695 (3737)"},
+  {"id_unidad": 35, "placa": "PAB3661 (3738)"},
+  {"id_unidad": 36, "placa": "PAB3685 (3739)"},
+  {"id_unidad": 37, "placa": "PAB3660 (3740)"},
+  {"id_unidad": 38, "placa": "PCX7184 (3741)"},
+  {"id_unidad": 39, "placa": "PAB4483 (3743)"}
     
   {"id_unidad": 40, "placa": "PAB6135 (29/0908)"},
   {"id_unidad": 41, "placa": "PAC8833 (35/0916)"},

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\EMPRESA;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use App\Models\Ruta;
@@ -38,4 +39,51 @@ class RutaController extends Controller
         // 6. Devolver las rutas
         return response()->json($rutas);
     }
+
+
+    public function index()
+    {
+        $rutas = Ruta::with('empresa')->get();
+        return view('rutasapp.index', compact('rutas'));
+    }
+
+    public function create()
+    {
+        $empresas = EMPRESA::orderBy('NOMBRE')->get();
+        return view('rutasapp.create', compact('empresas'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'descripcion' => 'required|string|max:255',
+            'EMP_ID' => 'nullable|exists:EMPRESA,EMP_ID'
+        ]);
+
+        Ruta::create($request->all());
+
+        return redirect()->route('rutasapp.index')->with('success', 'Ruta creada exitosamente.');
+    }
+
+    public function edit($id)
+    {
+        $ruta = Ruta::findOrFail($id);
+        $empresas = EMPRESA::orderBy('NOMBRE')->get();
+        return view('rutasapp.edit', compact('ruta', 'empresas'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'descripcion' => 'required|string|max:255',
+            'EMP_ID' => 'nullable|exists:EMPRESA,EMP_ID'
+        ]);
+
+        $ruta = Ruta::findOrFail($id);
+        $ruta->update($request->all());
+
+        return redirect()->route('rutasapp.index')->with('success', 'Ruta actualizada exitosamente.');
+    }
+
+
 }
