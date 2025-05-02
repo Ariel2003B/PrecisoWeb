@@ -378,10 +378,66 @@ class HojaTrabajoController extends Controller
 
 
 
+    // public function ReportePorRango(Request $request)
+    // {
+    //     ini_set('memory_limit', '1024M'); // o más, como '1024M'
+    //     ini_set('max_execution_time', 300); // 300 segundos = 5 minutos
+
+    //     $request->validate([
+    //         'fecha_inicio' => 'required|date',
+    //         'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+    //     ]);
+
+    //     $inicio = $request->fecha_inicio;
+    //     $fin = $request->fecha_fin;
+    //     $esUnSoloDia = $inicio === $fin;
+    //     $hojas = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones'])
+    //         ->whereBetween('fecha', [$inicio, $fin])
+    //         ->orderBy('fecha')
+    //         ->orderBy('id_unidad')
+    //         ->get();
+
+    //     $htmlCompleto = '';
+
+    //     foreach ($hojas as $hoja) {
+    //         $vueltasUsuario = ProduccionUsuario::with('usuario')
+    //             ->where('id_hoja', $hoja->id_hoja)
+    //             ->orderBy('nro_vuelta')
+    //             ->get();
+
+    //         $gastoDiesel = $hoja->gastos->firstWhere('tipo_gasto', 'DIESEL');
+    //         $gastoOtros = $hoja->gastos->firstWhere('tipo_gasto', 'OTROS');
+
+    //         $baseUrl = "http://precisogps.com/back/storage/app/public/";
+    //         $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
+    //         $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
+
+    //         // Renderiza UNA HOJA con su vista
+    //         $vista = $esUnSoloDia ? 'pdf.hoja_trabajo' : 'pdf.hojaTrabajoBulk';
+
+    //         $htmlHoja = view($vista, compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+
+    //         // Separamos con salto de página
+    //         $htmlCompleto .= '<div style="page-break-after: always;">' . $htmlHoja . '</div>';
+    //     }
+
+    //     $options = new Options();
+    //     $options->set('isRemoteEnabled', true);
+    //     $options->set('isHtml5ParserEnabled', true);
+
+    //     $pdf = new Dompdf($options);
+    //     $pdf->loadHtml($htmlCompleto);
+    //     $pdf->setPaper('A4');
+    //     $pdf->render();
+
+    //     return $pdf->stream("reporte_rango_{$inicio}_{$fin}.pdf");
+    // }
+
+
     public function ReportePorRango(Request $request)
     {
-        ini_set('memory_limit', '1024M'); // o más, como '1024M'
-        ini_set('max_execution_time', 300); // 300 segundos = 5 minutos
+        ini_set('memory_limit', '1024M');
+        ini_set('max_execution_time', 300);
 
         $request->validate([
             'fecha_inicio' => 'required|date',
@@ -391,12 +447,20 @@ class HojaTrabajoController extends Controller
         $inicio = $request->fecha_inicio;
         $fin = $request->fecha_fin;
         $esUnSoloDia = $inicio === $fin;
-        $hojas = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones'])
+
+        $user = auth()->user();  // <--- obtenemos el usuario logueado
+        $empresaId = $user->EMP_ID;
+
+        $hojas = HojaTrabajo::with(['unidad', 'ruta.empresa', 'conductor', 'ayudante', 'gastos', 'producciones'])
             ->whereBetween('fecha', [$inicio, $fin])
+            ->whereHas('ruta', function ($query) use ($empresaId) {
+                $query->where('EMP_ID', $empresaId);
+            })
             ->orderBy('fecha')
             ->orderBy('id_unidad')
             ->get();
 
+        $baseUrl = "http://precisogps.com/back/storage/app/public/";
         $htmlCompleto = '';
 
         foreach ($hojas as $hoja) {
@@ -408,16 +472,28 @@ class HojaTrabajoController extends Controller
             $gastoDiesel = $hoja->gastos->firstWhere('tipo_gasto', 'DIESEL');
             $gastoOtros = $hoja->gastos->firstWhere('tipo_gasto', 'OTROS');
 
-            $baseUrl = "http://precisogps.com/back/storage/app/public/";
             $imagenDiesel = $gastoDiesel && $gastoDiesel->imagen ? $baseUrl . $gastoDiesel->imagen : null;
             $imagenOtros = $gastoOtros && $gastoOtros->imagen ? $baseUrl . $gastoOtros->imagen : null;
 
-            // Renderiza UNA HOJA con su vista
+            $logoEmpresa = $hoja->ruta && $hoja->ruta->empresa && $hoja->ruta->empresa->IMAGEN
+                ? $baseUrl . $hoja->ruta->empresa->IMAGEN
+                : null;
+
+            $nombreEmpresa = $hoja->ruta && $hoja->ruta->empresa
+                ? $hoja->ruta->empresa->NOMBRE
+                : 'EMPRESA SIN NOMBRE';
+
             $vista = $esUnSoloDia ? 'pdf.hoja_trabajo' : 'pdf.hojaTrabajoBulk';
 
-            $htmlHoja = view($vista, compact('hoja', 'vueltasUsuario', 'imagenDiesel', 'imagenOtros'))->render();
+            $htmlHoja = view($vista, compact(
+                'hoja',
+                'vueltasUsuario',
+                'imagenDiesel',
+                'imagenOtros',
+                'logoEmpresa',
+                'nombreEmpresa'
+            ))->render();
 
-            // Separamos con salto de página
             $htmlCompleto .= '<div style="page-break-after: always;">' . $htmlHoja . '</div>';
         }
 
