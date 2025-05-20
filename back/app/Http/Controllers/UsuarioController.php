@@ -170,9 +170,11 @@ class UsuarioController extends Controller
 
         $usuario->update($updateData);
 
-        if ($request->has('permisos')) {
-            $usuario->permisos()->sync($request->permisos); // Actualizar permisos seleccionados
-        }
+        // if ($request->has('permisos')) {
+        //     $usuario->permisos()->sync($request->permisos); // Actualizar permisos seleccionados
+        // }
+
+        $usuario->permisos()->sync($request->input('permisos', []));
 
         return redirect()->route('usuario.index')->with('success', 'Usuario actualizado exitosamente.');
     }
