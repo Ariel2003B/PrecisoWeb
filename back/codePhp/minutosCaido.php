@@ -1,17 +1,17 @@
 <?php
 
-$token = "fc619d1f1c1549069a09aede082acd1c";
+$token = "79135be629b04b16a9836787d46480a6";
 
 // Zona horaria de Quito (GMT-5)
 date_default_timezone_set('America/Guayaquil');
 
 // URLs de los endpoints
-$url_routes = "https://nimbus.wialon.com/api/depot/8994/routes";
-$url_report_base = "https://nimbus.wialon.com/api/depot/8994/report/route/";
+$url_routes = "https://nimbus.wialon.com/api/depot/10994/routes";
+$url_report_base = "https://nimbus.wialon.com/api/depot/10994/report/route/";
 
 // urls para lo segundo 
-$url_stops = "https://nimbus.wialon.com/api/depot/8994/stops";
-$url_rides = "https://nimbus.wialon.com/api/depot/8994/rides";
+$url_stops = "https://nimbus.wialon.com/api/depot/10994/stops";
+$url_rides = "https://nimbus.wialon.com/api/depot/10994/rides";
 
 // Función para obtener datos de la API
 function getApiData($url, $token)
@@ -78,7 +78,7 @@ if (!$routes_data || !isset($routes_data['routes'])) {
 
 // Fecha para el reporte
 //$date = date('Y-m-d');
-$fecha = "2025-03-07";
+$fecha = "2025-05-09";
 
 
 // Procesar cada ruta

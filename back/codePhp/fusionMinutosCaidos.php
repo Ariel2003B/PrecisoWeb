@@ -2,14 +2,14 @@
 ini_set('memory_limit', '-1'); // Eliminar límite de memoria
 ini_set('max_execution_time', 0); // Eliminar límite de tiempo de ejecución
 
-$token = "795eb63f47c84e37925480c4f5f1ecaf";
+$token = "79135be629b04b16a9836787d46480a6";
 
 date_default_timezone_set('America/Guayaquil');
 
-$url_routes = "https://nimbus.wialon.com/api/depot/9125/routes";
-$url_report_base = "https://nimbus.wialon.com/api/depot/9125/report/route/";
-$url_stops = "https://nimbus.wialon.com/api/depot/9125/stops";
-$url_rides = "https://nimbus.wialon.com/api/depot/9125/rides";
+$url_routes = "https://nimbus.wialon.com/api/depot/10994/routes";
+$url_report_base = "https://nimbus.wialon.com/api/depot/10994/report/route/";
+$url_stops = "https://nimbus.wialon.com/api/depot/10994/stops";
+$url_rides = "https://nimbus.wialon.com/api/depot/10994/rides";
 
 function getApiData($url, $token)
 {
