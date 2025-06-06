@@ -103,34 +103,35 @@ unidades = [
     # {"id_unidad": 97, "placa": "PAC2888 (44/2344)"},
     # {"id_unidad": 98, "placa": "PAC2780 (45/2345)"},
     # {"id_unidad": 99, "placa": "PAC2961 (48/2348)"}
-    {"id_unidad": 100, "placa": "JAA1099 (23/1098)"},
-    {"id_unidad": 101, "placa": "PAA4857 (19/1106)"},
-    {"id_unidad": 102, "placa": "PAB0095 (30/1111)"},
-    {"id_unidad": 103, "placa": "PAB0733 (32/1075)"},
-    {"id_unidad": 104, "placa": "PAC2079 (35/1116)"},
-    {"id_unidad": 105, "placa": "PAB1246 (03/1085)"},
-    {"id_unidad": 106, "placa": "PAC2168 (02/1072)"},
-    {"id_unidad": 107, "placa": "PAC3506 (76/1115)"},
-    {"id_unidad": 108, "placa": "PAC4179 (12/1102)"},
-    {"id_unidad": 109, "placa": "PAC5969 (56/1076)"},
-    {"id_unidad": 110, "placa": "PAC6120 (54/1077)"},
-    {"id_unidad": 111, "placa": "PAU0059 (18/1087)"},
-    {"id_unidad": 112, "placa": "PAU0118 (84/1079)"},
-    {"id_unidad": 113, "placa": "PUA0453 (87/1107)"},
-    {"id_unidad": 114, "placa": "PUA0544 (39/1095)"},
-    {"id_unidad": 115, "placa": "PUB0233 (57/1089)"},
-    {"id_unidad": 116, "placa": "PAB0347 (31/1083)"},
-    {"id_unidad": 117, "placa": "PUB0908 (36/1081)"},
-    {"id_unidad": 118, "placa": "PUC0800 (50/1071)"},
-    {"id_unidad": 119, "placa": "PAB0327 (27/1099)"},
-    {"id_unidad": 120, "placa": "PUG0157 (09/1097)"},
-    {"id_unidad": 121, "placa": "PUG0707 (59/1090)"},
-    {"id_unidad": 122, "placa": "PUH0211 (62/1100)"},
-    {"id_unidad": 123, "placa": "PUJ0590 (08/1112)"},
-    {"id_unidad": 124, "placa": "PZX0336 (65/1101)"},
-    {"id_unidad": 125, "placa": "PZO0395 (20/1118)"},
-    {"id_unidad": 126, "placa": "PZU0526 (15/1110)"},
-    {"id_unidad": 127, "placa": "TAA1131 (80/1103)"}
+    # {"id_unidad": 100, "placa": "JAA1099 (23/1098)"},
+    # {"id_unidad": 101, "placa": "PAA4857 (19/1106)"},
+    # {"id_unidad": 102, "placa": "PAB0095 (30/1111)"},
+    # {"id_unidad": 103, "placa": "PAB0733 (32/1075)"},
+    # {"id_unidad": 104, "placa": "PAC2079 (35/1116)"},
+    # {"id_unidad": 105, "placa": "PAB1246 (03/1085)"},
+    # {"id_unidad": 106, "placa": "PAC2168 (02/1072)"},
+    # {"id_unidad": 107, "placa": "PAC3506 (76/1115)"},
+    # {"id_unidad": 108, "placa": "PAC4179 (12/1102)"},
+    # {"id_unidad": 109, "placa": "PAC5969 (56/1076)"},
+    # {"id_unidad": 110, "placa": "PAC6120 (54/1077)"},
+    # {"id_unidad": 111, "placa": "PAU0059 (18/1087)"},
+    # {"id_unidad": 112, "placa": "PAU0118 (84/1079)"},
+    # {"id_unidad": 113, "placa": "PUA0453 (87/1107)"},
+    # {"id_unidad": 114, "placa": "PUA0544 (39/1095)"},
+    # {"id_unidad": 115, "placa": "PUB0233 (57/1089)"},
+    # {"id_unidad": 116, "placa": "PAB0347 (31/1083)"},
+    # {"id_unidad": 117, "placa": "PUB0908 (36/1081)"},
+    # {"id_unidad": 118, "placa": "PUC0800 (50/1071)"},
+    # {"id_unidad": 119, "placa": "PAB0327 (27/1099)"},
+    # {"id_unidad": 120, "placa": "PUG0157 (09/1097)"},
+    # {"id_unidad": 121, "placa": "PUG0707 (59/1090)"},
+    # {"id_unidad": 122, "placa": "PUH0211 (62/1100)"},
+    # {"id_unidad": 123, "placa": "PUJ0590 (08/1112)"},
+    # {"id_unidad": 124, "placa": "PZX0336 (65/1101)"},
+    # {"id_unidad": 125, "placa": "PZO0395 (20/1118)"},
+    # {"id_unidad": 126, "placa": "PZU0526 (15/1110)"},
+    # {"id_unidad": 127, "placa": "TAA1131 (80/1103)"}
+    {"id_unidad": 128, "placa": "PAC8303 (31/2331)"}
 
 ]
 
@@ -196,7 +197,7 @@ for unidad in unidades:
     )
 
     # Texto TRANSMETROPOLI y PLACA dentro del rectángulo negro
-    text1 = f"NACIONAL - {unidad['placa']}"
+    text1 = f"URBANQUITO - {unidad['placa']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2

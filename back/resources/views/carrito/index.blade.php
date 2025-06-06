@@ -3,6 +3,17 @@
 @section('Titulo', 'Carrito de Compras')
 
 @section('content')
+
+    @push('head')
+        <!-- Event snippet for Vista de página conversion page -->
+        <script>
+            gtag('event', 'conversion', {
+                'send_to': 'AW-16975126379/PrA1CMiU9tAaEOu-r54_'
+            });
+        </script>
+    @endpush
+
+
     <main class="main">
         <!-- Page Title -->
         <div class="page-title accent-background">

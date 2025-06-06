@@ -58,6 +58,21 @@
         })(window, document, 'script', 'dataLayer', 'GTM-N9QC5VKN');
     </script>
     <!-- End Google Tag Manager -->
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16975126379"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'AW-16975126379');
+    </script>
+    @stack('head') <!-- Aquí permitimos agregar scripts desde otras vistas -->
+
 </head>
 
 <body class="index-page">
