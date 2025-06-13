@@ -33,6 +33,7 @@ Route::get('/', [HomeController::class, 'inicio'])->name('home.inicio');
 Route::get('/privacidad', [HomeController::class, 'privacidad'])->name('home.privacidad');
 Route::get('/plataformas', [HomeController::class, 'plataformas'])->name('home.plataformas');
 Route::get('/servicios', [HomeController::class, 'servicios'])->name('home.servicios');
+Route::get('/tutoriales', [HomeController::class, 'planes'])->name('home.tutoriales');
 Route::get('/planes', [HomeController::class, 'planes'])->name('home.planes');
 Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('home.nosotros');
 Route::get('/blogs', [HomeController::class, 'blog'])->name('home.blogs');
