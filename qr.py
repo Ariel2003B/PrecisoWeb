@@ -131,7 +131,9 @@ unidades = [
     # {"id_unidad": 125, "placa": "PZO0395 (20/1118)"},
     # {"id_unidad": 126, "placa": "PZU0526 (15/1110)"},
     # {"id_unidad": 127, "placa": "TAA1131 (80/1103)"}
-    {"id_unidad": 128, "placa": "PAC8303 (31/2331)"}
+    # {"id_unidad": 128, "placa": "PAC8303 (31/2331)"}
+    {"id_unidad": 129, "placa": "EAA2649 (15/0304)"}
+
 
 ]
 
@@ -197,7 +199,7 @@ for unidad in unidades:
     )
 
     # Texto TRANSMETROPOLI y PLACA dentro del rectángulo negro
-    text1 = f"URBANQUITO - {unidad['placa']}"
+    text1 = f"METROPOLI - {unidad['placa']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2

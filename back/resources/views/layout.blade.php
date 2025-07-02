@@ -91,9 +91,9 @@
                 <ul>
                     <li><a href="{{ route('home.inicio') }}" class="@yield('ActivarInicio')">Inicio</a></li>
 
-                    <li><a href="{{ route('home.servicios') }}" class="@yield('ActivarServicios')">Servicios</a></li>
+                    {{-- <li><a href="{{ route('home.servicios') }}" class="@yield('ActivarServicios')">Servicios</a></li> --}}
                     <li><a href="{{ route('home.equipos') }}" class="@yield('ActivarEquipos')">Equipos y accesorios</a></li>
-                    <li><a href="{{ route('home.planes') }}" class="@yield('ActivarPlanes')">Planes</a></li>
+                    <li><a href="{{ route('home.planes') }}" class="@yield('ActivarPlanes')">Planes y Servicios</a></li>
                     <li><a href="{{ route('home.blogs') }}" class="@yield('ActivarBlog')">Blog</a></li>
                     <li><a href="{{ route('home.nosotros') }}" class="@yield('ActivarNosotros')">Nosotros</a></li>
                     <!-- Dropdown del usuario -->
@@ -144,7 +144,7 @@
                     <div class="footer-contact pt-3">
                         <p>E16 N53-209 y de los Cholanes</p>
                         <p>Quito, 170514</p>
-                        <p class="mt-3"><strong>Celular:</strong> <span>+593 99 045 3275</span></p>
+                        <p class="mt-3"><strong>Ventas y servicio al cliente:</strong> <span>+593 99 045 3275</span></p>
                         <p><strong>Correo:</strong> <span>ventas@precisogps.com</span></p>
                     </div>
                     <div class="social-links d-flex mt-4">
