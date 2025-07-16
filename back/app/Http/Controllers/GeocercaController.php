@@ -44,8 +44,8 @@ class GeocercaController extends Controller
 
     public function crear(Request $request)
     {
-        //$sidWialon = (new SimCardController())->getWialonSid();
-        $sidWialon = "339faffbbfc67f8961beff738db6ccdfA8B13DBE16F44FE34D3967CAA3865BCF29789194";
+        $sidWialon = (new SimCardController())->getWialonSid();
+        //$sidWialon = "339faffbbfc67f8961beff738db6ccdfA8B13DBE16F44FE34D3967CAA3865BCF29789194";
 
         // Recibir variables dinámicas
         $tokenNimbus = $request->input('token_nimbus');
