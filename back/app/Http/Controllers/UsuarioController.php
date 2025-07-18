@@ -12,7 +12,7 @@ class UsuarioController extends Controller
 {
     public function index()
     {
-        $usuarios = USUARIO::with(['p_e_r_f_i_l','empresa'])->where('ESTADO', 'A')->get();
+        $usuarios = USUARIO::with(['p_e_r_f_i_l', 'empresa'])->where('ESTADO', 'A')->get();
         return view('usuario.index', compact('usuarios'));
     }
 
@@ -49,14 +49,14 @@ class UsuarioController extends Controller
             'EMP_ID' => $request->EMP_ID,
             'TELEFONO' => $request->TELEFONO
         ];
-        
+
         // Solo guardar el perfil si se envió
         if ($request->filled('PER_ID')) {
             $datos['PER_ID'] = $request->PER_ID;
         }
-        
+
         $usuario = USUARIO::create($datos);
-        
+
         $permisos = $request->has('permisos') ? PERMISO::whereIn('PRM_ID', $request->permisos)->pluck('DESCRIPCION')->toArray() : [];
         $listaPermisos = implode(", ", $permisos);
 
@@ -90,6 +90,7 @@ class UsuarioController extends Controller
                             <td style='padding: 8px;'>{$request->CLAVE}</td>
                         </tr>   
                     </table>
+                    <p>Es importante señalar que usted es el único responsable del uso, confidencialidad y resguardo de estas credenciales.</p>
                     <h3>Tus servicios activos son:</h3>
                     <ul style='padding-left: 20px;'>";
 
@@ -99,6 +100,9 @@ class UsuarioController extends Controller
 
         $mensaje .= "
                     </ul>
+                    <p>Descarga nuestra aplicación:</p>
+                    <p>Android: https://lc.cx/oot8eg</p>
+                    <p>IOS: https://lc.cx/2sWUBe</p>
                     <p style='color: #555;'>Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos.</p>
                     <p style='text-align: center;'><strong>¡Te damos la bienvenida!</strong></p>
                     <div style='background-color: #005298; color: #fff; padding: 20px; margin-top: 20px; border-radius: 8px;'>
@@ -163,7 +167,7 @@ class UsuarioController extends Controller
         if ($request->filled('PER_ID')) {
             $updateData['PER_ID'] = $request->PER_ID;
         }
-        
+
         if ($request->filled('CLAVE')) {
             $updateData['CLAVE'] = $request->CLAVE;
         }
