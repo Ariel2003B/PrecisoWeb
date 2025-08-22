@@ -51,3 +51,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [LoginController::class, 'user']);
 
 });
+
+Route::post('/account/deletion-request', [AccountController::class, 'deletionRequest']);

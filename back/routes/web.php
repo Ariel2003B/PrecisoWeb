@@ -147,5 +147,9 @@ Route::middleware(['auth'])->group(function () {
 
 }); 
 
+Route::get('/cuenta/eliminar', function () {
+    return view('legal.account-deletion'); // solo muestra la vista
+})->name('account.deletion.page');
+
 
 
