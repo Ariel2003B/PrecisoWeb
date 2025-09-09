@@ -578,7 +578,7 @@ class SimCardController extends Controller
 
     public function getWialonSid()
     {
-        $token = "a21e2472955b1cb0847730f34edcf3e80605D3CD98B9503934D35018FCF192A38E0D748A";
+        $token = "d3f43687417e572e5992f9ce8b5ae098A45E897294385480A33BAD97150A8C7F4C4AC389";
         //$token = "339faffbbfc67f8961beff738db6ccdfA8B13DBE16F44FE34D3967CAA3865BCF29789194";
 
         $url = "https://hst-api.wialon.com/wialon/ajax.html?svc=token/login&params=" . urlencode(json_encode(["token" => $token]));

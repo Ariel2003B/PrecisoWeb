@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\RutaController;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\HojaChoferController;
