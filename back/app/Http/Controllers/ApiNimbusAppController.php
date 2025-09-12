@@ -39,7 +39,7 @@ class ApiNimbusAppController extends Controller
         $empresa = $unidad->usuario?->empresa;
 
         return response()->json([
-            'placa' => $unidad->placa .'('.$unidad->numero_habilitacion.')',
+            'placa' => $unidad->placa .'('.$unidad->numero_habilitacion.')  ',
             'idWialon' => $unidad->idWialon,
             'token' => $empresa?->TOKEN,
             'depot' => $empresa?->DEPOT,

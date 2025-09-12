@@ -43,7 +43,7 @@ Route::post('/auth', [LoginController::class, 'auth']);
 Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
 Route::get('/hojas-trabajo/{id}/generar-pdfWeb', [HojaTrabajoController::class, 'generarPDFWeb']);
 Route::get('/empresa/rutas', [RutaController::class, 'rutasPorEmpresa']);
-Route::get('/data-inicial', [ApiNimbusAppController::class, 'getUnidadByPlaca']);
+Route::post('/data-inicial', [ApiNimbusAppController::class, 'getUnidadByPlaca']);
 
 
 
