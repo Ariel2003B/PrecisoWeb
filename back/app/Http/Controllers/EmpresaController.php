@@ -60,7 +60,7 @@ class EmpresaController extends Controller
             'CORREO' => 'nullable|email|max:600',
             'ESTADO' => 'required|string|max:1',
             'IMAGEN' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
+            
         ]);
 
         $data = $request->all();

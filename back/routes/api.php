@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ApiNimbusAppController;
 use App\Http\Controllers\RutaController;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\HojaChoferController;
@@ -42,6 +43,7 @@ Route::post('/auth', [LoginController::class, 'auth']);
 Route::get('/hojas-trabajo/{id}/generar-pdf', [HojaTrabajoController::class, 'generarPDF']);
 Route::get('/hojas-trabajo/{id}/generar-pdfWeb', [HojaTrabajoController::class, 'generarPDFWeb']);
 Route::get('/empresa/rutas', [RutaController::class, 'rutasPorEmpresa']);
+Route::get('/data-inicial', [ApiNimbusAppController::class, 'getUnidadByPlaca']);
 
 
 

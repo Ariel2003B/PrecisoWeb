@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $TELEFONO
  * @property string|null $CORREO
  * @property string $ESTADO
+ * @property string|null $TOKEN
+ * @property int|null $DEPOT
  * 
  * @property \Illuminate\Database\Eloquent\Collection|USUARIO[] $usuarios
  * 
@@ -39,7 +41,9 @@ class EMPRESA extends Model
         'TELEFONO',
         'CORREO',
         'ESTADO',
-        'IMAGEN'
+        'IMAGEN',
+        'TOKEN',
+        'DEPOT'
     ];
 
     // Relación con USUARIO

@@ -38,7 +38,8 @@ class Unidad extends Model
         'capacidad_pasajeros',
         'puertas_ingreso',
         'puertas_izquierdas',
-        'usu_id' // ← nuevo campo agregado
+        'usu_id', // ← nuevo campo agregado
+        'idWialon'
     ];
 
     public function hojas_trabajo()

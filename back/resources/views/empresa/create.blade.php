@@ -53,6 +53,16 @@
                         <input type="email" name="CORREO" id="CORREO" class="form-control"
                             placeholder="Correo de la Empresa">
                     </div>
+                    <div class="mb-3">
+                        <label for="TOKEN" class="form-label">Token nimbus</label>
+                        <input type="text" name="TOKEN" id="TOKEN" class="form-control"
+                            placeholder="Token obtenido de nimbus">
+                    </div>
+                    <div class="mb-3">
+                        <label for="DEPOT" class="form-label">Depot</label>
+                        <input type="number" name="DEPOT" id="DEPOT" class="form-control"
+                            placeholder="Llena solo administrador">
+                    </div>
 
                     <div class="mb-3">
                         <label for="ESTADO" class="form-label">Estado</label>
@@ -65,7 +75,7 @@
                         <label for="IMAGEN" class="form-label">Logo o Imagen de la Empresa</label>
                         <input type="file" name="IMAGEN" id="IMAGEN" class="form-control" accept="image/*">
                     </div>
-                    
+
 
                     <button type="submit" class="btn btn-success">Guardar</button>
                     <a href="{{ route('empresa.index') }}" class="btn btn-secondary">Cancelar</a>

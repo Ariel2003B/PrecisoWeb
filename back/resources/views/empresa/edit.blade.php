@@ -53,7 +53,16 @@
                         <input type="email" name="CORREO" id="CORREO" class="form-control"
                             value="{{ old('CORREO', $empresa->CORREO) }}">
                     </div>
-
+                    <div class="mb-3">
+                        <label for="TOKEN" class="form-label">Token nimbus</label>
+                        <input type="text" name="TOKEN" id="TOKEN" class="form-control"
+                           value="{{ old('TOKEN', $empresa->TOKEN) }}" placeholder="Token obtenido de nimbus">
+                    </div>
+                    <div class="mb-3">
+                        <label for="DEPOT" class="form-label">Depot</label>
+                        <input type="number" name="DEPOT" id="DEPOT" class="form-control"
+                           value="{{ old('DEPOT', $empresa->DEPOT) }}" placeholder="Llena solo administrador">
+                    </div>
                     <div class="mb-3">
                         <label for="ESTADO" class="form-label">Estado</label>
                         <select name="ESTADO" id="ESTADO" class="form-control" required>
