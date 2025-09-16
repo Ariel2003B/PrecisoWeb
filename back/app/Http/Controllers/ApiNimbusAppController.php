@@ -171,5 +171,27 @@ class ApiNimbusAppController extends Controller
         return strtoupper(str_replace(' ', '', $s));
     }
 
+    public function getValorGeocerca(Request $request)
+    {
+        $data = $request->validate([
+            'idWialon' => 'required'
+        ]);
+
+        // Busca la unidad por idWialon y trae directamente el valor de sanción
+        $valor = Unidad::query()
+            ->join('USUARIO as u', 'unidades.usu_id', '=', 'u.USU_ID')
+            ->join('EMPRESA as e', 'u.EMP_ID', '=', 'e.EMP_ID')
+            ->where('unidades.idWialon', $data['idWialon'])
+            ->value('e.VALOR_SANCION_GEOCERCA'); // <-- devuelve un escalar
+
+        if ($valor === null) {
+            // Si no se encuentra, 404 (puedes cambiar a 200 con 0 si prefieres)
+            return response()->json(null, 404);
+        }
+
+        // "Solo ese dato": un número JSON (no un objeto envoltorio)
+        return response()->json($valor);
+    }
+
 }
 

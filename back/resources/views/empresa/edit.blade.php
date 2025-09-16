@@ -56,12 +56,17 @@
                     <div class="mb-3">
                         <label for="TOKEN" class="form-label">Token nimbus</label>
                         <input type="text" name="TOKEN" id="TOKEN" class="form-control"
-                           value="{{ old('TOKEN', $empresa->TOKEN) }}" placeholder="Token obtenido de nimbus">
+                            value="{{ old('TOKEN', $empresa->TOKEN) }}" placeholder="Token obtenido de nimbus">
                     </div>
                     <div class="mb-3">
                         <label for="DEPOT" class="form-label">Depot</label>
                         <input type="number" name="DEPOT" id="DEPOT" class="form-control"
-                           value="{{ old('DEPOT', $empresa->DEPOT) }}" placeholder="Llena solo administrador">
+                            value="{{ old('DEPOT', $empresa->DEPOT) }}" placeholder="Llena solo administrador">
+                    </div>
+                    <div class="mb-3">
+                        <label for="VALOR_SANCION_GEOCERCA" class="form-label">Valor de sanción por minuto</label>
+                        <input type="text" name="VALOR_SANCION_GEOCERCA" id="VALOR_SANCION_GEOCERCA" class="form-control" value="{{ old('VALOR_SANCION_GEOCERCA', $empresa->VALOR_SANCION_GEOCERCA) }}"
+                            placeholder="El valor de sanción por minuto caido">
                     </div>
                     <div class="mb-3">
                         <label for="ESTADO" class="form-label">Estado</label>

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $ESTADO
  * @property string|null $TOKEN
  * @property int|null $DEPOT
+ * @property float|null $VALOR_SANCION_GEOCERCA
  * 
  * @property \Illuminate\Database\Eloquent\Collection|USUARIO[] $usuarios
  * 
@@ -43,7 +44,8 @@ class EMPRESA extends Model
         'ESTADO',
         'IMAGEN',
         'TOKEN',
-        'DEPOT'
+        'DEPOT',
+        'VALOR_SANCION_GEOCERCA'
     ];
 
     // Relación con USUARIO

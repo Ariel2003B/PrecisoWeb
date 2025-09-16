@@ -45,6 +45,7 @@ Route::get('/hojas-trabajo/{id}/generar-pdfWeb', [HojaTrabajoController::class, 
 Route::get('/empresa/rutas', [RutaController::class, 'rutasPorEmpresa']);
 Route::post('/data-inicial', [ApiNimbusAppController::class, 'getUnidadByPlaca']);
 Route::post('/update/idwialon', [ApiNimbusAppController::class, 'updateIdWialon']);
+Route::post('/valorsancion', [ApiNimbusAppController::class, 'getValorGeocerca']);
 
 
 

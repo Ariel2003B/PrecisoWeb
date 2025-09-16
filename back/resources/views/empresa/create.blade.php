@@ -63,6 +63,11 @@
                         <input type="number" name="DEPOT" id="DEPOT" class="form-control"
                             placeholder="Llena solo administrador">
                     </div>
+                    <div class="mb-3">
+                        <label for="VALOR_SANCION_GEOCERCA" class="form-label">Valor de sanción por minuto</label>
+                        <input type="text" name="VALOR_SANCION_GEOCERCA" id="VALOR_SANCION_GEOCERCA" class="form-control"
+                            placeholder="El valor de sanción por minuto caido">
+                    </div>
 
                     <div class="mb-3">
                         <label for="ESTADO" class="form-label">Estado</label>
