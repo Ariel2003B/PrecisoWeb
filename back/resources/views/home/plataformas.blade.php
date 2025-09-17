@@ -281,18 +281,18 @@
                                 pagina</a>
                         </div>
                     @endif
-                    {{-- @if (Auth::user()->permisos->contains('DESCRIPCION', 'SANCIONES'))
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'SANCIONES MINUTOS CAIDOS'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">
                                 <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
                                 <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
                             </span>
-                            <h4 class="my-3">SANCIONES</h4>
-                            <a class="btn btn-success" href="{{ route('sanciones.index', ['parametro' => 'S-N']) }}"
+                            <h4 class="my-3">SANCIONES MINUTOS CAIDOS</h4>
+                            <a class="btn btn-success" href="{{ route('reportes.dia.nimbus') }}"
                                 target="_blank">Visitar
                                 página</a>
                         </div>
-                    @endif --}}
+                    @endif
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'GESTION DE PLANES'))
                         <div class="col-md-4">
                             <span class="fa-stack fa-4x">

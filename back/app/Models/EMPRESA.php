@@ -59,4 +59,10 @@ class EMPRESA extends Model
         return $this->hasMany(Ruta::class, 'EMP_ID');
     }
 
+        /** Nueva: geocercas/Stops propios de la empresa */
+    public function geoStops()
+    {
+        return $this->hasMany(GeoStop::class, 'EMP_ID');
+    }
+
 }

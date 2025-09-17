@@ -56,6 +56,11 @@
                                 <td>
                                     <a href="{{ route('empresa.edit', $empresa->EMP_ID) }}"
                                         class="btn btn-primary btn-sm">Editar</a>
+                                    <a class="btn btn-sm btn-outline-primary"
+                                        href="{{ route('empresa.stops.form', $empresa->EMP_ID) }}">
+                                        Configurar geocercas
+                                    </a>
+
                                     <form action="{{ route('empresa.destroy', $empresa->EMP_ID) }}" method="POST"
                                         class="d-inline">
                                         @csrf

@@ -14,6 +14,7 @@ use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MinutosCaidosController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NimbusController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PlanController;
@@ -46,7 +47,7 @@ Route::get('/incrementar-visitas', [VisitasController::class, 'incrementarVisita
 Route::get('/obtener-visitas', [VisitasController::class, 'obtenerVisitas']);
 
 
-Route::get ('/aplicacion',[AplicacionController::class, 'index'])->name('aplicacion.index');
+Route::get('/aplicacion', [AplicacionController::class, 'index'])->name('aplicacion.index');
 
 Route::resource('unidades', UnidadController::class);
 Route::resource('rutasapp', RutaController::class);
@@ -80,9 +81,11 @@ Route::get('/log-test', function () {
     Log::info('Escribiendo en el log desde /log-test');
     return 'Log generado';
 });
-
+Route::get('/empresa/{empresa}/stops',       [EmpresaController::class, 'stopsForm'])->name('empresa.stops.form');
+Route::post('/empresa/{empresa}/stops/save', [EmpresaController::class, 'stopsSave'])->name('empresa.stops.save');
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/nimbus/reporte-dia-all', [NimbusController::class, 'reporteDiaAll'])->name('reportes.dia.nimbus');
     Route::resource('empresa', EmpresaController::class);
 
     Route::get('/reportes', [ReporteProduccionController::class, 'index'])->name('reportes.index');
@@ -145,7 +148,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reporte/global/pdf', [ReporteProduccionController::class, 'generarPDF'])->name('reporte.global.pdf');
     Route::get('/reporte-pdf-rango', [HojaTrabajoController::class, 'reportePorRango'])->name('reporte.pdf.rango');
 
-}); 
+});
 
 Route::get('/cuenta/eliminar', function () {
     return view('legal.account-deletion'); // solo muestra la vista
