@@ -313,10 +313,26 @@
 
             // Helper: conecta QZ
             async function qzConnect() {
-                if (!qz.websocket.isActive()) {
-                    await qz.websocket.connect();
+                // Ya activo
+                if (qz.websocket.isActive()) return;
+
+                try {
+                    await qz.websocket.connect({
+                        retries: 2, // intenta un par de veces
+                        delay: 0.5 // segundos entre intentos
+                    });
+                } catch (e) {
+                    // Mensaje claro al usuario
+                    throw new Error(
+                        "No se pudo conectar con QZ Tray.\n\n" +
+                        "1) Verifica que QZ Tray esté abierto (icono verde).\n" +
+                        "2) Si aparece un cuadro pidiendo permisos, presiona Aceptar.\n" +
+                        "3) En QZ → Connections/Whitelist, borra entradas antiguas y vuelve a intentar.\n\n" +
+                        "Detalle técnico: " + (e?.message || e)
+                    );
                 }
             }
+
 
             // Helper: busca la impresora
             async function getPrinter() {
