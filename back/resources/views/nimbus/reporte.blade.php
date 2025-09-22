@@ -299,7 +299,7 @@
     <script>
         (function() {
             // ======= Configura aquí el nombre EXACTO de la impresora =======
-            const PRINTER_NAME = 'PRUEBA2'; // cámbialo por el nombre que ves en Windows
+            const PRINTER_NAME = 'TICKETSPRECISOGPS'; // cámbialo por el nombre que ves en Windows
 
             // Firmas mínimas (modo sin certificados propios)
             qz.security.setCertificatePromise(function(resolve, reject) {
