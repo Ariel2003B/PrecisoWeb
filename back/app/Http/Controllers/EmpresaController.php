@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EMPRESA;
 use App\Models\GeoStop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 class EmpresaController extends Controller
@@ -155,15 +156,19 @@ class EmpresaController extends Controller
             return back()->with('error', 'No se recibieron datos para guardar.');
         }
 
+        // 1) Preparar filas e IDs presentes en el formulario
         $rows = [];
+        $presentIds = [];
+
         foreach ($payload as $nimbusId => $row) {
             $nimbusId = (int) $nimbusId;
+            $presentIds[] = $nimbusId;
+
             $valor = isset($row['valor']) ? (float) $row['valor'] : 0.0;
             $nombre = isset($row['nombre']) ? Str::limit((string) $row['nombre'], 180, '') : '';
 
-            // Evitar negativos
             if ($valor < 0)
-                $valor = 0.0;
+                $valor = 0.0; // sin negativos
 
             $rows[] = [
                 'EMP_ID' => (int) $empresa->EMP_ID,
@@ -171,22 +176,37 @@ class EmpresaController extends Controller
                 'NOMBRE' => $nombre,
                 'DEPOT' => (int) $empresa->DEPOT,
                 'VALOR_MINUTO' => $valor,
-                'ESTADO' => 'A',
+                'ESTADO' => 'A', // las presentes quedan activas
             ];
         }
 
-        if (!empty($rows)) {
-            // upsert por (EMP_ID, NIMBUS_ID). Se actualizan nombre, depot, valor y estado.
-            GeoStop::upsert(
-                $rows,
-                ['EMP_ID', 'NIMBUS_ID'],
-                ['NOMBRE', 'DEPOT', 'VALOR_MINUTO', 'ESTADO']
-            );
-        }
+        // 2) Sincronizar usando transacción
+        DB::transaction(function () use ($empresa, $rows, $presentIds) {
+
+            // 2.1) Borrar TODO lo que ya no esté presente en el submit
+            //     (si prefieres desactivar en lugar de borrar, ver bloque alternativo más abajo)
+            GeoStop::where('EMP_ID', (int) $empresa->EMP_ID)
+                ->when(!empty($presentIds), function ($q) use ($presentIds) {
+                    $q->whereNotIn('NIMBUS_ID', $presentIds);
+                }, function ($q) {
+                    // si por algún motivo la lista vino vacía, elimina todos los registros de esa empresa
+                    $q->whereRaw('1 = 1');
+                })
+                ->delete();
+
+            // 2.2) Upsert (insert/update) de las presentes
+            if (!empty($rows)) {
+                GeoStop::upsert(
+                    $rows,
+                    ['EMP_ID', 'NIMBUS_ID'],                 // claves únicas/compuestas
+                    ['NOMBRE', 'DEPOT', 'VALOR_MINUTO', 'ESTADO'] // columnas a actualizar
+                );
+            }
+        });
 
         return redirect()
             ->route('empresa.stops.form', $empresa->EMP_ID)
-            ->with('success', 'Geocercas guardadas correctamente.');
+            ->with('success', 'Geocercas sincronizadas y guardadas correctamente.');
     }
 
 }
