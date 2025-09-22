@@ -65,6 +65,16 @@
                         <label class="form-label mb-0">Fecha</label>
                         <input type="date" name="fecha" value="{{ $fecha }}"
                             class="form-control form-control-sm">
+
+                    </div>
+                    <!-- Debajo del input Fecha -->
+                    <div class="col-auto">
+                        <label class="form-label mb-0">Buscar placa</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="filtroPlaca" class="form-control" placeholder="ABC1234, (01/2345)">
+                            <button class="btn btn-outline-secondary" type="button" id="btnLimpiarFiltro"
+                                title="Limpiar">×</button>
+                        </div>
                     </div>
                     {{-- <div class="col-auto">
                         <div class="form-check form-switch">
@@ -135,8 +145,11 @@
                                     <div class="table-responsive">
                                         <table
                                             class="table table-sm table-striped table-bordered align-middle table-compact"
-                                            id="tabla-{{ $ruta['idRoute'] }}" data-stops='@json($stops)'
-                                            data-tarifas='{{ $tarifasJson }}'>
+                                            id="tabla-{{ $ruta['idRoute'] }}" data-stops='@json($stops, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)'
+                                            data-tarifas='@json(
+                                                $ruta['tarifas'] ?? new \stdClass(),
+                                                JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)'>
+
                                             <thead class="table-light align-middle"
                                                 style="position: sticky; top: 0; z-index: 10;">
                                                 <tr>
@@ -181,7 +194,8 @@
                                                             <div class="text-muted small">{{ $extra }}</div>
                                                         </td>
                                                         <td class="sticky-col sticky-rutina text-nowrap">
-                                                            {{ rutinaFrom($plan) }}</td>
+                                                            {{ rutinaFrom($plan) }}
+                                                        </td>
                                                         <td class="sticky-col sticky-sancion text-end">
                                                             <span class="sancion-amount" data-total="0.00">$0.00</span>
                                                             <button type="button"
@@ -191,7 +205,8 @@
                                                             <td class="text-center col-plan text-nowrap">
                                                                 {{ $plan[$j] ?? '--:--' }}</td>
                                                             <td class="text-center col-eje text-nowrap">
-                                                                {{ $ejec[$j] ?? '--:--' }}</td>
+                                                                {{ $ejec[$j] ?? '--:--' }}
+                                                            </td>
                                                             @php $d = $dif[$j] ?? null; @endphp
                                                             <td class="text-center col-dif {{ difClass($d) }}">
                                                                 {{ $d === null ? '—' : ($d > 0 ? '+' : '') . $d }}
@@ -212,478 +227,315 @@
         </section>
     </main>
     <div class="modal fade" id="modalSancion" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detalle de sanción</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content sancion-modal">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold">Detalle de sanción</h5>
+                        <div class="small text-muted">
+                            <span class="me-2"><i class="bi bi-calendar3 me-1"></i><span id="sm-fecha">—</span></span>
+                            <span class="me-2"><i class="bi bi-signpost-2 me-1"></i><span
+                                    id="sm-ruta">—</span></span>
+                            <span class="me-2"><i class="bi bi-truck-front me-1"></i><span
+                                    id="sm-placa">—</span></span>
+                        </div>
+                    </div>
+
+                    <div class="text-end ms-auto">
+                        <div class="label text-uppercase small text-muted">Total</div>
+                        <div id="sm-total" class="display-6 fw-bold text-success mb-0">$0.00</div>
+                    </div>
                 </div>
-                <div class="modal-body">
+
+                <div class="modal-subheader bg-light rounded px-3 py-2 mx-3 mb-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="stat-chip chip-caidas" title="Geocercas con caída (Dif < 0)">Caídas: <b
+                                id="sm-caidas">0</b></span>
+                        <span class="stat-chip chip-atiempo" title="Geocercas a tiempo (Dif = 0)">A tiempo: <b
+                                id="sm-atiempo">0</b></span>
+                        <span class="stat-chip chip-adelanto" title="Geocercas con adelanto (Dif > 0)">Adelanto: <b
+                                id="sm-adelanto">0</b></span>
+                        <span class="stat-chip chip-renglones" title="Total de renglones">Geocercas: <b
+                                id="sm-rows">0</b></span>
+                    </div>
+                </div>
+
+                <div class="modal-body pt-2">
                     <div class="table-responsive">
-                        <table class="table table-sm table-bordered align-middle mb-0" style="font-size:.85rem;">
-                            <thead class="table-light">
+                        <table class="table table-sm align-middle sancion-table mb-0">
+                            <thead class="table-light sticky-top shadow-sm">
                                 <tr>
-                                    <th style="width:40px;">#</th>
+                                    <th class="text-center" style="width:50px">#</th>
                                     <th>Geocerca</th>
-                                    <th class="text-center" style="width:70px;">Dif</th>
-                                    <th class="text-end" style="width:120px;">Tarifa</th>
-                                    <th class="text-end" style="width:120px;">Cargo</th>
+                                    <th class="text-center" style="width:90px">Dif</th>
+                                    <th class="text-end mono" style="width:120px">Tarifa</th>
+                                    <th class="text-end mono" style="width:140px">Cargo</th>
                                 </tr>
                             </thead>
-                            <tbody id="detSancionBody"></tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="4" class="text-end">Total</th>
-                                    <th class="text-end" id="detSancionTotal">$0.00</th>
-                                </tr>
-                            </tfoot>
+                            <tbody id="detSancionBody"><!-- filas se inyectan en tu JS --></tbody>
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button class="btn btn-primary" id="btnPrintSancion">Imprimir</button> {{-- NUEVO --}}
-                </div>
 
+                <div class="modal-footer justify-content-between sticky-footer">
+                    <div class="small text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Los valores en <b>Dif</b> negativos generan cargo. Los positivos son informativos.
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-primary" id="btnPrintSancion">Imprimir</button>
+                        <button class="btn btn-outline-primary" id="btnTicketSancion">Imprimir ticket</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
 
-
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // rutas
-            const buttons = document.querySelectorAll('.route-btn');
-            const tables = document.querySelectorAll('.route-table');
-
-            function show(target) {
-                tables.forEach(t => t.classList.add('d-none'));
-                buttons.forEach(b => b.classList.remove('active'));
-                const el = document.querySelector(target);
-                if (el) el.classList.remove('d-none');
-            }
-            buttons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    show(this.dataset.target);
-                    this.classList.add('active');
-                });
-            });
-
-            // nombres completos on/off
-            const wrapToggle = document.getElementById('toggleWrapStops');
-            const container = document.querySelector('.container'); // o un wrapper más específico
-            if (wrapToggle) {
-                wrapToggle.addEventListener('change', function() {
-                    if (this.checked) container.classList.add('wrap-stops');
-                    else container.classList.remove('wrap-stops');
-                });
-            }
-
-            // Bootstrap tooltip (si usas BS5)
-            if (window.bootstrap) {
-                const tts = [].slice.call(document.querySelectorAll('[title]'));
-                tts.forEach(el => new bootstrap.Tooltip(el));
-            }
-        });
-    </script>
+    <script src="{{ asset('js/reporte-dia-all.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        (function() {
+            // ======= Configura aquí el nombre EXACTO de la impresora =======
+            const PRINTER_NAME = 'TICKETS'; // cámbialo por el nombre que ves en Windows
 
-            // === Calcular totales al cargar ===
-            document.querySelectorAll('table.table-compact').forEach(table => {
-                const stops = safeJson(table.dataset.stops) || [];
-                const tarifas = buildTarifaLookup(safeJson(table.dataset.tarifas));
-
-                const rows = table.querySelectorAll('tbody tr');
-
-                rows.forEach(tr => {
-                    const difCells = tr.querySelectorAll('td.col-dif');
-                    let total = 0;
-
-                    difCells.forEach((td, idx) => {
-                        const raw = (td.textContent || '').trim();
-                        const diff = parseInt(raw.replace(/[^\-0-9]/g, ''), 10);
-                        const stop = stops[idx] || {};
-                        const nid = stop.id;
-                        const t = parseFloat(tarifas[String(nid)] ?? tarifas[nid] ?? 0) ||
-                            0;
-
-
-                        if (!isNaN(diff) && diff < 0 && t > 0) {
-                            total += Math.abs(diff) * t;
-                        }
-                    });
-
-                    const amountEl = tr.querySelector('.sancion-amount');
-                    if (amountEl) {
-                        amountEl.dataset.total = total.toFixed(2);
-                        amountEl.textContent = '$' + numberFmt(total);
-                    }
-
-                    // Guardamos el contexto en el <tr> para usar en "Ver"
-                    tr._sancionContext = {
-                        stops,
-                        tarifas
-                    };
-                });
+            // Firmas mínimas (modo sin certificados propios)
+            qz.security.setCertificatePromise(function(resolve, reject) {
+                resolve("-----BEGIN CERTIFICATE-----\nMIIB...TU_CERT...\n-----END CERTIFICATE-----");
+            });
+            qz.security.setSignaturePromise(function(toSign) {
+                return function(resolve, reject) {
+                    resolve(null);
+                };
             });
 
-            // === Botón "Ver" (detalle en modal) ===
-            document.querySelectorAll('.ver-sancion').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tr = this.closest('tr');
-                    const table = this.closest('table');
-                    const stops = (tr?._sancionContext?.stops) || safeJson(table.dataset.stops) ||
-                    [];
-                    const tarifas = (tr?._sancionContext?.tarifas) || buildTarifaLookup(safeJson(
-                        table.dataset.tarifas));
-
-                    const placa = tr.querySelector('.sticky-placa .fw-semibold')?.textContent
-                        ?.trim() || '';
-                    const difTds = tr.querySelectorAll('td.col-dif');
-
-                    let bodyHtml = '';
-                    let total = 0;
-
-                    difTds.forEach((td, idx) => {
-                        const raw = (td.textContent || '').trim();
-                        const diff = parseInt(raw.replace(/[^\-0-9]/g, ''),
-                            10); // puede ser NaN
-                        const stop = stops[idx] || {};
-                        const nid = stop.id;
-                        const name = stop.n || ('Parada ' + (idx + 1));
-                        const t = parseFloat(tarifas[String(nid)] ?? tarifas[nid] ?? 0) ||
-                            0;
-
-                        const cargo = (!isNaN(diff) && diff < 0 && t > 0) ? Math.abs(diff) *
-                            t : 0;
-
-                        if (cargo > 0) total += cargo;
-
-                        const cls = isNaN(diff) ? 'text-muted' :
-                            diff < 0 ? 'text-danger fw-semibold' :
-                            diff > 0 ? 'text-success' :
-                            'text-secondary';
-
-                        bodyHtml += `
-          <tr>
-            <td class="text-center">${idx+1}</td>
-            <td>${escapeHtml(name)}</td>
-            <td class="text-center ${cls}">${isNaN(diff) ? '—' : (diff>0? '+'+diff : diff)}</td>
-            <td class="text-end">${t ? '$'+numberFmt(t) : '$0.00'}</td>
-            <td class="text-end">${cargo ? '$'+numberFmt(cargo) : '$0.00'}</td>
-          </tr>`;
-                    });
-
-                    document.getElementById('detSancionBody').innerHTML = bodyHtml || `
-        <tr><td colspan="5" class="text-center text-muted">Sin datos</td></tr>`;
-                    document.getElementById('detSancionTotal').textContent = '$' + numberFmt(total);
-
-                    const modalEl = document.getElementById('modalSancion');
-                    modalEl.querySelector('.modal-title').textContent =
-                        `Detalle de sanción – ${placa}`;
-                    if (window.bootstrap) new bootstrap.Modal(modalEl).show();
-                });
-            });
-
-            // Helpers
-            function safeJson(s) {
-                try {
-                    return JSON.parse(s || 'null');
-                } catch {
-                    return null;
+            // Helper: conecta QZ
+            async function qzConnect() {
+                if (!qz.websocket.isActive()) {
+                    await qz.websocket.connect();
                 }
             }
 
-            function numberFmt(n) {
-                return (isNaN(n) ? 0 : n).toFixed(2);
+            // Helper: busca la impresora
+            async function getPrinter() {
+                const list = await qz.printers.find(PRINTER_NAME);
+                return list || PRINTER_NAME;
             }
 
-            function escapeHtml(s) {
-                return (s || '').replace(/[&<>"']/g, m => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                } [m]));
-            }
-        });
+            function buildEscPosTicket({
+                empresa,
+                fecha,
+                ruta,
+                placa,
+                total,
+                caidas,
+                rows
+            }) {
+                const ESC = '\x1B',
+                    GS = '\x1D',
+                    SI = '\x0F',
+                    DC2 = '\x12';
 
-        function buildTarifaLookup(raw) {
-            const out = {};
-            if (!raw) return out;
+                const init = ESC + '@';
+                const align = (n) => ESC + 'a' + String.fromCharCode(n); // 0=L,1=C,2=R
+                const boldOn = ESC + 'E' + '\x01',
+                    boldOff = ESC + 'E' + '\x00';
+                const fontB = ESC + 'M' + '\x01'; // angosto
+                const normal = ESC + '!' + '\x00';
+                const hr = (w = 33) => '-'.repeat(w) + '\n';
 
-            // Si viene como objeto { "891516": 0.5, ... }
-            if (typeof raw === 'object' && !Array.isArray(raw)) {
-                Object.keys(raw).forEach(k => {
-                    out[String(k)] = parseFloat(raw[k]) || 0;
+                // Alimentar n líneas
+                const feed = (n) => ESC + 'd' + String.fromCharCode(n & 0xFF);
+                // Corte recomendado para Epson: GS V 66 0 (full cut) — si no hay cortador se ignora
+                const cut = GS + 'V' + '\x42' + '\x00';
+
+                // Layout de columnas (42 col): " 2idx + 1sp + 22name + 1sp + 3dif + 1sp + 5tar + 1sp + 7cargo = 43?
+                // Ajustamos a EXACTO 42: 2 + 1 + 21 + 1 + 3 + 1 + 5 + 1 + 7 = 42
+                const NAME_W = 15;
+
+                function lineItem(idx, name, dif, cargo) {
+                    const nm = fitNameOneLine(name, NAME_W); // 26 cols para nombre
+                    const dff = fmtDiff(dif).padStart(3, ' '); // 3 cols para Dif
+                    const cStr = money(cargo).replace('$', '').padStart(8, ' '); // 8 cols para Cargo
+                    // 2(idx) + 1 + 26(name) + 1 + 3(dif) + 1 + 8(cargo) = 42 columnas exactas
+                    return `${String(idx).padStart(2,' ')} ${nm} ${dff} ${cStr}\n`;
+                }
+
+                let out = init + fontB + normal;
+                out += align(1) + boldOn + (empresa || 'EMPRESA') + '\n' + boldOff;
+                out += 'SANCION DE MINUTOS CAIDOS\n';
+                out += align(0);
+                out += `Fecha: ${fecha || '--'}\n`;
+                out += `Ruta : ${ruta  || '--'}\n`;
+                out += `Placa: ${placa || '--'}\n`;
+                out += hr();
+
+                // Cuerpo compacto (condensed ON)
+                out += SI;
+                out += ` # ${'Geocerca'.padEnd(NAME_W,' ')} ${'Dif'.padStart(3,' ')} ${'Cargo'.padStart(8,' ')}\n`;
+
+                out += hr();
+
+                (rows || []).forEach(r => {
+                    out += lineItem(r.idx, r.n || '', r.dif, r.cargo);
                 });
+
+
+                // condensed OFF
+                out += DC2;
+                out += hr();
+
+                // Resumen (alineado a la derecha)
+                out += align(2) + `Geocercas con caida: ${caidas || 0}\n`;
+                out += boldOn + align(2) + `TOTAL: $${money(total)}\n` + boldOff;
+
+                // Alimenta un poco y CORTA DESPUÉS DEL TOTAL
+                out += feed(1) + cut;
+
                 return out;
             }
 
-            // Si viniera como array de objetos [{id:891516, t:0.5}, ...] (por si algún día cambias)
-            if (Array.isArray(raw)) {
-                raw.forEach(x => {
-                    if (x && (x.id !== undefined)) out[String(x.id)] = parseFloat(x.t ?? x.valor ?? x.rate ?? 0) ||
-                        0;
-                });
+            function toAscii(s) {
+                try {
+                    return String(s || '')
+                        .normalize('NFD') // separa tildes
+                        .replace(/[\u0300-\u036f]/g, '') // quita tildes
+                        .replace(/[^\x20-\x7E]/g, ''); // deja solo ASCII imprimible
+                } catch {
+                    return String(s || '');
+                }
             }
-            return out;
-        }
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
 
-            // ... (tu código existente de cálculo de totales)
+            function fitNameOneLine(name, width) {
+                let s = String(name || '')
+                    .replace(/^(?:\s*\d+\s*\.\s*)+/, '') // quita "12. " al inicio (1 o más veces)
+                    .replace(/\s+/g, ' ') // colapsa espacios
+                    .trim();
 
-            // === Botón "Ver" (detalle en modal) ===
-            document.querySelectorAll('.ver-sancion').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tr = this.closest('tr');
-                    const table = this.closest('table');
-                    const contRT = this.closest('.route-table');
-                    const stops = (tr?._sancionContext?.stops) || safeJson(table.dataset.stops) ||
-                    [];
-                    const tarifas = (tr?._sancionContext?.tarifas) || buildTarifaLookup(safeJson(
-                        table.dataset.tarifas)) || {};
+                s = toAscii(s);
 
-                    const placa = tr.querySelector('.sticky-placa .fw-semibold')?.textContent
-                        ?.trim() || '';
-                    const ruta = contRT?.querySelector('h5')?.textContent?.trim() || '';
-                    const difTds = tr.querySelectorAll('td.col-dif');
+                if (s.length <= width) return s.padEnd(width, ' ');
 
-                    let bodyHtmlAll = '';
-                    let bodyHtmlCaidas = '';
-                    let total = 0,
-                        caidas = 0;
+                // si no cabe, deja sitio para '...' (3).
+                const w = Math.max(3, width);
+                return (s.slice(0, w - 3) + '...').padEnd(width, ' ');
+            }
 
-                    difTds.forEach((td, idx) => {
-                        const raw = (td.textContent || '').trim();
-                        const diff = parseInt(raw.replace(/[^\-0-9]/g, ''),
-                            10); // puede ser NaN
-                        const stop = stops[idx] || {};
-                        const nid = stop.id;
-                        const name = stop.n || ('Parada ' + (idx + 1));
-                        const t = parseFloat(tarifas[String(nid)] ?? tarifas[nid] ?? 0) ||
-                            0;
+            function money(n) {
+                n = parseFloat(n || 0);
+                return n.toFixed(2);
+            }
 
-                        const cargo = (!isNaN(diff) && diff < 0 && t > 0) ? Math.abs(diff) *
-                            t : 0;
+            function stripNumPrefix(name) {
+                return String(name || '').replace(/^(?:\s*\d+\s*\.\s*)+/, '');
+            }
+            // Si no hay diferencia => "-"
+            function fmtDiff(s) {
+                s = String(s || '').trim();
+                if (!s) return '-';
+                const m = s.match(/[+\-]?\d+/);
+                if (!m) return '-';
+                const v = parseInt(m[0], 10);
+                if (isNaN(v)) return '-';
+                return (m[0].startsWith('+') ? ('+' + Math.abs(v)) : String(v));
+            }
+            // Compacta el nombre para que quepa EXACTAMENTE en 'width' columnas monoespaciadas
+            function squeezeName(name, width) {
+                name = String(name || '');
 
-                        if (cargo > 0) {
-                            total += cargo;
-                            caidas++;
+                // Quita uno o varios prefijos numerados: "12. " o "12. 12. "
+                name = name.replace(/^(?:\s*\d+\s*\.\s*)+/, '');
+
+                // Normaliza espacios
+                name = name.replace(/\s+/g, ' ').trim();
+
+                if (name.length <= width) return name.padEnd(width, ' ');
+
+                const words = name.split(' ');
+                let out = '';
+
+                for (let i = 0; i < words.length; i++) {
+                    let w = words[i];
+                    if (out.length === 0) {
+                        if (w.length > width) {
+                            // La 1ª palabra sola ya no cabe: recórtala (mínimo 3)
+                            return w.slice(0, Math.max(3, width)).padEnd(width, ' ');
                         }
-
-                        const cls = isNaN(diff) ? 'text-muted' :
-                            diff < 0 ? 'text-danger fw-semibold' :
-                            diff > 0 ? 'text-success' :
-                            'text-secondary';
-
-                        const rowHtml = `
-          <tr>
-            <td class="text-center">${idx+1}</td>
-            <td>${escapeHtml(name)}</td>
-            <td class="text-center ${cls}">${isNaN(diff) ? '—' : (diff>0? '+'+diff : diff)}</td>
-            <td class="text-end">${t ? '$'+numberFmt(t) : '$0.00'}</td>
-            <td class="text-end">${cargo ? '$'+numberFmt(cargo) : '$0.00'}</td>
-          </tr>`;
-
-                        bodyHtmlAll += rowHtml;
-                        if (cargo > 0) bodyHtmlCaidas += rowHtml;
-                    });
-
-                    // Pinta el detalle en el modal (todas las paradas)
-                    document.getElementById('detSancionBody').innerHTML =
-                        bodyHtmlAll ||
-                        `<tr><td colspan="5" class="text-center text-muted">Sin datos</td></tr>`;
-                    document.getElementById('detSancionTotal').textContent = '$' + numberFmt(total);
-
-                    // Setea título del modal
-                    const modalEl = document.getElementById('modalSancion');
-                    modalEl.querySelector('.modal-title').textContent =
-                        `Detalle de sanción – ${placa}`;
-
-                    // === Guarda datos para impresión en data-attributes del modal ===
-                    const meta = document.getElementById('printMeta');
-                    modalEl.dataset.empresa = meta?.dataset.empresa || '';
-                    modalEl.dataset.fecha = meta?.dataset.fecha || '';
-                    modalEl.dataset.ruta = ruta;
-                    modalEl.dataset.placa = placa;
-                    modalEl.dataset.total = numberFmt(total);
-                    modalEl.dataset.caidas = caidas.toString();
-                    modalEl.dataset.rowsAll = bodyHtmlAll;
-                    modalEl.dataset.rowsCaidas = bodyHtmlCaidas; // solo caídas
-
-                    if (window.bootstrap) new bootstrap.Modal(modalEl).show();
-                });
-            });
-
-            // === Botón "Imprimir" ===
-            // === Botón "Imprimir" ===
-            const btnPrint = document.getElementById('btnPrintSancion');
-            if (btnPrint) {
-                btnPrint.addEventListener('click', function() {
-                    const modalEl = document.getElementById('modalSancion');
-                    if (!modalEl) return;
-
-                    const doPrint = () => {
-                        safetyCleanModalArtifacts(); // limpiar backdrop/clases por si acaso
-                        printSancion(modalEl); // abrir y mandar a imprimir
-                    };
-
-                    // Si está Bootstrap, espera a que el modal quede oculto (sin backdrop)
-                    if (window.bootstrap) {
-                        const inst = bootstrap.Modal.getInstance(modalEl);
-                        modalEl.addEventListener('hidden.bs.modal', function onHidden() {
-                            modalEl.removeEventListener('hidden.bs.modal', onHidden);
-                            doPrint();
-                        }, {
-                            once: true
-                        });
-                        inst?.hide();
+                        out = w;
+                        continue;
+                    }
+                    // +1 por el espacio a insertar
+                    if (out.length + 1 + w.length <= width) {
+                        out += ' ' + w;
                     } else {
-                        doPrint();
+                        const remain = width - out.length - 1; // lo que queda para la última palabra
+                        if (remain > 0) {
+                            out += ' ' + w.slice(0, Math.max(3, remain)); // corta a mínimo 3
+                        }
+                        return out.padEnd(width, ' ');
                     }
-                });
-            }
-
-
-            // Helpers ya existentes...
-            function safeJson(s) {
-                try {
-                    return JSON.parse(s || 'null');
-                } catch {
-                    return null;
                 }
+                // Si caben todas, rellena a la derecha
+                return out.slice(0, width).padEnd(width, ' ');
             }
 
-            function numberFmt(n) {
-                return (isNaN(n) ? 0 : n).toFixed(2);
-            }
 
-            function escapeHtml(s) {
-                return (s || '').replace(/[&<>"']/g, m => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                } [m]));
-            }
+            // Lee los datos del modal (los dejamos listos en tu JS)
+            function getModalData() {
+                const modal = document.getElementById('modalSancion');
+                const empresa = modal.dataset.empresa || '';
+                const fecha = modal.dataset.fecha || '';
+                const ruta = modal.dataset.ruta || '';
+                const placa = modal.dataset.placa || '';
+                const total = modal.dataset.total || '0.00';
+                const caidas = parseInt(modal.dataset.caidas || '0', 10) || 0;
 
-            function buildTarifaLookup(raw) {
-                const out = {};
-                if (!raw) return out;
-                if (typeof raw === 'object' && !Array.isArray(raw)) {
-                    Object.keys(raw).forEach(k => out[String(k)] = parseFloat(raw[k]) || 0);
-                    return out;
-                }
-                if (Array.isArray(raw)) {
-                    raw.forEach(x => {
-                        if (x && (x.id !== undefined)) out[String(x.id)] = parseFloat(x.t ?? x.valor ?? x
-                            .rate ?? 0) || 0;
+                // Reconstruimos las filas en formato compacto
+                const rows = [];
+                document.querySelectorAll('#detSancionBody tr').forEach((tr, i) => {
+                    const tds = tr.querySelectorAll('td');
+                    if (tds.length < 5) return;
+                    rows.push({
+                        idx: i + 1,
+                        n: (tds[1]?.textContent || '').trim(),
+                        dif: (tds[2]?.textContent || '').trim(),
+                        tarifa: parseFloat((tds[3]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
+                        cargo: parseFloat((tds[4]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
                     });
-                }
-                return out;
-            }
-
-            // === Generador de impresión ===
-            function safetyCleanModalArtifacts() {
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.removeProperty('padding-right');
-            }
-
-            function printSancion(modalEl) {
-                if (!modalEl) return;
-                const empresa = modalEl.dataset.empresa || '';
-                const fecha = modalEl.dataset.fecha || '';
-                const ruta = modalEl.dataset.ruta || '';
-                const placa = modalEl.dataset.placa || '';
-                const total = modalEl.dataset.total || '0.00';
-                const caidas = parseInt(modalEl.dataset.caidas || '0', 10);
-                // tomamos SIEMPRE todas las filas:
-                const rowsAll = modalEl.dataset.rowsAll || '';
-
-                const html = `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Sanción ${escapeHtml(placa)} - ${escapeHtml(fecha)}</title>
-  <style>
-    @page { size: A4; margin: 18mm 14mm; }
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; color:#0f172a; }
-    h1 { font-size: 18px; margin:0 0 8px; }
-    h2 { font-size: 15px; margin:14px 0 6px; }
-    .muted { color:#64748b; }
-    .badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:12px; }
-    .resume { margin:12px 0 16px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; }
-    .resume strong { font-size:18px; }
-    table { width:100%; border-collapse:collapse; }
-    th,td { border:1px solid #e2e8f0; padding:6px 8px; font-size:12px; }
-    thead th { background:#f8fafc; text-align:left; }
-    .text-end { text-align:right; }
-    .text-center { text-align:center; }
-    .small { font-size:11px; }
-    .foot { margin-top:18px; font-size:11px; color:#64748b; }
-  </style>
-</head>
-<body>
-  <h1>Reporte de sanción <span class="badge">${escapeHtml(empresa)}</span></h1>
-  <div class="small muted">Fecha: ${escapeHtml(fecha)} · Ruta: ${escapeHtml(ruta)} · Unidad: ${escapeHtml(placa)}</div>
-
-  <div class="resume">
-    <div><span class="muted">Geocercas con caída:</span> <strong>${caidas}</strong></div>
-    <div><span class="muted">Total a pagar:</span> <strong>$${total}</strong></div>
-  </div>
-
-  <h2>Detalle (todas las geocercas)</h2>
-  <table>
-    <thead>
-      <tr>
-        <th style="width:40px;" class="text-center">#</th>
-        <th>Geocerca</th>
-        <th style="width:70px;" class="text-center">Dif</th>
-        <th style="width:110px;" class="text-end">Tarifa</th>
-        <th style="width:110px;" class="text-end">Cargo</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${rowsAll}
-    </tbody>
-    <tfoot>
-      <tr>
-        <th colspan="4" class="text-end">Total</th>
-        <th class="text-end">$${total}</th>
-      </tr>
-    </tfoot>
-  </table>
-
-  <div class="foot">Generado automáticamente · ${new Date().toLocaleString()}</div>
-</body>
-</html>`;
-
-                const w = window.open('', '_blank');
-                if (!w) return;
-                w.document.open();
-                w.document.write(html);
-                w.document.close();
-                w.addEventListener('load', () => {
-                    w.focus();
-                    w.print();
                 });
-                w.onafterprint = () => { try { w.close(); } catch(e) {} };
 
+                return {
+                    empresa,
+                    fecha,
+                    ruta,
+                    placa,
+                    total,
+                    caidas,
+                    rows
+                };
             }
 
+            // Click “Imprimir ticket”
+            document.addEventListener('click', async (e) => {
+                if (!e.target.closest('#btnTicketSancion')) return;
+                try {
+                    await qzConnect();
+                    const printer = await getPrinter();
+                    const data = getModalData();
+                    const escpos = buildEscPosTicket(data);
 
-        });
+                    const cfg = qz.configs.create(printer, {
+                        encoding: 'iso-8859-1'
+                    }); // TM-U220 va bien con latin
+                    await qz.print(cfg, [escpos]);
+                } catch (err) {
+                    console.error(err);
+                    alert('No se pudo imprimir el ticket. Ver consola.');
+                }
+            });
+        })();
     </script>
 
     <style>
@@ -858,7 +710,269 @@
         .text-muted {
             color: #9aa0a6 !important;
         }
+
+        /* ===== Modal de sanción (mejora visual) ===== */
+        .sancion-modal .modal-header .display-6 {
+            line-height: 1;
+        }
+
+        .sancion-modal .modal-subheader {
+            border: 1px dashed rgba(0, 0, 0, .08);
+        }
+
+        .stat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .25rem .6rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: .78rem;
+            border: 1px solid transparent;
+        }
+
+        .chip-caidas {
+            background: #fde8e8;
+            color: #b42318;
+            border-color: #fac5c5;
+        }
+
+        .chip-adelanto {
+            background: #e8f7ee;
+            color: #0f7a3a;
+            border-color: #c6edd6;
+        }
+
+        .chip-atiempo {
+            background: #eef2ff;
+            color: #3730a3;
+            border-color: #d9e1ff;
+        }
+
+        .chip-renglones {
+            background: #f3f4f6;
+            color: #374151;
+            border-color: #e5e7eb;
+        }
+
+        .sancion-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .sancion-table td,
+        .sancion-table th {
+            padding: .5rem .6rem;
+        }
+
+        .sancion-table .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        }
+
+        .badge-dif {
+            display: inline-block;
+            min-width: 2.4rem;
+            text-align: center;
+            font-weight: 700;
+            padding: .15rem .35rem;
+            border-radius: .375rem;
+        }
+
+        .badge-dif.neg {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-dif.zero {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .badge-dif.pos {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .money {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Footer pegajoso suave en el modal */
+        .sticky-footer {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid rgba(0, 0, 0, .075);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, .03);
+        }
     </style>
+    <script>
+        (function() {
+            const $modal = document.getElementById('modalSancion');
+            const $body = document.getElementById('detSancionBody');
+
+            // Utilidades
+            const money = n => (parseFloat(n || 0)).toFixed(2);
+            const parseMoney = s => parseFloat(String(s || '').replace(/[^\d.-]/g, '') || 0);
+
+            function badgeDif(raw) {
+                const txt = String(raw || '').trim();
+
+                // Si viene sin dígitos y es solo un guion (o variantes), muéstralo como "-"
+                if (/^[\-–—]$/.test(txt)) {
+                    return `<span class="badge-dif zero">-</span>`;
+                }
+
+                const m = txt.match(/[+\-]?\d+/);
+                if (!m) {
+                    // Sin número: también renderiza "-" y trátalo visualmente como "a tiempo"
+                    return `<span class="badge-dif zero">-</span>`;
+                }
+
+                const v = parseInt(m[0], 10);
+                const cls = v < 0 ? 'neg' : v > 0 ? 'pos' : 'zero';
+                const label = v > 0 ? `+${v}` : String(v);
+                return `<span class="badge-dif ${cls}">${label}</span>`;
+            }
+
+
+            function refreshHeaderFromDataset(ds) {
+                // dataset viene de tu código que llena el modal antes de mostrarlo
+                document.getElementById('sm-fecha').textContent = ds.fecha || '—';
+                document.getElementById('sm-ruta').textContent = ds.ruta || '—';
+                document.getElementById('sm-placa').textContent = ds.placa || '—';
+            }
+
+            function recomputeCountersAndPaint() {
+                let caidas = 0,
+                    aTiempo = 0,
+                    adelanto = 0,
+                    total = 0,
+                    rows = 0;
+
+                // Re-pinta filas
+                $body.querySelectorAll('tr').forEach(tr => {
+                    const tds = tr.querySelectorAll('td');
+                    if (tds.length < 5) return;
+
+                    // Dif -> chip
+                    const difTd = tds[2];
+                    const difRaw = difTd.textContent.trim();
+                    difTd.innerHTML = badgeDif(difRaw);
+
+                    // Contadores
+                    const v = parseInt(String(difRaw || '').match(/[+-]?\d+/)?.[0] ?? '0', 10);
+                    if (!isNaN(v)) {
+                        if (v < 0) caidas++;
+                        else if (v > 0) adelanto++;
+                        else aTiempo++;
+                    }
+
+                    // Cargo -> formateo
+                    const cargoTd = tds[4];
+                    const cargo = parseMoney(cargoTd.textContent);
+                    total += cargo;
+                    cargoTd.innerHTML =
+                        `<span class="money ${cargo>0?'fw-semibold text-danger':''}">$${money(cargo)}</span>`;
+
+                    // Tarifa -> normaliza
+                    const tarifaTd = tds[3];
+                    const tarifa = parseMoney(tarifaTd.textContent);
+                    tarifaTd.innerHTML = `<span class="money">$${money(tarifa)}</span>`;
+
+                    rows++;
+                });
+
+                // Pinta contadores y total
+                document.getElementById('sm-caidas').textContent = caidas;
+                document.getElementById('sm-adelanto').textContent = adelanto;
+                document.getElementById('sm-atiempo').textContent = aTiempo;
+                document.getElementById('sm-rows').textContent = rows;
+                document.getElementById('sm-total').textContent = '$' + money(total);
+            }
+
+            // Cada vez que se muestra el modal, actualizamos header y pintamos filas
+            $modal.addEventListener('shown.bs.modal', () => {
+                const ds = Object.assign({}, $modal.dataset); // espera que tú seteas data-* en el modal
+                refreshHeaderFromDataset(ds);
+                recomputeCountersAndPaint();
+            });
+        })();
+
+
+
+        // ------------- Filtro por placa -------------
+        const $filtroPlaca = document.getElementById("filtroPlaca");
+        const $btnLimpiarFiltro = document.getElementById("btnLimpiarFiltro");
+
+        function getActiveTable() {
+            const activePane = document.querySelector(".route-table:not(.d-none)");
+            if (!activePane) return null;
+            return activePane.querySelector("table.table-compact");
+        }
+
+        function normaliza(s) {
+            return String(s || "")
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // sin tildes
+                .toUpperCase();
+        }
+
+        // Permite múltiples términos, todos deben aparecer (AND)
+        function coincidePlaca(textoPlaca, query) {
+            const base = normaliza(textoPlaca);
+            const terms = normaliza(query).split(/\s+/).filter(Boolean);
+            for (const t of terms) {
+                if (!base.includes(t)) return false;
+            }
+            return true;
+        }
+
+        function aplicarFiltroPlaca(q) {
+            const table = getActiveTable();
+            if (!table) return;
+
+            let visibles = 0;
+            const rows = table.querySelectorAll("tbody tr");
+            rows.forEach(tr => {
+                const placaCell = tr.querySelector(".sticky-placa"); // toma TODO (código + paréntesis)
+                const textoPlaca = placaCell ? placaCell.innerText.replace(/\s+/g, " ").trim() : "";
+                const show = !q || coincidePlaca(textoPlaca, q);
+                tr.style.display = show ? "" : "none";
+                if (show) visibles++;
+            });
+
+            // (Opcional) mensaje si no hay resultados
+            let msg = table._noResEl;
+            if (!msg) {
+                msg = document.createElement("div");
+                msg.className = "alert alert-info py-1 px-2 small mt-2";
+                msg.textContent = "No hay coincidencias para la placa buscada.";
+                msg.style.display = "none";
+                table.parentElement.appendChild(msg);
+                table._noResEl = msg;
+            }
+            msg.style.display = (visibles === 0) ? "" : "none";
+        }
+
+        // Eventos
+        if ($filtroPlaca) {
+            $filtroPlaca.addEventListener("input", (e) => aplicarFiltroPlaca(e.target.value));
+        }
+        if ($btnLimpiarFiltro) {
+            $btnLimpiarFiltro.addEventListener("click", () => {
+                $filtroPlaca.value = "";
+                aplicarFiltroPlaca("");
+                $filtroPlaca.focus();
+            });
+        }
+
+        // Reaplicar filtro al cambiar de pestaña (rutas)
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".route-btn")) return;
+            // da un pequeño tiempo a que se muestre la tabla
+            setTimeout(() => aplicarFiltroPlaca($filtroPlaca?.value || ""), 0);
+        });
+    </script>
+
 
 @endsection
 

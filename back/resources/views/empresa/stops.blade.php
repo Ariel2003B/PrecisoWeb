@@ -26,10 +26,6 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                <div class="mb-2">
-                    <span class="badge bg-secondary">Depot: {{ $empresa->DEPOT }}</span>
-                    <span class="badge bg-dark">API base: {{ $base }}</span>
-                </div>
 
                 <form method="POST" action="{{ route('empresa.stops.save', $empresa->EMP_ID) }}">
                     @csrf

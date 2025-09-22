@@ -97,7 +97,7 @@ class EmpresaController extends Controller
         }
 
         // Puedes sobreescribir la base por query ?base=http://... si quieres
-        $base = rtrim($request->query('base', 'http://159.203.177.210:5000'), '/');
+        $base = rtrim($request->query('base', 'http://159.203.177.210:443'), '/');
         $api = $base . '/api/stops/stops';
 
         // Llamado a tu API .NET

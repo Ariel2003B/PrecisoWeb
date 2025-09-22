@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\GeoStop;
 use Illuminate\Http\Request;
 use App\Models\Unidad;
 
@@ -171,7 +172,7 @@ class ApiNimbusAppController extends Controller
         return strtoupper(str_replace(' ', '', $s));
     }
 
-    public function getValorGeocerca(Request $request)
+    public function getValorGeocercaTest(Request $request)
     {
         $data = $request->validate([
             'idWialon' => 'required'
@@ -191,6 +192,40 @@ class ApiNimbusAppController extends Controller
 
         // "Solo ese dato": un número JSON (no un objeto envoltorio)
         return response()->json($valor);
+    }
+
+
+    public function getValorGeocerca(Request $request)
+    {
+        $data = $request->validate([
+            'idWialon' => 'required'
+        ]);
+
+        // 1) Ubicar la EMPRESA a partir de la unidad (igual que antes)
+        $empId = Unidad::query()
+            ->join('USUARIO as u', 'unidades.usu_id', '=', 'u.USU_ID')
+            ->join('EMPRESA as e', 'u.EMP_ID', '=', 'e.EMP_ID')
+            ->where('unidades.idWialon', $data['idWialon'])
+            ->value('e.EMP_ID');
+
+        if ($empId === null) {
+            // No existe la unidad/empresa para ese idWialon
+            return response()->json(null, 404);
+        }
+
+        // 2) Traer las geocercas (stops) activas de esa empresa: NIMBUS_ID y VALOR_MINUTO
+        $rows = GeoStop::deEmpresa((int) $empId)
+            ->activas()
+            ->get(['NIMBUS_ID', 'VALOR_MINUTO']);
+
+        // 3) Formato de salida: lista de objetos { nimbusId, valorMinuto }
+        $tarifas = $rows->map(fn($r) => [
+            'paradaId' => (int) $r->NIMBUS_ID,
+            'valorMinuto' => (float) $r->VALOR_MINUTO,
+        ])->values();
+
+        // Si no hay registros, devolvemos lista vacía con 200
+        return response()->json($tarifas);
     }
 
 }
