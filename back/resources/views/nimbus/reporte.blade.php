@@ -284,7 +284,7 @@
                     </div>
                     <div class="d-flex gap-2">
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button class="btn btn-primary" id="btnPrintSancion">Imprimir</button>
+                        <button class="btn btn-primary" id="btnPrintSancion">Imprimir A4</button>
                         <button class="btn btn-outline-primary" id="btnTicketSancion">Imprimir ticket</button>
                     </div>
                 </div>
@@ -299,7 +299,7 @@
     <script>
         (function() {
             // ======= Configura aquí el nombre EXACTO de la impresora =======
-            const PRINTER_NAME = 'TICKETS'; // cámbialo por el nombre que ves en Windows
+            const PRINTER_NAME = 'PRUEBA2'; // cámbialo por el nombre que ves en Windows
 
             // Firmas mínimas (modo sin certificados propios)
             qz.security.setCertificatePromise(function(resolve, reject) {
