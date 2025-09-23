@@ -303,7 +303,43 @@
 
             // Firmas mínimas (modo sin certificados propios)
             qz.security.setCertificatePromise(function(resolve, reject) {
-                resolve("-----BEGIN CERTIFICATE-----\nMIIB...TU_CERT...\n-----END CERTIFICATE-----");
+                resolve(`-----BEGIN CERTIFICATE-----
+MIIGfzCCBGegAwIBAgIRAKMjXP589Pf1XIuKZdMbGyswDQYJKoZIhvcNAQEMBQAw
+SzELMAkGA1UEBhMCQVQxEDAOBgNVBAoTB1plcm9TU0wxKjAoBgNVBAMTIVplcm9T
+U0wgUlNBIERvbWFpbiBTZWN1cmUgU2l0ZSBDQTAeFw0yNTA3MDIwMDAwMDBaFw0y
+NTA5MzAyMzU5NTlaMBkxFzAVBgNVBAMTDnByZWNpc29ncHMuY29tMIIBIjANBgkq
+hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo6fJ3oPFBjRE25KpS+oOlofUBuE6xiSw
+S2UX7bBDIx2teJYwjnb3vC77nM925qDn12ReQg7qTrn//9A0ogYUgmJpjBHBN75c
+WkOxGvl60F5IMfQZEsbzNrMykYmoUP6m1gNNYZgRqGq0SQTwFCRLNEGeizRAuhIR
+JRdeTnQ/F/CbX3R4NTDX01g3KpsA01+lSTHAoS/bvBW+6qE8liCPkzoMocAwHTze
+bRyG47aIWjFBfBki4iIMpO9ccTSbczEfJuXRcEGf4WUVU0gER/I3rho8ZxApaSV9
+xbkzhvBv7n7WlYsLAHq3EereOzEsKS39GUhzfdtGFElOplnoFLdeNQIDAQABo4IC
+jjCCAoowHwYDVR0jBBgwFoAUyNl4aKLZGWjVPXLeXwo+3LWGhqYwHQYDVR0OBBYE
+FGKsmv3MqNwaUJD6qF+p9k61Sv/HMA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8E
+AjAAMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBJBgNVHSAEQjBAMDQG
+CysGAQQBsjEBAgJOMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20v
+Q1BTMAgGBmeBDAECATCBiAYIKwYBBQUHAQEEfDB6MEsGCCsGAQUFBzAChj9odHRw
+Oi8vemVyb3NzbC5jcnQuc2VjdGlnby5jb20vWmVyb1NTTFJTQURvbWFpblNlY3Vy
+ZVNpdGVDQS5jcnQwKwYIKwYBBQUHMAGGH2h0dHA6Ly96ZXJvc3NsLm9jc3Auc2Vj
+dGlnby5jb20wggEEBgorBgEEAdZ5AgQCBIH1BIHyAPAAdgDd3Mo0ldfhFgXnlTL6
+x5/4PRxQ39sAOhQSdgosrLvIKgAAAZfJQJeqAAAEAwBHMEUCIQDAgC2T6Yxl/A9Q
+tWNWiDBCPKPpcMNYEO5jMCGs8D33iQIgebAaRjkGlaaAdErKsRmileB9+JP6krLK
+ONDawiqec2kAdgAN4fIwK9MNwUBiEgnqVS78R3R8sdfpMO8OQh60fk6qNAAAAZfJ
+QJdpAAAEAwBHMEUCIHaaxnSXfCatdHMBi3Xtl6po+Ic1HWlp3tUqlGHxq5a0AiEA
+k8dq/ft72Sx1ibtwUMGvd4gv/NCKeA1c9i9Nmiw3qRIwLQYDVR0RBCYwJIIOcHJl
+Y2lzb2dwcy5jb22CEnd3dy5wcmVjaXNvZ3BzLmNvbTANBgkqhkiG9w0BAQwFAAOC
+AgEAJ6ITQ9vgygApembokSKAToi9mnWT6aPNqiCEM5gfmTRiZPNNKHW+cp3IbMRl
+GPdGnjc7LOmFGM6/opdpsOQr6CbzoRVc0cm3kbhxJkS1YHnETS/tZqzyMF6L/VHr
+oSbhPSW31WNVX/hFpzU3btZGqO9F7VwQdMs+aGRUpZ5M7ZlsNfVuoCMWFFulaYa1
+OnTUSI3wukMN2fzALQonv0diinPtzObDoYYHGvgYzGlGYAnlkp6eWxCmkoBmrzHp
+RODZEdcWxJHRaulqICPqfzaR23MoxtT8kzNuQ7qsd9jJx3RDiOK8HMoym8N+sH8Z
+QI0ukjY0qnI5xv+01gFoTjeo15KEJGMh7pbgZKde7k410MacC3F/wosprRuFcrqw
+3IYD82jZ17MLmkTKZVWyEMmJhsymWwQPODMXkIK9AwohfIkgCAb1EJJQAdQ+ZW1s
+jTVS2zNv2UP6de3Hch0ZFmf3AYRIGnHlqZtq7TN7JEV1Qw71hWdjJn1EdDCPeKdG
+PvTcuBlN4LnaL1S87ZfCoWncT3pJ4bJTLHuxFKia/GIpXBaf259srb/XOA/vWLSu
+ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
+4xaTDc8Ceceu2kJwLGbXYlQB+6q+XmdxRbR/vGca6IOUFjM=
+-----END CERTIFICATE-----`);
             });
             qz.security.setSignaturePromise(function(toSign) {
                 return function(resolve, reject) {
@@ -334,6 +370,7 @@
             }
 
 
+
             // Helper: busca la impresora
             async function getPrinter() {
                 const list = await qz.printers.find(PRINTER_NAME);
@@ -361,23 +398,35 @@
                 const fontB = ESC + 'M' + '\x01'; // angosto
                 const normal = ESC + '!' + '\x00';
                 const hr = (w = 33) => '-'.repeat(w) + '\n';
-
-                // Alimentar n líneas
                 const feed = (n) => ESC + 'd' + String.fromCharCode(n & 0xFF);
-                // Corte recomendado para Epson: GS V 66 0 (full cut) — si no hay cortador se ignora
                 const cut = GS + 'V' + '\x42' + '\x00';
 
-                // Layout de columnas (42 col): " 2idx + 1sp + 22name + 1sp + 3dif + 1sp + 5tar + 1sp + 7cargo = 43?
-                // Ajustamos a EXACTO 42: 2 + 1 + 21 + 1 + 3 + 1 + 5 + 1 + 7 = 42
                 const NAME_W = 15;
 
                 function lineItem(idx, name, dif, cargo) {
-                    const nm = fitNameOneLine(name, NAME_W); // 26 cols para nombre
-                    const dff = fmtDiff(dif).padStart(3, ' '); // 3 cols para Dif
-                    const cStr = money(cargo).replace('$', '').padStart(8, ' '); // 8 cols para Cargo
-                    // 2(idx) + 1 + 26(name) + 1 + 3(dif) + 1 + 8(cargo) = 42 columnas exactas
+                    const nm = fitNameOneLine(name, NAME_W);
+                    const dff = fmtDiff(dif).padStart(3, ' ');
+                    const cStr = money(cargo).replace('$', '').padStart(8, ' ');
                     return `${String(idx).padStart(2,' ')} ${nm} ${dff} ${cStr}\n`;
                 }
+
+                // ===== NUEVO: sumar y detectar +70 =====
+                let sumPos = 0,
+                    sumNeg = 0,
+                    hasPlus70 = false;
+                (rows || []).forEach(r => {
+                    const m = String(r?.dif ?? '').match(/[+\-]?\d+/);
+                    if (!m) return;
+                    const v = parseInt(m[0], 10);
+                    if (isNaN(v)) return;
+                    if (v > 0) {
+                        sumPos += v;
+                    } else if (v < 0) {
+                        sumNeg += -v;
+                    }
+                    if (v >= 70) hasPlus70 = true; // ← aquí marcamos la alerta
+                });
+                // =======================================
 
                 let out = init + fontB + normal;
                 out += align(1) + boldOn + (empresa || 'EMPRESA') + '\n' + boldOff;
@@ -388,28 +437,32 @@
                 out += `Placa: ${placa || '--'}\n`;
                 out += hr();
 
-                // Cuerpo compacto (condensed ON)
+                // Cuerpo
                 out += SI;
                 out += ` # ${'Geocerca'.padEnd(NAME_W,' ')} ${'Dif'.padStart(3,' ')} ${'Cargo'.padStart(8,' ')}\n`;
-
                 out += hr();
-
                 (rows || []).forEach(r => {
                     out += lineItem(r.idx, r.n || '', r.dif, r.cargo);
                 });
-
-
-                // condensed OFF
                 out += DC2;
                 out += hr();
 
-                // Resumen (alineado a la derecha)
+                // ===== NUEVO: mostrar Adelantos/Atrasos antes del TOTAL =====
+                out += align(2) + `Adelantos: ${sumPos}\n`;
+                out += align(2) + `Atrasos : ${sumNeg}\n`;
+                // ============================================================
+
                 out += align(2) + `Geocercas con caida: ${caidas || 0}\n`;
                 out += boldOn + align(2) + `TOTAL: $${money(total)}\n` + boldOff;
-
-                // Alimenta un poco y CORTA DESPUÉS DEL TOTAL
+                // ===== NUEVO: mensaje de alerta si hubo +70 =====
+                if (hasPlus70) {
+                    out += '\n' + align(1) + boldOn + 'ALERTA\n' + boldOff;
+                    out += align(1) + 'Puede que la unidad haya\n';
+                    out += align(1) + 'cerrado la vuelta antes de\n';
+                    out += align(1) + 'iniciarla.\n';
+                }
+                // ================================================
                 out += feed(1) + cut;
-
                 return out;
             }
 
