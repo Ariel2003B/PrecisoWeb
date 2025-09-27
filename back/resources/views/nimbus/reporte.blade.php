@@ -43,7 +43,7 @@
 
     <main class="main">
         <div class="page-title accent-background">
-            <div class="container d-lg-flex justify-content-between align-items-center">
+            <div class="container d-lg-flex justify-content-between align-items-center px-2 px-md-3">
                 <h1 class="mb-2 mb-lg-0">Minutos Caídos</h1>
                 <nav class="breadcrumbs">
                     <ol>
@@ -58,7 +58,7 @@
         <section class="section">
             <div id="printMeta" data-empresa="{{ $empresa->NOMBRE }}" data-fecha="{{ $fecha }}"></div>
 
-            <div class="container">
+            <div class="container-fluid px-2 px-md-3">
                 {{-- Filtros rápidos --}}
                 <form class="row g-2 align-items-end mb-3" method="GET" action="{{ url('/nimbus/reporte-dia-all') }}">
                     <div class="col-auto">
@@ -101,7 +101,7 @@
                 @else
                     <div class="row">
                         {{-- Sidebar de rutas --}}
-                        <div class="col-12 col-md-3 col-lg-2 mb-3">
+                        {{-- <div class="col-12 col-md-3 col-lg-2 mb-3">
                             <div class="list-group" id="rutasList">
                                 @foreach ($rutas as $i => $ruta)
                                     <button type="button"
@@ -112,112 +112,157 @@
                                     </button>
                                 @endforeach
                             </div>
+                        </div> --}}
+
+
+                        <div class="routes-toolbar mb-2">
+                            <div class="route-scroll nav nav-pills gap-2 flex-nowrap overflow-auto" id="rutasList"
+                                style="white-space:nowrap">
+                                @foreach ($rutas as $i => $ruta)
+                                    <button type="button"
+                                        class="route-btn btn btn-primary btn-sm @if ($i === 0) active @endif"
+                                        {{-- @if ($i === 0) style="background-color: #005298" @endif --}} data-target="#route-{{ $ruta['idRoute'] }}">
+                                        {{ $ruta['nombre'] ?? 'Ruta ' . $ruta['idRoute'] }}
+                                        <span class="badge bg-secondary ms-1">{{ count($ruta['data'] ?? []) }}</span>
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
 
+
                         {{-- Contenido de cada ruta --}}
-                        <div class="col-12 col-md-9 col-lg-10">
+                        <div class="tables-wrap">
                             @foreach ($rutas as $i => $ruta)
                                 @php
                                     $stops = $ruta['stops'] ?? [];
                                     $vueltas = $ruta['data'] ?? [];
-
-                                    // las tarifas ya vienen del controlador
-                                    $tarifasRoute = (array) ($ruta['tarifas'] ?? []);
-                                    // JSON seguro: llaves string => número
-                                    $tarifasJson = json_encode($tarifasRoute, JSON_UNESCAPED_UNICODE);
                                 @endphp
 
                                 <div class="route-table @if ($i !== 0) d-none @endif"
                                     id="route-{{ $ruta['idRoute'] }}">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <h5 class="mb-0 me-2">{{ $ruta['nombre'] ?? 'Ruta ' . $ruta['idRoute'] }}</h5>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <h6 class="mb-0 me-2 fw-semibold">
+                                            {{ $ruta['nombre'] ?? 'Ruta ' . $ruta['idRoute'] }}</h6>
                                         <span class="text-muted small">({{ count($vueltas) }} vueltas)</span>
                                     </div>
-                                    {{-- @php
-                                        // Si el controlador no envió tarifas, las armamos aquí:
-                                        $tarifasRoute =
-                                            $ruta['tarifas'] ??
-                                            \App\Models\GeoStop::mapaTarifas(
-                                                $empresa->EMP_ID,
-                                                array_map(fn($s) => (int) ($s['id'] ?? 0), $stops),
-                                            );
-                                    @endphp --}}
-                                    <div class="table-responsive">
-                                        <table
-                                            class="table table-sm table-striped table-bordered align-middle table-compact"
-                                            id="tabla-{{ $ruta['idRoute'] }}" data-stops='@json($stops, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)'
-                                            data-tarifas='@json(
-                                                $ruta['tarifas'] ?? new \stdClass(),
-                                                JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)'>
 
-                                            <thead class="table-light align-middle"
-                                                style="position: sticky; top: 0; z-index: 10;">
-                                                <tr>
-                                                    <th class="col-index sticky-col sticky-index text-center">#</th>
-                                                    <th class="col-placa sticky-col sticky-placa">PLACA</th>
-                                                    <th class="col-rutina sticky-col sticky-rutina">RUTINA</th>
-                                                    <th class="col-sancion sticky-col sticky-sancion text-end">Sanción (USD)
-                                                    </th>
+                                    <div class="table-wrap">
+                                        <div class="table-responsive table-scroller">
+                                            <table
+                                                class="table table-sm table-striped table-bordered align-middle table-compact row-hover"
+                                                id="tabla-{{ $ruta['idRoute'] }}" data-stops='@json($stops, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)'
+                                                data-tarifas='@json(
+                                                    $ruta['tarifas'] ?? new \stdClass(),
+                                                    JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS)'>
 
-                                                    @foreach ($stops as $s)
-                                                        @php $full = $s['n'] ?? 'Parada'; @endphp
-                                                        <th class="text-center" colspan="3" title="{{ $full }}">
-                                                            <span class="stop-title">{{ $full }}</span>
-                                                        </th>
-                                                    @endforeach
-                                                </tr>
-                                                <tr>
-                                                    <th class="sticky-col sticky-index"></th>
-                                                    <th class="sticky-col sticky-placa"></th>
-                                                    <th class="sticky-col sticky-rutina"></th>
-                                                    <th class="sticky-col sticky-sancion"></th>
-                                                    @foreach ($stops as $s)
-                                                        <th class="text-center col-plan">Plan.</th>
-                                                        <th class="text-center col-eje">Eje.</th>
-                                                        <th class="text-center col-dif">Dif</th>
-                                                    @endforeach
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($vueltas as $idx => $v)
-                                                    @php
-                                                        [$placaCode, $extra] = placa($v['nombreUnidad'] ?? '');
-                                                        $plan = $v['horaProgramada'] ?? [];
-                                                        $ejec = $v['horaEjecutada'] ?? [];
-                                                        $dif = $v['diferencia'] ?? [];
-                                                    @endphp
+
+                                                <thead class="table-light align-middle sticky-top">
                                                     <tr>
-                                                        <td class="sticky-col sticky-index text-center">{{ $idx + 1 }}
-                                                        </td>
-                                                        <td class="sticky-col sticky-placa">
-                                                            <div class="fw-semibold text-nowrap">{{ $placaCode }}</div>
-                                                            <div class="text-muted small">{{ $extra }}</div>
-                                                        </td>
-                                                        <td class="sticky-col sticky-rutina text-nowrap">
-                                                            {{ rutinaFrom($plan) }}
-                                                        </td>
-                                                        <td class="sticky-col sticky-sancion text-end">
-                                                            <span class="sancion-amount" data-total="0.00">$0.00</span>
-                                                            <button type="button"
-                                                                class="btn btn-link btn-sm p-0 ms-2 ver-sancion">Ver</button>
-                                                        </td>
-                                                        @for ($j = 0; $j < count($stops); $j++)
-                                                            <td class="text-center col-plan text-nowrap">
-                                                                {{ $plan[$j] ?? '--:--' }}</td>
-                                                            <td class="text-center col-eje text-nowrap">
-                                                                {{ $ejec[$j] ?? '--:--' }}
-                                                            </td>
-                                                            @php $d = $dif[$j] ?? null; @endphp
-                                                            <td class="text-center col-dif {{ difClass($d) }}">
-                                                                {{ $d === null ? '—' : ($d > 0 ? '+' : '') . $d }}
-                                                            </td>
-                                                        @endfor
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                        <th class="col-index sticky-col sticky-index text-center">#</th>
+                                                        <th class="col-placa sticky-col sticky-placa">PLACA</th>
+                                                        <th class="col-rutina sticky-col sticky-rutina">RUTINA</th>
 
+                                                        @foreach ($stops as $s)
+                                                            @php $full = $s['n'] ?? 'Parada'; @endphp
+                                                            <th class="text-center" colspan="3"
+                                                                title="{{ $full }}">
+                                                                <span class="stop-title">{{ $full }}</span>
+                                                            </th>
+                                                        @endforeach
+
+                                                        {{-- NUEVO: columnas finales --}}
+                                                        <th class="col-adelantos text-center">Total adelantos</th>
+                                                        <th class="col-atrasos text-center">Total atrasos</th>
+                                                        <th class="col-sancion text-end">Sanción (USD)</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="sticky-col sticky-index"></th>
+                                                        <th class="sticky-col sticky-placa"></th>
+                                                        <th class="sticky-col sticky-rutina"></th>
+
+                                                        @foreach ($stops as $s)
+                                                            <th class="text-center col-plan">Plan.</th>
+                                                            <th class="text-center col-eje">Eje.</th>
+                                                            <th class="text-center col-dif">Dif</th>
+                                                        @endforeach
+
+                                                        {{-- Huecos de las 3 columnas finales --}}
+                                                        <th class="text-center col-adelantos"></th>
+                                                        <th class="text-center col-atrasos"></th>
+                                                        <th class="text-end col-sancion"></th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @foreach ($vueltas as $idx => $v)
+                                                        @php
+                                                            [$placaCode, $extra] = placa($v['nombreUnidad'] ?? '');
+                                                            $plan = $v['horaProgramada'] ?? [];
+                                                            $ejec = $v['horaEjecutada'] ?? [];
+                                                            $dif = $v['diferencia'] ?? [];
+
+                                                            // Totales por fila
+                                                            $adelantos = 0; // suma de positivos
+                                                            $atrasos = 0; // suma de negativos (en positivo)
+                                                            foreach ($dif as $dv) {
+                                                                if ($dv === null || $dv === '') {
+                                                                    continue;
+                                                                }
+                                                                $n = (int) $dv;
+                                                                if ($n > 0) {
+                                                                    $adelantos += $n;
+                                                                } elseif ($n < 0) {
+                                                                    $atrasos += -$n;
+                                                                }
+                                                            }
+                                                        @endphp
+
+                                                        <tr>
+                                                            <td class="sticky-col sticky-index text-center">
+                                                                {{ $idx + 1 }}</td>
+
+                                                            <td class="sticky-col sticky-placa"
+                                                                title="{{ trim($v['nombreUnidad'] ?? '') }}"
+                                                                data-search="{{ trim(($placaCode ?? '') . ' ' . ($extra ?? '')) }}">
+                                                                <div class="text-muted small text-nowrap">
+                                                                    {{ $extra }}</div>
+                                                            </td>
+
+                                                            <td class="sticky-col sticky-rutina text-nowrap">
+                                                                {{ rutinaFrom($plan) }}</td>
+
+                                                            @for ($j = 0; $j < count($stops); $j++)
+                                                                <td class="text-center col-plan text-nowrap">
+                                                                    {{ $plan[$j] ?? '--:--' }}</td>
+                                                                <td class="text-center col-eje  text-nowrap">
+                                                                    {{ $ejec[$j] ?? '--:--' }}</td>
+                                                                @php $d = $dif[$j] ?? null; @endphp
+                                                                <td class="text-center col-dif {{ difClass($d) }}">
+                                                                    {{ $d === null ? '—' : ($d > 0 ? '+' : '') . $d }}
+                                                                </td>
+                                                            @endfor
+
+                                                            {{-- NUEVO: totales --}}
+                                                            <td class="text-center col-adelantos text-success fw-semibold">
+                                                                +{{ $adelantos }}</td>
+                                                            <td class="text-center col-atrasos   text-danger  fw-semibold">
+                                                                {{ $atrasos }}</td>
+
+                                                            {{-- Sanción al final, clickeable y pegada a la derecha --}}
+                                                            <td class="text-end col-sancion">
+                                                                <a href="javascript:void(0)"
+                                                                    class="sancion-amount sancion-link ver-sancion"
+                                                                    data-total="0.00" title="Ver detalle de sanción">
+                                                                    $0.00
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                </tbody>
+                                            </table>
+                                        </div> {{-- .table-scroller --}}
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -609,15 +654,122 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
     <style>
         /* ===== Tamaños más compactos ===== */
+        /* === Compactar aún más entre PLACA y RUTINA === */
         :root {
-            --w-index: 36px;
-            --w-placa: 140px;
-            --w-rutina: 120px;
-            --w-plan: 54px;
-            --w-eje: 54px;
-            --w-dif: 36px;
-            --w-sancion: 120px;
+            --w-index: 28px;
+            /* antes 30/36 */
+            --w-placa: 92px;
+            /* antes 128/140 */
+            --w-rutina: 98px;
+            /* antes 108/120 */
+            --w-sancion: 100px;
+            /* opcional bajar un poco */
+            --w-plan: 46px;
+            --w-eje: 46px;
+            --w-dif: 30px;
+            --w-mins: 54px;
+            /* ancho columna Min. */
+            --w-sancion: 92px;
+            /* ancho columna Sanción al final */
+        }
 
+        /* Nuevas columnas finales */
+        .col-adelantos {
+            min-width: var(--w-adelantos);
+            width: var(--w-adelantos);
+        }
+
+        .col-atrasos {
+            min-width: var(--w-atrasos);
+            width: var(--w-atrasos);
+        }
+
+        /* Sanción bien a la derecha y sin espacio extra */
+        .col-sancion {
+            min-width: var(--w-sancion);
+            width: var(--w-sancion);
+            padding-right: .2rem !important;
+        }
+
+        .col-sancion a.sancion-link {
+            display: inline-block;
+            min-width: 0;
+            text-decoration: underline;
+        }
+
+        /* Monospace para números de totales (opcional) */
+        .col-adelantos,
+        .col-atrasos {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* (si aún la ves muy a la izquierda, asegúrate de NO usar sticky en sanción) */
+        .sticky-sancion {
+            left: auto;
+            box-shadow: none;
+        }
+
+        /* Nuevas columnas del final */
+        .col-mins {
+            min-width: var(--w-mins);
+            width: var(--w-mins);
+        }
+
+        .col-sancion {
+            min-width: var(--w-sancion);
+            width: var(--w-sancion);
+        }
+
+        /* La sanción YA NO es sticky a la izquierda */
+        .sticky-sancion {
+            left: auto;
+            box-shadow: none;
+        }
+
+        /* que se note que el monto es clickeable */
+        a.sancion-amount {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* quitar “aire” a los lados de esas dos celdas fijas */
+        .table-compact td.sticky-placa,
+        .table-compact th.sticky-placa {
+            padding-right: .10rem !important;
+        }
+
+        .table-compact td.sticky-rutina,
+        .table-compact th.sticky-rutina {
+            padding-left: .10rem !important;
+        }
+
+        /* texto del paréntesis más pequeño y apretado */
+        .sticky-placa .small {
+            font-size: .66rem;
+            line-height: 1.0;
+        }
+
+        /* recalcular lefts (ya usan vars) y sombras sutiles */
+        .sticky-index {
+            left: 0;
+        }
+
+        .sticky-placa {
+            left: var(--w-index);
+        }
+
+        .sticky-rutina {
+            left: calc(var(--w-index) + var(--w-placa));
+        }
+
+        .sticky-sancion {
+            left: calc(var(--w-index) + var(--w-placa) + var(--w-rutina));
+        }
+
+        /* encabezado más fino aún (opcional) */
+        thead.table-light th {
+            font-size: .64rem;
         }
 
         .table-compact {
@@ -814,7 +966,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
         .chip-atiempo {
             background: #eef2ff;
-            color: #3730a3;
+            color: #005298;
             border-color: #d9e1ff;
         }
 
@@ -872,6 +1024,175 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             background: #fff;
             border-top: 1px solid rgba(0, 0, 0, .075);
             box-shadow: 0 -4px 12px rgba(0, 0, 0, .03);
+        }
+
+        /* ===== Layout más ancho y compacto ===== */
+        .routes-toolbar {
+            position: sticky;
+            top: 64px;
+            /* si tu navbar mide distinto, ajusta */
+            z-index: 20;
+            background: #fff;
+            padding: .25rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+        }
+
+        .route-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .route-scroll::-webkit-scrollbar-thumb {
+            background: #d0d5dd;
+            border-radius: 8px;
+        }
+
+        .route-btn {
+            white-space: nowrap;
+        }
+
+        .route-btn.active {
+            color: #fff !important;
+        }
+
+        /* Ocupa casi todo el alto de la ventana para scrollear dentro de la tabla */
+        .tables-wrap {
+            /* 100vh menos: header página (~56) + toolbar rutas (~44) + margenes */
+            max-height: calc(100vh - 120px);
+            overflow: hidden;
+        }
+
+        .table-wrap {
+            height: 100%;
+        }
+
+        .table-scroller {
+            height: calc(100% - 28px);
+            /* deja visible el título de la ruta */
+            overflow: auto;
+            position: relative;
+            isolation: isolate;
+            /* ← clave para crear un stacking context propio */
+            z-index: 0;
+
+        }
+
+        /* ===== Aún más compacto en la tabla ===== */
+
+
+        .table-compact {
+            font-size: .68rem;
+            /* antes .74 */
+            line-height: 1.02;
+        }
+
+        .table-compact th,
+        .table-compact td {
+            padding: .12rem .18rem !important;
+            /* antes .18/.25 */
+        }
+
+        /* Todos los <th> del thead pegajosos y con z alto */
+        .table-compact thead th {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            /* > que cualquier td */
+            background: #fff;
+            /* evita que “transparente” deje ver el body */
+            box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+            /* línea sutil bajo el header */
+        }
+
+        /* Las columnas fijas del thead aún más arriba que las fijas del body */
+        .table-compact thead th.sticky-col {
+            z-index: 60;
+        }
+
+        /* Asegura que las columnas fijas del body queden por debajo del header */
+        .table-compact tbody .sticky-col {
+            z-index: 20;
+        }
+
+        /* (opcional) segunda fila del thead también con la misma altura */
+        .table-compact thead.table-light th {
+            top: 0;
+        }
+
+        /* ya tenías sticky-top */
+        /* títulos de paradas aún más compactos */
+        .stop-title {
+            max-width: 160px;
+            -webkit-line-clamp: 2;
+        }
+
+        /* Pegajosas más delgadas y con sombra sutil */
+        .sticky-col {
+            background: #fff !important;
+            color: #111 !important;
+        }
+
+        .sticky-index {
+            left: 0;
+            box-shadow: 2px 0 0 rgba(0, 0, 0, .03);
+        }
+
+        .sticky-placa {
+            left: var(--w-index);
+            box-shadow: 2px 0 0 rgba(0, 0, 0, .03);
+        }
+
+        .sticky-rutina {
+            left: calc(var(--w-index) + var(--w-placa));
+            box-shadow: 2px 0 0 rgba(0, 0, 0, .03);
+        }
+
+        .sticky-sancion {
+            left: calc(var(--w-index) + var(--w-placa) + var(--w-rutina));
+            box-shadow: 2px 0 0 rgba(0, 0, 0, .04);
+        }
+
+        /* Tipografía monospace y mejor alineación numérica */
+        .table-compact .col-plan,
+        .table-compact .col-eje,
+        .table-compact .col-dif,
+        .sancion-table .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: .1px;
+        }
+
+        /* Encabezado ultra fino */
+        thead.table-light th {
+            font-size: .66rem;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Botón "Ver" mini */
+
+
+        /* Hover de fila completo (incluye sticky left y right) */
+        .row-hover tbody tr:hover>* {
+            background: #93bdf5 !important;
+            /* color de realce */
+        }
+
+        .row-hover tbody tr:hover .sticky-col,
+        .row-hover tbody tr:hover .sticky-right {
+            background: #93bdf5 !important;
+            /* asegura mismo color en columnas fijas */
+        }
+
+        /* También cuando una celda tiene foco (accesibilidad/teclado) */
+        .row-hover tbody tr:focus-within>* {
+            background: #93bdf5 !important;
+        }
+
+        /* Si usas .table-striped, esto evita que la raya se imponga sobre el hover */
+        .table-striped>tbody>tr:nth-of-type(odd):hover>* {
+            background: #93bdf5 !important;
         }
     </style>
     <script>
