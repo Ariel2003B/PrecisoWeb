@@ -88,8 +88,7 @@
                     </div>
 
                     <div class="col-auto ms-auto">
-                        <span class="badge bg-secondary">Empresa: {{ $empresa->NOMBRE ?? '—' }}</span>
-
+                        <span class="badge bg-warning">Empresa: {{ $empresa->NOMBRE ?? '—' }}</span>
                     </div>
                 </form>
 
