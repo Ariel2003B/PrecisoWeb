@@ -120,7 +120,7 @@
                                 style="white-space:nowrap">
                                 @foreach ($rutas as $i => $ruta)
                                     <button type="button"
-                                        class="route-btn btn btn-primary btn-sm @if ($i === 0) active @endif"
+                                        class="route-btn btn btn-outline-danger btn-sm @if ($i === 0) active @endif"
                                         {{-- @if ($i === 0) style="background-color: #005298" @endif --}} data-target="#route-{{ $ruta['idRoute'] }}">
                                         {{ $ruta['nombre'] ?? 'Ruta ' . $ruta['idRoute'] }}
                                         <span class="badge bg-secondary ms-1">{{ count($ruta['data'] ?? []) }}</span>
