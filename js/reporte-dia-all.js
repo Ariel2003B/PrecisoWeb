@@ -197,7 +197,7 @@
     @page { size: A4; margin: 18mm 14mm; }
     body { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif; color:#0f172a; }
     .hdr{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-    .logo{ height:42px; object-fit:contain; }
+    .logo{ height:58px; object-fit:contain; }
     h1 { font-size:18px; margin:0 0 4px; }
     .muted{ color:#64748b; } .badge{ display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:12px; }
     .resume{ margin:10px 0 14px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; } .resume strong{ font-size:18px; }
