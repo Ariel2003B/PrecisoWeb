@@ -123,7 +123,7 @@
                                         class="route-btn btn btn-outline-danger btn-sm @if ($i === 0) active @endif"
                                         {{-- @if ($i === 0) style="background-color: #005298" @endif --}} data-target="#route-{{ $ruta['idRoute'] }}">
                                         {{ $ruta['nombre'] ?? 'Ruta ' . $ruta['idRoute'] }}
-                                        
+
                                     </button>
                                 @endforeach
                             </div>
@@ -225,7 +225,8 @@
                                                                 title="{{ trim($v['nombreUnidad'] ?? '') }}"
                                                                 data-search="{{ trim(($placaCode ?? '') . ' ' . ($extra ?? '')) }}">
                                                                 <div class="text-muted small text-nowrap">
-                                                                    <b>{{ $extra }}</b></div>
+                                                                    <b>{{ $extra }}</b>
+                                                                </div>
                                                             </td>
 
                                                             <td class="sticky-col sticky-rutina text-nowrap">
@@ -669,6 +670,106 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             --w-dif: 30px;
             --w-mins: 54px;
             /* ancho columna Sanción al final */
+
+            --header-accent: #005298;
+            /* color encabezado */
+            --sticky-body-gray: #EEE9E9;
+            /* grisito columnas #/PLACA/RUTINA en body */
+            --stripe-odd: #0a0a0b;
+            /* zebra más visible (filas impares) */
+            --header-accent: #005298;
+            /* azul encabezados */
+            --hover-row: #7db3f5;
+            /* color de hover que tapa todo */
+            --zebra-odd: #cfcfcf;
+            /* <-- color para filas impares */
+            --zebra-even: #ffffff;
+            /* <-- opcional, pares */
+        }
+
+        /* 1) Encabezados de geocercas también en azul (fila superior del thead) */
+        .table-compact thead tr:first-child th {
+            background: var(--header-accent) !important;
+            color: #fff !important;
+            border-color: #00477f !important;
+        }
+
+
+        /* texto interno del título (span.stop-title) también blanco */
+        .table-compact thead tr:first-child th .stop-title {
+            color: #fff !important;
+        }
+
+
+
+        /* Asegura hover aún con .table-striped y celdas sticky */
+        .table-compact.table-striped.row-hover>tbody>tr:nth-of-type(odd):hover>th,
+        .table-compact.table-striped.row-hover>tbody>tr:nth-of-type(odd):hover>td,
+        .table-compact.row-hover tbody tr:hover>td.sticky-col,
+        .table-compact.row-hover tbody tr:hover>th.sticky-col {
+            background: var(--hover-row) !important;
+        }
+
+        /* (opcional) cuando la fila tiene foco por teclado, mismo efecto que hover */
+        .table-compact.row-hover tbody tr:focus-within>th,
+        .table-compact.row-hover tbody tr:focus-within>td {
+            background: var(--hover-row) !important;
+        }
+
+        /* Base: siempre gris para las 3 columnas fijas */
+        /* Gris SIEMPRE en las 3 columnas fijas del body */
+        .table-compact tbody td.sticky-index,
+        .table-compact tbody td.sticky-placa,
+        .table-compact tbody td.sticky-rutina,
+        .table-compact tbody td.sticky-col {
+            background: var(--sticky-body-gray) !important;
+        }
+
+        /* Evita que el zebra reemplace el gris en esas columnas */
+        .table-compact.table-striped>tbody>tr:nth-of-type(odd)>td.sticky-index,
+        .table-compact.table-striped>tbody>tr:nth-of-type(odd)>td.sticky-placa,
+        .table-compact.table-striped>tbody>tr:nth-of-type(odd)>td.sticky-rutina,
+        .table-compact.table-striped>tbody>tr:nth-of-type(odd)>td.sticky-col {
+            background: var(--sticky-body-gray) !important;
+        }
+
+        /* Pares (por si quieres forzar blanco) */
+        .table-compact.table-striped>tbody>tr:nth-of-type(even)>td:not(.sticky-col),
+        .table-compact.table-striped>tbody>tr:nth-of-type(even)>th:not(.sticky-col) {
+            background: var(--zebra-even) !important;
+        }
+
+        /* Impares */
+        .table-compact.table-striped>tbody>tr:nth-of-type(odd)>td:not(.sticky-col),
+        .table-compact.table-striped>tbody>tr:nth-of-type(odd)>th:not(.sticky-col) {
+            background: var(--zebra-odd) !important;
+        }
+
+        /* (IMPORTANTE) Anula reglas previas que pintaban blanco o gris claro las sticky */
+        .table-striped>tbody>tr:nth-of-type(odd) .sticky-col,
+        .table-hover>tbody>tr:hover .sticky-col {
+            background: var(--sticky-body-gray) !important;
+        }
+
+        /* Hover que se superpone a TODO (incluidas las 3 columnas fijas) */
+        .table-compact.row-hover tbody tr:hover>* {
+            background: var(--hover-row) !important;
+            color: #111 !important;
+        }
+
+        /* En caso de zebra + hover, asegura que el hover gane en sticky también */
+        .table-compact.table-striped.row-hover>tbody>tr:nth-of-type(odd):hover>td.sticky-col,
+        .table-compact.row-hover>tbody>tr:hover>td.sticky-col {
+            background: var(--hover-row) !important;
+        }
+
+
+
+        /* (Opcional) Mejor contraste de bordes en los headers de esas tres columnas */
+        .table-compact thead th.col-index,
+        .table-compact thead th.col-placa,
+        .table-compact thead th.col-rutina {
+            border-color: #00477f !important;
         }
 
         /* Nuevas columnas finales */
@@ -858,14 +959,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             font-weight: 600;
         }
 
-        /* ===== Corregir interacción con .table-striped y hover ===== */
-        .table-striped>tbody>tr:nth-of-type(odd) .sticky-col {
-            background: #fff !important;
-        }
 
-        .table-hover>tbody>tr:hover .sticky-col {
-            background: #f6f7f9 !important;
-        }
 
         /* ===== Encabezados de paradas: 2 líneas + tooltip ===== */
         .stop-title {
@@ -1090,7 +1184,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
             /* línea sutil bajo el header */
         }
-        
+
         /* Las columnas fijas del thead aún más arriba que las fijas del body */
         .table-compact thead th.sticky-col {
             z-index: 60;
@@ -1111,12 +1205,6 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
         .stop-title {
             max-width: 160px;
             -webkit-line-clamp: 2;
-        }
-
-        /* Pegajosas más delgadas y con sombra sutil */
-        .sticky-col {
-            background: #fff !important;
-            color: #111 !important;
         }
 
         .sticky-index {
@@ -1181,6 +1269,46 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
         /* Si usas .table-striped, esto evita que la raya se imponga sobre el hover */
         .table-striped>tbody>tr:nth-of-type(odd):hover>* {
             background: #93bdf5 !important;
+        }
+
+        /* 2) Hover que se impone sobre zebra y columnas sticky */
+        .table-compact.row-hover tbody tr:hover>th,
+        .table-compact.row-hover tbody tr:hover>td {
+            background: var(--hover-row) !important;
+            color: #111 !important;
+        }
+
+        /* === HOVER FULL-ROW QUE GANA A TODO === */
+
+        /* 1) Anula zebra/colores previos en cualquier fila al pasar el mouse */
+        .table-compact.row-hover tbody tr:hover>td,
+        .table-compact.row-hover tbody tr:hover>th,
+        .table-compact.row-hover.table-striped tbody tr:hover:nth-of-type(even)>td,
+        .table-compact.row-hover.table-striped tbody tr:hover:nth-of-type(odd)>td,
+        .table-compact.row-hover.table-striped tbody tr:hover:nth-of-type(even)>th,
+        .table-compact.row-hover.table-striped tbody tr:hover:nth-of-type(odd)>th,
+        .table-compact.row-hover tbody tr:hover>td.sticky-col,
+        .table-compact.row-hover tbody tr:hover>th.sticky-col {
+            background-color: var(--hover-row) !important;
+            background-image: none !important;
+            /* por si algún tema usa gradientes */
+            color: #111 !important;
+        }
+
+        /* 2) Las columnas sticky NO quedan “fijas en blanco” cuando hay hover */
+        .table-compact.row-hover tbody tr:hover .sticky-col {
+            background-color: var(--hover-row) !important;
+        }
+
+        /* 3) (Saneamiento) si alguna celda quedó blanca por reglas anteriores, hereda del tr en hover */
+        .table-compact.row-hover tbody tr:hover td,
+        .table-compact.row-hover tbody tr:hover th {
+            background: var(--hover-row) !important;
+        }
+
+        /* 4) Mantén el gris por defecto de las sticky SOLO cuando NO hay hover */
+        .table-compact tbody .sticky-col {
+            background-color: var(--sticky-body-gray) !important;
         }
     </style>
     <script>
