@@ -173,7 +173,7 @@
                                                         {{-- NUEVO: columnas finales --}}
                                                         <th class="col-adelantos text-center">Total adelantos</th>
                                                         <th class="col-atrasos text-center">Total atrasos</th>
-                                                        <th class="col-sancion text-end">Sanción (USD)</th>
+                                                        <th class="col-sancion text-center">Sanción (USD)</th>
                                                     </tr>
                                                     <tr>
                                                         <th class="sticky-col sticky-index"></th>
@@ -225,7 +225,7 @@
                                                                 title="{{ trim($v['nombreUnidad'] ?? '') }}"
                                                                 data-search="{{ trim(($placaCode ?? '') . ' ' . ($extra ?? '')) }}">
                                                                 <div class="text-muted small text-nowrap">
-                                                                    {{ $extra }}</div>
+                                                                    <b>{{ $extra }}</b></div>
                                                             </td>
 
                                                             <td class="sticky-col sticky-rutina text-nowrap">
@@ -249,7 +249,7 @@
                                                                 {{ $atrasos }}</td>
 
                                                             {{-- Sanción al final, clickeable y pegada a la derecha --}}
-                                                            <td class="text-end col-sancion">
+                                                            <td class="text-center col-sancion">
                                                                 <a href="javascript:void(0)"
                                                                     class="sancion-amount sancion-link ver-sancion"
                                                                     data-total="0.00" title="Ver detalle de sanción">
@@ -662,14 +662,12 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             /* antes 128/140 */
             --w-rutina: 98px;
             /* antes 108/120 */
-            --w-sancion: 100px;
+            --w-sancion: 85px;
             /* opcional bajar un poco */
             --w-plan: 46px;
             --w-eje: 46px;
             --w-dif: 30px;
             --w-mins: 54px;
-            /* ancho columna Min. */
-            --w-sancion: 92px;
             /* ancho columna Sanción al final */
         }
 
@@ -688,7 +686,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
         .col-sancion {
             min-width: var(--w-sancion);
             width: var(--w-sancion);
-            padding-right: .2rem !important;
+            padding-right: .5rem !important;
         }
 
         .col-sancion a.sancion-link {
@@ -716,11 +714,6 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             width: var(--w-mins);
         }
 
-        .col-sancion {
-            min-width: var(--w-sancion);
-            width: var(--w-sancion);
-        }
-
         /* La sanción YA NO es sticky a la izquierda */
         .sticky-sancion {
             left: auto;
@@ -746,7 +739,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
         /* texto del paréntesis más pequeño y apretado */
         .sticky-placa .small {
-            font-size: .66rem;
+            font-size: .70rem;
             line-height: 1.0;
         }
 
@@ -824,11 +817,6 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
         .sticky-index {
             left: 0;
-        }
-
-        .col-sancion {
-            min-width: var(--w-sancion);
-            width: var(--w-sancion);
         }
 
         .sticky-sancion {
@@ -910,7 +898,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
         /* azul gris oscuro */
         .sticky-col .small {
-            color: #6b7280 !important;
+            color: black !important;
         }
 
         /* gris medio */
@@ -1102,7 +1090,7 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
             /* línea sutil bajo el header */
         }
-
+        
         /* Las columnas fijas del thead aún más arriba que las fijas del body */
         .table-compact thead th.sticky-col {
             z-index: 60;
