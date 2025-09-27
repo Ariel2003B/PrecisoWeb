@@ -84,11 +84,14 @@
 
     const placa = tr.querySelector(".sticky-placa")?.innerText.replace(/\s+/g, " ").trim() || "";
 
-    const ruta = contRT?.querySelector("h5")?.textContent?.trim() || "";
+    const ruta = contRT?.querySelector("h6, h5")?.textContent?.trim() || "";
     const difTds = tr.querySelectorAll("td.col-dif");
+    const planTds = tr.querySelectorAll("td.col-plan");
+    const ejeTds = tr.querySelectorAll("td.col-eje");
 
     let body = "";
     let total = 0, caidas = 0;
+    const rowsJson = [];
 
     difTds.forEach((td, idx) => {
       const raw = (td.textContent || "").trim();
@@ -98,6 +101,8 @@
       const name = stop.n || ("Parada " + (idx + 1));
       const t = parseFloat(tarifas[String(nid)] ?? tarifas[nid] ?? 0) || 0;
       const cargo = (!isNaN(diff) && diff < 0 && t > 0) ? Math.abs(diff) * t : 0;
+      const planH = (planTds[idx]?.textContent || "").trim() || "--:--";
+      const ejeH = (ejeTds[idx]?.textContent || "").trim() || "--:--";
 
       if (cargo > 0) { total += cargo; caidas++; }
 
@@ -110,6 +115,17 @@
           <td class="text-end">${t ? "$" + num2(t) : "$0.00"}</td>
           <td class="text-end">${cargo ? "$" + num2(cargo) : "$0.00"}</td>
         </tr>`;
+
+      rowsJson.push({
+        idx: idx + 1,
+        n: name,
+        dif: isNaN(diff) ? "—" : (diff > 0 ? ("+" + diff) : String(diff)),
+        tarifa: t,
+        cargo: cargo,
+        plan: planH,
+        eje: ejeH
+      });
+
     });
 
     // Pinta modal
@@ -129,6 +145,7 @@
     modalEl.dataset.total = num2(total);
     modalEl.dataset.caidas = String(caidas);
     modalEl.dataset.rowsAll = neutralizeScriptClosers(body);
+    modalEl.dataset.rowsJson = JSON.stringify(rowsJson);
 
     showModal(modalEl);
   });
@@ -179,23 +196,34 @@
   <style>
     @page { size: A4; margin: 18mm 14mm; }
     body { font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif; color:#0f172a; }
-    h1 { font-size:18px; margin:0 0 8px; }
-    h2 { font-size:15px; margin:14px 0 6px; }
+    .hdr{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .logo{ height:42px; object-fit:contain; }
+    h1 { font-size:18px; margin:0 0 4px; }
     .muted{ color:#64748b; } .badge{ display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:12px; }
-    .resume{ margin:12px 0 16px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; } .resume strong{ font-size:18px; }
-    table{ width:100%; border-collapse:collapse; } th,td{ border:1px solid #e2e8f0; padding:6px 8px; font-size:12px; }
-    thead th{ background:#f8fafc; text-align:left; } .text-end{ text-align:right; } .text-center{ text-align:center; }
-    .small{ font-size:11px; } .foot{ margin-top:18px; font-size:11px; color:#64748b; }
+    .resume{ margin:10px 0 14px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; } .resume strong{ font-size:18px; }
+    table{ width:100%; border-collapse:collapse; } th,td{ border:1px solid #e2e8f0; padding:6px 8px; font-size:12px; vertical-align:top; }
+    thead th{ background:#f8fafc; text-align:left; }
+    .text-end{ text-align:right; } .text-center{ text-align:center; }
+    .small{ font-size:11px; } .foot{ margin-top:16px; font-size:11px; color:#64748b; }
+    /* sublínea Plan/Eje debajo del nombre de geocerca */
+    .subline{ margin-top:2px; color:#64748b; font-size:11px; }
   </style>
 </head>
 <body>
-  <h1>Reporte de sanción <span class="badge">${esc(empresa)}</span></h1>
-  <div class="small muted">Fecha: ${esc(fecha)} · Ruta: ${esc(ruta)} · Unidad: ${esc(placa)}</div>
+  <div class="hdr">
+    <img src="https://precisogps.com/img/Precisogps.png" class="logo" alt="Precisogps">
+    <div style="text-align:right">
+      <h1>Reporte de sanción <span class="badge">${esc(empresa)}</span></h1>
+      <div class="small muted">Fecha: ${esc(fecha)} · Ruta: ${esc(ruta)} · Unidad: ${esc(placa)}</div>
+    </div>
+  </div>
+
   <div class="resume">
     <div><span class="muted">Geocercas con caída:</span> <strong>${caidas}</strong></div>
     <div><span class="muted">Total a pagar:</span> <strong>$${total}</strong></div>
   </div>
-  <h2>Detalle (todas las geocercas)</h2>
+
+  <h2 style="font-size:15px; margin:12px 0 6px;">Detalle (todas las geocercas)</h2>
   <table>
     <thead>
       <tr>
@@ -209,6 +237,7 @@
     <tbody id="rows"></tbody>
     <tfoot><tr><th colspan="4" class="text-end">Total</th><th class="text-end">$${total}</th></tr></tfoot>
   </table>
+
   <div class="foot">Generado automáticamente · ${esc(new Date().toLocaleString())}</div>
 </body>
 </html>`;
@@ -220,10 +249,33 @@
     w.document.open(); w.document.write(html); w.document.close();
 
     // 2) inyectar filas y mandar a imprimir
+    // 2) inyectar filas y mandar a imprimir
     const doFillAndPrint = () => {
       try {
         const tbody = w.document.getElementById("rows");
-        if (tbody) tbody.innerHTML = rowsAll; // ya viene escapado para </script>
+        if (!tbody) { try { w.close(); } catch { } return; }
+
+        const jsonStr = modalEl.dataset.rowsJson || "";
+        if (jsonStr) {
+          let rows = [];
+          try { rows = JSON.parse(jsonStr); } catch { }
+          tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td class="text-center">${r.idx}</td>
+          <td>
+            ${esc(r.n)}
+            <div class="subline">Planificada: ${esc(r.plan)} · Ejecutada: ${esc(r.eje)}</div>
+          </td>
+          <td class="text-center">${esc(r.dif)}</td>
+          <td class="text-end">$${num2(r.tarifa)}</td>
+          <td class="text-end">$${num2(r.cargo)}</td>
+        </tr>
+      `).join("");
+        } else {
+          // Fallback: lo viejo (sin Plan/Eje)
+          tbody.innerHTML = rowsAll;
+        }
+
         try { w.focus(); } catch { }
         try { w.print(); } catch { }
         w.onafterprint = () => { try { w.close(); } catch { } };
@@ -232,11 +284,14 @@
       }
     };
 
+    // ⬇️ ESTO FALTABA
     if (w.document.readyState === "complete") {
       doFillAndPrint();
     } else {
       w.addEventListener("load", doFillAndPrint, { once: true });
     }
+
+
   }
 
   // ------------- Modal helpers (fallback si no hay BS) -------------

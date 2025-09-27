@@ -77,8 +77,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="col-auto">
                         <button class="btn btn-primary btn-sm">Actualizar</button>
                     </div>
@@ -1559,8 +1557,6 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             setInterval(tick, 1000); // actualiza cada segundo
         })();
     </script>
-
-
 
 @endsection
 
