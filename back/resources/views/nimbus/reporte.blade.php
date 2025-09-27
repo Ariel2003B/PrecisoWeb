@@ -60,7 +60,8 @@
 
             <div class="container-fluid px-2 px-md-3">
                 {{-- Filtros rápidos --}}
-                <form class="row g-2 align-items-end mb-3" method="GET" action="{{ url('/nimbus/reporte-dia-all') }}">
+                <form class="row g-2 align-items-end position-relative mb-3" method="GET"
+                    action="{{ url('/nimbus/reporte-dia-all') }}">
                     <div class="col-auto">
                         <label class="form-label mb-0">Fecha</label>
                         <input type="date" name="fecha" value="{{ $fecha }}"
@@ -72,20 +73,20 @@
                         <label class="form-label mb-0">Buscar placa</label>
                         <div class="input-group input-group-sm">
                             <input type="text" id="filtroPlaca" class="form-control" placeholder="ABC1234, (01/2345)">
-                            <button class="btn btn-outline-secondary" type="button" id="btnLimpiarFiltro"
-                                title="Limpiar">×</button>
+
                         </div>
                     </div>
-                    {{-- <div class="col-auto">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="toggleWrapStops">
-                            <label class="form-check-label" for="toggleWrapStops">Nombres completos</label>
-                        </div>
-                    </div> --}}
+
+
 
                     <div class="col-auto">
                         <button class="btn btn-primary btn-sm">Actualizar</button>
                     </div>
+                    <!-- Reloj Ecuador centrado -->
+                    <div class="col clock-col d-none d-md-block">
+                        <div id="relojEc" class="badge bg-danger text-white mono px-3 py-2">--:--:--</div>
+                    </div>
+
                     <div class="col-auto ms-auto">
                         <span class="badge bg-secondary">Empresa: {{ $empresa->NOMBRE ?? '—' }}</span>
 
@@ -100,20 +101,6 @@
                     <div class="alert alert-warning">No hay datos para mostrar.</div>
                 @else
                     <div class="row">
-                        {{-- Sidebar de rutas --}}
-                        {{-- <div class="col-12 col-md-3 col-lg-2 mb-3">
-                            <div class="list-group" id="rutasList">
-                                @foreach ($rutas as $i => $ruta)
-                                    <button type="button"
-                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center route-btn @if ($i === 0) active @endif"
-                                        data-target="#route-{{ $ruta['idRoute'] }}">
-                                        {{ $ruta['nombre'] ?? 'Ruta ' . $ruta['idRoute'] }}
-                                        <span class="badge bg-secondary">{{ count($ruta['data'] ?? []) }}</span>
-                                    </button>
-                                @endforeach
-                            </div>
-                        </div> --}}
-
 
                         <div class="routes-toolbar mb-2">
                             <div class="route-scroll nav nav-pills gap-2 flex-nowrap overflow-auto" id="rutasList"
@@ -158,9 +145,16 @@
 
                                                 <thead class="table-light align-middle sticky-top">
                                                     <tr>
-                                                        <th class="col-index sticky-col sticky-index text-center">#</th>
-                                                        <th class="col-placa sticky-col sticky-placa">PLACA</th>
-                                                        <th class="col-rutina sticky-col sticky-rutina">RUTINA</th>
+                                                        <th rowspan="2"
+                                                            class="col-index  sticky-col sticky-index  text-center align-middle">
+                                                            #</th>
+                                                        <th rowspan="2"
+                                                            class="col-placa  sticky-col sticky-placa  text-center align-middle">
+                                                            PLACA</th>
+                                                        <th rowspan="2"
+                                                            class="col-rutina sticky-col sticky-rutina text-center align-middle">
+                                                            RUTINA</th>
+
 
                                                         @foreach ($stops as $s)
                                                             @php $full = $s['n'] ?? 'Parada'; @endphp
@@ -170,15 +164,15 @@
                                                             </th>
                                                         @endforeach
 
-                                                        {{-- NUEVO: columnas finales --}}
-                                                        <th class="col-adelantos text-center">Total adelantos</th>
-                                                        <th class="col-atrasos text-center">Total atrasos</th>
-                                                        <th class="col-sancion text-center">Sanción (USD)</th>
+                                                        <th rowspan="2" class="col-adelantos text-center">Total adelantos
+                                                        </th>
+                                                        <th rowspan="2" class="col-atrasos text-center">Total atrasos
+                                                        </th>
+                                                        <th rowspan="2" class="col-sancion text-center">Sanción (USD)
+                                                        </th>
                                                     </tr>
                                                     <tr>
-                                                        <th class="sticky-col sticky-index"></th>
-                                                        <th class="sticky-col sticky-placa"></th>
-                                                        <th class="sticky-col sticky-rutina"></th>
+
 
                                                         @foreach ($stops as $s)
                                                             <th class="text-center col-plan">Plan.</th>
@@ -186,10 +180,7 @@
                                                             <th class="text-center col-dif">Dif</th>
                                                         @endforeach
 
-                                                        {{-- Huecos de las 3 columnas finales --}}
-                                                        <th class="text-center col-adelantos"></th>
-                                                        <th class="text-center col-atrasos"></th>
-                                                        <th class="text-end col-sancion"></th>
+
                                                     </tr>
                                                 </thead>
 
@@ -225,7 +216,7 @@
                                                                 title="{{ trim($v['nombreUnidad'] ?? '') }}"
                                                                 data-search="{{ trim(($placaCode ?? '') . ' ' . ($extra ?? '')) }}">
                                                                 <div class="text-muted small text-nowrap">
-                                                                    <b>{{ $extra }}</b>
+                                                                    {{ $extra }}
                                                                 </div>
                                                             </td>
 
@@ -665,9 +656,9 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             /* antes 108/120 */
             --w-sancion: 85px;
             /* opcional bajar un poco */
-            --w-plan: 46px;
-            --w-eje: 46px;
-            --w-dif: 30px;
+            --w-plan: 55px;
+            --w-eje: 50px;
+            --w-dif: 35px;
             --w-mins: 54px;
             /* ancho columna Sanción al final */
 
@@ -867,14 +858,14 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
         }
 
         .table-compact {
-            font-size: .74rem;
+            font-size: .80rem;
             /* más pequeño */
-            line-height: 1.05;
+            line-height: 1.25;
         }
 
         .table-compact th,
         .table-compact td {
-            padding: .18rem .25rem !important;
+            padding: .22rem .30rem !important;
             /* menos alto y menos ancho */
         }
 
@@ -1310,6 +1301,77 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
         .table-compact tbody .sticky-col {
             background-color: var(--sticky-body-gray) !important;
         }
+
+        /* Misma apariencia azul para Plan/Eje/Dif en la 2ª fila del thead */
+        .table-compact thead tr:nth-child(2) th.col-plan,
+        .table-compact thead tr:nth-child(2) th.col-eje,
+        .table-compact thead tr:nth-child(2) th.col-dif {
+            background: var(--header-accent) !important;
+            color: #fff !important;
+            border-color: #00477f !important;
+            text-align: center;
+        }
+
+        /* Centrar el reloj en el "medio-medio" del formulario */
+        form.position-relative .clock-col {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-5%);
+            bottom: .25rem;
+            /* ajusta la altura para alinearlo con los controles */
+            z-index: 5;
+            /* por si hay overlaps */
+            pointer-events: none;
+            /* no bloquea clicks en inputs detrás */
+        }
+
+        /* Reloj un poco más grande */
+        #relojEc {
+            font-size: 1.35rem;
+            /* antes ~1.05rem */
+            padding: .55rem .9rem;
+            /* un poco más de “aire” */
+            border-radius: .5rem;
+            letter-spacing: .5px;
+            /* puedes subir a .6 si te gusta más “digital” */
+        }
+
+        /* En pantallas chicas, que el reloj vuelva a flujo normal y centrado abajo */
+        @media (max-width: 767.98px) {
+            form.position-relative .clock-col {
+                position: static;
+                transform: none;
+                display: flex !important;
+                justify-content: center;
+                margin-top: .25rem;
+                pointer-events: auto;
+            }
+        }
+
+
+        .table-compact tbody td.sticky-rutina {
+            font-weight: 400 !important;
+            /* normal */
+        }
+
+        /* (por si algún contenido llegó con <b> o <strong>) */
+        .table-compact tbody td.sticky-rutina b,
+        .table-compact tbody td.sticky-rutina strong {
+            font-weight: 400 !important;
+        }
+
+        /* Quitar negrilla de la celda RUTINA en el cuerpo de la tabla */
+        .table-compact tbody td.sticky-placa {
+            font-weight: 400 !important;
+            /* normal */
+        }
+
+        /* 2) Aumenta padding en TODAS las celdas (gana a .table-sm) */
+        .table.table-sm.table-compact th,
+        .table.table-sm.table-compact td {
+            padding: .36rem .34rem !important;
+            /* ↑ alto | ancho */
+        }
     </style>
     <script>
         (function() {
@@ -1478,6 +1540,27 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             setTimeout(() => aplicarFiltroPlaca($filtroPlaca?.value || ""), 0);
         });
     </script>
+    <script>
+        (function() {
+            const el = document.getElementById('relojEc');
+            if (!el) return;
+
+            function tick() {
+                const str = new Intl.DateTimeFormat('es-EC', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'America/Guayaquil'
+                }).format(new Date());
+                el.textContent = str;
+            }
+
+            tick(); // pinta al cargar
+            setInterval(tick, 1000); // actualiza cada segundo
+        })();
+    </script>
+
 
 
 @endsection
