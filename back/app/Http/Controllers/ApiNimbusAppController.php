@@ -75,10 +75,11 @@ class ApiNimbusAppController extends Controller
 
         $dryRun = $request->boolean('dry', false); // opcional ?dry=1 para probar sin guardar
         $updated = [];
+        $created = [];        // <-- NUEVO
         $notFound = [];
-        $conflicts = []; // por si hay más de una coincidencia
+        $conflicts = [];       // por si hay más de una coincidencia
 
-        DB::transaction(function () use ($payload, $dryRun, &$updated, &$notFound, &$conflicts) {
+        DB::transaction(function () use ($payload, $dryRun, &$updated, &$created, &$notFound, &$conflicts) {
             foreach ($payload as $row) {
                 $nm = trim($row['nm']);
                 $wId = (int) $row['id'];
@@ -96,11 +97,8 @@ class ApiNimbusAppController extends Controller
                     // Fallback: intentar por concatenación "placa (hab)" o "placa(hab)" o por placa sola
                     $nmNorm = strtoupper($this->normalizeName($nm));
                     $query->where(function ($q) use ($nmNorm) {
-                        // "placa (hab)"
                         $q->orWhereRaw('UPPER(REPLACE(CONCAT(placa, " (", numero_habilitacion, ")"), " ", "")) = ?', [$nmNorm]);
-                        // "placa(hab)"
                         $q->orWhereRaw('UPPER(REPLACE(CONCAT(placa, "(", numero_habilitacion, ")"), " ", "")) = ?', [$nmNorm]);
-                        // placa sola
                         $q->orWhereRaw('UPPER(REPLACE(placa, " ", "")) = ?', [$nmNorm]);
                     });
                 }
@@ -108,6 +106,7 @@ class ApiNimbusAppController extends Controller
                 $matches = $query->get();
 
                 if ($matches->count() === 1) {
+                    // --- Caso: existe exactamente una ---
                     $unidad = $matches->first();
                     if (!$dryRun) {
                         $unidad->idWialon = $wId;
@@ -121,6 +120,7 @@ class ApiNimbusAppController extends Controller
                         'from' => $nm
                     ];
                 } elseif ($matches->count() > 1) {
+                    // --- Caso: varios candidatos (no tocamos nada) ---
                     $conflicts[] = [
                         'from' => $nm,
                         'count' => $matches->count(),
@@ -131,7 +131,36 @@ class ApiNimbusAppController extends Controller
                         ])->values()
                     ];
                 } else {
-                    $notFound[] = $nm;
+                    // --- Caso: no existe ---
+                    if ($parsed) {
+                        // Si se pudo parsear "PLACA (HAB)", creamos la unidad
+                        if (!$dryRun) {
+                            $unidad = Unidad::create([
+                                'placa' => $parsed['placa'],
+                                'numero_habilitacion' => $parsed['hab'],
+                                'idWialon' => $wId,
+                                // agrega aquí otros defaults si quieres: 'usu_id' => auth()->id(),
+                            ]);
+                        } else {
+                            // Solo preview en dry-run
+                            $unidad = (object) [
+                                'id_unidad' => null,
+                                'placa' => $parsed['placa'],
+                                'numero_habilitacion' => $parsed['hab'],
+                            ];
+                        }
+
+                        $created[] = [
+                            'unidad_id' => $unidad->id_unidad,
+                            'placa' => $parsed['placa'],
+                            'numero_habilitacion' => $parsed['hab'],
+                            'idWialon' => $wId,
+                            'from' => $nm
+                        ];
+                    } else {
+                        // Si no parsea, no podemos crear con seguridad
+                        $notFound[] = $nm;
+                    }
                 }
             }
         });
@@ -140,13 +169,16 @@ class ApiNimbusAppController extends Controller
             'ok' => true,
             'dryRun' => $dryRun,
             'updated_count' => count($updated),
+            'created_count' => count($created),   // <-- NUEVO
             'not_found_count' => count($notFound),
             'conflicts_count' => count($conflicts),
             'updated' => $updated,
+            'created' => $created,          // <-- NUEVO
             'not_found' => $notFound,
             'conflicts' => $conflicts
         ]);
     }
+
 
     /**
      * Parsear "PLACA (HAB)" o "PLACA(HAB)" → ['placa' => ..., 'hab' => ...]
