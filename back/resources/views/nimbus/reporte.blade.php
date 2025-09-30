@@ -414,6 +414,96 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                 return list || PRINTER_NAME;
             }
 
+            // function buildEscPosTicket({
+            //     empresa,
+            //     fecha,
+            //     ruta,
+            //     placa,
+            //     total,
+            //     caidas,
+            //     rows
+            // }) {
+            //     const ESC = '\x1B',
+            //         GS = '\x1D',
+            //         SI = '\x0F',
+            //         DC2 = '\x12';
+
+            //     const init = ESC + '@';
+            //     const align = (n) => ESC + 'a' + String.fromCharCode(n); // 0=L,1=C,2=R
+            //     const boldOn = ESC + 'E' + '\x01',
+            //         boldOff = ESC + 'E' + '\x00';
+            //     const fontB = ESC + 'M' + '\x01'; // angosto
+            //     const normal = ESC + '!' + '\x00';
+            //     const hr = (w = 33) => '-'.repeat(w) + '\n';
+            //     const feed = (n) => ESC + 'd' + String.fromCharCode(n & 0xFF);
+            //     const cut = GS + 'V' + '\x42' + '\x00';
+
+            //     const NAME_W = 15;
+
+            //     function lineItem(idx, name, dif, cargo) {
+            //         const nm = fitNameOneLine(name, NAME_W);
+            //         const dff = fmtDiff(dif).padStart(3, ' ');
+            //         const cStr = money(cargo).replace('$', '').padStart(8, ' ');
+            //         return `${String(idx).padStart(2,' ')} ${nm} ${dff} ${cStr}\n`;
+            //     }
+
+            //     // ===== NUEVO: sumar y detectar +70 =====
+            //     let sumPos = 0,
+            //         sumNeg = 0,
+            //         hasPlus70 = false;
+            //     (rows || []).forEach(r => {
+            //         const m = String(r?.dif ?? '').match(/[+\-]?\d+/);
+            //         if (!m) return;
+            //         const v = parseInt(m[0], 10);
+            //         if (isNaN(v)) return;
+            //         if (v > 0) {
+            //             sumPos += v;
+            //         } else if (v < 0) {
+            //             sumNeg += -v;
+            //         }
+            //         if (v >= 70) hasPlus70 = true; // ← aquí marcamos la alerta
+            //     });
+            //     // =======================================
+
+            //     let out = init + fontB + normal;
+            //     out += align(1) + boldOn + (empresa || 'EMPRESA') + '\n' + boldOff;
+            //     out += 'SANCION DE MINUTOS CAIDOS\n';
+            //     out += align(0);
+            //     out += `Fecha: ${fecha || '--'}\n`;
+            //     out += `Ruta : ${ruta  || '--'}\n`;
+            //     out += `Placa: ${placa || '--'}\n`;
+            //     out += hr();
+
+            //     // Cuerpo
+            //     out += SI;
+            //     out += ` # ${'Geocerca'.padEnd(NAME_W,' ')} ${'Dif'.padStart(3,' ')} ${'Cargo'.padStart(8,' ')}\n`;
+            //     out += hr();
+            //     (rows || []).forEach(r => {
+            //         out += lineItem(r.idx, r.n || '', r.dif, r.cargo);
+            //     });
+            //     out += DC2;
+            //     out += hr();
+
+            //     // ===== NUEVO: mostrar Adelantos/Atrasos antes del TOTAL =====
+            //     out += align(2) + `Adelantos: ${sumPos}\n`;
+            //     out += align(2) + `Atrasos : ${sumNeg}\n`;
+            //     // ============================================================
+
+            //     out += align(2) + `Geocercas con caida: ${caidas || 0}\n`;
+            //     out += boldOn + align(2) + `TOTAL: $${money(total)}\n` + boldOff;
+            //     // ===== NUEVO: mensaje de alerta si hubo +70 =====
+            //     if (hasPlus70) {
+            //         out += '\n' + align(1) + boldOn + 'ALERTA\n' + boldOff;
+            //         out += align(1) + 'Puede que la unidad haya\n';
+            //         out += align(1) + 'cerrado la vuelta antes de\n';
+            //         out += align(1) + 'iniciarla.\n';
+            //     }
+            //     // ================================================
+            //     out += feed(1) + cut;
+            //     return out;
+            // }
+
+
             function buildEscPosTicket({
                 empresa,
                 fecha,
@@ -427,7 +517,6 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                     GS = '\x1D',
                     SI = '\x0F',
                     DC2 = '\x12';
-
                 const init = ESC + '@';
                 const align = (n) => ESC + 'a' + String.fromCharCode(n); // 0=L,1=C,2=R
                 const boldOn = ESC + 'E' + '\x01',
@@ -440,14 +529,21 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
                 const NAME_W = 15;
 
-                function lineItem(idx, name, dif, cargo) {
+                function lineItem(idx, name, dif, cargo, plan, eje) {
                     const nm = fitNameOneLine(name, NAME_W);
                     const dff = fmtDiff(dif).padStart(3, ' ');
                     const cStr = money(cargo).replace('$', '').padStart(8, ' ');
-                    return `${String(idx).padStart(2,' ')} ${nm} ${dff} ${cStr}\n`;
+                    let out = `${String(idx).padStart(2,' ')} ${nm} ${dff} ${cStr}\n`;
+                    // sublínea con Plan/Eje (indentada)
+                    if (plan || eje) {
+                        const p = String(plan || '--:--').padEnd(5, ' ');
+                        const e = String(eje || '--:--').padEnd(5, ' ');
+                        out += `    P:${p} E:${e}\n`;
+                    }
+                    return out;
                 }
 
-                // ===== NUEVO: sumar y detectar +70 =====
+                // ===== TOTALES PARA ADELANTOS/ATRASOS Y ALERTA +70 =====
                 let sumPos = 0,
                     sumNeg = 0,
                     hasPlus70 = false;
@@ -456,14 +552,10 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                     if (!m) return;
                     const v = parseInt(m[0], 10);
                     if (isNaN(v)) return;
-                    if (v > 0) {
-                        sumPos += v;
-                    } else if (v < 0) {
-                        sumNeg += -v;
-                    }
-                    if (v >= 70) hasPlus70 = true; // ← aquí marcamos la alerta
+                    if (v > 0) sumPos += v;
+                    else if (v < 0) sumNeg += -v;
+                    if (v >= 70) hasPlus70 = true;
                 });
-                // =======================================
 
                 let out = init + fontB + normal;
                 out += align(1) + boldOn + (empresa || 'EMPRESA') + '\n' + boldOff;
@@ -478,27 +570,31 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                 out += SI;
                 out += ` # ${'Geocerca'.padEnd(NAME_W,' ')} ${'Dif'.padStart(3,' ')} ${'Cargo'.padStart(8,' ')}\n`;
                 out += hr();
+
                 (rows || []).forEach(r => {
-                    out += lineItem(r.idx, r.n || '', r.dif, r.cargo);
+                    out += lineItem(r.idx, r.n || '', r.dif, r.cargo, r.plan, r.eje);
                 });
+
                 out += DC2;
                 out += hr();
 
-                // ===== NUEVO: mostrar Adelantos/Atrasos antes del TOTAL =====
                 out += align(2) + `Adelantos: ${sumPos}\n`;
                 out += align(2) + `Atrasos : ${sumNeg}\n`;
-                // ============================================================
-
                 out += align(2) + `Geocercas con caida: ${caidas || 0}\n`;
                 out += boldOn + align(2) + `TOTAL: $${money(total)}\n` + boldOff;
-                // ===== NUEVO: mensaje de alerta si hubo +70 =====
+
                 if (hasPlus70) {
                     out += '\n' + align(1) + boldOn + 'ALERTA\n' + boldOff;
                     out += align(1) + 'Puede que la unidad haya\n';
                     out += align(1) + 'cerrado la vuelta antes de\n';
                     out += align(1) + 'iniciarla.\n';
                 }
-                // ================================================
+                // ----- Pie de página -----
+                out += hr();
+                out += align(1) + boldOn + 'PrecisoGPS' + boldOff + '\n';
+                out += align(1) + '+593 98 149 1469\n';
+                out += align(1) + 'No solo rastreamos... resolvemos.\n';
+
                 out += feed(1) + cut;
                 return out;
             }
@@ -589,6 +685,39 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
 
 
             // Lee los datos del modal (los dejamos listos en tu JS)
+            // function getModalData() {
+            //     const modal = document.getElementById('modalSancion');
+            //     const empresa = modal.dataset.empresa || '';
+            //     const fecha = modal.dataset.fecha || '';
+            //     const ruta = modal.dataset.ruta || '';
+            //     const placa = modal.dataset.placa || '';
+            //     const total = modal.dataset.total || '0.00';
+            //     const caidas = parseInt(modal.dataset.caidas || '0', 10) || 0;
+
+            //     // Reconstruimos las filas en formato compacto
+            //     const rows = [];
+            //     document.querySelectorAll('#detSancionBody tr').forEach((tr, i) => {
+            //         const tds = tr.querySelectorAll('td');
+            //         if (tds.length < 5) return;
+            //         rows.push({
+            //             idx: i + 1,
+            //             n: (tds[1]?.textContent || '').trim(),
+            //             dif: (tds[2]?.textContent || '').trim(),
+            //             tarifa: parseFloat((tds[3]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
+            //             cargo: parseFloat((tds[4]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
+            //         });
+            //     });
+
+            //     return {
+            //         empresa,
+            //         fecha,
+            //         ruta,
+            //         placa,
+            //         total,
+            //         caidas,
+            //         rows
+            //     };
+            // }
             function getModalData() {
                 const modal = document.getElementById('modalSancion');
                 const empresa = modal.dataset.empresa || '';
@@ -598,19 +727,43 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                 const total = modal.dataset.total || '0.00';
                 const caidas = parseInt(modal.dataset.caidas || '0', 10) || 0;
 
-                // Reconstruimos las filas en formato compacto
-                const rows = [];
-                document.querySelectorAll('#detSancionBody tr').forEach((tr, i) => {
-                    const tds = tr.querySelectorAll('td');
-                    if (tds.length < 5) return;
-                    rows.push({
-                        idx: i + 1,
-                        n: (tds[1]?.textContent || '').trim(),
-                        dif: (tds[2]?.textContent || '').trim(),
-                        tarifa: parseFloat((tds[3]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
-                        cargo: parseFloat((tds[4]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
+                // 1) Preferir rowsJson (trae plan/eje)
+                let rows = [];
+                const rowsJsonStr = modal.dataset.rowsJson || '';
+                if (rowsJsonStr) {
+                    try {
+                        const arr = JSON.parse(rowsJsonStr);
+                        rows = (Array.isArray(arr) ? arr : []).map(r => ({
+                            idx: r.idx,
+                            n: r.n,
+                            dif: r.dif,
+                            tarifa: parseFloat(r.tarifa || 0) || 0,
+                            cargo: parseFloat(r.cargo || 0) || 0,
+                            plan: r.plan || '--:--',
+                            eje: r.eje || '--:--'
+                        }));
+                    } catch {
+                        /* si falla, cae al fallback */
+                    }
+                }
+
+                // 2) Fallback: reconstruir desde la tabla del modal (sin plan/eje)
+                if (rows.length === 0) {
+                    rows = [];
+                    document.querySelectorAll('#detSancionBody tr').forEach((tr, i) => {
+                        const tds = tr.querySelectorAll('td');
+                        if (tds.length < 5) return;
+                        rows.push({
+                            idx: i + 1,
+                            n: (tds[1]?.textContent || '').trim(),
+                            dif: (tds[2]?.textContent || '').trim(),
+                            tarifa: parseFloat((tds[3]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
+                            cargo: parseFloat((tds[4]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
+                            plan: '--:--',
+                            eje: '--:--'
+                        });
                     });
-                });
+                }
 
                 return {
                     empresa,
