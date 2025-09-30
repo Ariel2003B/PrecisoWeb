@@ -205,9 +205,12 @@
                                                             }
                                                         @endphp
 
-                                                        <tr>
+                                                        <tr data-idunidad="{{ (int) ($v['idUnidad'] ?? 0) }}"
+                                                            data-routeid="{{ (int) ($ruta['idRoute'] ?? 0) }}">
                                                             <td class="sticky-col sticky-index text-center">
-                                                                {{ $idx + 1 }}</td>
+                                                                {{ $idx + 1 }}
+                                                            </td>
+
 
                                                             <td class="sticky-col sticky-placa"
                                                                 title="{{ trim($v['nombreUnidad'] ?? '') }}"
@@ -1556,6 +1559,184 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
             tick(); // pinta al cargar
             setInterval(tick, 1000); // actualiza cada segundo
         })();
+    </script>
+    <script>
+        (function() {
+            const POLL_MS = 20000; // 20s
+
+            // Aux: misma lógica de color que en PHP (difClass)
+            function difClass(v) {
+                if (v === null || v === '' || typeof v === 'undefined') return 'text-muted';
+                const n = parseInt(v, 10);
+                if (isNaN(n)) return 'text-secondary';
+                if (n < 0) return 'text-danger';
+                if (n > 0) return 'text-success';
+                return 'text-secondary';
+            }
+
+            // Busca la tabla visible (ruta activa)
+            function getActiveTableByRouteId(routeId) {
+                const table = document.getElementById('tabla-' + routeId);
+                return table || null;
+            }
+
+            // Recalcula y pinta una fila con nuevos plan/eje/dif
+            function updateRow(tr, stops, tarifas, vuelta) {
+                const plan = vuelta.horaProgramada || [];
+                const eje = vuelta.horaEjecutada || [];
+                const dif = vuelta.diferencia || [];
+
+                const tds = tr.querySelectorAll('td');
+
+                // Columna "RUTINA" está en el índice 2 (0=#,1=placa,2=rutina)
+                const rutinaTd = tds[2];
+                const first = plan?.[0] ?? '--:--';
+                const last = plan?.[plan.length - 1] ?? '--:--';
+                rutinaTd.textContent = `${first} - ${last}`;
+
+                // Actualizamos columnas por parada (3 celdas por parada: Plan/Eje/Dif)
+                let adelantos = 0,
+                    atrasos = 0,
+                    totalCargo = 0;
+
+                for (let j = 0; j < stops.length; j++) {
+                    const base = 3 + j * 3;
+                    // Plan
+                    tds[base + 0].textContent = plan[j] ?? '--:--';
+                    // Eje
+                    tds[base + 1].textContent = eje[j] ?? '--:--';
+                    // Dif
+                    const d = (dif[j] ?? null);
+                    const tdDif = tds[base + 2];
+                    tdDif.className = 'text-center col-dif ' + difClass(d);
+                    tdDif.textContent = (d === null || d === '') ? '—' : ((parseInt(d, 10) > 0) ? ('+' + parseInt(d,
+                        10)) : String(parseInt(d, 10)));
+
+                    // Totales y sanción
+                    if (d !== null && d !== '') {
+                        const n = parseInt(d, 10);
+                        if (!isNaN(n)) {
+                            if (n > 0) adelantos += n;
+                            else if (n < 0) atrasos += (-n);
+
+                            if (n < 0) {
+                                const stopId = (stops[j]?.id) ?? (stops[j]?.ID) ?? (stops[j]?.nid) ?? 0;
+                                const tarifa = Number(tarifas[String(stopId)] || 0);
+                                totalCargo += (-n) * tarifa;
+                            }
+                        }
+                    }
+                }
+
+                // Pinta totales por fila
+                const tdAdel = tr.querySelector('.col-adelantos');
+                const tdAtra = tr.querySelector('.col-atrasos');
+                if (tdAdel) tdAdel.textContent = `+${adelantos}`;
+                if (tdAtra) tdAtra.textContent = `${atrasos}`;
+
+                // Pinta la sanción calculada
+                const aSancion = tr.querySelector('.col-sancion a.sancion-amount');
+                if (aSancion) {
+                    const total = (totalCargo || 0).toFixed(2);
+                    aSancion.dataset.total = total;
+                    aSancion.textContent = '$' + total;
+                }
+            }
+
+            function parseDataAttrJSON(el, attr) {
+                const raw = el.getAttribute(attr) || '{}';
+                try {
+                    return JSON.parse(raw);
+                } catch {
+                    return {};
+                }
+            }
+
+            // Aplica un lote de datos (todas las rutas)
+            function applyUpdate(payload) {
+                if (!payload || !Array.isArray(payload.rutas)) return;
+
+                for (const ruta of payload.rutas) {
+                    const routeId = ruta.idRoute;
+                    const table = getActiveTableByRouteId(routeId);
+                    if (!table) continue;
+
+                    const stops = parseDataAttrJSON(table, 'data-stops'); // array con { id / n / ... }
+                    const tarifas = parseDataAttrJSON(table, 'data-tarifas'); // mapa "nimbusId" => valor
+
+                    // Indexar TR por idUnidad (desde data-idunidad)
+                    // Indexar TR por idUnidad (admite data-idunidad en <tr> o en un <td>)
+                    const body = table.tBodies?.[0];
+                    if (!body) continue;
+                    const rowByUnidad = {};
+                    body.querySelectorAll('tbody tr').forEach(tr => {
+                        const holder = tr.matches('[data-idunidad]') ? tr : tr.querySelector('[data-idunidad]');
+                        const id = holder ? String(holder.getAttribute('data-idunidad') || '') : '';
+                        if (id) rowByUnidad[id] = tr;
+                    });
+
+
+                    // Actualizar cada vuelta que vino en el JSON
+                    const vueltas = Array.isArray(ruta.data) ? ruta.data : [];
+                    for (const v of vueltas) {
+                        const key = String(v.idUnidad || '');
+                        const tr = rowByUnidad[key];
+                        if (!tr) continue; // si no encontramos la fila, la ignoramos
+                        updateRow(tr, stops, tarifas, v);
+                    }
+                }
+                // ...después de actualizar filas de esta ruta:
+                scrollTableToBottom(table); // <- baja al final siempre
+
+            }
+            // === NUEVO: auto-scroll al final de la tabla ===
+            function scrollTableToBottom(table) {
+                if (!table) return;
+                // el <table> está dentro de .table-responsive.table-scroller
+                const scroller = table.parentElement?.classList?.contains('table-scroller') ?
+                    table.parentElement :
+                    table.closest('.table-scroller');
+                if (scroller) scroller.scrollTop = scroller.scrollHeight;
+            }
+
+            // Hacer el fetch cada 20s
+            async function pollOnce() {
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('poll', '1'); // activa la rama JSON del controlador
+                    const res = await fetch(url.toString(), {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    applyUpdate(data);
+                } catch (e) {
+                    // Silencioso para no molestar en UI; puedes loguear a consola si quieres
+                    console.debug('poll error', e);
+                }
+            }
+
+            // Primer intento y luego intervalos
+            pollOnce();
+            setInterval(pollOnce, POLL_MS);
+            // primer auto-scroll al cargar
+            const firstActiveTable = document.querySelector('.route-table:not(.d-none) table');
+            scrollTableToBottom(firstActiveTable);
+        })();
+
+
+        // cuando cambias de ruta, baja al final de esa tabla
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.route-btn');
+            if (!btn) return;
+            setTimeout(() => {
+                const pane = document.querySelector(btn.dataset.target);
+                const table = pane?.querySelector('table');
+                scrollTableToBottom(table);
+            }, 0);
+        });
     </script>
 
 @endsection

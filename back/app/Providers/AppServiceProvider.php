@@ -23,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
         SIMCARD::observe(SIMCARDObserver::class);
+
     }
 }
