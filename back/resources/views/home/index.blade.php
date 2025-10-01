@@ -2,6 +2,7 @@
 @section('Titulo', 'PrecisoGPS')
 @section('ActivarInicio', 'active')
 @section('content')
+    <script src="https://cdn.pulse.is/livechat/loader.js" data-live-chat-id="68dda155e788d993f90f4455"  async></script>
     <main class="main">
         <!-- Hero Section -->
         <section id="hero" class="hero section dark-background">
