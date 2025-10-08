@@ -186,22 +186,26 @@ class ApiNimbusAppController extends Controller
      */
     private function parsePlacaHabilitacion(string $nm): ?array
     {
-        // Admite espacios opcionales antes/después del paréntesis
-        if (preg_match('/^\s*([A-Z0-9\-]+)\s*\(\s*([^)]+)\s*\)\s*$/i', $nm, $m)) {
+        // Permite espacios y puntos (.) al final luego del cierre de paréntesis
+        if (preg_match('/^\s*([A-Z0-9\-]+)\s*\(\s*([^)]+)\s*\)\s*\.{0,}\s*$/i', $nm, $m)) {
+            $hab = trim($m[2]);
+            // Quitar puntos finales y espacios residuales del hab
+            $hab = rtrim($hab, ". \t\n\r\0\x0B");
             return [
                 'placa' => strtoupper(trim($m[1])),
-                'hab' => trim($m[2])
+                'hab' => $hab,
             ];
         }
         return null;
     }
 
     /**
-     * Normaliza para comparar: mayúsculas y sin espacios.
+     * Normaliza para comparar: mayúsculas y sin espacios ni puntos.
      */
     private function normalizeName(string $s): string
     {
-        return strtoupper(str_replace(' ', '', $s));
+        $s = strtoupper($s);
+        return str_replace([' ', '.'], '', $s);
     }
 
     public function getValorGeocercaTest(Request $request)
