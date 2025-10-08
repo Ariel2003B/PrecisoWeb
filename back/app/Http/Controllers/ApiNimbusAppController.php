@@ -81,27 +81,22 @@ class ApiNimbusAppController extends Controller
 
         DB::transaction(function () use ($payload, $dryRun, &$updated, &$created, &$notFound, &$conflicts) {
             foreach ($payload as $row) {
-                $nm = trim($row['nm']);
-
-                // Normalizar espacios Unicode (NBSP, thin space, etc.) a espacio normal
-                $nm = preg_replace('/[\\x{00A0}\\x{2000}-\\x{200B}\\x{202F}\\x{205F}\\x{3000}]/u', ' ', $nm);
-                // Colapsar múltiples espacios a uno
-                $nm = preg_replace('/[[:space:]]+/u', ' ', $nm);
+                $nm = (string) ($row['nm'] ?? '');
+                $nm = $this->normalizeFull($nm); // ⬅️ usa helper nuevo de abajo
 
                 $wId = (int) $row['id'];
 
-                // 1) Parsear "PLACA (HAB)" admitiendo puntos finales opcionales
+                // ya normalizamos $nm arriba con normalizeFull()
+
                 $parsed = $this->parsePlacaHabilitacion($nm);
 
                 $query = Unidad::query()->select('id_unidad', 'placa', 'numero_habilitacion');
 
                 if ($parsed) {
-                    // Limpia placa y hab para comparar y guardar
                     $placaClean = strtoupper(trim($parsed['placa']));
-                    // Quitamos puntos finales (si vienen), NO tocamos barras
-                    $habClean = rtrim(trim($parsed['hab']), ". ");
+                    $habClean = $this->rtrimPunct(trim($parsed['hab'])); // por si acaso
 
-                    // Comparación ignorando espacios y puntos
+                    // Comparación ignorando espacios y puntos (en SQL)
                     $query->whereRaw(
                         'UPPER(REPLACE(REPLACE(placa, " ", ""), ".", "")) = ?',
                         [strtoupper(str_replace([' ', '.'], '', $placaClean))]
@@ -110,8 +105,8 @@ class ApiNimbusAppController extends Controller
                             [str_replace('.', '', $habClean)]
                         );
                 } else {
-                    // Fallback por string completo (sin espacios ni puntos) o por placa sola
-                    $nmNorm = strtoupper($this->normalizeName($nm)); // quita espacios y puntos
+                    // Fallback: string entero normalizado (sin espacios/puntos unicode)
+                    $nmNorm = $this->normalizeName($nm);
                     $query->where(function ($q) use ($nmNorm) {
                         $q->orWhereRaw(
                             'UPPER(REPLACE(REPLACE(CONCAT(placa, " (", numero_habilitacion, ")"), " ", ""), ".", "")) = ?',
@@ -210,15 +205,27 @@ class ApiNimbusAppController extends Controller
      */
     private function parsePlacaHabilitacion(string $nm): ?array
     {
-        // Permite espacios y cualquier cantidad de puntos tras el cierre de ')'
-        if (preg_match('/^\s*([A-Z0-9\-]+)\s*\(\s*([^)]+)\s*\)\s*\.{0,}\s*$/i', $nm, $m)) {
-            // No limpiamos aquí (solo recortamos); la limpieza final ocurre antes de guardar/comparar
+        // \h = horizontal whitespace (unicode). Acepta cierre + basura de puntuación/espacios
+        if (preg_match('/^\h*([A-Z0-9\-]+)\h*\(\h*([^)]+?)\h*\)\h*[\p{P}\p{Z}\p{Cf}]*$/ui', $nm, $m)) {
             return [
                 'placa' => strtoupper(trim($m[1])),
-                'hab' => trim($m[2]),
+                'hab' => $this->rtrimPunct(trim($m[2])),  // limpia HAB al final
             ];
         }
         return null;
+    }
+    private function normalizeFull(string $s): string
+    {
+        // quitar BOM/ZWNBSP
+        $s = preg_replace('/\x{FEFF}/u', '', $s);
+
+        // mapear espacios unicode a " "
+        $s = preg_replace('/[\x{00A0}\x{2000}-\x{200B}\x{202F}\x{205F}\x{3000}]/u', ' ', $s);
+
+        // colapsar múltiples espacios (incluye tabs)
+        $s = preg_replace('/[[:space:]]+/u', ' ', $s);
+
+        return trim($s);
     }
 
     /**
@@ -228,11 +235,10 @@ class ApiNimbusAppController extends Controller
     private function normalizeName(string $s): string
     {
         $s = strtoupper($s);
-        // Quitar TODOS los espacios (incl. Unicode) y puntos
-        $s = preg_replace('/[[:space:]\\x{00A0}\\x{2000}-\\x{200B}\\x{202F}\\x{205F}\\x{3000}\.]/u', '', $s);
+        // quita espacios (todos) y puntos (incluye '．' U+FF0E y similares)
+        $s = preg_replace('/[[:space:]\x{00A0}\x{2000}-\x{200B}\x{202F}\x{205F}\x{3000}\.\x{FF0E}\x{2024}\x{22C5}]/u', '', $s);
         return $s;
     }
-
 
 
     public function getValorGeocercaTest(Request $request)
