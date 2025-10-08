@@ -82,6 +82,12 @@ class ApiNimbusAppController extends Controller
         DB::transaction(function () use ($payload, $dryRun, &$updated, &$created, &$notFound, &$conflicts) {
             foreach ($payload as $row) {
                 $nm = trim($row['nm']);
+
+                // Normalizar espacios Unicode (NBSP, thin space, etc.) a espacio normal
+                $nm = preg_replace('/[\\x{00A0}\\x{2000}-\\x{200B}\\x{202F}\\x{205F}\\x{3000}]/u', ' ', $nm);
+                // Colapsar múltiples espacios a uno
+                $nm = preg_replace('/[[:space:]]+/u', ' ', $nm);
+
                 $wId = (int) $row['id'];
 
                 // 1) Parsear "PLACA (HAB)" admitiendo puntos finales opcionales
@@ -222,8 +228,11 @@ class ApiNimbusAppController extends Controller
     private function normalizeName(string $s): string
     {
         $s = strtoupper($s);
-        return str_replace([' ', '.'], '', $s);
+        // Quitar TODOS los espacios (incl. Unicode) y puntos
+        $s = preg_replace('/[[:space:]\\x{00A0}\\x{2000}-\\x{200B}\\x{202F}\\x{205F}\\x{3000}\.]/u', '', $s);
+        return $s;
     }
+
 
 
     public function getValorGeocercaTest(Request $request)
