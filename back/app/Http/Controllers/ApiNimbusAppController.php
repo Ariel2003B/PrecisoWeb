@@ -214,6 +214,10 @@ class ApiNimbusAppController extends Controller
         }
         return null;
     }
+    private function rtrimPunct(string $s): string
+    {
+        return preg_replace('/[\p{P}\p{Z}\p{Cf}]+$/u', '', $s);
+    }
     private function normalizeFull(string $s): string
     {
         // quitar BOM/ZWNBSP
