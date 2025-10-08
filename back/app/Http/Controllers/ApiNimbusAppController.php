@@ -54,7 +54,7 @@ class ApiNimbusAppController extends Controller
 
     public function updateIdWialon(Request $request)
     {
-        // Espera un array tipo: [ { "nm": "ABC1234 (15/2515)", "id": 401971053 }, ... ]
+        // Espera: [ { "nm": "ABC1234 (12/1122)", "id": 401971053 }, ... ]
         $payload = $request->json()->all();
 
         $v = Validator::make(
@@ -73,40 +73,59 @@ class ApiNimbusAppController extends Controller
             ], 422);
         }
 
-        $dryRun = $request->boolean('dry', false); // opcional ?dry=1 para probar sin guardar
+        $dryRun = $request->boolean('dry', false);
         $updated = [];
-        $created = [];        // <-- NUEVO
+        $created = [];
         $notFound = [];
-        $conflicts = [];       // por si hay más de una coincidencia
+        $conflicts = [];
 
         DB::transaction(function () use ($payload, $dryRun, &$updated, &$created, &$notFound, &$conflicts) {
             foreach ($payload as $row) {
                 $nm = trim($row['nm']);
                 $wId = (int) $row['id'];
 
-                // 1) Intentar parsear "PLACA (HAB)"
+                // 1) Parsear "PLACA (HAB)" admitiendo puntos finales opcionales
                 $parsed = $this->parsePlacaHabilitacion($nm);
 
                 $query = Unidad::query()->select('id_unidad', 'placa', 'numero_habilitacion');
 
                 if ($parsed) {
-                    // Búsqueda exacta por placa + numero_habilitacion
-                    $query->whereRaw('UPPER(REPLACE(placa, " ", "")) = ?', [strtoupper(str_replace(' ', '', $parsed['placa']))])
-                        ->whereRaw('TRIM(numero_habilitacion) = ?', [trim($parsed['hab'])]);
+                    // Limpia placa y hab para comparar y guardar
+                    $placaClean = strtoupper(trim($parsed['placa']));
+                    // Quitamos puntos finales (si vienen), NO tocamos barras
+                    $habClean = rtrim(trim($parsed['hab']), ". ");
+
+                    // Comparación ignorando espacios y puntos
+                    $query->whereRaw(
+                        'UPPER(REPLACE(REPLACE(placa, " ", ""), ".", "")) = ?',
+                        [strtoupper(str_replace([' ', '.'], '', $placaClean))]
+                    )->whereRaw(
+                            'REPLACE(TRIM(numero_habilitacion), ".", "") = ?',
+                            [str_replace('.', '', $habClean)]
+                        );
                 } else {
-                    // Fallback: intentar por concatenación "placa (hab)" o "placa(hab)" o por placa sola
-                    $nmNorm = strtoupper($this->normalizeName($nm));
+                    // Fallback por string completo (sin espacios ni puntos) o por placa sola
+                    $nmNorm = strtoupper($this->normalizeName($nm)); // quita espacios y puntos
                     $query->where(function ($q) use ($nmNorm) {
-                        $q->orWhereRaw('UPPER(REPLACE(CONCAT(placa, " (", numero_habilitacion, ")"), " ", "")) = ?', [$nmNorm]);
-                        $q->orWhereRaw('UPPER(REPLACE(CONCAT(placa, "(", numero_habilitacion, ")"), " ", "")) = ?', [$nmNorm]);
-                        $q->orWhereRaw('UPPER(REPLACE(placa, " ", "")) = ?', [$nmNorm]);
+                        $q->orWhereRaw(
+                            'UPPER(REPLACE(REPLACE(CONCAT(placa, " (", numero_habilitacion, ")"), " ", ""), ".", "")) = ?',
+                            [$nmNorm]
+                        );
+                        $q->orWhereRaw(
+                            'UPPER(REPLACE(REPLACE(CONCAT(placa, "(", numero_habilitacion, ")"), " ", ""), ".", "")) = ?',
+                            [$nmNorm]
+                        );
+                        $q->orWhereRaw(
+                            'UPPER(REPLACE(REPLACE(placa, " ", ""), ".", "")) = ?',
+                            [$nmNorm]
+                        );
                     });
                 }
 
                 $matches = $query->get();
 
                 if ($matches->count() === 1) {
-                    // --- Caso: existe exactamente una ---
+                    // --- Coincidencia única -> actualizar ---
                     $unidad = $matches->first();
                     if (!$dryRun) {
                         $unidad->idWialon = $wId;
@@ -120,7 +139,7 @@ class ApiNimbusAppController extends Controller
                         'from' => $nm
                     ];
                 } elseif ($matches->count() > 1) {
-                    // --- Caso: varios candidatos (no tocamos nada) ---
+                    // --- Varias coincidencias -> no tocar nada, reportar ---
                     $conflicts[] = [
                         'from' => $nm,
                         'count' => $matches->count(),
@@ -131,34 +150,34 @@ class ApiNimbusAppController extends Controller
                         ])->values()
                     ];
                 } else {
-                    // --- Caso: no existe ---
+                    // --- No existe -> crear si pudimos parsear ---
                     if ($parsed) {
-                        // Si se pudo parsear "PLACA (HAB)", creamos la unidad
+                        $placaClean = strtoupper(trim($parsed['placa']));
+                        $habClean = rtrim(trim($parsed['hab']), ". "); // quita puntos finales
+
                         if (!$dryRun) {
                             $unidad = Unidad::create([
-                                'placa' => $parsed['placa'],
-                                'numero_habilitacion' => $parsed['hab'],
+                                'placa' => $placaClean,
+                                'numero_habilitacion' => $habClean,
                                 'idWialon' => $wId,
-                                // agrega aquí otros defaults si quieres: 'usu_id' => auth()->id(),
                             ]);
                         } else {
-                            // Solo preview en dry-run
                             $unidad = (object) [
                                 'id_unidad' => null,
-                                'placa' => $parsed['placa'],
-                                'numero_habilitacion' => $parsed['hab'],
+                                'placa' => $placaClean,
+                                'numero_habilitacion' => $habClean,
                             ];
                         }
 
                         $created[] = [
                             'unidad_id' => $unidad->id_unidad,
-                            'placa' => $parsed['placa'],
-                            'numero_habilitacion' => $parsed['hab'],
+                            'placa' => $placaClean,
+                            'numero_habilitacion' => $habClean,
                             'idWialon' => $wId,
                             'from' => $nm
                         ];
                     } else {
-                        // Si no parsea, no podemos crear con seguridad
+                        // No se pudo extraer placa y hab con seguridad
                         $notFound[] = $nm;
                     }
                 }
@@ -169,31 +188,28 @@ class ApiNimbusAppController extends Controller
             'ok' => true,
             'dryRun' => $dryRun,
             'updated_count' => count($updated),
-            'created_count' => count($created),   // <-- NUEVO
+            'created_count' => count($created),
             'not_found_count' => count($notFound),
             'conflicts_count' => count($conflicts),
             'updated' => $updated,
-            'created' => $created,          // <-- NUEVO
+            'created' => $created,
             'not_found' => $notFound,
             'conflicts' => $conflicts
         ]);
     }
 
-
     /**
-     * Parsear "PLACA (HAB)" o "PLACA(HAB)" → ['placa' => ..., 'hab' => ...]
-     * Retorna null si no coincide el patrón.
+     * Parsear "PLACA (HAB)" o "PLACA(HAB)" con puntos finales opcionales.
+     * Retorna ['placa' => ..., 'hab' => ...] o null si no matchea.
      */
     private function parsePlacaHabilitacion(string $nm): ?array
     {
-        // Permite espacios y puntos (.) al final luego del cierre de paréntesis
+        // Permite espacios y cualquier cantidad de puntos tras el cierre de ')'
         if (preg_match('/^\s*([A-Z0-9\-]+)\s*\(\s*([^)]+)\s*\)\s*\.{0,}\s*$/i', $nm, $m)) {
-            $hab = trim($m[2]);
-            // Quitar puntos finales y espacios residuales del hab
-            $hab = rtrim($hab, ". \t\n\r\0\x0B");
+            // No limpiamos aquí (solo recortamos); la limpieza final ocurre antes de guardar/comparar
             return [
                 'placa' => strtoupper(trim($m[1])),
-                'hab' => $hab,
+                'hab' => trim($m[2]),
             ];
         }
         return null;
@@ -201,12 +217,14 @@ class ApiNimbusAppController extends Controller
 
     /**
      * Normaliza para comparar: mayúsculas y sin espacios ni puntos.
+     * OJO: sólo para COMPARAR, no para GUARDAR.
      */
     private function normalizeName(string $s): string
     {
         $s = strtoupper($s);
         return str_replace([' ', '.'], '', $s);
     }
+
 
     public function getValorGeocercaTest(Request $request)
     {
