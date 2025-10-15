@@ -147,6 +147,48 @@ class NimbusController extends Controller
             $ruta['tarifas'] = $map;
         }
         unset($ruta);
+
+
+        // ---- ORDENAR VUELTAS POR HORA ----
+        $toMinutes = function ($hhmm) {
+            if (!is_string($hhmm) || !preg_match('/^\d{2}:\d{2}$/', $hhmm)) {
+                return PHP_INT_MAX; // sin hora => al final
+            }
+            [$H, $M] = explode(':', $hhmm);
+            return ((int) $H) * 60 + ((int) $M);
+        };
+
+        if (is_array($rutas)) {
+            foreach ($rutas as &$ruta) {
+                if (!isset($ruta['data']) || !is_array($ruta['data']))
+                    continue;
+
+                usort($ruta['data'], function ($a, $b) use ($toMinutes) {
+                    $pa = $a['horaProgramada'] ?? [];
+                    $pb = $b['horaProgramada'] ?? [];
+
+                    $startA = isset($pa[0]) ? $toMinutes($pa[0]) : PHP_INT_MAX;
+                    $startB = isset($pb[0]) ? $toMinutes($pb[0]) : PHP_INT_MAX;
+
+                    if ($startA !== $startB)
+                        return $startA <=> $startB;
+
+                    // desempate por última hora de la rutina
+                    $endA = !empty($pa) ? $toMinutes($pa[count($pa) - 1]) : PHP_INT_MAX;
+                    $endB = !empty($pb) ? $toMinutes($pb[count($pb) - 1]) : PHP_INT_MAX;
+
+                    if ($endA !== $endB)
+                        return $endA <=> $endB;
+
+                    // último desempate por nombre/placa
+                    $na = strtoupper(trim($a['nombreUnidad'] ?? ''));
+                    $nb = strtoupper(trim($b['nombreUnidad'] ?? ''));
+                    return $na <=> $nb;
+                });
+            }
+            unset($ruta);
+        }
+
         // Si viene en modo "poll" (consulta periódica), responde JSON simple
         if ($request->boolean('poll')) {
             return response()->json([

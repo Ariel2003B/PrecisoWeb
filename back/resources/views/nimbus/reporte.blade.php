@@ -1796,6 +1796,34 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                 }
             }
 
+            function reorderRowsByHora(table) {
+                if (!table) return;
+                const body = table.tBodies?.[0];
+                if (!body) return;
+
+                const rows = Array.from(body.querySelectorAll('tr'));
+
+                // Extrae la hora de la primera columna "Plan." de cada fila
+                rows.sort((a, b) => {
+                    const horaA = (a.querySelector('.col-plan')?.textContent || '').trim();
+                    const horaB = (b.querySelector('.col-plan')?.textContent || '').trim();
+
+                    const tA = parseHora(horaA);
+                    const tB = parseHora(horaB);
+
+                    return tA - tB; // orden ascendente
+                });
+
+                rows.forEach(r => body.appendChild(r)); // reaplica orden al DOM
+            }
+
+            // Helper: convierte "15:08" a minutos para comparar
+            function parseHora(h) {
+                const m = /^(\d{1,2}):(\d{2})$/.exec(h);
+                if (!m) return 9999;
+                return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+            }
+
             function parseDataAttrJSON(el, attr) {
                 const raw = el.getAttribute(attr) || '{}';
                 try {
@@ -1842,6 +1870,9 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                 scrollTableToBottom(table); // <- baja al final siempre
 
             }
+
+            reorderRowsByHora(table);
+
             // === NUEVO: auto-scroll al final de la tabla ===
             function scrollTableToBottom(table) {
                 if (!table) return;

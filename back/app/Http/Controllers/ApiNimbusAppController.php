@@ -75,8 +75,7 @@ class ApiNimbusAppController extends Controller
 
         $dryRun = $request->boolean('dry', false);
         $updated = [];
-        $created = [];
-        $notFound = [];
+        $created = [];        $notFound = [];
         $conflicts = [];
 
         DB::transaction(function () use ($payload, $dryRun, &$updated, &$created, &$notFound, &$conflicts) {
