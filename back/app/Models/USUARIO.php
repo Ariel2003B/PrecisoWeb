@@ -89,5 +89,9 @@ class USUARIO extends Authenticatable
 	{
 		return $this->hasMany(Unidad::class, 'usu_id');
 	}
+	public function simcards()
+	{
+		return $this->hasMany(SIMCARD::class, 'USU_ID', 'USU_ID');
+	}
 
 }

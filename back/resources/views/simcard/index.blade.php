@@ -1,3 +1,5 @@
+
+
 @extends('layout')
 
 @section('Titulo', 'Gestión de SIM Cards')
@@ -92,7 +94,7 @@
                             <tr>
                                 <th scope="col">N</th>
                                 <th scope="col">Cuenta</th>
-                                <th scope="col">Plan</th>
+
                                 <th scope="col">Código Plan</th>
                                 <th scope="col">ICC</th>
                                 <th scope="col">Número</th>
@@ -101,7 +103,7 @@
                                 <th scope="col">Grupo</th>
                                 <th scope="col">Asignación</th>
                                 <th scope="col">Estado</th>
-                                <th scope="col">Acciones</th>
+                                <th scope="col" class="text-nowrap" style="width: 1%; min-width: 210px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,7 +114,7 @@
                                 <tr>
                                     <td>{{ $secuencial++ }}</td>
                                     <td>{{ $simcard->CUENTA }}</td>
-                                    <td>{{ $simcard->PLAN }}</td>
+
                                     <td>{{ $simcard->TIPOPLAN }}</td>
                                     <td>{{ $simcard->ICC }}</td>
                                     <td>{{ $simcard->NUMEROTELEFONO }}</td>
@@ -133,16 +135,65 @@
                                             <span class="badge bg-warning">Libre</span>
                                         @endif
                                     </td>
-                                    <td>
+
+                                    <td class="table-actions text-nowrap">
                                         @if (Auth::check())
                                             @if (!Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'LECTURA'))
-                                                <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
-                                                    class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-edit"></i> Editar
-                                                </a>
+                                                {{-- Botonera para >= sm --}}
+                                                <div class="d-none d-sm-inline-flex align-items-center gap-1">
+                                                    <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
+                                                        class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip"
+                                                        title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                        <span class="d-none d-md-inline">Editar</span>
+                                                    </a>
+
+                                                    <a href="{{ route('simcards.contrato', $simcard->ID_SIM) }}"
+                                                        class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip"
+                                                        title="Contrato">
+                                                        <i class="fas fa-file-contract"></i>
+                                                        <span class="d-none d-md-inline">Contrato</span>
+                                                    </a>
+
+                                                    <button type="button" class="btn btn-outline-secondary btn-action"
+                                                        data-bs-toggle="tooltip" title="Información"
+                                                        onclick="verInfoSim({{ $simcard->ID_SIM }})">
+                                                        <i class="bi bi-info-circle"></i>
+                                                        <span class="d-none d-md-inline">Info</span>
+                                                    </button>
+                                                </div>
+
+                                                {{-- Dropdown compacto para < sm --}}
+                                                <div class="dropdown d-inline-block d-sm-none">
+                                                    <button class="btn btn-outline-primary btn-action dropdown-toggle"
+                                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-h"></i> Acciones
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('simcards.edit', $simcard->ID_SIM) }}">
+                                                                <i class="fas fa-edit me-2"></i> Editar
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('simcards.contrato', $simcard->ID_SIM) }}">
+                                                                <i class="fas fa-file-contract me-2"></i> Contrato
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <button class="dropdown-item" type="button"
+                                                                onclick="verInfoSim({{ $simcard->ID_SIM }})">
+                                                                <i class="bi bi-info-circle me-2"></i> Info
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             @endif
                                         @endif
                                     </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -192,6 +243,27 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
         </div>
 
     </div>
+    <div class="modal fade" id="modalSimInfo" tabindex="-1" aria-labelledby="modalSimInfoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title" id="modalSimInfoLabel">Información de la SIM</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="modalSimInfoBody">
+                    <div class="text-center p-5">
+                        <div class="spinner-border" role="status"></div>
+                        <div class="mt-2">Cargando...</div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -269,5 +341,121 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
                 });
         }
     </script>
+    <script>
+        function verInfoSim(id) {
+            const modalEl = document.getElementById('modalSimInfo');
+            const bodyEl = document.getElementById('modalSimInfoBody');
+
+            // Limpia y muestra "cargando"
+            bodyEl.innerHTML = `
+        <div class="text-center p-5">
+            <div class="spinner-border" role="status"></div>
+            <div class="mt-2">Cargando...</div>
+        </div>`;
+
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+
+            // Petición AJAX (GET) que trae el HTML del parcial
+            fetch(`{{ url('/simcards') }}/${id}/info`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(resp => {
+                    if (!resp.ok) throw new Error('Error HTTP ' + resp.status);
+                    return resp.text();
+                })
+                .then(html => {
+                    bodyEl.innerHTML = html;
+                })
+                .catch(err => {
+                    console.error(err);
+                    bodyEl.innerHTML = `
+                <div class="alert alert-danger">
+                    No se pudo cargar la información. Intenta nuevamente.
+                </div>`;
+                });
+        }
+    </script>
+    {{-- Modal visor genérico (img / pdf) --}}
+    <div class="modal fade" id="viewerModal" tabindex="-1" aria-labelledby="viewerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title" id="viewerModalLabel">Vista de documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="viewerBody">
+                    <div class="text-center p-5">
+                        <div class="spinner-border" role="status"></div>
+                        <div class="mt-2">Cargando…</div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <a id="viewerOpenNew" href="#" target="_blank" class="btn btn-outline-secondary">Abrir en
+                        pestaña</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openViewer(src, type) {
+            const body = document.getElementById('viewerBody');
+            const a = document.getElementById('viewerOpenNew');
+            body.innerHTML = `
+      <div class="text-center p-5">
+        <div class="spinner-border" role="status"></div>
+        <div class="mt-2">Cargando…</div>
+      </div>`;
+            a.href = src || '#';
+
+            const modal = new bootstrap.Modal(document.getElementById('viewerModal'));
+            modal.show();
+
+            // Render según tipo
+            setTimeout(() => {
+                if (!src) {
+                    body.innerHTML = `<div class="alert alert-danger mb-0">No hay archivo para mostrar.</div>`;
+                    a.classList.add('disabled');
+                    return;
+                }
+                a.classList.remove('disabled');
+
+                if (type === 'image') {
+                    body.innerHTML = `<img src="${src}" class="img-fluid rounded shadow-sm" alt="Documento">`;
+                } else if (type === 'pdf') {
+                    body.innerHTML = `
+          <div class="ratio ratio-16x9">
+            <iframe src="${src}" title="PDF" frameborder="0"></iframe>
+          </div>`;
+                } else {
+                    body.innerHTML = `
+          <div class="alert alert-info">
+            Formato no previsualizable. Puedes abrirlo en una pestaña nueva.
+          </div>`;
+                }
+            }, 150);
+        }
+    </script>
+
+    <style>
+        /* Miniaturas compactas y botones consistentes */
+        .thumb-doc {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: .35rem;
+            border: 1px solid rgba(0, 0, 0, .075);
+        }
+
+        .btn-viewer {
+            padding: .2rem .5rem;
+            font-size: .82rem;
+            border-radius: .35rem;
+        }
+    </style>
 
 @endsection

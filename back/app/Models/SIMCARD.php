@@ -24,9 +24,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $ASIGNACION
  * @property string|null $EQUIPO
  * @property int|null $VEH_ID
+ * @property int|null $USU_ID
  * @property string|null $IMEI
- * 
+ * @property string|null $MODELO_EQUIPO
+ * @property string|null $MARCA_EQUIPO
  * @property VEHICULO|null $v_e_h_i_c_u_l_o
+ * @property USUARIO|null $usuario
  *
  * @package App\Models
  */
@@ -37,7 +40,9 @@ class SIMCARD extends Model
 	public $timestamps = false;
 
 	protected $casts = [
-		'VEH_ID' => 'int'
+		'VEH_ID' => 'int',
+		'USU_ID' => 'int',
+
 	];
 
 	protected $fillable = [
@@ -53,12 +58,41 @@ class SIMCARD extends Model
 		'ASIGNACION',
 		'EQUIPO',
 		'VEH_ID',
+		'USU_ID',
 		'IMEI',
-		'ID_WIALON'
+		'ID_WIALON',
+		'MODELO_EQUIPO',
+		'MARCA_EQUIPO'
 	];
 
 	public function v_e_h_i_c_u_l_o()
 	{
 		return $this->belongsTo(VEHICULO::class, 'VEH_ID');
+	}
+	/** Nuevo: propietario (usuario) */
+	public function usuario()
+	{
+		return $this->belongsTo(USUARIO::class, 'USU_ID', 'USU_ID');
+	}
+	/** Detalles de contrato/pagos de la SIM */
+	public function detalleSimcards()
+	{
+		return $this->hasMany(DETALLE_SIMCARD::class, 'SIM_ID', 'ID_SIM');
+	}
+	public function cuotas()
+	{
+		return $this->hasManyThrough(
+			CUOTAS::class,           // Modelo destino
+			DETALLE_SIMCARD::class,  // Modelo intermedio
+			'SIM_ID',                // FK en DETALLE_SIMCARD -> SIMCARD
+			'DET_ID',                // FK en CUOTAS -> DETALLE_SIMCARD
+			'ID_SIM',                // PK en SIMCARD
+			'DET_ID'                 // PK en DETALLE_SIMCARD
+		);
+	}
+
+	public function documentosGenerados()
+	{
+		return $this->hasMany(DOCUMENTOS_GENERADOS::class, 'SIM_ID', 'ID_SIM');
 	}
 }

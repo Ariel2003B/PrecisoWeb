@@ -23,6 +23,8 @@
                 <form action="{{ route('simcards.update', $simcard->ID_SIM) }}" id="editSimCardForm" method="POST">
                     @csrf
                     @method('PUT')
+                    <input type="hidden" name="deps_migrated" id="deps_migrated" value="0">
+
                     <div class="mb-3">
                         <label for="PROPIETARIO" class="form-label">PROPIETARIO</label>
                         <select name="PROPIETARIO" id="PROPIETARIO" class="form-control">
@@ -96,6 +98,19 @@
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label for="MODELO_EQUIPO" class="form-label">Modelo del Equipo</label>
+                        <input type="text" name="MODELO_EQUIPO" id="MODELO_EQUIPO" class="form-control"
+                            value="{{ old('MODELO_EQUIPO', $simcard->MODELO_EQUIPO) }}"
+                            placeholder="Ingrese el modelo del equipo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="MARCA_EQUIPO" class="form-label">Marca del Equipo</label>
+                        <input type="text" name="MARCA_EQUIPO" id="MARCA_EQUIPO" class="form-control"
+                            value="{{ old('MARCA_EQUIPO', $simcard->MARCA_EQUIPO) }}"
+                            placeholder="Ingrese la marca del equipo">
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label">Estado</label>
                         <div>
                             <input type="radio" id="estado_activa" name="ESTADO" value="ACTIVA"
@@ -116,6 +131,36 @@
             </div>
         </section>
     </main>
+    <div class="modal fade" id="modalMigrarDependencias" tabindex="-1" aria-labelledby="modalMigrarDependenciasLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title" id="modalMigrarDependenciasLabel">Migrar dependencias a otra SIM</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">Esta SIM tiene contratos y/o documentos asociados. Debes migrarlos a otra SIM <b>sin
+                            detalles asignados</b> antes de cambiar su estado a <b>LIBRE</b> o <b>ELIMINADA</b>.</p>
+                    <div id="depsResumen" class="small text-muted mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Selecciona SIM destino</label>
+                        <select id="target_sim_id" class="form-select"></select>
+                        <div class="form-text">Solo se listan SIMs sin detalles asignados.</div>
+                    </div>
+                    <div id="migrarAlert" class="alert alert-danger d-none"></div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmarMigracion" class="btn btn-primary">
+                        Migrar dependencias
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('editSimCardForm');
@@ -257,6 +302,139 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editSimCardForm');
+            const depsMigratedEl = document.getElementById('deps_migrated');
+            const modalEl = document.getElementById('modalMigrarDependencias');
+            const modal = new bootstrap.Modal(modalEl);
+            const targetSelect = document.getElementById('target_sim_id');
+            const migrarAlert = document.getElementById('migrarAlert');
+            const depsResumen = document.getElementById('depsResumen');
+
+            const simId = {{ $simcard->ID_SIM }};
+
+            async function fetchJSON(url) {
+                const resp = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                return resp.json();
+            }
+
+            async function cargarTargets() {
+                targetSelect.innerHTML = '<option value="">Cargando...</option>';
+                const data = await fetchJSON(`{{ route('simcards.eligibleTargets') }}?exclude=${simId}`);
+                if (!data.items || data.items.length === 0) {
+                    targetSelect.innerHTML = '<option value="">No hay SIMs elegibles</option>';
+                    return;
+                }
+                targetSelect.innerHTML = '<option value="">-- Selecciona SIM destino --</option>';
+                for (const it of data.items) {
+                    const opt = document.createElement('option');
+                    opt.value = it.id;
+                    opt.textContent = it.label;
+                    targetSelect.appendChild(opt);
+                }
+            }
+
+            async function chequearDependenciasYMostrar(estadoNuevo) {
+                try {
+                    const dep = await fetchJSON(`{{ route('simcards.dependencies', $simcard->ID_SIM) }}`);
+                    if (!dep.has) return true; // no tiene dependencias => continuar normal
+
+                    // Tiene dependencias => abrir modal de migración
+                    depsResumen.textContent = `Detalles: ${dep.detalles} · Documentos: ${dep.documentos}`;
+                    migrarAlert.classList.add('d-none');
+                    await cargarTargets();
+                    modal.show();
+
+                    return false; // detener flujo normal hasta migrar
+                } catch (e) {
+                    alert('Error consultando dependencias. Intenta de nuevo.');
+                    console.error(e);
+                    return false;
+                }
+            }
+
+            async function migrarDependencias() {
+                const targetId = targetSelect.value;
+                if (!targetId) {
+                    migrarAlert.textContent = 'Selecciona una SIM destino.';
+                    migrarAlert.classList.remove('d-none');
+                    return;
+                }
+
+                migrarAlert.classList.add('d-none');
+
+                try {
+                    const resp = await fetch(`{{ route('simcards.migrateDependents', $simcard->ID_SIM) }}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            target_sim_id: parseInt(targetId, 10)
+                        })
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok || !data.ok) {
+                        throw new Error(data.message || 'No se pudo migrar');
+                    }
+
+                    // Marcamos que ya migramos y cerramos modal
+                    depsMigratedEl.value = '1';
+                    modal.hide();
+                    alert('Dependencias migradas correctamente. Ahora puedes guardar el cambio de estado.');
+
+                } catch (e) {
+                    migrarAlert.textContent = e.message;
+                    migrarAlert.classList.remove('d-none');
+                    console.error(e);
+                }
+            }
+
+            document.getElementById('btnConfirmarMigracion').addEventListener('click', migrarDependencias);
+
+            // Interceptar cambio de estado para exigir migración si hay dependencias
+            form.addEventListener('change', async function(e) {
+                if (e.target.name === 'ESTADO') {
+                    const estadoNuevo = e.target.value;
+                    if (['LIBRE', 'ELIMINADA'].includes(estadoNuevo)) {
+                        // Si aún no migraste en esta sesión => chequear dependencias
+                        if (depsMigratedEl.value !== '1') {
+                            const ok = await chequearDependenciasYMostrar(estadoNuevo);
+                            if (!ok) {
+                                // Revertir radio visualmente hasta que migre
+                                e.target.checked = false;
+                                // Volver al estado actual
+                                document.querySelector(
+                                        `input[name="ESTADO"][value="{{ $simcard->ESTADO }}"]`)
+                                    .checked = true;
+                            }
+                        }
+                    }
+                }
+            });
+
+            // En el submit, si va a LIBRE/ELIMINADA y hay deps_migrated=0, evitamos submit
+            form.addEventListener('submit', async function(e) {
+                const estado = document.querySelector('input[name="ESTADO"]:checked')?.value;
+                if (['LIBRE', 'ELIMINADA'].includes(estado) && depsMigratedEl.value !== '1') {
+                    e.preventDefault();
+                    const ok = await chequearDependenciasYMostrar(estado);
+                    if (ok) {
+                        // no tenía deps, podemos intentar otra vez
+                        form.submit();
+                    }
+                }
+            });
+        });
+    </script>
 
 
     @if ($errors->any())

@@ -81,7 +81,7 @@ Route::get('/log-test', function () {
     Log::info('Escribiendo en el log desde /log-test');
     return 'Log generado';
 });
-Route::get('/empresa/{empresa}/stops',       [EmpresaController::class, 'stopsForm'])->name('empresa.stops.form');
+Route::get('/empresa/{empresa}/stops', [EmpresaController::class, 'stopsForm'])->name('empresa.stops.form');
 Route::post('/empresa/{empresa}/stops/save', [EmpresaController::class, 'stopsSave'])->name('empresa.stops.save');
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
@@ -98,10 +98,27 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('simcards', SimCardController::class)->except(['show']);
         Route::post('/simcards/bulk-upload', [SimCardController::class, 'bulkUpload'])->name('simcards.bulkUpload');
         Route::get('/simcards/template', [SimCardController::class, 'downloadTemplate'])->name('simcards.template');
+        Route::get('/simcards/{simcard}/contrato', [SimcardController::class, 'simcardcontratos'])
+            ->name('simcards.contrato');
+        Route::post('/simcards/{simcard}/contrato', [SimcardController::class, 'storeContrato'])
+            ->name('simcards.contrato.store');
         Route::get('/simcards/update-wialon', [SimCardController::class, 'updateWialonPhones'])
             ->name('simcards.updateWialonPhones');
         Route::get('/simcards/updateSimCardFromWialon', [SimCardController::class, 'updateSimCardFromWialon'])
             ->name('simcards.updateSimCardFromWialon');
+        Route::get('/simcards/{simcard}/info', [SimCardController::class, 'info'])
+            ->name('simcards.info')
+            ->middleware('auth');
+
+        Route::get('/simcards/{simcard}/dependencies', [SimCardController::class, 'dependencies'])
+            ->name('simcards.dependencies');
+
+        Route::get('/simcards/eligible-targets', [SimCardController::class, 'eligibleTargets'])
+            ->name('simcards.eligibleTargets');
+
+        Route::post('/simcards/{simcard}/migrate-dependents', [SimCardController::class, 'migrateDependents'])
+            ->name('simcards.migrateDependents');
+
     });
     Route::middleware(['auth', 'role:GESTION DE PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);

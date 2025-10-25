@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CUOTAS;
+use App\Models\DETALLE_SIMCARD;
 use App\Models\SIMCARD;
+use App\Models\USUARIO;
 use App\Models\VEHICULO;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Mail;
@@ -26,6 +31,26 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class SimCardController extends Controller
 {
+
+    public function info(SIMCARD $simcard)
+    {
+        // Eager loading de relaciones para el modal
+        $simcard->load([
+            'usuario',
+            'v_e_h_i_c_u_l_o',
+            'detalleSimcards.cuotas' => fn($q) => $q->orderBy('FECHA_PAGO'),
+            'documentosGenerados',
+        ]);
+
+        // Contrato vigente (si existe) y el historial
+        $vigente = $simcard->detalleSimcards()->vigente()->first();
+        $historial = $simcard->detalleSimcards()
+            ->orderByDesc('FECHA_ACTIVACION_RENOVACION')
+            ->get();
+
+        // Retornamos HTML para inyectar en el modal (AJAX)
+        return view('simcard.partials.info', compact('simcard', 'vigente', 'historial'));
+    }
     public function index(Request $request)
     {
         $query = SIMCARD::with('v_e_h_i_c_u_l_o');
@@ -362,9 +387,268 @@ class SimCardController extends Controller
     }
 
 
+    public function simcardcontratos(SIMCARD $simcard)
+    {
+        $hoy = Carbon::today();
+
+        // Buscar contrato vigente
+        $detalleVigente = $simcard->detalleSimcards()
+            ->vigente($hoy)
+            ->with(['cuotas' => fn($q) => $q->orderBy('FECHA_PAGO')])
+            ->first();
+
+        // Si no hay vigente => preparar un objeto vacío (para crear nuevo)
+        $detalle = $detalleVigente ?? null;
+        $puedeEditar = $detalleVigente !== null; // true si hay contrato vigente
+
+        // Historial completo
+        $historial = $simcard->detalleSimcards()
+            ->with(['cuotas' => fn($q) => $q->orderBy('FECHA_PAGO')])
+            ->orderByDesc('FECHA_ACTIVACION_RENOVACION')
+            ->get();
+
+        // Lista de usuarios
+        $usuarios = USUARIO::orderBy('APELLIDO')
+            ->orderBy('NOMBRE')
+            ->get(['USU_ID', 'NOMBRE', 'APELLIDO', 'CEDULA', 'TELEFONO']);
+
+        return view('simcard.contrato', compact('simcard', 'usuarios', 'detalle', 'historial', 'puedeEditar'));
+    }
 
 
+    public function storeContrato(Request $request, SIMCARD $simcard)
+    {
+        $data = $request->validate([
+            'DET_ID' => ['nullable', 'integer', 'exists:DETALLE_SIMCARD,DET_ID'],
 
+            'USU_ID' => ['required', 'integer', 'exists:USUARIO,USU_ID'],
+            'FECHA_ACTIVACION_RENOVACION' => ['required', 'date'],
+            'PLAZO_CONTRATADO' => ['required', 'integer', 'min:1', 'max:60'],
+            'VALOR_TOTAL' => ['required', 'numeric', 'min:0'],
+            'NUMERO_CUOTAS' => ['required', 'integer', 'min:1', 'max:60'],
+            'FECHA_SIGUIENTE_PAGO' => ['nullable', 'date'],
+
+            'cuotas' => ['nullable', 'array'],
+            'cuotas.*.CUO_ID' => ['nullable', 'integer', 'exists:CUOTAS,CUO_ID'],
+            'cuotas.*.FECHA_PAGO' => ['nullable', 'date'],
+            'cuotas.*.VALOR_CUOTA' => ['nullable', 'numeric', 'min:0'],
+            'cuotas.*.COMPROBANTE' => ['nullable', 'string', 'max:8000'],
+            'cuotas.*.COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ]);
+
+        // Asegura relación simcard -> usuario
+        if ($simcard->USU_ID !== (int) $data['USU_ID']) {
+            $simcard->USU_ID = $data['USU_ID'];
+            $simcard->save();
+        }
+
+        $fechaActivacion = Carbon::parse($data['FECHA_ACTIVACION_RENOVACION']);
+        $plazo = (int) $data['PLAZO_CONTRATADO'];
+        $fechaSiguiente = $fechaActivacion->copy()->addMonths($plazo);
+
+        DB::transaction(function () use ($simcard, $data, $fechaSiguiente, $request) {
+            // 1) Upsert del DETALLE (igual que ya lo tienes)...
+            if (!empty($data['DET_ID'])) {
+                $detalle = DETALLE_SIMCARD::where('DET_ID', $data['DET_ID'])
+                    ->where('SIM_ID', $simcard->ID_SIM)
+                    ->firstOrFail();
+                $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
+                $detalle->FECHA_SIGUIENTE_PAGO = $fechaSiguiente->toDateString();
+                $detalle->PLAZO_CONTRATADO = $data['PLAZO_CONTRATADO'];
+                $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
+                $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
+                $detalle->save();
+            } else {
+                $detalle = new DETALLE_SIMCARD();
+                $detalle->SIM_ID = $simcard->ID_SIM;
+                $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
+                $detalle->FECHA_SIGUIENTE_PAGO = $fechaSiguiente->toDateString();
+                $detalle->PLAZO_CONTRATADO = $data['PLAZO_CONTRATADO'];
+                $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
+                $detalle->VALOR_ABONADO = 0;
+                $detalle->SALDO = $data['VALOR_TOTAL'];
+                $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
+                $detalle->save();
+            }
+
+            // 2) Reconciliación de CUOTAS por CUO_ID
+            $basePath = "simcards/{$simcard->ID_SIM}/detalles/{$detalle->DET_ID}/cuotas";
+            $cuotasReq = $data['cuotas'] ?? [];
+
+            $idsRecibidos = [];
+
+            foreach ($cuotasReq as $idx => $c) {
+                // Normalizar valores: '' -> null
+                $fecha = !empty($c['FECHA_PAGO']) ? $c['FECHA_PAGO'] : null;
+                $valor = (isset($c['VALOR_CUOTA']) && $c['VALOR_CUOTA'] !== '') ? $c['VALOR_CUOTA'] : null;
+                $compTexto = (isset($c['COMPROBANTE']) && $c['COMPROBANTE'] !== '') ? $c['COMPROBANTE'] : null;
+                $tieneArchivo = $request->hasFile("cuotas.$idx.COMPROBANTE_FILE");
+
+                // Si la fila está completamente vacía y no hay archivo ni CUO_ID => NO crear fila basura
+                $cuoId = $c['CUO_ID'] ?? null;
+                $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo;
+
+                if ($filaVacia && empty($cuoId)) {
+                    continue; // no crear nada
+                }
+
+                // Buscar existente si viene CUO_ID
+                $cuota = null;
+                if (!empty($cuoId)) {
+                    $cuota = \App\Models\CUOTAS::where('CUO_ID', $cuoId)
+                        ->where('DET_ID', $detalle->DET_ID)
+                        ->first();
+                }
+                if (!$cuota) {
+                    $cuota = new \App\Models\CUOTAS();
+                    $cuota->DET_ID = $detalle->DET_ID; // SIEMPRE setear DET_ID
+                }
+
+                $cuota->FECHA_PAGO = $fecha;      // null si venía vacío
+                $cuota->VALOR_CUOTA = $valor;     // null si venía vacío
+                // Si mandaron texto/URL de comprobante
+                if (!is_null($compTexto)) {
+                    $cuota->COMPROBANTE = $compTexto;
+                }
+
+                $cuota->save();
+
+                // Manejo de archivo (si llega)
+                if ($tieneArchivo) {
+                    $stored = $request->file("cuotas.$idx.COMPROBANTE_FILE")->store($basePath, 'public');
+                    // si había uno anterior interno, lo borramos
+                    if (!empty($cuota->COMPROBANTE) && Str::startsWith($cuota->COMPROBANTE, ['simcards/'])) {
+                        Storage::disk('public')->delete($cuota->COMPROBANTE);
+                    }
+                    $cuota->COMPROBANTE = $stored;
+                    $cuota->save();
+                }
+
+                $idsRecibidos[] = $cuota->CUO_ID;
+            }
+
+            // Borrar cuotas que no vinieron (cuando bajan el número o eliminan filas)
+            // Si $idsRecibidos está vacío, borra todas las actuales del detalle.
+            \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
+                ->when(count($idsRecibidos) > 0, fn($q) => $q->whereNotIn('CUO_ID', $idsRecibidos))
+                ->when(count($idsRecibidos) === 0, fn($q) => $q) // sin filtro => borra todas
+                ->delete();
+            // === Recalcular ABONADO y SALDO ===
+            $abonado = (float) \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
+                ->sum('VALOR_CUOTA'); // suma solo las cuotas con valor (null no suma)
+
+            $total = (float) $detalle->VALOR_TOTAL;
+            $saldo = round($total - $abonado, 2);
+            if ($saldo < 0) { // por si se pagó de más
+                $saldo = 0.00;
+            }
+
+            $detalle->VALOR_ABONADO = round($abonado, 2);
+            $detalle->SALDO = $saldo;
+
+            // Si quieres que NUMERO_CUOTAS refleje lo que quedó realmente cargado,
+            // descomenta la siguiente línea (opcional):
+            // $detalle->NUMERO_CUOTAS = \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)->count();
+
+            $detalle->save();
+
+        });
+
+        return redirect()
+            ->route('simcards.contrato', $simcard->ID_SIM) // o a donde prefieras volver
+            ->with('ok', 'Contrato guardado correctamente.');
+    }
+    public function dependencies(SIMCARD $simcard)
+    {
+        $detalles = DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)->count();
+        // Si tienes modelo DOCUMENTOS_GENERADOS, úsalo; si no, usa DB::
+        $docs = DB::table('DOCUMENTOS_GENERADOS')->where('SIM_ID', $simcard->ID_SIM)->count();
+
+        return response()->json([
+            'detalles' => $detalles,
+            'documentos' => $docs,
+            'has' => ($detalles + $docs) > 0,
+        ]);
+    }
+
+    public function eligibleTargets(Request $request)
+    {
+        $excludeId = (int) $request->query('exclude');
+
+        // SIMs sin detalles asignados (0 detalles) y distintas a la actual.
+        // Opcional: excluir ELIMINADA
+        $targets = SIMCARD::query()
+            ->where('ID_SIM', '!=', $excludeId)
+            ->where(function ($q) { // sin detalles
+                $q->whereNotIn('ID_SIM', function ($sub) {
+                    $sub->from('DETALLE_SIMCARD')->select('SIM_ID')->whereNotNull('SIM_ID');
+                })->orWhereNull('ID_SIM'); // redundante, pero harmless
+            })
+            ->where(function ($q) {
+                $q->whereNull('ESTADO')->orWhere('ESTADO', '!=', 'ELIMINADA');
+            })
+            ->orderBy('CUENTA')
+            ->orderBy('NUMEROTELEFONO')
+            ->limit(300)
+            ->get(['ID_SIM', 'CUENTA', 'PLAN', 'NUMEROTELEFONO', 'ESTADO']);
+
+        return response()->json([
+            'items' => $targets->map(fn($s) => [
+                'id' => $s->ID_SIM,
+                'label' => sprintf('#%d | %s | %s | %s', $s->ID_SIM, $s->CUENTA ?? '—', $s->PLAN ?? '—', $s->NUMEROTELEFONO ?? '—'),
+                'estado' => $s->ESTADO,
+            ]),
+        ]);
+    }
+
+    public function migrateDependents(Request $request, SIMCARD $simcard)
+    {
+        $data = $request->validate([
+            'target_sim_id' => ['required', 'integer', 'different:current_sim_id', 'exists:SIMCARD,ID_SIM'],
+        ], [], [
+                'target_sim_id' => 'SIM destino',
+            ] + ['current_sim_id' => $simcard->ID_SIM]);
+
+        $targetId = (int) $data['target_sim_id'];
+
+        // 1) Validar que el destino NO tenga detalles
+        $hasDetalles = DETALLE_SIMCARD::where('SIM_ID', $targetId)->exists();
+        if ($hasDetalles) {
+            return response()->json(['ok' => false, 'message' => 'La SIM destino ya tiene detalles asignados.'], 422);
+        }
+
+        // 2) (Opcional) Si NO quieres sobreescribir un USU_ID ya asignado en destino, descomenta:
+        // $targetSim = SIMCARD::findOrFail($targetId);
+        // if (!is_null($targetSim->USU_ID)) {
+        //     return response()->json(['ok' => false, 'message' => 'La SIM destino ya tiene un usuario asignado.'], 422);
+        // }
+
+        DB::transaction(function () use ($simcard, $targetId) {
+            // a) Mover DETALLE_SIMCARD al destino
+            DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)->update(['SIM_ID' => $targetId]);
+
+            // b) Mover DOCUMENTOS_GENERADOS al destino (ajusta el nombre de la tabla/campos si difieren)
+            DB::table('DOCUMENTOS_GENERADOS')->where('SIM_ID', $simcard->ID_SIM)->update(['SIM_ID' => $targetId]);
+
+            // c) Migrar también el USUARIO vinculado a la SIM (USU_ID) y, si quieres, el PROPIETARIO (texto)
+            $sourceUserId = $simcard->USU_ID;
+            $sourcePropietario = $simcard->PROPIETARIO;
+
+            // Sobreescribimos destino con el usuario de origen (comportamiento más práctico para "migrar")
+            SIMCARD::where('ID_SIM', $targetId)->update([
+                'USU_ID' => $sourceUserId,
+                'PROPIETARIO' => $sourcePropietario, // quita esta línea si NO quieres mover el nombre visual
+            ]);
+
+            // Deja la SIM de origen sin usuario (ya que vas a dejarla LIBRE/ELIMINADA)
+            SIMCARD::where('ID_SIM', $simcard->ID_SIM)->update([
+                'USU_ID' => null,
+                // 'PROPIETARIO' => null, // descomenta si quieres limpiar también el texto
+            ]);
+        });
+
+        return response()->json(['ok' => true, 'message' => 'Dependencias y usuario migrados correctamente.']);
+    }
     public function update(Request $request, SIMCARD $simcard)
     {
         $request->validate([
@@ -417,6 +701,8 @@ class SimCardController extends Controller
             'GRUPO' => $request->GRUPO,
             'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo y se actualiza
             'IMEI' => $request->IMEI,
+            'MODELO_EQUIPO' => $request->MODELO_EQUIPO,
+            'MARCA_EQUIPO' => $request->MARCA_EQUIPO
         ]);
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');
