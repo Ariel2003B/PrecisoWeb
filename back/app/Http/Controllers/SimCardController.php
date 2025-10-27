@@ -53,7 +53,7 @@ class SimCardController extends Controller
     }
     public function index(Request $request)
     {
-        $query = SIMCARD::with('v_e_h_i_c_u_l_o');
+        $query = SIMCARD::with(['v_e_h_i_c_u_l_o', 'servicioReciente']);
 
         // Obtener opciones únicas para los desplegables
         $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
@@ -389,44 +389,210 @@ class SimCardController extends Controller
 
     public function simcardcontratos(SIMCARD $simcard)
     {
-        $hoy = Carbon::today();
+        $hoy = \Carbon\Carbon::today();
 
-        // Buscar contrato vigente
-        $detalleVigente = $simcard->detalleSimcards()
-            ->vigente($hoy)
+        // EDITAR: toma el último detalle (no el vigente)
+        $detalle = $simcard->detalleSimcards()
             ->with(['cuotas' => fn($q) => $q->orderBy('FECHA_PAGO')])
+            ->orderByDesc('FECHA_ACTIVACION_RENOVACION')
+            ->orderByDesc('DET_ID')
             ->first();
 
-        // Si no hay vigente => preparar un objeto vacío (para crear nuevo)
-        $detalle = $detalleVigente ?? null;
-        $puedeEditar = $detalleVigente !== null; // true si hay contrato vigente
+        // ahora siempre puede editar (si no hay, el form sirve para crear)
+        $puedeEditar = true;
 
-        // Historial completo
+        // Historial de contratos (como antes)
         $historial = $simcard->detalleSimcards()
             ->with(['cuotas' => fn($q) => $q->orderBy('FECHA_PAGO')])
             ->orderByDesc('FECHA_ACTIVACION_RENOVACION')
+            ->orderByDesc('DET_ID')
             ->get();
 
-        // Lista de usuarios
+        // SERVICIO: último y su historial
+        $servicioReciente = $simcard->servicios()
+            ->orderByDesc('FECHA_SERVICIO')
+            ->orderByDesc('SERV_ID')
+            ->first();
+
+        $historialServicios = $simcard->servicios()
+            ->orderByDesc('FECHA_SERVICIO')
+            ->orderByDesc('SERV_ID')
+            ->get();
+
+        // Usuarios
         $usuarios = USUARIO::orderBy('APELLIDO')
             ->orderBy('NOMBRE')
             ->get(['USU_ID', 'NOMBRE', 'APELLIDO', 'CEDULA', 'TELEFONO']);
 
-        return view('simcard.contrato', compact('simcard', 'usuarios', 'detalle', 'historial', 'puedeEditar'));
+        return view('simcard.contrato', compact(
+            'simcard',
+            'usuarios',
+            'detalle',
+            'historial',
+            'puedeEditar',
+            'servicioReciente',
+            'historialServicios'
+        ));
     }
+
+
+
+    // public function storeContrato(Request $request, SIMCARD $simcard)
+    // {
+    //     $data = $request->validate([
+    //         'DET_ID' => ['nullable', 'integer', 'exists:DETALLE_SIMCARD,DET_ID'],
+
+    //         'USU_ID' => ['required', 'integer', 'exists:USUARIO,USU_ID'],
+    //         'FECHA_ACTIVACION_RENOVACION' => ['required', 'date'],
+    //         'PLAZO_CONTRATADO' => ['required', 'integer', 'min:1', 'max:60'],
+    //         'VALOR_TOTAL' => ['required', 'numeric', 'min:0'],
+    //         'NUMERO_CUOTAS' => ['required', 'integer', 'min:1', 'max:60'],
+    //         'FECHA_SIGUIENTE_PAGO' => ['nullable', 'date'],
+
+    //         'cuotas' => ['nullable', 'array'],
+    //         'cuotas.*.CUO_ID' => ['nullable', 'integer', 'exists:CUOTAS,CUO_ID'],
+    //         'cuotas.*.FECHA_PAGO' => ['nullable', 'date'],
+    //         'cuotas.*.VALOR_CUOTA' => ['nullable', 'numeric', 'min:0'],
+    //         'cuotas.*.COMPROBANTE' => ['nullable', 'string', 'max:8000'],
+    //         'cuotas.*.COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+    //     ]);
+
+    //     // Asegura relación simcard -> usuario
+    //     if ($simcard->USU_ID !== (int) $data['USU_ID']) {
+    //         $simcard->USU_ID = $data['USU_ID'];
+    //         $simcard->save();
+    //     }
+
+    //     $fechaActivacion = Carbon::parse($data['FECHA_ACTIVACION_RENOVACION']);
+    //     $plazo = (int) $data['PLAZO_CONTRATADO'];
+    //     $fechaSiguiente = $fechaActivacion->copy()->addMonths($plazo);
+
+    //     DB::transaction(function () use ($simcard, $data, $fechaSiguiente, $request) {
+    //         // 1) Upsert del DETALLE (igual que ya lo tienes)...
+    //         if (!empty($data['DET_ID'])) {
+    //             $detalle = DETALLE_SIMCARD::where('DET_ID', $data['DET_ID'])
+    //                 ->where('SIM_ID', $simcard->ID_SIM)
+    //                 ->firstOrFail();
+    //             $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
+    //             $detalle->FECHA_SIGUIENTE_PAGO = $fechaSiguiente->toDateString();
+    //             $detalle->PLAZO_CONTRATADO = $data['PLAZO_CONTRATADO'];
+    //             $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
+    //             $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
+    //             $detalle->save();
+    //         } else {
+    //             $detalle = new DETALLE_SIMCARD();
+    //             $detalle->SIM_ID = $simcard->ID_SIM;
+    //             $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
+    //             $detalle->FECHA_SIGUIENTE_PAGO = $fechaSiguiente->toDateString();
+    //             $detalle->PLAZO_CONTRATADO = $data['PLAZO_CONTRATADO'];
+    //             $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
+    //             $detalle->VALOR_ABONADO = 0;
+    //             $detalle->SALDO = $data['VALOR_TOTAL'];
+    //             $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
+    //             $detalle->save();
+    //         }
+
+    //         // 2) Reconciliación de CUOTAS por CUO_ID
+    //         $basePath = "simcards/{$simcard->ID_SIM}/detalles/{$detalle->DET_ID}/cuotas";
+    //         $cuotasReq = $data['cuotas'] ?? [];
+
+    //         $idsRecibidos = [];
+
+    //         foreach ($cuotasReq as $idx => $c) {
+    //             // Normalizar valores: '' -> null
+    //             $fecha = !empty($c['FECHA_PAGO']) ? $c['FECHA_PAGO'] : null;
+    //             $valor = (isset($c['VALOR_CUOTA']) && $c['VALOR_CUOTA'] !== '') ? $c['VALOR_CUOTA'] : null;
+    //             $compTexto = (isset($c['COMPROBANTE']) && $c['COMPROBANTE'] !== '') ? $c['COMPROBANTE'] : null;
+    //             $tieneArchivo = $request->hasFile("cuotas.$idx.COMPROBANTE_FILE");
+
+    //             // Si la fila está completamente vacía y no hay archivo ni CUO_ID => NO crear fila basura
+    //             $cuoId = $c['CUO_ID'] ?? null;
+    //             $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo;
+
+    //             if ($filaVacia && empty($cuoId)) {
+    //                 continue; // no crear nada
+    //             }
+
+    //             // Buscar existente si viene CUO_ID
+    //             $cuota = null;
+    //             if (!empty($cuoId)) {
+    //                 $cuota = \App\Models\CUOTAS::where('CUO_ID', $cuoId)
+    //                     ->where('DET_ID', $detalle->DET_ID)
+    //                     ->first();
+    //             }
+    //             if (!$cuota) {
+    //                 $cuota = new \App\Models\CUOTAS();
+    //                 $cuota->DET_ID = $detalle->DET_ID; // SIEMPRE setear DET_ID
+    //             }
+
+    //             $cuota->FECHA_PAGO = $fecha;      // null si venía vacío
+    //             $cuota->VALOR_CUOTA = $valor;     // null si venía vacío
+    //             // Si mandaron texto/URL de comprobante
+    //             if (!is_null($compTexto)) {
+    //                 $cuota->COMPROBANTE = $compTexto;
+    //             }
+
+    //             $cuota->save();
+
+    //             // Manejo de archivo (si llega)
+    //             if ($tieneArchivo) {
+    //                 $stored = $request->file("cuotas.$idx.COMPROBANTE_FILE")->store($basePath, 'public');
+    //                 // si había uno anterior interno, lo borramos
+    //                 if (!empty($cuota->COMPROBANTE) && Str::startsWith($cuota->COMPROBANTE, ['simcards/'])) {
+    //                     Storage::disk('public')->delete($cuota->COMPROBANTE);
+    //                 }
+    //                 $cuota->COMPROBANTE = $stored;
+    //                 $cuota->save();
+    //             }
+
+    //             $idsRecibidos[] = $cuota->CUO_ID;
+    //         }
+
+    //         // Borrar cuotas que no vinieron (cuando bajan el número o eliminan filas)
+    //         // Si $idsRecibidos está vacío, borra todas las actuales del detalle.
+    //         \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
+    //             ->when(count($idsRecibidos) > 0, fn($q) => $q->whereNotIn('CUO_ID', $idsRecibidos))
+    //             ->when(count($idsRecibidos) === 0, fn($q) => $q) // sin filtro => borra todas
+    //             ->delete();
+    //         // === Recalcular ABONADO y SALDO ===
+    //         $abonado = (float) \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
+    //             ->sum('VALOR_CUOTA'); // suma solo las cuotas con valor (null no suma)
+
+    //         $total = (float) $detalle->VALOR_TOTAL;
+    //         $saldo = round($total - $abonado, 2);
+    //         if ($saldo < 0) { // por si se pagó de más
+    //             $saldo = 0.00;
+    //         }
+
+    //         $detalle->VALOR_ABONADO = round($abonado, 2);
+    //         $detalle->SALDO = $saldo;
+
+    //         // Si quieres que NUMERO_CUOTAS refleje lo que quedó realmente cargado,
+    //         // descomenta la siguiente línea (opcional):
+    //         // $detalle->NUMERO_CUOTAS = \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)->count();
+
+    //         $detalle->save();
+
+    //     });
+
+    //     return redirect()
+    //         ->route('simcards.contrato', $simcard->ID_SIM) // o a donde prefieras volver
+    //         ->with('ok', 'Contrato guardado correctamente.');
+    // }
+
 
 
     public function storeContrato(Request $request, SIMCARD $simcard)
     {
-        $data = $request->validate([
-            'DET_ID' => ['nullable', 'integer', 'exists:DETALLE_SIMCARD,DET_ID'],
-
+        // 1) Validación base (sin forzar contrato/servicio)
+        $baseRules = [
             'USU_ID' => ['required', 'integer', 'exists:USUARIO,USU_ID'],
-            'FECHA_ACTIVACION_RENOVACION' => ['required', 'date'],
-            'PLAZO_CONTRATADO' => ['required', 'integer', 'min:1', 'max:60'],
-            'VALOR_TOTAL' => ['required', 'numeric', 'min:0'],
-            'NUMERO_CUOTAS' => ['required', 'integer', 'min:1', 'max:60'],
-            'FECHA_SIGUIENTE_PAGO' => ['nullable', 'date'],
+
+            // Contrato
+            'DET_ID' => ['nullable', 'integer', 'exists:DETALLE_SIMCARD,DET_ID'],
+            'FECHA_ACTIVACION_RENOVACION' => ['nullable', 'date'],
+            'VALOR_TOTAL' => ['nullable', 'numeric', 'min:0'],
+            'NUMERO_CUOTAS' => ['nullable', 'integer', 'min:1', 'max:60'],
 
             'cuotas' => ['nullable', 'array'],
             'cuotas.*.CUO_ID' => ['nullable', 'integer', 'exists:CUOTAS,CUO_ID'],
@@ -434,130 +600,184 @@ class SimCardController extends Controller
             'cuotas.*.VALOR_CUOTA' => ['nullable', 'numeric', 'min:0'],
             'cuotas.*.COMPROBANTE' => ['nullable', 'string', 'max:8000'],
             'cuotas.*.COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-        ]);
 
-        // Asegura relación simcard -> usuario
+            // Servicio
+            'SERV_ID' => ['nullable', 'integer'], // <-- NUEVO (para actualizar)
+            'SERV_FECHA' => ['nullable', 'date'],
+            'SERV_PLAZO' => ['nullable', 'integer', 'min:1', 'max:60'],
+            'SERV_SIGUIENTE_PAGO' => ['nullable', 'date'],
+            'SERV_VALOR' => ['nullable', 'numeric', 'min:0'],
+            'SERV_OBSERVACION' => ['nullable', 'string', 'max:1000'],
+            'SERV_COMPROBANTE' => ['nullable', 'string', 'max:8000'],
+            'SERV_COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ];
+        $data = $request->validate($baseRules);
+
+        // 2) Flags
+        $hasContrato = filled($data['FECHA_ACTIVACION_RENOVACION'] ?? null)
+            || filled($data['VALOR_TOTAL'] ?? null)
+            || filled($data['NUMERO_CUOTAS'] ?? null)
+            || !empty($data['DET_ID'])
+            || !empty($data['cuotas']);
+
+        $hasServicio = filled($data['SERV_FECHA'] ?? null)
+            || filled($data['SERV_VALOR'] ?? null)
+            || filled($data['SERV_PLAZO'] ?? null)
+            || $request->hasFile('SERV_COMPROBANTE_FILE')
+            || filled($data['SERV_COMPROBANTE'] ?? null)
+            || filled($data['SERV_OBSERVACION'] ?? null)
+            || !empty($data['SERV_ID']);
+
+        // 3) Reglas requeridas según flags
+        if ($hasContrato) {
+            $request->validate([
+                'FECHA_ACTIVACION_RENOVACION' => ['required', 'date'],
+                'VALOR_TOTAL' => ['required', 'numeric', 'min:0'],
+                'NUMERO_CUOTAS' => ['required', 'integer', 'min:1', 'max:60'],
+            ]);
+        }
+        if ($hasServicio) {
+            $request->validate([
+                'SERV_FECHA' => ['required', 'date'],
+                'SERV_PLAZO' => ['required', 'integer', 'min:1', 'max:60'],
+                'SERV_VALOR' => ['required', 'numeric', 'min:0'],
+            ]);
+        }
+
+        // 4) Actualiza propietario siempre
         if ($simcard->USU_ID !== (int) $data['USU_ID']) {
-            $simcard->USU_ID = $data['USU_ID'];
+            $simcard->USU_ID = (int) $data['USU_ID'];
             $simcard->save();
         }
 
-        $fechaActivacion = Carbon::parse($data['FECHA_ACTIVACION_RENOVACION']);
-        $plazo = (int) $data['PLAZO_CONTRATADO'];
-        $fechaSiguiente = $fechaActivacion->copy()->addMonths($plazo);
+        \DB::transaction(function () use ($simcard, $data, $request, $hasServicio, $hasContrato) {
 
-        DB::transaction(function () use ($simcard, $data, $fechaSiguiente, $request) {
-            // 1) Upsert del DETALLE (igual que ya lo tienes)...
-            if (!empty($data['DET_ID'])) {
-                $detalle = DETALLE_SIMCARD::where('DET_ID', $data['DET_ID'])
-                    ->where('SIM_ID', $simcard->ID_SIM)
-                    ->firstOrFail();
-                $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
-                $detalle->FECHA_SIGUIENTE_PAGO = $fechaSiguiente->toDateString();
-                $detalle->PLAZO_CONTRATADO = $data['PLAZO_CONTRATADO'];
-                $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
-                $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
-                $detalle->save();
-            } else {
-                $detalle = new DETALLE_SIMCARD();
-                $detalle->SIM_ID = $simcard->ID_SIM;
-                $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
-                $detalle->FECHA_SIGUIENTE_PAGO = $fechaSiguiente->toDateString();
-                $detalle->PLAZO_CONTRATADO = $data['PLAZO_CONTRATADO'];
-                $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
-                $detalle->VALOR_ABONADO = 0;
-                $detalle->SALDO = $data['VALOR_TOTAL'];
-                $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
-                $detalle->save();
-            }
+            // 5) SERVICIO: update-or-create
+            if ($hasServicio) {
+                $fecha = \Carbon\Carbon::parse($data['SERV_FECHA']);
+                $plazo = (int) $data['SERV_PLAZO'];
+                $siguiente = $fecha->copy()->addMonths($plazo);
 
-            // 2) Reconciliación de CUOTAS por CUO_ID
-            $basePath = "simcards/{$simcard->ID_SIM}/detalles/{$detalle->DET_ID}/cuotas";
-            $cuotasReq = $data['cuotas'] ?? [];
-
-            $idsRecibidos = [];
-
-            foreach ($cuotasReq as $idx => $c) {
-                // Normalizar valores: '' -> null
-                $fecha = !empty($c['FECHA_PAGO']) ? $c['FECHA_PAGO'] : null;
-                $valor = (isset($c['VALOR_CUOTA']) && $c['VALOR_CUOTA'] !== '') ? $c['VALOR_CUOTA'] : null;
-                $compTexto = (isset($c['COMPROBANTE']) && $c['COMPROBANTE'] !== '') ? $c['COMPROBANTE'] : null;
-                $tieneArchivo = $request->hasFile("cuotas.$idx.COMPROBANTE_FILE");
-
-                // Si la fila está completamente vacía y no hay archivo ni CUO_ID => NO crear fila basura
-                $cuoId = $c['CUO_ID'] ?? null;
-                $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo;
-
-                if ($filaVacia && empty($cuoId)) {
-                    continue; // no crear nada
-                }
-
-                // Buscar existente si viene CUO_ID
-                $cuota = null;
-                if (!empty($cuoId)) {
-                    $cuota = \App\Models\CUOTAS::where('CUO_ID', $cuoId)
-                        ->where('DET_ID', $detalle->DET_ID)
+                // si mandan SERV_ID y pertenece a la SIM, actualizamos; sino creamos
+                $serv = null;
+                if (!empty($data['SERV_ID'])) {
+                    $serv = \App\Models\DETALLE_SIMCARD_SERVICIO::where('SERV_ID', $data['SERV_ID'])
+                        ->where('SIM_ID', $simcard->ID_SIM)
                         ->first();
                 }
-                if (!$cuota) {
-                    $cuota = new \App\Models\CUOTAS();
-                    $cuota->DET_ID = $detalle->DET_ID; // SIEMPRE setear DET_ID
+                if (!$serv) {
+                    $serv = new \App\Models\DETALLE_SIMCARD_SERVICIO();
+                    $serv->SIM_ID = $simcard->ID_SIM;
                 }
 
-                $cuota->FECHA_PAGO = $fecha;      // null si venía vacío
-                $cuota->VALOR_CUOTA = $valor;     // null si venía vacío
-                // Si mandaron texto/URL de comprobante
-                if (!is_null($compTexto)) {
-                    $cuota->COMPROBANTE = $compTexto;
+                $serv->FECHA_SERVICIO = $fecha->toDateString();
+                $serv->FECHA_SIGUIENTE_PAGO = $siguiente->toDateString();
+                $serv->PLAZO_CONTRATADO = $plazo; // <-- IMPORTANTE: guardar plazo
+                $serv->VALOR_PAGO = $data['SERV_VALOR'];
+                $serv->OBSERVACION = $data['SERV_OBSERVACION'] ?? null;
+                // URL de comprobante (texto) la pisamos sólo si viene algo
+                if (!empty($data['SERV_COMPROBANTE'])) {
+                    $serv->COMPROBANTE = $data['SERV_COMPROBANTE'];
+                }
+                $serv->save(); // asegura SERV_ID
+
+                // archivo: archivo > reemplaza lo que haya
+                if ($request->hasFile('SERV_COMPROBANTE_FILE')) {
+                    $stored = $request->file('SERV_COMPROBANTE_FILE')
+                        ->store("simcards/{$simcard->ID_SIM}/servicios/{$serv->SERV_ID}", 'public');
+                    $serv->COMPROBANTE = $stored;
+                    $serv->save();
+                }
+            }
+
+            // 6) CONTRATO
+            if ($hasContrato) {
+                if (!empty($data['DET_ID'])) {
+                    $detalle = \App\Models\DETALLE_SIMCARD::where('DET_ID', $data['DET_ID'])
+                        ->where('SIM_ID', $simcard->ID_SIM)->firstOrFail();
+                } else {
+                    $detalle = new \App\Models\DETALLE_SIMCARD();
+                    $detalle->SIM_ID = $simcard->ID_SIM;
+                    $detalle->VALOR_ABONADO = 0;
+                    $detalle->SALDO = 0;
                 }
 
-                $cuota->save();
+                $detalle->FECHA_ACTIVACION_RENOVACION = $data['FECHA_ACTIVACION_RENOVACION'];
+                $detalle->FECHA_SIGUIENTE_PAGO = null;    // ya no se usa
+                $detalle->PLAZO_CONTRATADO = null;        // ya no se usa
+                $detalle->VALOR_TOTAL = $data['VALOR_TOTAL'];
+                $detalle->NUMERO_CUOTAS = $data['NUMERO_CUOTAS'];
+                $detalle->save();
 
-                // Manejo de archivo (si llega)
-                if ($tieneArchivo) {
-                    $stored = $request->file("cuotas.$idx.COMPROBANTE_FILE")->store($basePath, 'public');
-                    // si había uno anterior interno, lo borramos
-                    if (!empty($cuota->COMPROBANTE) && Str::startsWith($cuota->COMPROBANTE, ['simcards/'])) {
-                        Storage::disk('public')->delete($cuota->COMPROBANTE);
+                $basePath = "simcards/{$simcard->ID_SIM}/detalles/{$detalle->DET_ID}/cuotas";
+                $cuotasReq = $data['cuotas'] ?? [];
+                $idsRecibidos = [];
+
+                foreach ($cuotasReq as $idx => $c) {
+                    $fecha = $c['FECHA_PAGO'] ?? null;
+                    $valor = (isset($c['VALOR_CUOTA']) && $c['VALOR_CUOTA'] !== '') ? $c['VALOR_CUOTA'] : null;
+                    $compTexto = (isset($c['COMPROBANTE']) && $c['COMPROBANTE'] !== '') ? $c['COMPROBANTE'] : null;
+                    $tieneArchivo = $request->hasFile("cuotas.$idx.COMPROBANTE_FILE");
+
+                    $cuoId = $c['CUO_ID'] ?? null;
+                    $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo;
+                    if ($filaVacia && empty($cuoId))
+                        continue;
+
+                    $cuota = null;
+                    if (!empty($cuoId)) {
+                        $cuota = \App\Models\CUOTAS::where('CUO_ID', $cuoId)
+                            ->where('DET_ID', $detalle->DET_ID)->first();
                     }
-                    $cuota->COMPROBANTE = $stored;
+                    if (!$cuota) {
+                        $cuota = new \App\Models\CUOTAS();
+                        $cuota->DET_ID = $detalle->DET_ID;
+                    }
+
+                    $cuota->FECHA_PAGO = $fecha;
+                    $cuota->VALOR_CUOTA = $valor;
+                    if (!is_null($compTexto))
+                        $cuota->COMPROBANTE = $compTexto;
                     $cuota->save();
+
+                    if ($tieneArchivo) {
+                        $stored = $request->file("cuotas.$idx.COMPROBANTE_FILE")->store($basePath, 'public');
+                        if (!empty($cuota->COMPROBANTE) && \Illuminate\Support\Str::startsWith($cuota->COMPROBANTE, ['simcards/'])) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($cuota->COMPROBANTE);
+                        }
+                        $cuota->COMPROBANTE = $stored;
+                        $cuota->save();
+                    }
+
+                    $idsRecibidos[] = $cuota->CUO_ID;
                 }
 
-                $idsRecibidos[] = $cuota->CUO_ID;
+                // Si quitaron todas, se eliminan todas las cuotas
+                \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
+                    ->when(count($idsRecibidos) > 0, fn($q) => $q->whereNotIn('CUO_ID', $idsRecibidos))
+                    ->delete();
+
+                $abonado = (float) \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)->sum('VALOR_CUOTA');
+                $total = (float) $detalle->VALOR_TOTAL;
+                $saldo = round(max($total - $abonado, 0), 2);
+                $detalle->VALOR_ABONADO = round($abonado, 2);
+                $detalle->SALDO = $saldo;
+                $detalle->save();
             }
-
-            // Borrar cuotas que no vinieron (cuando bajan el número o eliminan filas)
-            // Si $idsRecibidos está vacío, borra todas las actuales del detalle.
-            \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
-                ->when(count($idsRecibidos) > 0, fn($q) => $q->whereNotIn('CUO_ID', $idsRecibidos))
-                ->when(count($idsRecibidos) === 0, fn($q) => $q) // sin filtro => borra todas
-                ->delete();
-            // === Recalcular ABONADO y SALDO ===
-            $abonado = (float) \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)
-                ->sum('VALOR_CUOTA'); // suma solo las cuotas con valor (null no suma)
-
-            $total = (float) $detalle->VALOR_TOTAL;
-            $saldo = round($total - $abonado, 2);
-            if ($saldo < 0) { // por si se pagó de más
-                $saldo = 0.00;
-            }
-
-            $detalle->VALOR_ABONADO = round($abonado, 2);
-            $detalle->SALDO = $saldo;
-
-            // Si quieres que NUMERO_CUOTAS refleje lo que quedó realmente cargado,
-            // descomenta la siguiente línea (opcional):
-            // $detalle->NUMERO_CUOTAS = \App\Models\CUOTAS::where('DET_ID', $detalle->DET_ID)->count();
-
-            $detalle->save();
-
         });
 
-        return redirect()
-            ->route('simcards.contrato', $simcard->ID_SIM) // o a donde prefieras volver
-            ->with('ok', 'Contrato guardado correctamente.');
+        // 7) Mensaje final
+        $msg = match (true) {
+            $hasContrato && $hasServicio => 'Contrato y servicio guardados correctamente.',
+            $hasContrato => 'Contrato guardado correctamente.',
+            $hasServicio => 'Servicio guardado correctamente.',
+            default => 'No se enviaron datos de contrato o servicio. Sin cambios.',
+        };
+
+        return redirect()->route('simcards.contrato', $simcard->ID_SIM)->with('ok', $msg);
     }
+
+
     public function dependencies(SIMCARD $simcard)
     {
         $detalles = DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)->count();

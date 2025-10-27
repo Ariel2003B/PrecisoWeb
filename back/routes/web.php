@@ -119,6 +119,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/simcards/{simcard}/migrate-dependents', [SimCardController::class, 'migrateDependents'])
             ->name('simcards.migrateDependents');
 
+        // web.php
+        Route::get('simcards/{simcard}/servicio', [SimcardController::class, 'servicio'])->name('simcards.servicio');
+        Route::post('simcards/{simcard}/servicio', [SimcardController::class, 'storeServicio'])->name('simcards.servicio.store');
+
+
     });
     Route::middleware(['auth', 'role:GESTION DE PERFILES'])->group(function () {
         Route::resource('perfil', PerfilController::class);

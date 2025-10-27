@@ -95,4 +95,14 @@ class SIMCARD extends Model
 	{
 		return $this->hasMany(DOCUMENTOS_GENERADOS::class, 'SIM_ID', 'ID_SIM');
 	}
+	public function servicios()
+	{
+		return $this->hasMany(DETALLE_SIMCARD_SERVICIO::class, 'SIM_ID', 'ID_SIM');
+	}
+	// Último servicio por fecha de servicio
+	public function servicioReciente()
+	{
+		return $this->hasOne(DETALLE_SIMCARD_SERVICIO::class, 'SIM_ID', 'ID_SIM')
+			->latestOfMany('FECHA_SERVICIO'); // requiere Laravel 8.42+; si no, avísame y te doy alternativa
+	}
 }

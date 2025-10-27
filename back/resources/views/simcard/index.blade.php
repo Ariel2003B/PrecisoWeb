@@ -1,5 +1,6 @@
-
-
+@php
+    use Illuminate\Support\Str;
+@endphp
 @extends('layout')
 
 @section('Titulo', 'Gestión de SIM Cards')
@@ -111,13 +112,39 @@
                                 $secuencial = $simcards->firstItem();
                             @endphp
                             @foreach ($simcards as $simcard)
-                                <tr>
+                                @php
+                                    // Tomamos la fecha del último servicio (si existe)
+                                    $dueRaw = $simcard->servicioReciente->FECHA_SIGUIENTE_PAGO ?? null;
+                                    $rowClass = '';
+
+                                    if ($dueRaw) {
+                                        $due = \Carbon\Carbon::parse($dueRaw)->startOfDay();
+                                        $diff = \Carbon\Carbon::today()->diffInDays($due, false);
+                                        // diff < 0 => ya venció, diff = 0 => hoy, diff > 0 => falta
+
+                                        if ($diff <= 0) {
+                                            // hoy o pasado
+                                            $rowClass = 'table-danger'; // rojo
+                                        } elseif ($diff <= 5) {
+                                            // dentro de 5 días
+                                            $rowClass = 'table-warning'; // naranja/amarillo
+                                        }
+                                    }
+                                @endphp
+                                <tr class="{{ $rowClass }}">
                                     <td>{{ $secuencial++ }}</td>
                                     <td>{{ $simcard->CUENTA }}</td>
 
                                     <td>{{ $simcard->TIPOPLAN }}</td>
                                     <td>{{ $simcard->ICC }}</td>
-                                    <td>{{ $simcard->NUMEROTELEFONO }}</td>
+                                    <td>
+                                        {{ $simcard->NUMEROTELEFONO }}
+                                        @if ($dueRaw)
+                                            <div class="small text-muted">
+                                                Próx. pago: {{ \Carbon\Carbon::parse($dueRaw)->toDateString() }}
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td>{{ $simcard->EQUIPO }}</td>
                                     <td>{{ $simcard->IMEI }}</td>
                                     <td>

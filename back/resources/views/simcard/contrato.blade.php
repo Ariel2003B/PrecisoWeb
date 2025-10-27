@@ -114,20 +114,9 @@
 
                                         </div>
 
-                                        <div class="col-md-4">
-                                            <label class="form-label">Plazo contratado (meses) *</label>
-                                            <input type="number" min="1" max="60" name="PLAZO_CONTRATADO"
-                                                id="PLAZO_CONTRATADO" class="form-control" required
-                                                value="{{ old('PLAZO_CONTRATADO', optional($detalle)->PLAZO_CONTRATADO ?? 1) }}">
-                                        </div>
 
-                                        <div class="col-md-4">
-                                            <label class="form-label">Siguiente pago (auto)</label>
-                                            <input type="date" name="FECHA_SIGUIENTE_PAGO" id="FECHA_SIGUIENTE_PAGO"
-                                                class="form-control" readonly
-                                                value="{{ old('FECHA_SIGUIENTE_PAGO', optional(optional($detalle)->FECHA_SIGUIENTE_PAGO)->format('Y-m-d')) }}">
 
-                                        </div>
+
 
                                         <div class="col-md-4">
                                             <label class="form-label">Valor total *</label>
@@ -218,15 +207,69 @@
                                 </div>
                             </div>
 
+                            <div class="card mb-4">
+                                <div class="card-header fw-bold">Servicio (pago único)</div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            {{-- si existe un servicio reciente, enviar su ID para actualizarlo --}}
+                                            <input type="hidden" name="SERV_ID"
+                                                value="{{ optional($servicioReciente)->SERV_ID }}">
 
-                            <div class="d-flex justify-content-between">
+                                            <label class="form-label">Fecha del servicio *</label>
+                                            <input type="date" name="SERV_FECHA" id="SERV_FECHA" class="form-control"
+                                                value="{{ old('SERV_FECHA', optional(optional($servicioReciente)->FECHA_SERVICIO)->format('Y-m-d')) }}">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Plazo contratado (meses) *</label>
+
+                                            <input type="number" min="1" max="60" name="SERV_PLAZO"
+                                                id="SERV_PLAZO" class="form-control"
+                                                value="{{ old('SERV_PLAZO', optional($servicioReciente)->PLAZO_CONTRATADO ?? 1) }}">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Siguiente pago (auto)</label>
+                                            <input type="date" name="SERV_SIGUIENTE_PAGO" id="SERV_SIGUIENTE_PAGO"
+                                                class="form-control" readonly
+                                                value="{{ old('SERV_SIGUIENTE_PAGO', optional(optional($servicioReciente)->FECHA_SIGUIENTE_PAGO)->format('Y-m-d')) }}">
+
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Valor del servicio *</label>
+                                            <input type="number" step="0.01" min="0" name="SERV_VALOR"
+                                                id="SERV_VALOR" class="form-control"
+                                                value="{{ old('SERV_VALOR', optional($servicioReciente)->VALOR_PAGO) }}">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Comprobante (archivo)</label>
+                                            <input type="file" name="SERV_COMPROBANTE_FILE" class="form-control"
+                                                accept=".jpg,.jpeg,.png,.pdf">
+                                        </div>
+
+
+                                        <div class="col-12">
+                                            <label class="form-label">Observación</label>
+                                            <textarea name="SERV_OBSERVACION" class="form-control" rows="2">{{ old('SERV_OBSERVACION', optional($servicioReciente)->OBSERVACION) }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <input type="hidden" name="modo" id="MODO" value="CONTRATO">
+                            <div class="d-flex justify-content-between gap-2 flex-wrap">
                                 <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i> Regresar Simcards
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-save me-1"></i> Guardar contrato
+                                    <i class="bi bi-save me-1"></i> Guardar
                                 </button>
                             </div>
+
 
                         </form>
 
@@ -235,45 +278,55 @@
                     {{-- ========== DERECHA: HISTORIAL ========== --}}
                     <div class="col-lg-5">
                         <div class="card mb-4">
-                            <div class="card-header fw-bold">Historial de contratos</div>
+                            <div class="card-header fw-bold">Historial de instalacion</div>
                             <div class="card-body p-2">
 
                                 @forelse ($historial as $h)
                                     @php
                                         $hoy = \Carbon\Carbon::today();
-                                        $esVigente =
-                                            $h->FECHA_ACTIVACION_RENOVACION && $h->FECHA_SIGUIENTE_PAGO
-                                                ? $hoy->between(
-                                                    \Carbon\Carbon::parse(
-                                                        $h->FECHA_ACTIVACION_RENOVACION,
-                                                    )->startOfDay(),
-                                                    \Carbon\Carbon::parse($h->FECHA_SIGUIENTE_PAGO)->endOfDay(),
-                                                )
-                                                : false;
 
-                                        $badgeClass = $esVigente
-                                            ? 'bg-success'
-                                            : (optional($h->FECHA_SIGUIENTE_PAGO)->lt($hoy)
-                                                ? 'bg-secondary'
-                                                : 'bg-info');
+                                        // ACTIVACIÓN como Carbon|null
+                                        $act = $h->FECHA_ACTIVACION_RENOVACION
+                                            ? \Carbon\Carbon::parse($h->FECHA_ACTIVACION_RENOVACION)->startOfDay()
+                                            : null;
 
-                                        $estadoTxt = $esVigente
-                                            ? 'VIGENTE'
-                                            : (optional($h->FECHA_SIGUIENTE_PAGO)->lt($hoy)
-                                                ? 'FINALIZADO'
-                                                : 'PROGRAMADO');
+                                        // VENCIMIENTO calculado:
+                                        // 1) última cuota; 2) si no hay cuotas, activación + (num_cuotas-1) meses; 3) null si no hay datos
+                                        $ultimaCuotaRaw = $h->cuotas?->max('FECHA_PAGO');
+                                        if ($ultimaCuotaRaw) {
+                                            $vencCalc = \Carbon\Carbon::parse($ultimaCuotaRaw)->endOfDay();
+                                        } elseif ($act) {
+                                            $n = max(1, (int) ($h->NUMERO_CUOTAS ?? 1));
+                                            $vencCalc = $act
+                                                ->copy()
+                                                ->addMonths($n - 1)
+                                                ->endOfDay();
+                                        } else {
+                                            $vencCalc = null;
+                                        }
+
+                                        // ESTADO (sin usar FECHA_SIGUIENTE_PAGO)
+                                        if ($act && $hoy->lt($act)) {
+                                            $estadoTxt = 'PROGRAMADO';
+                                            $badgeClass = 'bg-info';
+                                        } elseif ($vencCalc && $hoy->gt($vencCalc)) {
+                                            $estadoTxt = 'FINALIZADO';
+                                            $badgeClass = 'bg-secondary';
+                                        } else {
+                                            $estadoTxt = 'VIGENTE';
+                                            $badgeClass = 'bg-success';
+                                        }
                                     @endphp
+
 
                                     <div class="border rounded p-3 mb-3">
                                         <div
                                             class="d-flex justify-content-between align-items-start hist-head flex-wrap gap-2">
                                             <div class="hist-title">
                                                 <span class="me-2">Activación:
-                                                    {{ optional($h->FECHA_ACTIVACION_RENOVACION)->format('Y-m-d') }}</span>
-                                                <span class="no-break">
-                                                    Vencimiento:
-                                                    {{ optional($h->FECHA_SIGUIENTE_PAGO)->format('Y-m-d') }}
-                                                </span>
+                                                    {{ $act ? $act->toDateString() : '—' }}</span>
+
+
                                             </div>
                                             <span
                                                 class="badge {{ $badgeClass }} flex-shrink-0">{{ $estadoTxt }}</span>
@@ -341,12 +394,15 @@
     </main>
     <script>
         const $fa = document.getElementById('FECHA_ACTIVACION_RENOVACION');
-        const $pl = document.getElementById('PLAZO_CONTRATADO');
-        const $fsp = document.getElementById('FECHA_SIGUIENTE_PAGO');
         const $nc = document.getElementById('NUMERO_CUOTAS');
         const $vt = document.getElementById('VALOR_TOTAL');
         const $list = document.getElementById('cuotas-list');
         const $btnDist = document.getElementById('btn-distribuir');
+        const $modo = document.getElementById('MODO');
+        // ======== SERVICIO: cálculo automático siguiente pago =========
+        const $servFecha = document.getElementById('SERV_FECHA');
+        const $servPlazo = document.getElementById('SERV_PLAZO');
+        const $servSig = document.getElementById('SERV_SIGUIENTE_PAGO');
 
         function addMonthsToISO(isoDate, months) {
             if (!isoDate) return '';
@@ -358,13 +414,25 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
-        function recalcSiguientePago() {
-            const fa = $fa.value;
-            const pl = parseInt($pl.value || '0', 10);
-            $fsp.value = (fa && pl > 0) ? addMonthsToISO(fa, pl) : '';
+        function recalcServicioSiguiente() {
+            const fa = $servFecha.value;
+            const pl = parseInt($servPlazo.value || '0', 10);
+            $servSig.value = (fa && pl > 0) ? addMonthsToISO(fa, pl) : '';
         }
 
-        // Crea una fila (nueva cuota sin CUO_ID)
+        $servFecha?.addEventListener('change', recalcServicioSiguiente);
+        $servPlazo?.addEventListener('input', recalcServicioSiguiente);
+
+        function addMonthsToISO(isoDate, months) {
+            if (!isoDate) return '';
+            const d = new Date(isoDate + 'T00:00:00');
+            d.setMonth(d.getMonth() + parseInt(months || 0, 10));
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
         function createCuotaRow() {
             const wrapper = document.createElement('div');
             wrapper.className = 'border rounded p-3 mb-3 cuota-item';
@@ -386,93 +454,73 @@
             return wrapper;
         }
 
-        // Renumera índices name="cuotas[i][campo]" y # visual
         function renumberRows() {
             const rows = [...$list.querySelectorAll('.cuota-item')];
             rows.forEach((row, i) => {
-                const label = row.querySelector('.cuota-label');
-                if (label) label.textContent = `#${i+1} Fecha pago`;
-
-                // date
-                const dateInput = row.querySelector('input.cuotas-fecha');
-                dateInput.name = `cuotas[${i}][FECHA_PAGO]`;
-
-                // valor
-                const valInput = row.querySelector('input.cuotas-valor');
-                valInput.name = `cuotas[${i}][VALOR_CUOTA]`;
-
-                // file
-                const fileInput = row.querySelector('input[type="file"]');
-                fileInput.name = `cuotas[${i}][COMPROBANTE_FILE]`;
-
-                // si existe un hidden CUO_ID (para filas existentes), su name debe corresponder al nuevo índice
+                row.querySelector('.cuota-label').textContent = `#${i+1} Fecha pago`;
+                row.querySelector('input.cuotas-fecha').name = `cuotas[${i}][FECHA_PAGO]`;
+                row.querySelector('input.cuotas-valor').name = `cuotas[${i}][VALOR_CUOTA]`;
+                row.querySelector('input[type="file"]').name = `cuotas[${i}][COMPROBANTE_FILE]`;
                 const hidden = row.querySelector('input[type="hidden"][name*="[CUO_ID]"]');
                 if (hidden) hidden.name = `cuotas[${i}][CUO_ID]`;
             });
         }
 
-        // Ajusta cantidad de filas al número requerido
         function syncCuotasCount() {
             const desired = Math.max(1, parseInt($nc.value || '1', 10));
             let current = $list.querySelectorAll('.cuota-item').length;
-
-            // agregar
             while (current < desired) {
                 $list.appendChild(createCuotaRow());
                 current++;
             }
-            // quitar (del final)
             while (current > desired) {
-                const last = $list.querySelector('.cuota-item:last-of-type');
-                if (last) last.remove();
+                $list.querySelector('.cuota-item:last-of-type')?.remove();
                 current--;
             }
             renumberRows();
         }
 
+        // Distribuye montos y fechas base: fecha de activación (o la 1ª fecha ya ingresada)
         function distribuir() {
             const n = $list.querySelectorAll('.cuota-item').length;
             const total = parseFloat($vt.value || '0');
-            const fBase = $fsp.value;
-
-            const valores = [];
-            if (n > 0) {
-                const base = Math.floor((total / n) * 100) / 100;
-                let resto = +(total - base * n).toFixed(2);
-                for (let i = 0; i < n; i++) {
-                    let v = base;
-                    if (resto > 0) {
-                        v += 0.01;
-                        resto = +(resto - 0.01).toFixed(2);
-                    }
-                    valores.push(v.toFixed(2));
-                }
-            }
 
             const fechas = $list.querySelectorAll('.cuotas-fecha');
             const montos = $list.querySelectorAll('.cuotas-valor');
+
+            const baseMonto = Math.floor((total / n) * 100) / 100;
+            let resto = +(total - baseMonto * n).toFixed(2);
+
+            let fBase = $fa.value || (fechas[0]?.value ?? '');
             for (let i = 0; i < n; i++) {
+                let v = baseMonto;
+                if (resto > 0) {
+                    v += 0.01;
+                    resto = +(resto - 0.01).toFixed(2);
+                }
                 if (fBase) fechas[i].value = addMonthsToISO(fBase, i);
-                if (!isNaN(valores[i])) montos[i].value = valores[i];
+                montos[i].value = v.toFixed(2);
             }
         }
 
-        // Eventos
-        $fa.addEventListener('change', recalcSiguientePago);
-        $pl.addEventListener('input', recalcSiguientePago);
+        // eventos
         $nc.addEventListener('input', syncCuotasCount);
         $btnDist.addEventListener('click', distribuir);
 
-        // Inicial
-        recalcSiguientePago();
-        // Si no hay filas (contrato nuevo), crea tantas como NUMERO_CUOTAS
-        if ($list.querySelectorAll('.cuota-item').length === 0) {
-            syncCuotasCount();
-        } else {
-            // Si ya habían filas cargadas, asegúrate de que # coincida con NUMERO_CUOTAS
-            syncCuotasCount();
-        }
+        // // botones de envío con modo
+        // document.getElementById('btn-guardar-contrato')?.addEventListener('click', (e) => {
+        //     $modo.value = 'CONTRATO';
+        //     e.target.closest('form').submit();
+        // });
+        // document.getElementById('btn-guardar-servicio')?.addEventListener('click', (e) => {
+        //     $modo.value = 'SERVICIO';
+        //     e.target.closest('form').submit();
+        // });
+
+        // inicial
+        if ($list.querySelectorAll('.cuota-item').length === 0) syncCuotasCount();
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.__userTomSelect?.destroy) window.__userTomSelect.destroy();
@@ -570,11 +618,11 @@
 
         .compact-ui .form-control,
         {
-            padding: .25rem .5rem;
-            font-size: .92rem;
-            line-height: 1.25;
-            height: calc(1.25rem + .5rem + 2px);
-            /* altura visual más baja */
+        padding: .25rem .5rem;
+        font-size: .92rem;
+        line-height: 1.25;
+        height: calc(1.25rem + .5rem + 2px);
+        /* altura visual más baja */
         }
 
         /* Botones */
