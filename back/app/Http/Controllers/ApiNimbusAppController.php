@@ -75,7 +75,8 @@ class ApiNimbusAppController extends Controller
 
         $dryRun = $request->boolean('dry', false);
         $updated = [];
-        $created = [];        $notFound = [];
+        $created = [];
+        $notFound = [];
         $conflicts = [];
 
         DB::transaction(function () use ($payload, $dryRun, &$updated, &$created, &$notFound, &$conflicts) {
@@ -274,17 +275,34 @@ class ApiNimbusAppController extends Controller
         ]);
 
         // 1) Ubicar la EMPRESA a partir de la unidad (igual que antes)
-        $empId = Unidad::query()
+        // $empId = Unidad::query()
+        //     ->join('USUARIO as u', 'unidades.usu_id', '=', 'u.USU_ID')
+        //     ->join('EMPRESA as e', 'u.EMP_ID', '=', 'e.EMP_ID')
+        //     ->where('unidades.idWialon', $data['idWialon'])
+        //     ->value('e.EMP_ID');
+        // 1) Ubicar la EMPRESA a partir de la unidad y traer placa/num. habilitación
+        $unidad = Unidad::query()
             ->join('USUARIO as u', 'unidades.usu_id', '=', 'u.USU_ID')
             ->join('EMPRESA as e', 'u.EMP_ID', '=', 'e.EMP_ID')
             ->where('unidades.idWialon', $data['idWialon'])
-            ->value('e.EMP_ID');
-
-        if ($empId === null) {
-            // No existe la unidad/empresa para ese idWialon
+            ->first([
+                'e.EMP_ID as emp_id',
+                'unidades.placa',
+                'unidades.numero_habilitacion',
+                'unidades.idWialon',
+            ]);
+        if (!$unidad) {
             return response()->json(null, 404);
         }
 
+        $empId = (int) $unidad->emp_id;
+
+
+        // Armar el label: "PLACA (NUMERO_HABILITACION)"
+        $labelUnidad = trim(
+            ($unidad->placa ?? '—') .
+            (($unidad->numero_habilitacion ?? null) ? ' (' . $unidad->numero_habilitacion . ')' : '')
+        );
         // 2) Traer las geocercas (stops) activas de esa empresa: NIMBUS_ID y VALOR_MINUTO
         $rows = GeoStop::deEmpresa((int) $empId)
             ->activas()
@@ -294,6 +312,7 @@ class ApiNimbusAppController extends Controller
         $tarifas = $rows->map(fn($r) => [
             'paradaId' => (int) $r->NIMBUS_ID,
             'valorMinuto' => (float) $r->VALOR_MINUTO,
+            'nombreUnidad'              => $labelUnidad, 
         ])->values();
 
         // Si no hay registros, devolvemos lista vacía con 200
