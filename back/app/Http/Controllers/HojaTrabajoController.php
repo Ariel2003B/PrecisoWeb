@@ -251,7 +251,7 @@ class HojaTrabajoController extends Controller
                     }
                 }
 
-                Log::info('Hoja de trabajo actualizada OK', ['hoja_id' => $hoja->id]);
+                Log::info('Hoja de trabajo actualizada llega hasta aqui OK', ['hoja_id' => $hoja->id]);
                 return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
             });
 
