@@ -194,17 +194,33 @@ class HojaTrabajoController extends Controller
                         $tipo = $gasto['tipo_gasto'];
                         $imgB64 = $gasto['imagen_base64'] ?? null;
 
+                        // if (in_array($tipo, ['DIESEL', 'OTROS']) && $imgB64) {
+                        //     if (!preg_match('/^data:image\/(\w+);base64,/', $imgB64, $m)) {
+                        //         throw new \RuntimeException('Formato base64 inválido');
+                        //     }
+                        //     $extension = strtolower($m[1]);
+                        //     $raw = base64_decode(substr($imgB64, strpos($imgB64, ',') + 1), true);
+                        //     if ($raw === false) {
+                        //         throw new \RuntimeException('Contenido base64 corrupto');
+                        //     }
+                        //     $file = 'gastos/gasto_' . Str::uuid() . '.' . $extension;
+                        //     Storage::disk('public')->put($file, $raw);
+                        //     $rutaImagen = $file;
+                        // }
                         if (in_array($tipo, ['DIESEL', 'OTROS']) && $imgB64) {
                             if (!preg_match('/^data:image\/(\w+);base64,/', $imgB64, $m)) {
                                 throw new \RuntimeException('Formato base64 inválido');
                             }
-                            $extension = strtolower($m[1]);
                             $raw = base64_decode(substr($imgB64, strpos($imgB64, ',') + 1), true);
                             if ($raw === false) {
                                 throw new \RuntimeException('Contenido base64 corrupto');
                             }
-                            $file = 'gastos/gasto_' . Str::uuid() . '.' . $extension;
-                            Storage::disk('public')->put($file, $raw);
+
+                            // --- Comprimir con GD ---
+                            $compressed = $this->compressToJpeg($raw, 1600, 72);
+
+                            $file = 'gastos/gasto_' . Str::uuid() . '.jpg';
+                            Storage::disk('public')->put($file, $compressed);
                             $rutaImagen = $file;
                         }
 
@@ -273,6 +289,38 @@ class HojaTrabajoController extends Controller
             return response()->json(['message' => 'Error interno del servidor'], 500);
         }
     }
+    private function compressToJpeg(string $raw, int $maxW = 1600, int $quality = 72): string
+    {
+        // intento PNG/JPEG; si falla, devuelve el raw para no romper flujo
+        $src = @imagecreatefromstring($raw);
+        if (!$src)
+            return $raw;
+
+        $w = imagesx($src);
+        $h = imagesy($src);
+
+        if ($w > $maxW) {
+            $newW = $maxW;
+            $newH = intval($h * ($newW / $w));
+        } else {
+            $newW = $w;
+            $newH = $h;
+        }
+
+        $dst = imagecreatetruecolor($newW, $newH);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $w, $h);
+
+        ob_start();
+        // Siempre JPEG para máxima reducción
+        imagejpeg($dst, null, $quality);
+        $jpeg = ob_get_clean();
+
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        return $jpeg;
+    }
+
     public function destroy($id)
     {
         $hoja = HojaTrabajo::findOrFail($id);
