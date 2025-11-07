@@ -18,6 +18,11 @@ use Laravel\Sanctum\PersonalAccessToken;
 use PDF;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 class HojaTrabajoController extends Controller
 {
     public function store(Request $request)
@@ -138,75 +143,136 @@ class HojaTrabajoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        // 1) Reglas más estrictas (para evitar warnings)
+        $rules = [
             'fecha' => 'required|date',
             'tipo_dia' => 'required|in:LABORABLE,FERIADO,SABADO,DOMINGO',
             'id_conductor' => 'required|exists:personal,id_personal',
             'id_ruta' => 'required|exists:rutas,id_ruta',
             'id_unidad' => 'required|exists:unidades,id_unidad',
-            'gastos' => 'array'
+
+            'gastos' => 'array',
+            'gastos.*.tipo_gasto' => 'required|string',
+            'gastos.*.valor' => 'required|numeric|min:0',
+            'gastos.*.imagen_base64' => 'nullable|string',
+
+            'produccion' => 'array',
+            'produccion.*.nro_vuelta' => 'required|integer|min:1',
+            'produccion.*.hora_subida' => 'required|date_format:H:i',
+            'produccion.*.hora_bajada' => 'required|date_format:H:i|after:produccion.*.hora_subida',
+            'produccion.*.valor_vuelta' => 'required|numeric|min:0',
+        ];
+
+        Log::info('HojaTrabajo.update llamado', [
+            'hoja_id' => $id,
+            'ip' => $request->ip(),
+            'user_id' => optional($request->user())->id,
         ]);
 
-        $hoja = HojaTrabajo::with(['gastos', 'producciones'])->findOrFail($id);
+        try {
+            $data = $request->validate($rules);
 
-        // Actualizar la hoja
-        $hoja->update([
-            'fecha' => $request->fecha,
-            'tipo_dia' => $request->tipo_dia,
-            'id_conductor' => $request->id_conductor,
-            'ayudante_nombre' => $request->ayudante_nombre,
-            'id_ruta' => $request->id_ruta,
-            'id_unidad' => $request->id_unidad,
-        ]);
+            return DB::transaction(function () use ($data, $id) {
 
-        // Actualizar o crear gastos
-        foreach ($request->gastos as $gasto) {
-            $rutaImagen = null;
+                $hoja = HojaTrabajo::with(['gastos', 'producciones'])->lockForUpdate()->findOrFail($id);
 
-            if (in_array($gasto['tipo_gasto'], ['DIESEL', 'OTROS']) && !empty($gasto['imagen_base64'])) {
-                if (preg_match('/^data:image\/(\w+);base64,/', $gasto['imagen_base64'], $type)) {
-                    $imageData = base64_decode(substr($gasto['imagen_base64'], strpos($gasto['imagen_base64'], ',') + 1));
-                    $extension = strtolower($type[1]);
-                    $imageName = 'gasto_' . uniqid() . '.' . $extension;
-                    $gastosPath = storage_path('app/public/gastos');
-                    if (!file_exists($gastosPath)) {
-                        mkdir($gastosPath, 0777, true);
+                // --- Actualizar cabecera
+                $hoja->update([
+                    'fecha' => $data['fecha'],
+                    'tipo_dia' => $data['tipo_dia'],
+                    'id_conductor' => $data['id_conductor'],
+                    'ayudante_nombre' => $data['ayudante_nombre'] ?? null,
+                    'id_ruta' => $data['id_ruta'],
+                    'id_unidad' => $data['id_unidad'],
+                ]);
+
+                // --- Gastos
+                foreach (($data['gastos'] ?? []) as $idx => $gasto) {
+                    try {
+                        $rutaImagen = null;
+
+                        $tipo = $gasto['tipo_gasto'];
+                        $imgB64 = $gasto['imagen_base64'] ?? null;
+
+                        if (in_array($tipo, ['DIESEL', 'OTROS']) && $imgB64) {
+                            if (!preg_match('/^data:image\/(\w+);base64,/', $imgB64, $m)) {
+                                throw new \RuntimeException('Formato base64 inválido');
+                            }
+                            $extension = strtolower($m[1]);
+                            $raw = base64_decode(substr($imgB64, strpos($imgB64, ',') + 1), true);
+                            if ($raw === false) {
+                                throw new \RuntimeException('Contenido base64 corrupto');
+                            }
+                            $file = 'gastos/gasto_' . Str::uuid() . '.' . $extension;
+                            Storage::disk('public')->put($file, $raw);
+                            $rutaImagen = $file;
+                        }
+
+                        $hoja->gastos()->updateOrCreate(
+                            ['tipo_gasto' => $tipo],
+                            [
+                                'valor' => $gasto['valor'],
+                                'imagen' => $rutaImagen
+                                    ?? optional($hoja->gastos->firstWhere('tipo_gasto', $tipo))->imagen
+                            ]
+                        );
+                    } catch (\Throwable $e) {
+                        Log::error('Error guardando gasto', [
+                            'hoja_id' => $hoja->id,
+                            'index' => $idx,
+                            'tipo' => $gasto['tipo_gasto'] ?? null,
+                            'mensaje' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+                        throw $e; // fuerza rollback
                     }
-                    $savePath = $gastosPath . '/' . $imageName;
-                    file_put_contents($savePath, $imageData);
-                    $rutaImagen = 'gastos/' . $imageName;
                 }
-            }
 
-            $hoja->gastos()->updateOrCreate(
-                ['tipo_gasto' => $gasto['tipo_gasto']],
-                [
-                    'valor' => $gasto['valor'],
-                    'imagen' => $rutaImagen ?? $hoja->gastos->firstWhere('tipo_gasto', $gasto['tipo_gasto'])?->imagen
-                ]
-            );
-        }
-        // Producción: actualizar si existe, crear si no
-        if (!empty($request->produccion) && is_array($request->produccion)) { // Verificar que producción no esté vacío y sea un array
-            foreach ($request->produccion as $prod) {
-                if (isset($prod['nro_vuelta']) && isset($prod['hora_subida']) && isset($prod['hora_bajada']) && isset($prod['valor_vuelta'])) {
-                    $hoja->producciones()->updateOrCreate(
-                        ['nro_vuelta' => $prod['nro_vuelta']],
-                        [
-                            'hora_subida' => $prod['hora_subida'],
-                            'hora_bajada' => $prod['hora_bajada'],
-                            'valor_vuelta' => $prod['valor_vuelta'],
-                        ]
-                    );
+                // --- Producción
+                foreach (($data['produccion'] ?? []) as $idx => $prod) {
+                    try {
+                        $hoja->producciones()->updateOrCreate(
+                            ['nro_vuelta' => $prod['nro_vuelta']],
+                            [
+                                'hora_subida' => $prod['hora_subida'],
+                                'hora_bajada' => $prod['hora_bajada'],
+                                'valor_vuelta' => $prod['valor_vuelta'],
+                            ]
+                        );
+                    } catch (\Throwable $e) {
+                        Log::error('Error guardando producción', [
+                            'hoja_id' => $hoja->id,
+                            'index' => $idx,
+                            'nro' => $prod['nro_vuelta'] ?? null,
+                            'mensaje' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+                        throw $e; // rollback
+                    }
                 }
-            }
+
+                Log::info('Hoja de trabajo actualizada OK', ['hoja_id' => $hoja->id]);
+                return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
+            });
+
+        } catch (ValidationException $e) {
+            Log::warning('Validación fallida en update HojaTrabajo', [
+                'hoja_id' => $id,
+                'errors' => $e->errors(),
+            ]);
+            throw $e; // Laravel responderá 422 con los errores
+        } catch (ModelNotFoundException $e) {
+            Log::notice('HojaTrabajo no encontrada', ['hoja_id' => $id]);
+            return response()->json(['message' => 'Hoja no encontrada'], 404);
+        } catch (\Throwable $e) {
+            Log::critical('Fallo inesperado en HojaTrabajo.update', [
+                'hoja_id' => $id,
+                'mensaje' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['message' => 'Error interno del servidor'], 500);
         }
-
-
-
-        return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
     }
-
     public function destroy($id)
     {
         $hoja = HojaTrabajo::findOrFail($id);
