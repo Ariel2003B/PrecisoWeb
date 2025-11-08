@@ -193,20 +193,6 @@ class HojaTrabajoController extends Controller
 
                         $tipo = $gasto['tipo_gasto'];
                         $imgB64 = $gasto['imagen_base64'] ?? null;
-
-                        // if (in_array($tipo, ['DIESEL', 'OTROS']) && $imgB64) {
-                        //     if (!preg_match('/^data:image\/(\w+);base64,/', $imgB64, $m)) {
-                        //         throw new \RuntimeException('Formato base64 inválido');
-                        //     }
-                        //     $extension = strtolower($m[1]);
-                        //     $raw = base64_decode(substr($imgB64, strpos($imgB64, ',') + 1), true);
-                        //     if ($raw === false) {
-                        //         throw new \RuntimeException('Contenido base64 corrupto');
-                        //     }
-                        //     $file = 'gastos/gasto_' . Str::uuid() . '.' . $extension;
-                        //     Storage::disk('public')->put($file, $raw);
-                        //     $rutaImagen = $file;
-                        // }
                         if (in_array($tipo, ['DIESEL', 'OTROS']) && $imgB64) {
                             if (!preg_match('/^data:image\/(\w+);base64,/', $imgB64, $m)) {
                                 throw new \RuntimeException('Formato base64 inválido');

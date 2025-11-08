@@ -95,14 +95,13 @@
                             <tr>
                                 <th scope="col">N</th>
                                 <th scope="col">Cuenta</th>
-
+                                <th scope="col">Cliente</th>
                                 <th scope="col">Código Plan</th>
-                                <th scope="col">ICC</th>
                                 <th scope="col">Número</th>
                                 <th scope="col">Equipo</th>
-                                <th scope="col">Imei</th>
-                                <th scope="col">Grupo</th>
                                 <th scope="col">Asignación</th>
+                                <th scope="col">Pagos</th>
+
                                 <th scope="col">Estado</th>
                                 <th scope="col" class="text-nowrap" style="width: 1%; min-width: 210px;">Acciones</th>
                             </tr>
@@ -112,47 +111,37 @@
                                 $secuencial = $simcards->firstItem();
                             @endphp
                             @foreach ($simcards as $simcard)
-                                @php
-                                    // Tomamos la fecha del último servicio (si existe)
-                                    $dueRaw = $simcard->servicioReciente->FECHA_SIGUIENTE_PAGO ?? null;
-                                    $rowClass = '';
-
-                                    if ($dueRaw) {
-                                        $due = \Carbon\Carbon::parse($dueRaw)->startOfDay();
-                                        $diff = \Carbon\Carbon::today()->diffInDays($due, false);
-                                        // diff < 0 => ya venció, diff = 0 => hoy, diff > 0 => falta
-
-                                        if ($diff <= 0) {
-                                            // hoy o pasado
-                                            $rowClass = 'table-danger'; // rojo
-                                        } elseif ($diff <= 5) {
-                                            // dentro de 5 días
-                                            $rowClass = 'table-warning'; // naranja/amarillo
-                                        }
-                                    }
-                                @endphp
-                                <tr class="{{ $rowClass }}">
+                  
+                                <tr">
                                     <td>{{ $secuencial++ }}</td>
                                     <td>{{ $simcard->CUENTA }}</td>
+                                    <td>{{ $simcard->cliente_nombre }}</td>
 
                                     <td>{{ $simcard->TIPOPLAN }}</td>
-                                    <td>{{ $simcard->ICC }}</td>
                                     <td>
                                         {{ $simcard->NUMEROTELEFONO }}
-                                        @if ($dueRaw)
-                                            <div class="small text-muted">
-                                                Próx. pago: {{ \Carbon\Carbon::parse($dueRaw)->toDateString() }}
-                                            </div>
-                                        @endif
                                     </td>
                                     <td>{{ $simcard->EQUIPO }}</td>
-                                    <td>{{ $simcard->IMEI }}</td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ $simcard->GRUPO ?? 'Sin Asignar' }}</span>
-                                    </td>
+
                                     <td>
                                         <span class="badge bg-info">{{ $simcard->ASIGNACION ?? 'Sin Asignar' }}</span>
                                     </td>
+                                    <td>
+                                        @php $p = $simcard->pagos_estado; @endphp
+                                        <span
+                                            class="badge 
+                                                @if ($p['color'] === 'danger') bg-danger
+                                                @elseif($p['color'] === 'warning') bg-warning text-dark
+                                                @else bg-success @endif">
+                                            {{ $p['estado'] === 'PROXIMO' ? 'PRÓXIMO A VENCER' : $p['estado'] }}
+                                        </span>
+                                        @if ($p['fecha'])
+                                            <small class="text-muted d-block">
+                                                {{ $p['fuente'] }}
+                                            </small>
+                                        @endif
+                                    </td>
+
                                     <td>
                                         @if ($simcard->ESTADO === 'ACTIVA')
                                             <span class="badge bg-success">Activa</span>

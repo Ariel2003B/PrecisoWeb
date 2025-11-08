@@ -67,11 +67,7 @@
                         <input type="text" name="ICC" id="ICC" class="form-control"
                             value="{{ old('ICC', $simcard->ICC) }}" placeholder="Ingrese el ICC">
                     </div>
-                    <div class="mb-3">
-                        <label for="GRUPO" class="form-label">Grupo</label>
-                        <input type="text" name="GRUPO" id="GRUPO" class="form-control"
-                            value="{{ old('GRUPO', $simcard->GRUPO) }}" placeholder="Ingrese el Grupo">
-                    </div>
+                    
                     <div class="mb-3">
                         <label for="ASIGNACION" class="form-label">Asignacion</label>
                         <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control"
@@ -219,8 +215,8 @@
             // Función para aplicar el estado inicial
             function aplicarEstadoInicial(estado) {
                 const camposParaBloquear = {
-                    ELIMINADA: ['ICC', 'GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO'],
-                    LIBRE: ['GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO']
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'IMEI', 'EQUIPO'],
+                    LIBRE: [ 'ASIGNACION', 'IMEI', 'EQUIPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {
@@ -231,8 +227,8 @@
             // Función para manejar cambios de estado
             function handleEstadoChange(estado) {
                 const camposParaLimpiar = {
-                    ELIMINADA: ['ICC', 'GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO'],
-                    LIBRE: ['GRUPO', 'ASIGNACION', 'IMEI', 'EQUIPO']
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'IMEI', 'EQUIPO'],
+                    LIBRE: ['ASIGNACION', 'IMEI', 'EQUIPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $CUO_ID
  * @property int|null $DET_ID
  * @property \Illuminate\Support\Carbon|null $FECHA_PAGO
+ * @property \Illuminate\Support\Carbon|null $FECHA_REAL_PAGO
  * @property string|null $VALOR_CUOTA
  * @property string|null $COMPROBANTE
  */
@@ -25,6 +26,7 @@ class CUOTAS extends Model
     protected $casts = [
         'DET_ID' => 'int',
         'FECHA_PAGO' => 'date',
+        'FECHA_REAL_PAGO' => 'date',
         'VALOR_CUOTA' => 'decimal:2',
     ];
 

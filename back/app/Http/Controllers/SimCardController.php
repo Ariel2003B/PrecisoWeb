@@ -53,17 +53,18 @@ class SimCardController extends Controller
     }
     public function index(Request $request)
     {
-        $query = SIMCARD::with(['v_e_h_i_c_u_l_o', 'servicioReciente']);
+        $query = SIMCARD::with([
+            'usuario',
+            'v_e_h_i_c_u_l_o',
+            'servicioReciente',
+            'detalleVigente.cuotas',     // para cuotas del detalle vigente
+            // Fallback si no usas detalleVigente:
+            // 'detalleSimcards.cuotas',
+        ]);
 
-        // Obtener opciones únicas para los desplegables
-        $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
-        $planes = SIMCARD::select('PLAN')->distinct()->pluck('PLAN');
-        $tiposPlan = SIMCARD::select('TIPOPLAN')->distinct()->pluck('TIPOPLAN');
-
-        // Aplicar filtro de búsqueda existente
+        // filtros existentes...
         if ($request->filled('search')) {
             $search = $request->input('search');
-
             $query->where(function ($q) use ($search) {
                 $q->Where('CUENTA', 'like', "%$search%")
                     ->orWhere('PLAN', 'like', "%$search%")
@@ -74,28 +75,30 @@ class SimCardController extends Controller
                     ->orWhere('GRUPO', 'like', "%$search%")
                     ->orWhere('ASIGNACION', 'like', "%$search%")
                     ->orWhere('EQUIPO', 'like', "%$search%")
-                    ->orWhere('IMEI', 'like', "%$search%");
+                    ->orWhere('IMEI', 'like', "%$search%")
+                    ->orWhereHas('usuario', function ($uq) use ($search) {
+                        $uq->where('NOMBRE', 'like', "%$search%")
+                            ->orWhere('APELLIDO', 'like', "%$search%");
+                    });
             });
         }
 
-        // Aplicar filtros adicionales desde los dropdowns
-        if ($request->filled('CUENTA')) {
+        // filtros por dropdown (CUENTA, PLAN, TIPOPLAN)...
+        if ($request->filled('CUENTA'))
             $query->where('CUENTA', $request->input('CUENTA'));
-        }
-        if ($request->filled('PLAN')) {
+        if ($request->filled('PLAN'))
             $query->where('PLAN', $request->input('PLAN'));
-        }
-        if ($request->filled('TIPOPLAN')) {
+        if ($request->filled('TIPOPLAN'))
             $query->where('TIPOPLAN', $request->input('TIPOPLAN'));
-        }
 
-        // Ordenar los resultados del más reciente al más antiguo
         $query->orderBy('ID_SIM', 'desc');
-
-        // Paginar los resultados
         $simcards = $query->paginate(20);
 
-        // Retornar la vista con los resultados y las opciones de filtro
+        // Opciones únicas para tus selects
+        $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
+        $planes = SIMCARD::select('PLAN')->distinct()->pluck('PLAN');
+        $tiposPlan = SIMCARD::select('TIPOPLAN')->distinct()->pluck('TIPOPLAN');
+
         return view('simcard.index', compact('simcards', 'cuentas', 'planes', 'tiposPlan'));
     }
 
@@ -718,6 +721,16 @@ class SimCardController extends Controller
                     $valor = (isset($c['VALOR_CUOTA']) && $c['VALOR_CUOTA'] !== '') ? $c['VALOR_CUOTA'] : null;
                     $compTexto = (isset($c['COMPROBANTE']) && $c['COMPROBANTE'] !== '') ? $c['COMPROBANTE'] : null;
                     $tieneArchivo = $request->hasFile("cuotas.$idx.COMPROBANTE_FILE");
+                    $pagado = filter_var($c['PAGADO'] ?? false, FILTER_VALIDATE_BOOLEAN);
+                    $fechaReal = $c['FECHA_REAL_PAGO'] ?? null;
+                    $teniaArchivoAntes = !empty($cuota?->COMPROBANTE);
+
+                    // Si marcan pagado y no hay archivo nuevo ni existente => error de validación
+                    if ($pagado && !$tieneArchivo && !$teniaArchivoAntes) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            "cuotas.$idx.COMPROBANTE_FILE" => 'Comprobante obligatorio cuando la cuota está marcada como pagada.',
+                        ]);
+                    }
 
                     $cuoId = $c['CUO_ID'] ?? null;
                     $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo;
@@ -738,6 +751,19 @@ class SimCardController extends Controller
                     $cuota->VALOR_CUOTA = $valor;
                     if (!is_null($compTexto))
                         $cuota->COMPROBANTE = $compTexto;
+                    // Establecer FECHA_REAL_PAGO:
+                    //  - Si viene en request, usarla
+                    //  - Si está pagado y no vino, fijar hoy()
+                    //  - Si NO está pagado y no hay archivo ni texto, la limpiamos
+                    if (!empty($fechaReal)) {
+                        $cuota->FECHA_REAL_PAGO = \Carbon\Carbon::parse($fechaReal)->toDateString();
+                    } elseif ($pagado || $tieneArchivo || !empty($cuota->COMPROBANTE)) {
+                        $cuota->FECHA_REAL_PAGO = now()->toDateString();
+                    } else {
+                        $cuota->FECHA_REAL_PAGO = null;
+                    }
+
+
                     $cuota->save();
 
                     if ($tieneArchivo) {
