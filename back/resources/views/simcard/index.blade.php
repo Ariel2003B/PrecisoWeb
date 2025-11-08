@@ -96,7 +96,7 @@
                                 <th scope="col">N</th>
                                 <th scope="col">Cuenta</th>
                                 <th scope="col">Cliente</th>
-                                <th scope="col">Código Plan</th>
+                                <th scope="col">ICC</th>
                                 <th scope="col">Número</th>
                                 <th scope="col">Equipo</th>
                                 <th scope="col">Asignación</th>
@@ -117,7 +117,7 @@
                                     <td>{{ $simcard->CUENTA }}</td>
                                     <td>{{ $simcard->cliente_nombre }}</td>
 
-                                    <td>{{ $simcard->TIPOPLAN }}</td>
+                                    <td>{{ $simcard->ICC}}</td>
                                     <td>
                                         {{ $simcard->NUMEROTELEFONO }}
                                     </td>
