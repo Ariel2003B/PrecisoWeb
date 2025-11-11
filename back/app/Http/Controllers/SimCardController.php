@@ -82,26 +82,57 @@ class SimCardController extends Controller
                     });
             });
         }
-        // === Filtro por estado de pago ===
+        // === Filtro por estado de pago (Cuotas / Servicio) ===
         if ($request->filled('pago_estado')) {
-            $estado = $request->input('pago_estado');
+            $estado = $request->input('pago_estado');      // 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
             $hoy = now()->toDateString();
             $proximo = now()->addDays(5)->toDateString();
 
-            $query->whereHas('detalleVigente.cuotas', function ($q) use ($estado, $hoy, $proximo) {
+            $query->where(function ($qq) use ($estado, $hoy, $proximo) {
+                // --- 1) CUOTAS del detalle vigente (o, si no hay, de cualquier detalle) ---
+                $qq->whereHas('detalleVigente.cuotas', function ($q) use ($estado, $hoy, $proximo) {
 
-                // Seleccionamos solo la cuota con fecha más reciente / vigente
-                $q->orderBy('FECHA_FIN', 'desc')->limit(1);
+                    // Solo cuotas pendientes
+                    $q->whereNull('COMPROBANTE');
 
-                if ($estado === 'AL_DIA') {
-                    $q->where('FECHA_FIN', '>=', $hoy);
-                } elseif ($estado === 'PROXIMO') {
-                    $q->whereBetween('FECHA_FIN', [$hoy, $proximo]);
-                } elseif ($estado === 'VENCIDO') {
-                    $q->where('FECHA_FIN', '<', $hoy);
-                }
+                    // Rango por estado usando FECHA_PAGO
+                    if ($estado === 'AL_DIA') {
+                        // más allá de 5 días
+                        $q->where('FECHA_PAGO', '>', $proximo);
+                    } elseif ($estado === 'PROXIMO') {
+                        // entre hoy y hoy+5
+                        $q->whereBetween('FECHA_PAGO', [$hoy, $proximo]);
+                    } elseif ($estado === 'VENCIDO') {
+                        // ya vencidas
+                        $q->where('FECHA_PAGO', '<', $hoy);
+                    }
+                })
+                    // si no existiera detalleVigente, intentamos con cualquier detalle
+                    ->orWhereHas('detalleSimcards.cuotas', function ($q) use ($estado, $hoy, $proximo) {
+                        $q->whereNull('COMPROBANTE');
+
+                        if ($estado === 'AL_DIA') {
+                            $q->where('FECHA_PAGO', '>', $proximo);
+                        } elseif ($estado === 'PROXIMO') {
+                            $q->whereBetween('FECHA_PAGO', [$hoy, $proximo]);
+                        } elseif ($estado === 'VENCIDO') {
+                            $q->where('FECHA_PAGO', '<', $hoy);
+                        }
+                    });
+
+                // --- 2) SERVICIO reciente (usa FECHA_SIGUIENTE_PAGO) ---
+                $qq->orWhereHas('servicioReciente', function ($q) use ($estado, $hoy, $proximo) {
+                    if ($estado === 'AL_DIA') {
+                        $q->where('FECHA_SIGUIENTE_PAGO', '>', $proximo);
+                    } elseif ($estado === 'PROXIMO') {
+                        $q->whereBetween('FECHA_SIGUIENTE_PAGO', [$hoy, $proximo]);
+                    } elseif ($estado === 'VENCIDO') {
+                        $q->where('FECHA_SIGUIENTE_PAGO', '<', $hoy);
+                    }
+                });
             });
         }
+
 
 
         // filtros por dropdown (CUENTA, PLAN, TIPOPLAN)...
