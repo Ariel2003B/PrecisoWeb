@@ -86,12 +86,16 @@
                                     {{ $plan }}</option>
                             @endforeach
                         </select>
-                        <select id="pagoEstado" class="filtros-simcards-select">
+                        <select name="pago_estado" id="pagoEstado" class="filtros-simcards-select">
                             <option value="">Todos los pagos</option>
-                            <option value="AL_DIA">Al día</option>
-                            <option value="PROXIMO">Próximo a vencer</option>
-                            <option value="VENCIDO">Vencido</option>
+                            <option value="AL_DIA" {{ request('pago_estado') == 'AL_DIA' ? 'selected' : '' }}>Al día
+                            </option>
+                            <option value="PROXIMO" {{ request('pago_estado') == 'PROXIMO' ? 'selected' : '' }}>Próximo a
+                                vencer</option>
+                            <option value="VENCIDO" {{ request('pago_estado') == 'VENCIDO' ? 'selected' : '' }}>Vencido
+                            </option>
                         </select>
+
 
                         <button class="btn btn btn-primary mt-2" type="submit">Buscar</button>
                     </form>
@@ -481,44 +485,6 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             border-radius: .35rem;
         }
     </style>
-    <script>
-        (function() {
-            const pagoEstadoSel = document.getElementById('pagoEstado');
-            const pagoFuenteSel = document.getElementById('pagoFuente'); // opcional (si no lo usas, ignora)
-            const tbody = document.querySelector('table.table tbody');
 
-            function normaliza(v) {
-                return (v || '').toString().trim().toUpperCase();
-            }
-
-            function filtrar() {
-                const estado = normaliza(pagoEstadoSel ? pagoEstadoSel.value : '');
-                const fuente = (pagoFuenteSel ? pagoFuenteSel.value : '').trim(); // 'Cuota' | 'Servicio' | ''
-
-                if (!tbody) return;
-                const rows = tbody.querySelectorAll('tr');
-
-                rows.forEach(tr => {
-                    const rowEstado = normaliza(tr.dataset.pagoEstado); // AL_DIA / PROXIMO / VENCIDO
-                    const rowFuente = (tr.dataset.pagoFuente || '').trim(); // Cuota / Servicio / -
-
-                    // match de estado
-                    const matchEstado = !estado || rowEstado === estado;
-
-                    // match de fuente
-                    const matchFuente = !fuente || rowFuente === fuente;
-
-                    tr.style.display = (matchEstado && matchFuente) ? '' : 'none';
-                });
-            }
-
-            // dispara al cambiar selects
-            pagoEstadoSel && pagoEstadoSel.addEventListener('change', filtrar);
-            pagoFuenteSel && pagoFuenteSel.addEventListener('change', filtrar);
-
-            // si quieres aplicar el filtro inicial según lo que esté seleccionado:
-            document.addEventListener('DOMContentLoaded', filtrar);
-        })();
-    </script>
 
 @endsection
