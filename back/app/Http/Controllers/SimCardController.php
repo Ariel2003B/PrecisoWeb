@@ -53,100 +53,91 @@ class SimCardController extends Controller
     }
     public function index(Request $request)
     {
-        // Query base con tus eager-loads
-        $baseQuery = SIMCARD::with([
+        $query = SIMCARD::with([
             'usuario',
             'v_e_h_i_c_u_l_o',
             'servicioReciente',
-            'detalleVigente.cuotas',
-            // 'detalleSimcards.cuotas', // si usas fallback
+            'detalleVigente.cuotas',     // para cuotas del detalle vigente
+            // Fallback si no usas detalleVigente:
+            // 'detalleSimcards.cuotas',
         ]);
 
-        // --- Filtros existentes ---
+        // filtros existentes...
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $baseQuery->where(function ($q) use ($search) {
-                $q->where('CUENTA', 'like', "%{$search}%")
-                    ->orWhere('PLAN', 'like', "%{$search}%")
-                    ->orWhere('TIPOPLAN', 'like', "%{$search}%")
-                    ->orWhere('ICC', 'like', "%{$search}%")
-                    ->orWhere('NUMEROTELEFONO', 'like', "%{$search}%")
-                    ->orWhere('ESTADO', 'like', "%{$search}%")
-                    ->orWhere('GRUPO', 'like', "%{$search}%")
-                    ->orWhere('ASIGNACION', 'like', "%{$search}%")
-                    ->orWhere('EQUIPO', 'like', "%{$search}%")
-                    ->orWhere('IMEI', 'like', "%{$search}%")
+            $query->where(function ($q) use ($search) {
+                $q->Where('CUENTA', 'like', "%$search%")
+                    ->orWhere('PLAN', 'like', "%$search%")
+                    ->orWhere('TIPOPLAN', 'like', "%$search%")
+                    ->orWhere('ICC', 'like', "%$search%")
+                    ->orWhere('NUMEROTELEFONO', 'like', "%$search%")
+                    ->orWhere('ESTADO', 'like', "%$search%")
+                    ->orWhere('GRUPO', 'like', "%$search%")
+                    ->orWhere('ASIGNACION', 'like', "%$search%")
+                    ->orWhere('EQUIPO', 'like', "%$search%")
+                    ->orWhere('IMEI', 'like', "%$search%")
                     ->orWhereHas('usuario', function ($uq) use ($search) {
-                        $uq->where('NOMBRE', 'like', "%{$search}%")
-                            ->orWhere('APELLIDO', 'like', "%{$search}%");
+                        $uq->where('NOMBRE', 'like', "%$search%")
+                            ->orWhere('APELLIDO', 'like', "%$search%");
                     });
             });
         }
 
+        // filtros por dropdown (CUENTA, PLAN, TIPOPLAN)...
         if ($request->filled('CUENTA'))
-            $baseQuery->where('CUENTA', $request->input('CUENTA'));
+            $query->where('CUENTA', $request->input('CUENTA'));
         if ($request->filled('PLAN'))
-            $baseQuery->where('PLAN', $request->input('PLAN'));
+            $query->where('PLAN', $request->input('PLAN'));
         if ($request->filled('TIPOPLAN'))
-            $baseQuery->where('TIPOPLAN', $request->input('TIPOPLAN'));
+            $query->where('TIPOPLAN', $request->input('TIPOPLAN'));
+        /* ====== AGREGADO: filtro PAGOS ====== */
+        if ($request->filled('PAGOS')) {
+            $want = strtoupper($request->input('PAGOS')); // AL_DIA | PROXIMO | VENCIDO
+            $hoy = Carbon::today();
+            $umbralProx = Carbon::today()->addDays(7);     // cambia 7 si tu umbral es otro
 
-        $baseQuery->orderBy('ID_SIM', 'desc');
+            // helper: condición "no pagada"
+            $noPagada = function ($q) {
+                $q->where(function ($qq) {
+                    $qq->whereNull('PAGADO')
+                        ->orWhere('PAGADO', 0)
+                        ->orWhere('ESTADO', 'PENDIENTE');
+                });
+            };
 
-        // --- Si NO hay filtro de pagos, paginate normal ---
-        if (!$request->filled('PAGOS')) {
-            $simcards = $baseQuery->paginate(20);
+            // condición: tiene cuotas vencidas
+            $hasVencidas = function ($q) use ($hoy, $noPagada) {
+                $q->whereDate('FECHA_VENCE', '<', $hoy)->where($noPagada);
+            };
 
-            $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
-            $planes = SIMCARD::select('PLAN')->distinct()->pluck('PLAN');
-            $tiposPlan = SIMCARD::select('TIPOPLAN')->distinct()->pluck('TIPOPLAN');
+            // condición: tiene cuotas próximas a vencer
+            $hasProximas = function ($q) use ($hoy, $umbralProx, $noPagada) {
+                $q->whereBetween('FECHA_VENCE', [$hoy, $umbralProx])->where($noPagada);
+            };
 
-            return view('simcard.index', compact('simcards', 'cuentas', 'planes', 'tiposPlan'));
+            if ($want === 'VENCIDO') {
+                $query->whereHas('detalleVigente.cuotas', $hasVencidas);
+            } elseif ($want === 'PROXIMO') {
+                $query->whereHas('detalleVigente.cuotas', $hasProximas)
+                    ->whereDoesntHave('detalleVigente.cuotas', $hasVencidas); // evita que se cuele un vencido
+            } elseif ($want === 'AL_DIA') {
+                $query->whereDoesntHave('detalleVigente.cuotas', $hasVencidas)
+                    ->whereDoesntHave('detalleVigente.cuotas', $hasProximas);
+            }
         }
+        /* ====== FIN AGREGADO ====== */
+        $query->orderBy('ID_SIM', 'desc');
+        $simcards = $query->paginate(20);
 
-        // --- Con filtro de PAGOS: filtrar en colección y repaginar ---
-        $want = strtoupper($request->input('PAGOS')); // AL_DIA | PROXIMO | VENCIDO
-
-        // Clonar el query para no afectar el original si más adelante quieres reusar
-        $all = (clone $baseQuery)->get();
-
-        // Normalizador de bucket desde pagos_estado['estado']
-        $bucketOf = function ($estadoRaw) {
-            $s = Str::upper((string) $estadoRaw);
-            if (Str::contains($s, 'VENCID'))
-                return 'VENCIDO';
-            if (Str::contains($s, 'PROX'))
-                return 'PROXIMO';
-            return 'AL_DIA'; // por defecto
-        };
-
-        $filtered = $all->filter(function ($sim) use ($bucketOf, $want) {
-            $p = $sim->pagos_estado ?? ['estado' => null];
-            return $bucketOf($p['estado'] ?? '') === $want;
-        })->values();
-
-        // Repaginación manual
-        $perPage = 20; // mismo tamaño de página
-        $page = LengthAwarePaginator::resolveCurrentPage();
-        $items = $filtered->slice(($page - 1) * $perPage, $perPage)->values();
-
-        $simcards = new LengthAwarePaginator(
-            $items,
-            $filtered->count(),
-            $perPage,
-            $page,
-            [
-                'path' => $request->url(),
-                'query' => $request->query(), // mantiene todos los filtros en la URL
-            ]
-        );
-
-        // Opciones para selects (sin afectar filtros aplicados)
+        // Opciones únicas para tus selects
         $cuentas = SIMCARD::select('CUENTA')->distinct()->pluck('CUENTA');
         $planes = SIMCARD::select('PLAN')->distinct()->pluck('PLAN');
         $tiposPlan = SIMCARD::select('TIPOPLAN')->distinct()->pluck('TIPOPLAN');
 
         return view('simcard.index', compact('simcards', 'cuentas', 'planes', 'tiposPlan'));
     }
+
+
 
 
     public function fetchWialonData(Request $request)
