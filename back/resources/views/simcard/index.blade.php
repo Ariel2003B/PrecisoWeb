@@ -117,8 +117,10 @@
                                 $secuencial = $simcards->firstItem();
                             @endphp
                             @foreach ($simcards as $simcard)
+                                @php $p = $simcard->pagos_estado; @endphp
+
                                 <tr data-pago-estado="{{ $p['estado'] }}" {{-- AL_DIA | PROXIMO | VENCIDO --}}
-                                    data-pago-fuente="{{ $p['fuente'] ?? '' }}"> {{-- Cuota | Servicio | - --}}
+                                    data-pago-fuente="{{ $p['fuente'] ?? '-' }}"> {{-- Cuota | Servicio | - --}}
                                     <td>{{ $secuencial++ }}</td>
                                     <td>{{ $simcard->CUENTA }}</td>
                                     <td>{{ $simcard->cliente_nombre }}</td>
