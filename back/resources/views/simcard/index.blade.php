@@ -86,6 +86,14 @@
                                     {{ $plan }}</option>
                             @endforeach
                         </select>
+                        <select name="PAGOS" id="PAGOS" class="filtros-simcards-select">
+                            <option value="">Todos los pagos</option>
+                            <option value="AL_DIA" {{ request('PAGOS') === 'AL_DIA' ? 'selected' : '' }}>Al día</option>
+                            <option value="PROXIMO" {{ request('PAGOS') === 'PROXIMO' ? 'selected' : '' }}>Próximo a vencer
+                            </option>
+                            <option value="VENCIDO" {{ request('PAGOS') === 'VENCIDO' ? 'selected' : '' }}>Vencido</option>
+                        </select>
+
                         <button class="btn btn btn-primary mt-2" type="submit">Buscar</button>
                     </form>
                 </div>
@@ -101,7 +109,6 @@
                                 <th scope="col">Equipo</th>
                                 <th scope="col">Asignación</th>
                                 <th scope="col">Pagos</th>
-
                                 <th scope="col">Estado</th>
                                 <th scope="col" class="text-nowrap" style="width: 1%; min-width: 210px;">Acciones</th>
                             </tr>
@@ -111,13 +118,12 @@
                                 $secuencial = $simcards->firstItem();
                             @endphp
                             @foreach ($simcards as $simcard)
-                  
                                 <tr">
                                     <td>{{ $secuencial++ }}</td>
                                     <td>{{ $simcard->CUENTA }}</td>
                                     <td>{{ $simcard->cliente_nombre }}</td>
 
-                                    <td>{{ $simcard->ICC}}</td>
+                                    <td>{{ $simcard->ICC }}</td>
                                     <td>
                                         {{ $simcard->NUMEROTELEFONO }}
                                     </td>
@@ -165,8 +171,8 @@
                                                     </a>
 
                                                     <a href="{{ route('simcards.contrato', $simcard->ID_SIM) }}"
-                                                        class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip"
-                                                        title="Contrato">
+                                                        class="btn btn-outline-primary btn-action"
+                                                        data-bs-toggle="tooltip" title="Contrato">
                                                         <i class="fas fa-file-contract"></i>
                                                         <span class="d-none d-md-inline">Contrato</span>
                                                     </a>
@@ -210,7 +216,7 @@
                                         @endif
                                     </td>
 
-                                </tr>
+                                    </tr>
                             @endforeach
                         </tbody>
                     </table>
