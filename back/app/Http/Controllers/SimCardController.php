@@ -82,6 +82,27 @@ class SimCardController extends Controller
                     });
             });
         }
+        // === Filtro por estado de pago ===
+        if ($request->filled('pago_estado')) {
+            $estado = $request->input('pago_estado');
+            $hoy = now()->toDateString();
+            $proximo = now()->addDays(5)->toDateString();
+
+            $query->whereHas('detalleVigente.cuotas', function ($q) use ($estado, $hoy, $proximo) {
+
+                // Seleccionamos solo la cuota con fecha más reciente / vigente
+                $q->orderBy('FECHA_FIN', 'desc')->limit(1);
+
+                if ($estado === 'AL_DIA') {
+                    $q->where('FECHA_FIN', '>=', $hoy);
+                } elseif ($estado === 'PROXIMO') {
+                    $q->whereBetween('FECHA_FIN', [$hoy, $proximo]);
+                } elseif ($estado === 'VENCIDO') {
+                    $q->where('FECHA_FIN', '<', $hoy);
+                }
+            });
+        }
+
 
         // filtros por dropdown (CUENTA, PLAN, TIPOPLAN)...
         if ($request->filled('CUENTA'))
@@ -90,42 +111,7 @@ class SimCardController extends Controller
             $query->where('PLAN', $request->input('PLAN'));
         if ($request->filled('TIPOPLAN'))
             $query->where('TIPOPLAN', $request->input('TIPOPLAN'));
-        /* ====== AGREGADO: filtro PAGOS ====== */
-        if ($request->filled('PAGOS')) {
-            $want = strtoupper($request->input('PAGOS')); // AL_DIA | PROXIMO | VENCIDO
-            $hoy = Carbon::today();
-            $umbralProx = Carbon::today()->addDays(7);     // cambia 7 si tu umbral es otro
 
-            // helper: condición "no pagada"
-            $noPagada = function ($q) {
-                $q->where(function ($qq) {
-                    $qq->whereNull('PAGADO')
-                        ->orWhere('PAGADO', 0)
-                        ->orWhere('ESTADO', 'PENDIENTE');
-                });
-            };
-
-            // condición: tiene cuotas vencidas
-            $hasVencidas = function ($q) use ($hoy, $noPagada) {
-                $q->whereDate('FECHA_VENCE', '<', $hoy)->where($noPagada);
-            };
-
-            // condición: tiene cuotas próximas a vencer
-            $hasProximas = function ($q) use ($hoy, $umbralProx, $noPagada) {
-                $q->whereBetween('FECHA_VENCE', [$hoy, $umbralProx])->where($noPagada);
-            };
-
-            if ($want === 'VENCIDO') {
-                $query->whereHas('detalleVigente.cuotas', $hasVencidas);
-            } elseif ($want === 'PROXIMO') {
-                $query->whereHas('detalleVigente.cuotas', $hasProximas)
-                    ->whereDoesntHave('detalleVigente.cuotas', $hasVencidas); // evita que se cuele un vencido
-            } elseif ($want === 'AL_DIA') {
-                $query->whereDoesntHave('detalleVigente.cuotas', $hasVencidas)
-                    ->whereDoesntHave('detalleVigente.cuotas', $hasProximas);
-            }
-        }
-        /* ====== FIN AGREGADO ====== */
         $query->orderBy('ID_SIM', 'desc');
         $simcards = $query->paginate(20);
 

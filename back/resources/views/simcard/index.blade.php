@@ -86,12 +86,14 @@
                                     {{ $plan }}</option>
                             @endforeach
                         </select>
-                        <select name="PAGOS" id="PAGOS" class="filtros-simcards-select">
+                        <select name="pago_estado" id="pago_estado" class="filtros-simcards-select">
                             <option value="">Todos los pagos</option>
-                            <option value="AL_DIA" {{ request('PAGOS') === 'AL_DIA' ? 'selected' : '' }}>Al día</option>
-                            <option value="PROXIMO" {{ request('PAGOS') === 'PROXIMO' ? 'selected' : '' }}>Próximo a vencer
+                            <option value="AL_DIA" {{ request('pago_estado') == 'AL_DIA' ? 'selected' : '' }}>Al día
                             </option>
-                            <option value="VENCIDO" {{ request('PAGOS') === 'VENCIDO' ? 'selected' : '' }}>Vencido</option>
+                            <option value="PROXIMO" {{ request('pago_estado') == 'PROXIMO' ? 'selected' : '' }}>Próximo a
+                                vencer</option>
+                            <option value="VENCIDO" {{ request('pago_estado') == 'VENCIDO' ? 'selected' : '' }}>Vencido
+                            </option>
                         </select>
 
                         <button class="btn btn btn-primary mt-2" type="submit">Buscar</button>
