@@ -80,15 +80,15 @@ class SIMCARD extends Model
 	{
 		return $this->hasMany(DETALLE_SIMCARD::class, 'SIM_ID', 'ID_SIM');
 	}
-	 // Último detalle por fecha de activación (para tomar cuotas vigentes)
-    public function detalleVigente()
-    {
-        // Si tu Laravel soporta latestOfMany:
-        return $this->hasOne(DETALLE_SIMCARD::class, 'SIM_ID', 'ID_SIM')->latestOfMany('FECHA_ACTIVACION_RENOVACION');
+	// Último detalle por fecha de activación (para tomar cuotas vigentes)
+	public function detalleVigente()
+	{
+		// Si tu Laravel soporta latestOfMany:
+		return $this->hasOne(DETALLE_SIMCARD::class, 'SIM_ID', 'ID_SIM')->latestOfMany('FECHA_ACTIVACION_RENOVACION');
 
-        // Si NO soporta latestOfMany, usa en su lugar:
-        // return $this->hasOne(DETALLE_SIMCARD::class, 'SIM_ID', 'ID_SIM')->orderByDesc('FECHA_ACTIVACION_RENOVACION');
-    } 
+		// Si NO soporta latestOfMany, usa en su lugar:
+		// return $this->hasOne(DETALLE_SIMCARD::class, 'SIM_ID', 'ID_SIM')->orderByDesc('FECHA_ACTIVACION_RENOVACION');
+	}
 	public function cuotas()
 	{
 		return $this->hasManyThrough(
@@ -131,63 +131,194 @@ class SIMCARD extends Model
 
 
 	/**
-     * Estado de pagos combinando CUOTAS (del detalle vigente) y SERVICIO.
-     * Retorna un array:
-     *   ['estado' => 'VENCIDO|PROXIMO|AL_DIA', 'color' => 'danger|warning|success', 'fuente' => 'Cuota|Servicio', 'fecha' => 'Y-m-d']
-     */
-    public function getPagosEstadoAttribute(): array
-    {
-        $hoy = Carbon::today();
-        $limiteProximo = $hoy->copy()->addDays(5);
+	 * Estado de pagos combinando CUOTAS (del detalle vigente) y SERVICIO.
+	 * Retorna un array:
+	 *   ['estado' => 'VENCIDO|PROXIMO|AL_DIA', 'color' => 'danger|warning|success', 'fuente' => 'Cuota|Servicio', 'fecha' => 'Y-m-d']
+	 */
+	// public function getPagosEstadoAttribute(): array
+	// {
+	//     $hoy = Carbon::today();
+	//     $limiteProximo = $hoy->copy()->addDays(5);
 
-        // ---------- CUOTAS (del detalle vigente) ----------
-        $cuotaPend = null;
-        if ($this->relationLoaded('detalleVigente') || $this->relationLoaded('detalleSimcards')) {
-            $detalle = $this->detalleVigente ?? $this->detalleSimcards->sortByDesc('FECHA_ACTIVACION_RENOVACION')->first();
-            if ($detalle) {
-                // tomamos la primera cuota SIN comprobante (pendiente) por fecha programada
-                $cuotaPend = $detalle->cuotas()
-                    ->whereNull('COMPROBANTE')
-                    ->orderBy('FECHA_PAGO')
-                    ->first();
-            }
-        }
+	//     // ---------- CUOTAS (del detalle vigente) ----------
+	//     $cuotaPend = null;
+	//     if ($this->relationLoaded('detalleVigente') || $this->relationLoaded('detalleSimcards')) {
+	//         $detalle = $this->detalleVigente ?? $this->detalleSimcards->sortByDesc('FECHA_ACTIVACION_RENOVACION')->first();
+	//         if ($detalle) {
+	//             // tomamos la primera cuota SIN comprobante (pendiente) por fecha programada
+	//             $cuotaPend = $detalle->cuotas()
+	//                 ->whereNull('COMPROBANTE')
+	//                 ->orderBy('FECHA_PAGO')
+	//                 ->first();
+	//         }
+	//     }
 
-        // ---------- SERVICIO ----------
-        $servRec = $this->servicioReciente; // último pago; su FECHA_SIGUIENTE_PAGO es el próximo vencimiento
-        $servVence = $servRec?->FECHA_SIGUIENTE_PAGO ? Carbon::parse($servRec->FECHA_SIGUIENTE_PAGO) : null;
+	//     // ---------- SERVICIO ----------
+	//     $servRec = $this->servicioReciente; // último pago; su FECHA_SIGUIENTE_PAGO es el próximo vencimiento
+	//     $servVence = $servRec?->FECHA_SIGUIENTE_PAGO ? Carbon::parse($servRec->FECHA_SIGUIENTE_PAGO) : null;
 
-        // Decidir el peor estado entre ambos componentes
-        $cFecha = $cuotaPend?->FECHA_PAGO ? Carbon::parse($cuotaPend->FECHA_PAGO) : null;
+	//     // Decidir el peor estado entre ambos componentes
+	//     $cFecha = $cuotaPend?->FECHA_PAGO ? Carbon::parse($cuotaPend->FECHA_PAGO) : null;
 
-        // Helper para mapear a estado
-        $eval = function (?Carbon $fecha, string $fuente) use ($hoy, $limiteProximo) {
-            if (!$fecha) return null;
-            if ($fecha->lt($hoy))    return ['estado' => 'VENCIDO',          'color' => 'danger',  'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
-            if ($fecha->lte($limiteProximo)) return ['estado' => 'PROXIMO', 'color' => 'warning', 'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
-            return ['estado' => 'AL_DIA', 'color' => 'success', 'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
-        };
+	//     // Helper para mapear a estado
+	//     $eval = function (?Carbon $fecha, string $fuente) use ($hoy, $limiteProximo) {
+	//         if (!$fecha) return null;
+	//         if ($fecha->lt($hoy))    return ['estado' => 'VENCIDO',          'color' => 'danger',  'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
+	//         if ($fecha->lte($limiteProximo)) return ['estado' => 'PROXIMO', 'color' => 'warning', 'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
+	//         return ['estado' => 'AL_DIA', 'color' => 'success', 'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
+	//     };
 
-        $estCuota = $eval($cFecha, 'Cuota');
-        $estServ  = $eval($servVence, 'Servicio');
+	//     $estCuota = $eval($cFecha, 'Cuota');
+	//     $estServ  = $eval($servVence, 'Servicio');
 
-        // Combinar (regla: priorizar VENCIDO, luego PROXIMO, si no AL_DIA)
-        $candidatos = array_filter([$estCuota, $estServ]);
-        if (empty($candidatos)) {
-            return ['estado' => 'AL_DIA', 'color' => 'success', 'fuente' => '-', 'fecha' => null];
-        }
+	//     // Combinar (regla: priorizar VENCIDO, luego PROXIMO, si no AL_DIA)
+	//     $candidatos = array_filter([$estCuota, $estServ]);
+	//     if (empty($candidatos)) {
+	//         return ['estado' => 'AL_DIA', 'color' => 'success', 'fuente' => '-', 'fecha' => null];
+	//     }
 
-        // Si cualquier fuente está VENCIDO
-        foreach ($candidatos as $e) {
-            if ($e['estado'] === 'VENCIDO') return $e;
-        }
-        // Si cualquiera está PROXIMO
-        foreach ($candidatos as $e) {
-            if ($e['estado'] === 'PROXIMO') return $e;
-        }
-        // Si llegamos aquí, todos AL_DIA: escogemos el más próximo por fecha
-        usort($candidatos, fn($a,$b) => strcmp((string)$a['fecha'], (string)$b['fecha']));
-        return $candidatos[0];
-    }
+	//     // Si cualquier fuente está VENCIDO
+	//     foreach ($candidatos as $e) {
+	//         if ($e['estado'] === 'VENCIDO') return $e;
+	//     }
+	//     // Si cualquiera está PROXIMO
+	//     foreach ($candidatos as $e) {
+	//         if ($e['estado'] === 'PROXIMO') return $e;
+	//     }
+	//     // Si llegamos aquí, todos AL_DIA: escogemos el más próximo por fecha
+	//     usort($candidatos, fn($a,$b) => strcmp((string)$a['fecha'], (string)$b['fecha']));
+	//     return $candidatos[0];
+	// }
+
+	public function getPagosEstadoAttribute(): array
+	{
+		$hoy = Carbon::today();
+		$limiteProximo = $hoy->copy()->addDays(5);
+
+		/*
+		 * ================= CUOTA PENDIENTE =================
+		 */
+		$cuotaPend = null;
+
+		if ($this->relationLoaded('detalleVigente') || $this->relationLoaded('detalleSimcards')) {
+
+			$detalle = $this->detalleVigente;
+
+			// fallback: si no hay detalle vigente, usamos el último detalle
+			if (!$detalle && $this->relationLoaded('detalleSimcards')) {
+				$detalle = $this->detalleSimcards
+					->sortByDesc('FECHA_ACTIVACION_RENOVACION')
+					->first();
+			}
+
+			if ($detalle) {
+				$cuotaPend = $detalle->cuotas()
+					->whereNull('COMPROBANTE')   // SOLO cuotas pendientes
+					->orderBy('FECHA_PAGO')
+					->first();
+			}
+		}
+
+		$cFecha = $cuotaPend && $cuotaPend->FECHA_PAGO
+			? Carbon::parse($cuotaPend->FECHA_PAGO)
+			: null;
+
+		/*
+		 * ================= SERVICIO PENDIENTE =================
+		 * Solo se consideran servicios donde COMPROBANTE sea NULL (pendientes).
+		 * Si ya tiene COMPROBANTE, se asume pagado y no afecta el estado.
+		 */
+		$servPend = $this->servicios()
+			->whereNull('COMPROBANTE')                // SOLO servicios no pagados
+			->orderBy('FECHA_SERVICIO')              // el más antiguo pendiente
+			->first();
+
+		// Aquí usamos FECHA_SERVICIO como "fecha de contrato" para evaluar el vencimiento.
+		// Si prefieres usar FECHA_SIGUIENTE_PAGO, cambia FECHA_SERVICIO por FECHA_SIGUIENTE_PAGO.
+		$sFecha = $servPend && $servPend->FECHA_SERVICIO
+			? Carbon::parse($servPend->FECHA_SERVICIO)
+			: null;
+
+		/*
+		 * ================= FUNCIÓN DE EVALUACIÓN =================
+		 */
+		$eval = function (?Carbon $fecha) use ($hoy, $limiteProximo) {
+			if (!$fecha) {
+				return null; // no hay nada pendiente
+			}
+
+			if ($fecha->lt($hoy)) {
+				return 'VENCIDO';
+			}
+
+			if ($fecha->lte($limiteProximo)) {
+				return 'PROXIMO';
+			}
+
+			return 'AL_DIA';
+		};
+
+		$estadoCuota = $eval($cFecha);
+		$estadoServicio = $eval($sFecha);
+
+		/*
+		 * ================= ESTADO GENERAL =================
+		 */
+		$estados = collect([$estadoCuota, $estadoServicio])->filter();
+
+		if ($estados->isEmpty()) {
+			$estadoGeneral = 'AL_DIA';
+		} elseif ($estados->contains('VENCIDO')) {
+			$estadoGeneral = 'VENCIDO';
+		} elseif ($estados->contains('PROXIMO')) {
+			$estadoGeneral = 'PROXIMO';
+		} else {
+			$estadoGeneral = 'AL_DIA';
+		}
+
+		$color = match ($estadoGeneral) {
+			'VENCIDO' => 'danger',
+			'PROXIMO' => 'warning',
+			default => 'success',
+		};
+
+		/*
+		 * ================= RESUMEN (Servicio / Cuotas / Ambos) =================
+		 */
+		$partes = [];
+
+		if ($estadoCuota === $estadoGeneral && $estadoGeneral !== 'AL_DIA') {
+			$partes[] = 'Cuotas';
+		}
+
+		if ($estadoServicio === $estadoGeneral && $estadoGeneral !== 'AL_DIA') {
+			$partes[] = 'Servicio';
+		}
+
+		if (empty($partes) && $estadoGeneral !== 'AL_DIA') {
+			$resumen = 'Revisar detalle';
+		} elseif (count($partes) === 2) {
+			$resumen = 'Servicio y cuotas';
+		} elseif (count($partes) === 1) {
+			$resumen = $partes[0];
+		} else {
+			$resumen = '-';
+		}
+
+		return [
+			'estado' => $estadoGeneral,
+			'color' => $color,
+
+			'estado_cuota' => $estadoCuota,
+			'fecha_cuota' => $cFecha?->toDateString(),
+
+			'estado_servicio' => $estadoServicio,
+			'fecha_servicio' => $sFecha?->toDateString(),
+
+			'resumen' => $resumen,
+		];
+	}
+
+
 
 }

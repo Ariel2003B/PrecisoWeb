@@ -91,48 +91,55 @@ class SimCardController extends Controller
 
             $query->where(function ($qq) use ($estado, $hoy, $proximo) {
 
-                // ---- 1) CUOTAS (pendientes: COMPROBANTE NULL) ----
-                $cuotasFiltro = function ($q) use ($estado, $hoy, $proximo) {
+                // ==== CUOTAS PENDIENTES (COMPROBANTE NULL) ====
+                $cuotasPendientes = function ($q) {
                     $q->whereNull('COMPROBANTE');
+                };
 
-                    if ($estado === 'AL_DIA') {
-                        // próximas a más de 5 días
-                        $q->where('FECHA_PAGO', '>', $proximo);
-                    } elseif ($estado === 'PROXIMO') {
-                        // entre hoy y hoy+5
+                if ($estado === 'AL_DIA') {
+                    // AL_DIA = NO tener cuotas ni servicios pendientes
+                    // con fecha <= hoy+5 (nada vencido ni próximo)
+                    $qq->whereDoesntHave('detalleVigente.cuotas', function ($q) use ($cuotasPendientes, $proximo) {
+                        $cuotasPendientes($q);
+                        $q->where('FECHA_PAGO', '<=', $proximo);
+                    })
+                        ->whereDoesntHave('detalleSimcards.cuotas', function ($q) use ($cuotasPendientes, $proximo) {
+                            $cuotasPendientes($q);
+                            $q->where('FECHA_PAGO', '<=', $proximo);
+                        })
+                        ->whereDoesntHave('servicios', function ($q) use ($hoy, $proximo) {
+                            $q->whereNull('COMPROBANTE')
+                                ->where('FECHA_SERVICIO', '<=', $proximo);
+                        });
+
+                    return; // importante: no seguir con el resto del código
+                }
+
+                // ==== VENCIDO / PROXIMO ====
+                // 1) Cuotas
+                $cuotasFiltro = function ($q) use ($estado, $hoy, $proximo, $cuotasPendientes) {
+                    $cuotasPendientes($q);
+
+                    if ($estado === 'PROXIMO') {
                         $q->whereBetween('FECHA_PAGO', [$hoy, $proximo]);
                     } elseif ($estado === 'VENCIDO') {
-                        // ya vencidas
                         $q->where('FECHA_PAGO', '<', $hoy);
                     }
                 };
 
-                // detalle vigente
                 $qq->whereHas('detalleVigente.cuotas', $cuotasFiltro)
-                    // fallback si no hay detalleVigente cargado
                     ->orWhereHas('detalleSimcards.cuotas', $cuotasFiltro);
 
-                // ---- 2) SERVICIO (usa FECHA_SIGUIENTE_PAGO) ----
-                $qq->orWhereHas('servicioReciente', function ($q) use ($estado, $hoy, $proximo) {
-                    if ($estado === 'AL_DIA') {
-                        $q->where('FECHA_SIGUIENTE_PAGO', '>', $proximo);
-                    } elseif ($estado === 'PROXIMO') {
-                        $q->whereBetween('FECHA_SIGUIENTE_PAGO', [$hoy, $proximo]);
+                // 2) Servicios PENDIENTES (COMPROBANTE NULL)
+                $qq->orWhereHas('servicios', function ($q) use ($estado, $hoy, $proximo) {
+                    $q->whereNull('COMPROBANTE');
+
+                    if ($estado === 'PROXIMO') {
+                        $q->whereBetween('FECHA_SERVICIO', [$hoy, $proximo]);
                     } elseif ($estado === 'VENCIDO') {
-                        $q->where('FECHA_SIGUIENTE_PAGO', '<', $hoy);
+                        $q->where('FECHA_SERVICIO', '<', $hoy);
                     }
                 });
-
-                // ---- 3) Casos sin cuotas pendientes NI servicio (tu accessor los trata como AL_DIA)
-                if ($estado === 'AL_DIA') {
-                    $qq->orWhere(function ($zz) {
-                        $zz->whereDoesntHave('detalleVigente.cuotas', function ($x) {
-                            $x->whereNull('COMPROBANTE'); })
-                            ->whereDoesntHave('detalleSimcards.cuotas', function ($x) {
-                                $x->whereNull('COMPROBANTE'); })
-                            ->whereDoesntHave('servicioReciente');
-                    });
-                }
             });
         }
 
