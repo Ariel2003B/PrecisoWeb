@@ -133,6 +133,12 @@ class SIMCARD extends Model
 		return $this->PROPIETARIO ?: null;
 	}
 
+	public function getClienteCedulaAttribute()
+	{
+		return $this->usuario->CEDULA ?? null;
+	}
+
+
 
 	/**
 	 * Estado de pagos combinando CUOTAS (del detalle vigente) y SERVICIO.

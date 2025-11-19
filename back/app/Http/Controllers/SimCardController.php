@@ -76,9 +76,14 @@ class SimCardController extends Controller
                     ->orWhere('ASIGNACION', 'like', "%$search%")
                     ->orWhere('EQUIPO', 'like', "%$search%")
                     ->orWhere('IMEI', 'like', "%$search%")
+                    ->orWhere('PLATAFORMA', 'like', "%$search%")
+                    ->orWhere('PROVEEDOR', 'like', "%$search%")
                     ->orWhereHas('usuario', function ($uq) use ($search) {
-                        $uq->where('NOMBRE', 'like', "%$search%")
-                            ->orWhere('APELLIDO', 'like', "%$search%");
+                        $uq->where(function ($qq) use ($search) {
+                            $qq->where('NOMBRE', 'like', "%$search%")
+                                ->orWhere('APELLIDO', 'like', "%$search%")
+                                ->orWhere('CEDULA', 'like', "%$search%");
+                        });
                     });
             });
         }

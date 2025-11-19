@@ -105,9 +105,9 @@
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">N</th>
+                                <th scope="col">Plataforma</th>
                                 <th scope="col">Cliente</th>
-                                <th scope="col">ICC</th>
-                                <th scope="col">Número</th>
+                                <th scope="col">Cedula</th>
                                 <th scope="col">Equipo</th>
                                 <th scope="col">Asignación</th>
                                 <th scope="col">Pagos</th>
@@ -125,12 +125,9 @@
                                 <tr data-pago-estado="{{ $p['estado'] }}" {{-- AL_DIA | PROXIMO | VENCIDO --}}
                                     data-pago-fuente="{{ $p['fuente'] ?? '-' }}"> {{-- Cuota | Servicio | - --}}
                                     <td>{{ $secuencial++ }}</td>
+                                    <td>{{ $simcard->PLATAFORMA }}</td>
                                     <td>{{ $simcard->cliente_nombre }}</td>
-
-                                    <td>{{ $simcard->ICC }}</td>
-                                    <td>
-                                        {{ $simcard->NUMEROTELEFONO }}
-                                    </td>
+                                    <td>{{ $simcard->cliente_cedula }}</td>
                                     <td>{{ $simcard->EQUIPO }}</td>
 
                                     <td>

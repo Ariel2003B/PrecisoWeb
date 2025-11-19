@@ -65,7 +65,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="ICC" class="form-label">ICC</label>
+                        <label for="ICC" class="form-label">ICC / Contrato</label>
                         <input type="text" name="ICC" id="ICC" class="form-control"
                             value="{{ old('ICC', $simcard->ICC) }}" placeholder="Ingrese el ICC">
                     </div>
