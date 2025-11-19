@@ -138,68 +138,6 @@ class SIMCARD extends Model
 		return $this->usuario->CEDULA ?? null;
 	}
 
-
-
-	/**
-	 * Estado de pagos combinando CUOTAS (del detalle vigente) y SERVICIO.
-	 * Retorna un array:
-	 *   ['estado' => 'VENCIDO|PROXIMO|AL_DIA', 'color' => 'danger|warning|success', 'fuente' => 'Cuota|Servicio', 'fecha' => 'Y-m-d']
-	 */
-	// public function getPagosEstadoAttribute(): array
-	// {
-	//     $hoy = Carbon::today();
-	//     $limiteProximo = $hoy->copy()->addDays(5);
-
-	//     // ---------- CUOTAS (del detalle vigente) ----------
-	//     $cuotaPend = null;
-	//     if ($this->relationLoaded('detalleVigente') || $this->relationLoaded('detalleSimcards')) {
-	//         $detalle = $this->detalleVigente ?? $this->detalleSimcards->sortByDesc('FECHA_ACTIVACION_RENOVACION')->first();
-	//         if ($detalle) {
-	//             // tomamos la primera cuota SIN comprobante (pendiente) por fecha programada
-	//             $cuotaPend = $detalle->cuotas()
-	//                 ->whereNull('COMPROBANTE')
-	//                 ->orderBy('FECHA_PAGO')
-	//                 ->first();
-	//         }
-	//     }
-
-	//     // ---------- SERVICIO ----------
-	//     $servRec = $this->servicioReciente; // último pago; su FECHA_SIGUIENTE_PAGO es el próximo vencimiento
-	//     $servVence = $servRec?->FECHA_SIGUIENTE_PAGO ? Carbon::parse($servRec->FECHA_SIGUIENTE_PAGO) : null;
-
-	//     // Decidir el peor estado entre ambos componentes
-	//     $cFecha = $cuotaPend?->FECHA_PAGO ? Carbon::parse($cuotaPend->FECHA_PAGO) : null;
-
-	//     // Helper para mapear a estado
-	//     $eval = function (?Carbon $fecha, string $fuente) use ($hoy, $limiteProximo) {
-	//         if (!$fecha) return null;
-	//         if ($fecha->lt($hoy))    return ['estado' => 'VENCIDO',          'color' => 'danger',  'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
-	//         if ($fecha->lte($limiteProximo)) return ['estado' => 'PROXIMO', 'color' => 'warning', 'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
-	//         return ['estado' => 'AL_DIA', 'color' => 'success', 'fuente' => $fuente, 'fecha' => $fecha->toDateString()];
-	//     };
-
-	//     $estCuota = $eval($cFecha, 'Cuota');
-	//     $estServ  = $eval($servVence, 'Servicio');
-
-	//     // Combinar (regla: priorizar VENCIDO, luego PROXIMO, si no AL_DIA)
-	//     $candidatos = array_filter([$estCuota, $estServ]);
-	//     if (empty($candidatos)) {
-	//         return ['estado' => 'AL_DIA', 'color' => 'success', 'fuente' => '-', 'fecha' => null];
-	//     }
-
-	//     // Si cualquier fuente está VENCIDO
-	//     foreach ($candidatos as $e) {
-	//         if ($e['estado'] === 'VENCIDO') return $e;
-	//     }
-	//     // Si cualquiera está PROXIMO
-	//     foreach ($candidatos as $e) {
-	//         if ($e['estado'] === 'PROXIMO') return $e;
-	//     }
-	//     // Si llegamos aquí, todos AL_DIA: escogemos el más próximo por fecha
-	//     usort($candidatos, fn($a,$b) => strcmp((string)$a['fecha'], (string)$b['fecha']));
-	//     return $candidatos[0];
-	// }
-
 	public function getPagosEstadoAttribute(): array
 	{
 		$hoy = Carbon::today();

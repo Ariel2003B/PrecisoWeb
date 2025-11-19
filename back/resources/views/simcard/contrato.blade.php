@@ -94,13 +94,11 @@
                                                 </button>
                                             </div>
                                             <br>
-                                            <a href="{{ route('usuario.index') }}" class="btn btn-primary text-nowrap" target="_blank"
-                                                title="Administrar clientes">
+                                            <a href="{{ route('usuario.index') }}" class="btn btn-primary text-nowrap"
+                                                target="_blank" title="Administrar clientes">
                                                 Administrar Clientes
                                             </a>
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -330,13 +328,22 @@
 
                             <input type="hidden" name="modo" id="MODO" value="CONTRATO">
                             <div class="d-flex justify-content-between gap-2 flex-wrap">
-                                <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary" >
+                                <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i> Regresar Simcards
                                 </a>
+
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save me-1"></i> Guardar
                                 </button>
+
+                                {{-- SOLO mostrar Renovar si el servicio actual tiene comprobante --}}
+                                @if (!empty(optional($servicioReciente)->COMPROBANTE))
+                                    <button type="submit" name="accion" value="renovar" class="btn btn-success">
+                                        <i class="bi bi-arrow-repeat me-1"></i> Renovar servicio
+                                    </button>
+                                @endif
                             </div>
+
 
 
                         </form>
