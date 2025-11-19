@@ -94,7 +94,7 @@
                                                 </button>
                                             </div>
                                             <br>
-                                            <a href="{{ route('usuario.index') }}" class="btn btn-primary text-nowrap"
+                                            <a href="{{ route('usuario.index') }}" class="btn btn-primary text-nowrap" target="_blank"
                                                 title="Administrar clientes">
                                                 Administrar Clientes
                                             </a>
@@ -330,7 +330,7 @@
 
                             <input type="hidden" name="modo" id="MODO" value="CONTRATO">
                             <div class="d-flex justify-content-between gap-2 flex-wrap">
-                                <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary" target="_blank">
+                                <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary" >
                                     <i class="bi bi-arrow-left me-1"></i> Regresar Simcards
                                 </a>
                                 <button type="submit" class="btn btn-primary">
