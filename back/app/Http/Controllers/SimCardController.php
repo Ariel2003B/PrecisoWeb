@@ -1010,7 +1010,8 @@ class SimCardController extends Controller
             'IMEI' => $request->IMEI,
             'MODELO_EQUIPO' => $request->MODELO_EQUIPO,
             'MARCA_EQUIPO' => $request->MARCA_EQUIPO,
-            'PLATAFORMA' => $request->PLATAFORMA
+            'PLATAFORMA' => $request->PLATAFORMA,
+            'PROVEEDOR' => $request->PROVEEDOR
         ]);
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');

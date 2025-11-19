@@ -32,34 +32,36 @@
                                 {{ $simcard->PROPIETARIO === 'PRECISOGPS S.A.S.' ? 'selected' : '' }}>
                                 PRECISOGPS S.A.S.
                             </option>
-                            <option value="VARGAS REINOSO CESAR GIOVANNY"
-                                {{ $simcard->PROPIETARIO === 'VARGAS REINOSO CESAR GIOVANNY' ? 'selected' : '' }}>
-                                VARGAS REINOSO CESAR GIOVANNY
-                            </option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="CUENTA" class="form-label">Cuenta</label>
+                        <label for="PROVEEDOR" class="form-label">PROVEEDOR</label>
+                        <input type="text" name="PROVEEDOR" id="PROVEEDOR" class="form-control"
+                            value="{{ old('PROVEEDOR', $simcard->PROVEEDOR) }}" placeholder="Ingrese el nombre del proveedor"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="CUENTA" class="form-label">Cuenta / Código principal</label>
                         <input type="text" name="CUENTA" id="CUENTA" class="form-control"
                             value="{{ old('CUENTA', $simcard->CUENTA) }}" placeholder="Ingrese la cuenta de la SIM"
                             required>
                     </div>
                     <div class="mb-3">
-                        <label for="NUMEROTELEFONO" class="form-label">Número de Teléfono</label>
+                        <label for="NUMEROTELEFONO" class="form-label">Número de Teléfono / Login</label>
                         <input type="text" name="NUMEROTELEFONO" id="NUMEROTELEFONO" class="form-control" maxlength="10"
                             value="{{ old('NUMEROTELEFONO', $simcard->NUMEROTELEFONO) }}"
                             placeholder="Ingrese el número de teléfono" required>
                     </div>
                     <div class="mb-3">
-                        <label for="TIPOPLAN" class="form-label">Codigo de Plan</label>
+                        <label for="PLAN" class="form-label">Plan / Descripción</label>
+                        <input type="text" name="PLAN" id="PLAN" class="form-control" maxlength="255"
+                            value="{{ old('PLAN', $simcard->PLAN) }}" placeholder="Ingrese el plan">
+                    </div>
+                    <div class="mb-3">
+                        <label for="TIPOPLAN" class="form-label">Codigo de Plan / Dirección</label>
                         <input type="text" name="TIPOPLAN" id="TIPOPLAN" class="form-control" maxlength="255"
                             value="{{ old('TIPOPLAN', $simcard->TIPOPLAN) }}" placeholder="Ingrese el codigo de plan"
                             required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="PLAN" class="form-label">Plan</label>
-                        <input type="text" name="PLAN" id="PLAN" class="form-control" maxlength="255"
-                            value="{{ old('PLAN', $simcard->PLAN) }}" placeholder="Ingrese el plan">
                     </div>
 
                     <div class="mb-3">
