@@ -965,7 +965,7 @@ class SimCardController extends Controller
     {
         $request->validate([
             'PROPIETARIO' => 'required|string|max:255',
-            'NUMEROTELEFONO' => 'required|string|max:10|unique:SIMCARD,NUMEROTELEFONO,' . $simcard->ID_SIM . ',ID_SIM',
+            'NUMEROTELEFONO' => 'required|string|unique:SIMCARD,NUMEROTELEFONO,' . $simcard->ID_SIM . ',ID_SIM',
             'TIPOPLAN' => 'required|string|max:255',
             'PLAN' => 'nullable|string|max:255',
             'ICC' => [
