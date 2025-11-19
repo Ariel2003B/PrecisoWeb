@@ -63,7 +63,8 @@ class SIMCARD extends Model
 		'IMEI',
 		'ID_WIALON',
 		'MODELO_EQUIPO',
-		'MARCA_EQUIPO'
+		'MARCA_EQUIPO',
+		'PLATAFORMA'
 	];
 
 	public function v_e_h_i_c_u_l_o()

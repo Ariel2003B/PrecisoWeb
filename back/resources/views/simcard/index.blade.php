@@ -105,7 +105,6 @@
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">N</th>
-                                <th scope="col">Cuenta</th>
                                 <th scope="col">Cliente</th>
                                 <th scope="col">ICC</th>
                                 <th scope="col">Número</th>
@@ -126,7 +125,6 @@
                                 <tr data-pago-estado="{{ $p['estado'] }}" {{-- AL_DIA | PROXIMO | VENCIDO --}}
                                     data-pago-fuente="{{ $p['fuente'] ?? '-' }}"> {{-- Cuota | Servicio | - --}}
                                     <td>{{ $secuencial++ }}</td>
-                                    <td>{{ $simcard->CUENTA }}</td>
                                     <td>{{ $simcard->cliente_nombre }}</td>
 
                                     <td>{{ $simcard->ICC }}</td>

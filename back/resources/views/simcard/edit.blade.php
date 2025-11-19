@@ -67,6 +67,11 @@
                         <input type="text" name="ICC" id="ICC" class="form-control"
                             value="{{ old('ICC', $simcard->ICC) }}" placeholder="Ingrese el ICC">
                     </div>
+                    <div class="mb-3">
+                        <label for="PLATAFORMA" class="form-label">PLATAFORMA</label>
+                        <input type="text" name="PLATAFORMA" id="PLATAFORMA" class="form-control"
+                            value="{{ old('PLATAFORMA', $simcard->PLATAFORMA) }}" placeholder="Ingrese la plataforma">
+                    </div>
                     
                     <div class="mb-3">
                         <label for="ASIGNACION" class="form-label">Asignacion</label>
