@@ -61,6 +61,21 @@
                         </div>
 
                         {{-- Solo mostrar el formulario si se puede crear/editar --}}
+                        @php
+                            $puedeVenderHardware = false;
+
+                            if (!empty($detalle) && $detalle->cuotas && $detalle->cuotas->count() > 0) {
+                                // saldo == 0 y TODAS las cuotas con comprobante
+                                $saldoCero = (float) $detalle->SALDO <= 0;
+
+                                $todasConComprobante = $detalle->cuotas->every(function ($c) {
+                                    return !empty($c->COMPROBANTE);
+                                });
+
+                                $puedeVenderHardware = $saldoCero && $todasConComprobante;
+                            }
+                        @endphp
+
                         <form method="POST" action="{{ route('simcards.contrato.store', $simcard->ID_SIM) }}"
                             id="form-contrato" enctype="multipart/form-data">
                             @csrf
@@ -354,13 +369,16 @@
                                         <i class="bi bi-arrow-repeat me-1"></i> Renovar servicio
                                     </button>
                                 @endif
+
+                                {{-- SOLO mostrar "Vender nuevo hardware" si el contrato actual está 100% pagado --}}
+                                @if ($puedeVenderHardware)
+                                    <button type="submit" name="accion" value="nuevo_hardware"
+                                        class="btn btn-warning">
+                                        <i class="bi bi-cpu me-1"></i> Vender nuevo hardware
+                                    </button>
+                                @endif
                             </div>
-
-
-
                         </form>
-
-
                     </div>
                     {{-- ========== DERECHA: HISTORIAL ========== --}}
                     <div class="col-lg-5">

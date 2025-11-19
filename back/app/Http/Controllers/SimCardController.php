@@ -645,6 +645,7 @@ class SimCardController extends Controller
                     $nuevo->COMPROBANTE = null; // nuevo periodo todavía no pagado
                     $nuevo->save();
                 }
+
             }
             // 6) CONTRATO
             if ($hasContrato) {
@@ -743,6 +744,51 @@ class SimCardController extends Controller
                 $detalle->SALDO = $saldo;
                 $detalle->save();
             }
+            // 6.bis) NUEVO HARDWARE: crear nuevo contrato solo si TODO está pagado
+            if ($accion === 'nuevo_hardware') {
+                // Debe existir un contrato trabajado en este submit
+                if (!$hasContrato || !isset($detalle)) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'VALOR_TOTAL' => 'No hay contrato de hardware para generar uno nuevo.',
+                    ]);
+                }
+
+                // Refrescar con cuotas ya guardadas
+                $detalleRefrescado = \App\Models\DETALLE_SIMCARD::with('cuotas')
+                    ->where('DET_ID', $detalle->DET_ID)
+                    ->where('SIM_ID', $simcard->ID_SIM)
+                    ->first();
+
+                if (!$detalleRefrescado) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'VALOR_TOTAL' => 'No se pudo encontrar el contrato de hardware actual.',
+                    ]);
+                }
+
+                // Verificar que NO existan cuotas sin comprobante
+                $tienePendientes = $detalleRefrescado->cuotas()
+                    ->whereNull('COMPROBANTE')
+                    ->exists();
+
+                if ($tienePendientes || (float) $detalleRefrescado->SALDO > 0) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'VALOR_TOTAL' => 'Para vender nuevo hardware, todas las cuotas deben estar pagadas con comprobante y el saldo en 0.',
+                    ]);
+                }
+
+                // Crear un nuevo contrato de hardware "en blanco" para nueva venta
+                $nuevo = new \App\Models\DETALLE_SIMCARD();
+                $nuevo->SIM_ID = $simcard->ID_SIM;
+                $nuevo->FECHA_ACTIVACION_RENOVACION = now()->toDateString(); // puedes dejarla null si prefieres
+                $nuevo->FECHA_SIGUIENTE_PAGO = null;
+                $nuevo->PLAZO_CONTRATADO = null;
+                $nuevo->VALOR_TOTAL = 0;
+                $nuevo->VALOR_ABONADO = 0;
+                $nuevo->SALDO = 0;
+                $nuevo->NUMERO_CUOTAS = null;
+                $nuevo->save();
+            }
+
         });
 
         // 7) Mensaje final
