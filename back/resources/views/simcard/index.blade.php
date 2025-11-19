@@ -108,6 +108,7 @@
                                 <th scope="col">Plataforma</th>
                                 <th scope="col">Cliente</th>
                                 <th scope="col">Cedula</th>
+                                <th scope="col">Numero / Login</th>
                                 <th scope="col">Equipo</th>
                                 <th scope="col">Asignación</th>
                                 <th scope="col">Pagos</th>
