@@ -72,7 +72,7 @@
                         <input type="text" name="PLATAFORMA" id="PLATAFORMA" class="form-control"
                             value="{{ old('PLATAFORMA', $simcard->PLATAFORMA) }}" placeholder="Ingrese la plataforma">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="ASIGNACION" class="form-label">Asignacion</label>
                         <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control"
@@ -220,8 +220,8 @@
             // Función para aplicar el estado inicial
             function aplicarEstadoInicial(estado) {
                 const camposParaBloquear = {
-                    ELIMINADA: ['ICC', 'ASIGNACION', 'IMEI', 'EQUIPO'],
-                    LIBRE: [ 'ASIGNACION', 'IMEI', 'EQUIPO']
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO'],
+                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {
@@ -229,11 +229,12 @@
                 }
             }
 
+
             // Función para manejar cambios de estado
             function handleEstadoChange(estado) {
                 const camposParaLimpiar = {
-                    ELIMINADA: ['ICC', 'ASIGNACION', 'IMEI', 'EQUIPO'],
-                    LIBRE: ['ASIGNACION', 'IMEI', 'EQUIPO']
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO'],
+                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {
