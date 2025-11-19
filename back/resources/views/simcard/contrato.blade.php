@@ -203,12 +203,17 @@
                                                                 <label class="form-label d-block">Comprobante</label>
                                                                 @php $isFile = \Illuminate\Support\Str::startsWith($c->COMPROBANTE, ['simcards/']); @endphp
                                                                 @if ($isFile)
-                                                                    <a href="{{ asset('back/storage/app/public/' . $c->COMPROBANTE) }}"
-                                                                        target="_blank"
-                                                                        class="btn btn-sm btn-secondary">Ver</a>
+                                                                    <button type="button"
+                                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
+                                                                        data-url="{{ asset('back/storage/app/public/' . $c->COMPROBANTE) }}">
+                                                                        Ver
+                                                                    </button>
                                                                 @else
-                                                                    <a href="{{ $c->COMPROBANTE }}" target="_blank"
-                                                                        class="btn btn-sm btn-secondary">Abrir</a>
+                                                                    <button type="button"
+                                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
+                                                                        data-url="{{ $c->COMPROBANTE }}">
+                                                                        Abrir
+                                                                    </button>
                                                                 @endif
 
                                                                 {{-- input file oculto por defecto --}}
@@ -296,12 +301,19 @@
                                                     );
                                                 @endphp
                                                 @if ($isFile)
-                                                    <a href="{{ asset('back/storage/app/public/' . $servicioReciente->COMPROBANTE) }}"
-                                                        target="_blank" class="btn btn-sm btn-secondary">Ver</a>
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
+                                                        data-url="{{ asset('back/storage/app/public/' . $servicioReciente->COMPROBANTE) }}">
+                                                        Ver
+                                                    </button>
                                                 @else
-                                                    <a href="{{ $servicioReciente->COMPROBANTE }}" target="_blank"
-                                                        class="btn btn-sm btn-secondary">Abrir</a>
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
+                                                        data-url="{{ $servicioReciente->COMPROBANTE }}">
+                                                        Abrir
+                                                    </button>
                                                 @endif
+
 
 
                                                 <input type="file" name="SERV_COMPROBANTE_FILE"
@@ -434,17 +446,22 @@
                                                                 <td>
                                                                     @if ($c->COMPROBANTE)
                                                                         @if ($esArchivo)
-                                                                            <a class="btn btn-xs btn-outline-secondary"
-                                                                                target="_blank"
-                                                                                href="{{ asset('back/storage/app/public/' . $c->COMPROBANTE) }}">Ver</a>
+                                                                            <button type="button"
+                                                                                class="btn btn-xs btn-outline-secondary btn-ver-comprobante"
+                                                                                data-url="{{ asset('back/storage/app/public/' . $c->COMPROBANTE) }}">
+                                                                                Ver
+                                                                            </button>
                                                                         @else
-                                                                            <a class="btn btn-xs btn-outline-secondary"
-                                                                                target="_blank"
-                                                                                href="{{ $c->COMPROBANTE }}">Abrir</a>
+                                                                            <button type="button"
+                                                                                class="btn btn-xs btn-outline-secondary btn-ver-comprobante"
+                                                                                data-url="{{ $c->COMPROBANTE }}">
+                                                                                Abrir
+                                                                            </button>
                                                                         @endif
                                                                     @else
                                                                         <span class="text-muted">—</span>
                                                                     @endif
+
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -467,6 +484,85 @@
             </div>
         </section>
     </main>
+    <!-- Modal genérico para ver comprobantes -->
+    <div class="modal fade" id="comprobanteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title">Comprobante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-2 text-center">
+                    {{-- Para imágenes --}}
+                    <img id="comprobanteImg" src="" class="img-fluid d-none"
+                        style="max-height: 70vh; object-fit: contain;" />
+
+                    {{-- Para PDF u otros --}}
+                    <iframe id="comprobanteFrame" src="" class="d-none"
+                        style="width: 100%; height: 70vh; border: 0;" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('comprobanteModal');
+            const frame = document.getElementById('comprobanteFrame');
+            const img = document.getElementById('comprobanteImg');
+
+            const modal = modalEl ? new bootstrap.Modal(modalEl) : null;
+
+            document.querySelectorAll('.btn-ver-comprobante').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const url = btn.getAttribute('data-url');
+                    if (!url || !modal || (!frame && !img)) return;
+
+                    // detectar si es imagen
+                    const isImage = url.match(/\.(jpe?g|png|gif|webp)(\?|$)/i);
+
+                    if (isImage) {
+                        // mostrar IMG y ocultar iframe
+                        if (frame) {
+                            frame.classList.add('d-none');
+                            frame.src = '';
+                        }
+                        if (img) {
+                            img.src = url;
+                            img.classList.remove('d-none');
+                        }
+                    } else {
+                        // mostrar iframe (PDF u otros)
+                        if (img) {
+                            img.classList.add('d-none');
+                            img.src = '';
+                        }
+                        if (frame) {
+                            frame.src = url;
+                            frame.classList.remove('d-none');
+                        }
+                    }
+
+                    modal.show();
+                });
+            });
+
+            // limpiar al cerrar
+            modalEl?.addEventListener('hidden.bs.modal', () => {
+                if (frame) {
+                    frame.src = '';
+                    frame.classList.add('d-none');
+                }
+                if (img) {
+                    img.src = '';
+                    img.classList.add('d-none');
+                }
+            });
+        });
+    </script>
+
+
     <script>
         const $fa = document.getElementById('FECHA_ACTIVACION_RENOVACION');
         const $nc = document.getElementById('NUMERO_CUOTAS');
