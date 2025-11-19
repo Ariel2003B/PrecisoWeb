@@ -48,7 +48,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="NUMEROTELEFONO" class="form-label">Número de Teléfono / Login</label>
-                        <input type="text" name="NUMEROTELEFONO" id="NUMEROTELEFONO" class="form-control" maxlength="10"
+                        <input type="text" name="NUMEROTELEFONO" id="NUMEROTELEFONO" class="form-control" maxlength="50"
                             value="{{ old('NUMEROTELEFONO', $simcard->NUMEROTELEFONO) }}"
                             placeholder="Ingrese el número de teléfono" required>
                     </div>
