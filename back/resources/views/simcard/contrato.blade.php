@@ -330,7 +330,7 @@
 
                             <input type="hidden" name="modo" id="MODO" value="CONTRATO">
                             <div class="d-flex justify-content-between gap-2 flex-wrap">
-                                <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary" target="_blank">
                                     <i class="bi bi-arrow-left me-1"></i> Regresar Simcards
                                 </a>
                                 <button type="submit" class="btn btn-primary">
