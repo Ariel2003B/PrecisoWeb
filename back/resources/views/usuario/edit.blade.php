@@ -24,16 +24,16 @@
                     @csrf
                     @method('PUT')
 
+                    
                     <div class="mb-3">
-                        <label for="NOMBRE" class="form-label">Nombre</label>
+                        <label for="APELLIDO" class="form-label">Apellidos</label>
+                        <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
+                        value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="NOMBRE" class="form-label">Nombres</label>
                         <input type="text" name="NOMBRE" id="NOMBRE" class="form-control"
                             value="{{ old('NOMBRE', $usuario->NOMBRE) }}" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="APELLIDO" class="form-label">Apellido</label>
-                        <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
-                            value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
                     </div>
 
                     <div class="mb-3">

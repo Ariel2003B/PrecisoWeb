@@ -101,16 +101,16 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="MODELO_EQUIPO" class="form-label">Modelo del Equipo</label>
-                        <input type="text" name="MODELO_EQUIPO" id="MODELO_EQUIPO" class="form-control"
-                            value="{{ old('MODELO_EQUIPO', $simcard->MODELO_EQUIPO) }}"
-                            placeholder="Ingrese el modelo del equipo">
-                    </div>
-                    <div class="mb-3">
                         <label for="MARCA_EQUIPO" class="form-label">Marca del Equipo</label>
                         <input type="text" name="MARCA_EQUIPO" id="MARCA_EQUIPO" class="form-control"
                             value="{{ old('MARCA_EQUIPO', $simcard->MARCA_EQUIPO) }}"
                             placeholder="Ingrese la marca del equipo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="MODELO_EQUIPO" class="form-label">Modelo del Equipo</label>
+                        <input type="text" name="MODELO_EQUIPO" id="MODELO_EQUIPO" class="form-control"
+                            value="{{ old('MODELO_EQUIPO', $simcard->MODELO_EQUIPO) }}"
+                            placeholder="Ingrese el modelo del equipo">
                     </div>
 
                     <div class="mb-3">

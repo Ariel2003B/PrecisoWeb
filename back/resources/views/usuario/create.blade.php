@@ -23,16 +23,17 @@
                 <form action="{{ route('usuario.store') }}" method="POST">
                     @csrf
 
+                    
                     <div class="mb-3">
-                        <label for="NOMBRE" class="form-label">Nombre</label>
+                        <label for="APELLIDO" class="form-label">Apellidos</label>
+                        <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
+                        placeholder="Apellido del usuario">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="NOMBRE" class="form-label">Nombres</label>
                         <input type="text" name="NOMBRE" id="NOMBRE" class="form-control"
                             placeholder="Nombre del usuario" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="APELLIDO" class="form-label">Apellido</label>
-                        <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
-                            placeholder="Apellido del usuario">
                     </div>
 
                     <div class="mb-3">
