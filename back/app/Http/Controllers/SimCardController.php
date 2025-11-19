@@ -34,23 +34,43 @@ class SimCardController extends Controller
 
     public function info(SIMCARD $simcard)
     {
-        // Eager loading de relaciones para el modal
+        // Traemos todo lo que el modal necesita
         $simcard->load([
             'usuario',
             'v_e_h_i_c_u_l_o',
-            'detalleSimcards.cuotas' => fn($q) => $q->orderBy('FECHA_PAGO'),
+            'detalleSimcards.cuotas' => function ($q) {
+                $q->orderBy('FECHA_PAGO');
+            },
+            'servicios',              // ⬅️ AJUSTA al nombre real de tu relación
             'documentosGenerados',
         ]);
 
-        // Contrato vigente (si existe) y el historial
-        $vigente = $simcard->detalleSimcards()->vigente()->first();
+        // Contrato vigente (con sus cuotas)
+        $vigente = $simcard->detalleSimcards()
+            ->vigente()
+            ->with('cuotas')
+            ->first();
+
+        // Historial de contratos (hardware)
         $historial = $simcard->detalleSimcards()
+            ->with('cuotas')
             ->orderByDesc('FECHA_ACTIVACION_RENOVACION')
             ->get();
 
-        // Retornamos HTML para inyectar en el modal (AJAX)
-        return view('simcard.partials.info', compact('simcard', 'vigente', 'historial'));
+        // Historial de servicios
+        $servicios = $simcard->servicios()
+            ->orderByDesc('FECHA_SERVICIO')
+            ->get();
+
+        return view('simcard.partials.info', compact(
+            'simcard',
+            'vigente',
+            'historial',
+            'servicios'
+        ));
     }
+
+
     public function index(Request $request)
     {
         $query = SIMCARD::with([

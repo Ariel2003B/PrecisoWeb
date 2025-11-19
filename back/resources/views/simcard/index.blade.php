@@ -135,21 +135,6 @@
                                     <td>
                                         <span class="badge bg-info">{{ $simcard->ASIGNACION ?? 'Sin Asignar' }}</span>
                                     </td>
-                                    {{-- <td>
-                                        @php $p = $simcard->pagos_estado; @endphp
-                                        <span
-                                            class="badge 
-                                                @if ($p['color'] === 'danger') bg-danger
-                                                @elseif($p['color'] === 'warning') bg-warning text-dark
-                                                @else bg-success @endif">
-                                            {{ $p['estado'] === 'PROXIMO' ? 'PRÓXIMO A VENCER' : $p['estado'] }}
-                                        </span>
-                                        @if ($p['fecha'])
-                                            <small class="text-muted d-block">
-                                                {{ $p['fuente'] }}
-                                            </small>
-                                        @endif
-                                    </td> --}}
                                     <td>
                                         @php $p = $simcard->pagos_estado; @endphp
 

@@ -374,7 +374,7 @@
                                 @if ($puedeVenderHardware)
                                     <button type="submit" name="accion" value="nuevo_hardware"
                                         class="btn btn-warning">
-                                        <i class="bi bi-cpu me-1"></i> Vender nuevo hardware
+                                        <i class="bi bi-cpu me-1"></i> Vender hardware
                                     </button>
                                 @endif
                             </div>
