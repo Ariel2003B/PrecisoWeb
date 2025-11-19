@@ -129,6 +129,7 @@
                                     <td>{{ $simcard->PLATAFORMA }}</td>
                                     <td>{{ $simcard->cliente_nombre }}</td>
                                     <td>{{ $simcard->cliente_cedula }}</td>
+                                    <td>{{ $simcard->NUMEROTELEFONO }}</td>
                                     <td>{{ $simcard->EQUIPO }}</td>
 
                                     <td>
