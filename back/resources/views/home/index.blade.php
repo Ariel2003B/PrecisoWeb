@@ -54,13 +54,18 @@
                     <h5 class="modal-title" id="tiktokModalLabel">PrecisoGPS</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <div class="modal-body text-center">
+                {{-- <div class="modal-body text-center">
                     <video id="tiktokVideo" controls autoplay muted loop style="width: 100%; height: auto;"
                         controlsList="nodownload" oncontextmenu="return false;">
                         <source src="{{ asset('img/precisoimg/lady.mp4') }}" type="video/mp4">
                         Tu navegador no soporta el video.
                     </video>
+                </div> --}}
+                <div class="modal-body text-center">
+                    <img src="{{ asset('img/precisoimg/blackFriday.jpg') }}" alt="PrecisoGPS" style="width: 100%; height: auto;"
+                        class="img-fluid">
                 </div>
+
             </div>
         </div>
     </div>
