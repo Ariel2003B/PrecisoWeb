@@ -7,48 +7,60 @@
         <h1 class="text-center mb-4">Agregar SIM Card</h1>
         <form action="{{ route('simcards.store') }}" method="POST">
             @csrf
-            <div class="mb-3">
+            {{-- <div class="mb-3">
                 <label for="PROPIETARIO" class="form-label">PROPIETARIO</label>
                 <select name="PROPIETARIO" id="PROPIETARIO" class="form-control">
                     <option value="PRECISOGPS S.A.S.">PRECISOGPS S.A.S.</option>
                     <option value="VARGAS REINOSO CESAR GIOVANNY">VARGAS REINOSO CESAR GIOVANNY</option>
                 </select>
+            </div> --}}
+            <input type="hidden" name="PROPIETARIO" value="PRECISOGPS S.A.S.">
+            <div class="mb-3">
+                <label for="PROVEEDOR" class="form-label">Proveedor</label>
+                <input type="text" name="PROVEEDOR" id="PROVEEDOR" class="form-control" value="{{ old('PROVEEDOR') }}"
+                    placeholder="Ingrese el nombre del proveedor" required>
             </div>
             <div class="mb-3">
-                <label for="CUENTA" class="form-label">Cuenta</label>
+                <label for="CUENTA" class="form-label">Cuenta / Código principal</label>
                 <input type="text" name="CUENTA" id="CUENTA" class="form-control" maxlength="10"
                     value="{{ old('CUENTA') }}" placeholder="Ingrese la cuenta de la SIM" required>
             </div>
             <div class="mb-3">
-                <label for="NUMEROTELEFONO" class="form-label">Número de Teléfono</label>
+                <label for="NUMEROTELEFONO" class="form-label">Número de Teléfono / Login</label>
                 <input type="text" name="NUMEROTELEFONO" id="NUMEROTELEFONO" class="form-control" maxlength="10"
                     value="{{ old('NUMEROTELEFONO') }}" placeholder="Ingrese el número de teléfono" required>
             </div>
             <div class="mb-3">
-                <label for="PLAN" class="form-label">Plan</label>
+                <label for="PLAN" class="form-label">Plan / Descripción</label>
                 <input type="text" name="PLAN" id="PLAN" class="form-control" maxlength="255"
                     value="{{ old('PLAN') }}" placeholder="Ingrese el plan">
             </div>
             <div class="mb-3">
-                <label for="TIPOPLAN" class="form-label">Código de Plan</label>
+                <label for="TIPOPLAN" class="form-label">Codigo de Plan / Dirección</label>
                 <input type="text" name="TIPOPLAN" id="TIPOPLAN" class="form-control" maxlength="255"
                     value="{{ old('TIPOPLAN') }}" placeholder="Ingrese el tipo de plan" required>
             </div>
             <div class="mb-3">
-                <label for="ICC" class="form-label">ICC</label>
+                <label for="ICC" class="form-label">ICC / Contrato</label>
                 <input type="text" name="ICC" id="ICC" class="form-control" maxlength="255"
                     value="{{ old('ICC') }}" placeholder="Ingrese el ICC">
             </div>
             <div class="mb-3">
-                <label for="GRUPO" class="form-label">Grupo</label>
-                <input type="text" name="GRUPO" id="GRUPO" class="form-control" maxlength="255"
-                    value="{{ old('GRUPO') }}" placeholder="Ingrese el grupo Ej: COMERCIALES, SIRENA, PRECISO GPS, etc.">
+                <label for="PLATAFORMA" class="form-label">Plataforma</label>
+                <input type="text" name="PLATAFORMA" id="PLATAFORMA" class="form-control" value="{{ old('PLATAFORMA') }}"
+                    placeholder="Ingrese la plataforma">
             </div>
             <div class="mb-3">
                 <label for="ASIGNACION" class="form-label">Asignación</label>
                 <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control" maxlength="25"
-                    value="{{ old('ASIGNACION') }}" placeholder="Ingrese la asignación Ej: ABC1234 (01/2345), JUAN PEREZ, etc.">
+                    value="{{ old('ASIGNACION') }}"
+                    placeholder="Ingrese la asignación Ej: ABC1234 (01/2345), JUAN PEREZ, etc.">
                 <button type="button" class="btn btn-info mt-2" id="fetchWialonData">Traer datos de Wialon</button>
+            </div>
+            <div class="mb-3">
+                <label for="IMEI" class="form-label">Imei</label>
+                <input type="text" name="IMEI" id="IMEI" class="form-control" value="{{ old('IMEI') }}"
+                    placeholder="Ingrese el IMEI del equipo">
             </div>
             <div class="mb-3">
                 <label for="EQUIPO" class="form-label">Equipo</label>
@@ -62,9 +74,15 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="IMEI" class="form-label">IMEI</label>
-                <input type="text" name="IMEI" id="IMEI" class="form-control" value="{{ old('IMEI') }}"
-                    placeholder="Ingrese el IMEI del equipo">
+                <label for="MARCA_EQUIPO" class="form-label">Marca del Equipo</label>
+                <input type="text" name="MARCA_EQUIPO" id="MARCA_EQUIPO" class="form-control"
+                    value="{{ old('MARCA_EQUIPO') }}" placeholder="Ingrese la marca del equipo">
+            </div>
+            <div class="mb-3">
+                <label for="MODELO_EQUIPO" class="form-label">Modelo del Equipo</label>
+                <input type="text" name="MODELO_EQUIPO" id="MODELO_EQUIPO" class="form-control"
+                    value="{{ old('MODELO_EQUIPO') }}"
+                    placeholder="Ingrese el modelo del equipo">
             </div>
             <div class="mb-3">
                 <label for="ESTADO" class="form-label">Estado</label>

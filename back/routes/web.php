@@ -112,7 +112,11 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/simcards/{simcard}/dependencies', [SimCardController::class, 'dependencies'])
             ->name('simcards.dependencies');
+        Route::get('simcards/orphans/data', [SimcardController::class, 'orphansData'])
+            ->name('simcards.orphansData');
 
+        Route::post('simcards/orphans/reassign', [SimcardController::class, 'reassignOrphans'])
+            ->name('simcards.reassignOrphans');
         Route::get('/simcards/eligible-targets', [SimCardController::class, 'eligibleTargets'])
             ->name('simcards.eligibleTargets');
 

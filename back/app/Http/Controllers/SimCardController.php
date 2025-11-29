@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CUOTAS;
 use App\Models\DETALLE_SIMCARD;
+use App\Models\DETALLE_SIMCARD_SERVICIO;
 use App\Models\SIMCARD;
+use App\Models\SIMCARD_DEPENDENCIAS_LIBERADA;
 use App\Models\USUARIO;
 use App\Models\VEHICULO;
 use Illuminate\Http\Request;
@@ -362,7 +364,13 @@ class SimCardController extends Controller
             'ESTADO' => $request->ESTADO,
             'ASIGNACION' => $request->ASIGNACION,
             'GRUPO' => $request->GRUPO,
-            'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo
+            'EQUIPO' => $request->EQUIPO, 
+            'IMEI' => $request->IMEI,
+            'MODELO_EQUIPO' => $request->MODELO_EQUIPO,
+            'MARCA_EQUIPO' => $request->MARCA_EQUIPO,
+            'PLATAFORMA' => $request->PLATAFORMA,
+            'PROVEEDOR' => $request->PROVEEDOR
+
         ]);
 
         return redirect()->route('simcards.index')->with('success', 'SIM Card creada exitosamente.');
@@ -826,13 +834,22 @@ class SimCardController extends Controller
     public function dependencies(SIMCARD $simcard)
     {
         $detalles = DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)->count();
-        // Si tienes modelo DOCUMENTOS_GENERADOS, úsalo; si no, usa DB::
-        $docs = DB::table('DOCUMENTOS_GENERADOS')->where('SIM_ID', $simcard->ID_SIM)->count();
+
+        $docs = DB::table('DOCUMENTOS_GENERADOS')
+            ->where('SIM_ID', $simcard->ID_SIM)
+            ->count();
+
+        $servicios = DETALLE_SIMCARD_SERVICIO::where('SIM_ID', $simcard->ID_SIM)->count();
+        // 👉 Si quisieras solo servicios pendientes, podrías usar:
+        // $servicios = DETALLE_SIMCARD_SERVICIO::where('SIM_ID', $simcard->ID_SIM)
+        //     ->whereNull('COMPROBANTE')
+        //     ->count();
 
         return response()->json([
             'detalles' => $detalles,
             'documentos' => $docs,
-            'has' => ($detalles + $docs) > 0,
+            'servicios' => $servicios,
+            'has' => ($detalles + $docs + $servicios) > 0,
         ]);
     }
 
@@ -866,53 +883,276 @@ class SimCardController extends Controller
         ]);
     }
 
+    // public function migrateDependents(Request $request, SIMCARD $simcard)
+    // {
+    //     $data = $request->validate([
+    //         'target_sim_id' => ['required', 'integer', 'different:current_sim_id', 'exists:SIMCARD,ID_SIM'],
+    //     ], [], [
+    //             'target_sim_id' => 'SIM destino',
+    //         ] + ['current_sim_id' => $simcard->ID_SIM]);
+
+    //     $targetId = (int) $data['target_sim_id'];
+
+    //     // 1) Validar que el destino NO tenga detalles
+    //     $hasDetalles = DETALLE_SIMCARD::where('SIM_ID', $targetId)->exists();
+    //     if ($hasDetalles) {
+    //         return response()->json(['ok' => false, 'message' => 'La SIM destino ya tiene detalles asignados.'], 422);
+    //     }
+    //     DB::transaction(function () use ($simcard, $targetId) {
+    //         // a) Mover DETALLE_SIMCARD al destino
+    //         DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)->update(['SIM_ID' => $targetId]);
+
+    //         // b) Mover DOCUMENTOS_GENERADOS al destino (ajusta el nombre de la tabla/campos si difieren)
+    //         DB::table('DOCUMENTOS_GENERADOS')->where('SIM_ID', $simcard->ID_SIM)->update(['SIM_ID' => $targetId]);
+
+    //         // c) Migrar también el USUARIO vinculado a la SIM (USU_ID) y, si quieres, el PROPIETARIO (texto)
+    //         $sourceUserId = $simcard->USU_ID;
+    //         $sourcePropietario = $simcard->PROPIETARIO;
+
+    //         // Sobreescribimos destino con el usuario de origen (comportamiento más práctico para "migrar")
+    //         SIMCARD::where('ID_SIM', $targetId)->update([
+    //             'USU_ID' => $sourceUserId,
+    //             'PROPIETARIO' => $sourcePropietario, // quita esta línea si NO quieres mover el nombre visual
+    //         ]);
+
+    //         // Deja la SIM de origen sin usuario (ya que vas a dejarla LIBRE/ELIMINADA)
+    //         SIMCARD::where('ID_SIM', $simcard->ID_SIM)->update([
+    //             'USU_ID' => null,
+    //             // 'PROPIETARIO' => null, // descomenta si quieres limpiar también el texto
+    //         ]);
+    //     });
+
+    //     return response()->json(['ok' => true, 'message' => 'Dependencias y usuario migrados correctamente.']);
+    // }
+
+
+    // public function migrateDependents(Request $request, SIMCARD $simcard)
+    // {
+    //     // Ahora este método YA NO MIGRA a otra SIM,
+    //     // solo "libera" las dependencias dejándolas huérfanas (SIM_ID = null)
+
+    //     DB::transaction(function () use ($simcard) {
+
+    //         // a) Detalles de contrato / cuotas -> SIM_ID NULL
+    //         DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)
+    //             ->update(['SIM_ID' => null]);
+
+    //         // b) Servicios -> SIM_ID NULL
+    //         DETALLE_SIMCARD_SERVICIO::where('SIM_ID', $simcard->ID_SIM)
+    //             ->update(['SIM_ID' => null]);
+
+    //         // c) Documentos generados -> SIM_ID NULL
+    //         DB::table('DOCUMENTOS_GENERADOS')
+    //             ->where('SIM_ID', $simcard->ID_SIM)
+    //             ->update(['SIM_ID' => null]);
+
+    //         // d) La SIM queda sin usuario (y opcionalmente sin PROPIETARIO)
+    //         SIMCARD::where('ID_SIM', $simcard->ID_SIM)->update([
+    //             'USU_ID' => null,
+    //             // 'PROPIETARIO' => null, // descomenta si quieres limpiar también este texto
+    //         ]);
+    //     });
+
+    //     return response()->json([
+    //         'ok' => true,
+    //         'message' => 'Dependencias liberadas correctamente (quedaron huérfanas).',
+    //     ]);
+    // }
+
+
     public function migrateDependents(Request $request, SIMCARD $simcard)
     {
-        $data = $request->validate([
-            'target_sim_id' => ['required', 'integer', 'different:current_sim_id', 'exists:SIMCARD,ID_SIM'],
-        ], [], [
-                'target_sim_id' => 'SIM destino',
-            ] + ['current_sim_id' => $simcard->ID_SIM]);
+        DB::transaction(function () use ($simcard) {
 
-        $targetId = (int) $data['target_sim_id'];
+            $simId = $simcard->ID_SIM;
+            $userId = $simcard->USU_ID; // lo vamos a guardar en el historial
 
-        // 1) Validar que el destino NO tenga detalles
-        $hasDetalles = DETALLE_SIMCARD::where('SIM_ID', $targetId)->exists();
-        if ($hasDetalles) {
-            return response()->json(['ok' => false, 'message' => 'La SIM destino ya tiene detalles asignados.'], 422);
-        }
+            /*
+             * 1) Registrar DETALLE_SIMCARD en SIMCARD_DEPENDENCIAS_LIBERADAS
+             */
+            $detalles = DETALLE_SIMCARD::where('SIM_ID', $simId)->get();
 
-        // 2) (Opcional) Si NO quieres sobreescribir un USU_ID ya asignado en destino, descomenta:
-        // $targetSim = SIMCARD::findOrFail($targetId);
-        // if (!is_null($targetSim->USU_ID)) {
-        //     return response()->json(['ok' => false, 'message' => 'La SIM destino ya tiene un usuario asignado.'], 422);
-        // }
+            foreach ($detalles as $detalle) {
+                SIMCARD_DEPENDENCIAS_LIBERADA::create([
+                    'SIM_ORIGEN_ID' => $simId,
+                    'DETALLE_ID' => $detalle->DET_ID,
+                    'DETALLE_SERVICIO_ID' => null,
+                    'USU_ID' => $userId,
+                    'SIM_DESTINO_ID' => null,
+                    'ESTADO' => 'PENDIENTE',
+                    // 'FECHA_REGISTRO' se llena sola por DEFAULT CURRENT_TIMESTAMP
+                ]);
+            }
 
-        DB::transaction(function () use ($simcard, $targetId) {
-            // a) Mover DETALLE_SIMCARD al destino
-            DETALLE_SIMCARD::where('SIM_ID', $simcard->ID_SIM)->update(['SIM_ID' => $targetId]);
+            /*
+             * 2) Registrar DETALLE_SIMCARD_SERVICIO en SIMCARD_DEPENDENCIAS_LIBERADAS
+             */
+            $servicios = DETALLE_SIMCARD_SERVICIO::where('SIM_ID', $simId)->get();
 
-            // b) Mover DOCUMENTOS_GENERADOS al destino (ajusta el nombre de la tabla/campos si difieren)
-            DB::table('DOCUMENTOS_GENERADOS')->where('SIM_ID', $simcard->ID_SIM)->update(['SIM_ID' => $targetId]);
+            foreach ($servicios as $servicio) {
+                SIMCARD_DEPENDENCIAS_LIBERADA::create([
+                    'SIM_ORIGEN_ID' => $simId,
+                    'DETALLE_ID' => null,
+                    'DETALLE_SERVICIO_ID' => $servicio->SERV_ID,
+                    'USU_ID' => $userId,
+                    'SIM_DESTINO_ID' => null,
+                    'ESTADO' => 'PENDIENTE',
+                ]);
+            }
 
-            // c) Migrar también el USUARIO vinculado a la SIM (USU_ID) y, si quieres, el PROPIETARIO (texto)
-            $sourceUserId = $simcard->USU_ID;
-            $sourcePropietario = $simcard->PROPIETARIO;
+            /*
+             * 3) (Opcional) Registrar solo el USUARIO aunque no haya detalles/servicios
+             *    Esto te sirve para saber que la SIM tenía USU_ID vinculado aunque no tuviera contratos.
+             *    Si no lo quieres duplicado, solo lo creas si no hubo filas arriba.
+             */
+            if ($userId && $detalles->isEmpty() && $servicios->isEmpty()) {
+                SIMCARD_DEPENDENCIAS_LIBERADA::create([
+                    'SIM_ORIGEN_ID' => $simId,
+                    'DETALLE_ID' => null,
+                    'DETALLE_SERVICIO_ID' => null,
+                    'USU_ID' => $userId,
+                    'SIM_DESTINO_ID' => null,
+                    'ESTADO' => 'PENDIENTE',
+                ]);
+            }
 
-            // Sobreescribimos destino con el usuario de origen (comportamiento más práctico para "migrar")
-            SIMCARD::where('ID_SIM', $targetId)->update([
-                'USU_ID' => $sourceUserId,
-                'PROPIETARIO' => $sourcePropietario, // quita esta línea si NO quieres mover el nombre visual
-            ]);
+            /*
+             * 4) Ahora sí: dejar huérfanos los registros reales
+             */
+            DETALLE_SIMCARD::where('SIM_ID', $simId)->update(['SIM_ID' => null]);
 
-            // Deja la SIM de origen sin usuario (ya que vas a dejarla LIBRE/ELIMINADA)
-            SIMCARD::where('ID_SIM', $simcard->ID_SIM)->update([
+            DETALLE_SIMCARD_SERVICIO::where('SIM_ID', $simId)->update(['SIM_ID' => null]);
+
+            DB::table('DOCUMENTOS_GENERADOS')
+                ->where('SIM_ID', $simId)
+                ->update(['SIM_ID' => null]);
+
+            SIMCARD::where('ID_SIM', $simId)->update([
                 'USU_ID' => null,
-                // 'PROPIETARIO' => null, // descomenta si quieres limpiar también el texto
+                // 'PROPIETARIO' => null, // si también quieres limpiarlo
             ]);
         });
 
-        return response()->json(['ok' => true, 'message' => 'Dependencias y usuario migrados correctamente.']);
+        return response()->json([
+            'ok' => true,
+            'message' => 'Dependencias liberadas y registradas en historial correctamente.',
+        ]);
+    }
+    public function orphansData()
+    {
+        // Grupos de dependencias pendientes por SIM_ORIGEN_ID
+        $pendientes = SIMCARD_DEPENDENCIAS_LIBERADA::with(['simOrigen', 'usuario'])
+            ->where('ESTADO', 'PENDIENTE')
+            ->get()
+            ->groupBy('SIM_ORIGEN_ID');
+
+        $origins = [];
+
+        foreach ($pendientes as $simOrigenId => $group) {
+            /** @var \App\Models\SIMCARD|null $sim */
+            $sim = $group->first()->simOrigen;
+            $user = $group->first()->usuario;
+
+            $numDetalles = $group->whereNotNull('DETALLE_ID')->count();
+            $numServicios = $group->whereNotNull('DETALLE_SERVICIO_ID')->count();
+
+            $nombreCliente = $user
+                ? trim(($user->APELLIDO ?? '') . ' ' . ($user->NOMBRE ?? ''))
+                : 'Sin usuario';
+
+            $origins[] = [
+                'id' => $simOrigenId,
+                'label' => sprintf(
+                    'SIM origen #%s - %s (%d contratos, %d servicios)',
+                    $sim?->NUMEROTELEFONO ?? $simOrigenId,
+                    $nombreCliente,
+                    $numDetalles,
+                    $numServicios
+                ),
+            ];
+        }
+
+        // SIMs destino disponibles (puedes ajustar el filtro)
+        $targets = SIMCARD::where('ESTADO', '!=', 'ELIMINADA')
+            // SIN contratos (DETALLE_SIMCARD)
+            ->whereDoesntHave('detalleSimcards')
+            // SIN servicios (DETALLE_SIMCARD_SERVICIO)
+            ->whereDoesntHave('servicios')
+            ->orderBy('NUMEROTELEFONO')
+            ->get()
+            ->map(function (SIMCARD $s) {
+                return [
+                    'id' => $s->ID_SIM,
+                    'label' => $s->NUMEROTELEFONO . ' - ' . ($s->PLATAFORMA ?? ''),
+                ];
+            })
+            ->values();
+
+
+        return response()->json([
+            'origins' => $origins,
+            'targets' => $targets,
+        ]);
+    }
+
+    public function reassignOrphans(Request $request)
+    {
+        $data = $request->validate([
+            'sim_origen_id' => ['required', 'integer'],
+            'sim_destino_id' => ['required', 'integer', 'different:sim_origen_id', 'exists:SIMCARD,ID_SIM'],
+        ], [], [
+            'sim_origen_id' => 'SIM origen',
+            'sim_destino_id' => 'SIM destino',
+        ]);
+
+        $simOrigenId = (int) $data['sim_origen_id'];
+        $simDestinoId = (int) $data['sim_destino_id'];
+
+        DB::transaction(function () use ($simOrigenId, $simDestinoId) {
+            $rows = SIMCARD_DEPENDENCIAS_LIBERADA::where('SIM_ORIGEN_ID', $simOrigenId)
+                ->where('ESTADO', 'PENDIENTE')
+                ->lockForUpdate()
+                ->get();
+
+            if ($rows->isEmpty()) {
+                throw new \RuntimeException('No hay dependencias pendientes para esta SIM de origen.');
+            }
+
+            $userId = $rows->first()->USU_ID;
+
+            // Reasignar cada contrato / servicio
+            foreach ($rows as $row) {
+                if ($row->DETALLE_ID) {
+                    DETALLE_SIMCARD::where('DET_ID', $row->DETALLE_ID)
+                        ->update(['SIM_ID' => $simDestinoId]);
+                }
+                if ($row->DETALLE_SERVICIO_ID) {
+                    DETALLE_SIMCARD_SERVICIO::where('SERV_ID', $row->DETALLE_SERVICIO_ID)
+                        ->update(['SIM_ID' => $simDestinoId]);
+                }
+            }
+
+            // Reasignar también el usuario a la SIM destino
+            if ($userId) {
+                SIMCARD::where('ID_SIM', $simDestinoId)->update([
+                    'USU_ID' => $userId,
+                ]);
+            }
+
+            // Actualizar historial
+            SIMCARD_DEPENDENCIAS_LIBERADA::where('SIM_ORIGEN_ID', $simOrigenId)
+                ->where('ESTADO', 'PENDIENTE')
+                ->update([
+                    'SIM_DESTINO_ID' => $simDestinoId,
+                    'ESTADO' => 'REASIGNADO',
+                    'FECHA_REASIGNACION' => now(),
+                ]);
+        });
+
+        return response()->json([
+            'ok' => true,
+            'message' => 'Dependencias reasignadas correctamente.',
+        ]);
     }
     public function update(Request $request, SIMCARD $simcard)
     {

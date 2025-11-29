@@ -25,20 +25,13 @@
                     @method('PUT')
                     <input type="hidden" name="deps_migrated" id="deps_migrated" value="0">
 
-                    <div class="mb-3">
-                        <label for="PROPIETARIO" class="form-label">PROPIETARIO</label>
-                        <select name="PROPIETARIO" id="PROPIETARIO" class="form-control">
-                            <option value="PRECISOGPS S.A.S."
-                                {{ $simcard->PROPIETARIO === 'PRECISOGPS S.A.S.' ? 'selected' : '' }}>
-                                PRECISOGPS S.A.S.
-                            </option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="PROPIETARIO" value="PRECISOGPS S.A.S.">
+
                     <div class="mb-3">
                         <label for="PROVEEDOR" class="form-label">PROVEEDOR</label>
                         <input type="text" name="PROVEEDOR" id="PROVEEDOR" class="form-control"
-                            value="{{ old('PROVEEDOR', $simcard->PROVEEDOR) }}" placeholder="Ingrese el nombre del proveedor"
-                            required>
+                            value="{{ old('PROVEEDOR', $simcard->PROVEEDOR) }}"
+                            placeholder="Ingrese el nombre del proveedor" required>
                     </div>
                     <div class="mb-3">
                         <label for="CUENTA" class="form-label">Cuenta / Código principal</label>
@@ -86,7 +79,7 @@
                             value="{{ old('IMEI', $simcard->IMEI) }}" placeholder="Ingrese el IMEI del equipo">
                     </div>
                     <div class="mb-3">
-                        <label for="EQUIPO" class="form-label">EQUIPO</label>
+                        <label for="EQUIPO" class="form-label">Equipo</label>
                         <select name="EQUIPO" id="EQUIPO" class="form-control">
                             <option value="">Sin asignar</option>
                             <option value="GPS" {{ $simcard->EQUIPO === 'GPS' ? 'selected' : '' }}>GPS</option>
@@ -143,22 +136,22 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-2">Esta SIM tiene contratos y/o documentos asociados. Debes migrarlos a otra SIM <b>sin
-                            detalles asignados</b> antes de cambiar su estado a <b>LIBRE</b> o <b>ELIMINADA</b>.</p>
-                    <div id="depsResumen" class="small text-muted mb-3"></div>
+                    <p class="mb-2">
+                        Esta SIM tiene contratos y/o documentos asociados.
+                        Si continúas, se <b>liberarán</b> estas dependencias y quedarán
+                        <b>sin SIM asociada</b> (huérfanas).
+                    </p>
 
-                    <div class="mb-3">
-                        <label class="form-label">Selecciona SIM destino</label>
-                        <select id="target_sim_id" class="form-select"></select>
-                        <div class="form-text">Solo se listan SIMs sin detalles asignados.</div>
-                    </div>
+                    <div id="depsResumen" class="small text-muted mb-3"></div>
                     <div id="migrarAlert" class="alert alert-danger d-none"></div>
+
                 </div>
                 <div class="modal-footer py-2">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" id="btnConfirmarMigracion" class="btn btn-primary">
-                        Migrar dependencias
+                        Liberar dependencias
                     </button>
+
                 </div>
             </div>
         </div>
@@ -222,8 +215,8 @@
             // Función para aplicar el estado inicial
             function aplicarEstadoInicial(estado) {
                 const camposParaBloquear = {
-                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO'],
-                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO']
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO'],
+                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {
@@ -235,8 +228,8 @@
             // Función para manejar cambios de estado
             function handleEstadoChange(estado) {
                 const camposParaLimpiar = {
-                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO'],
-                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO']
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO'],
+                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {
@@ -312,7 +305,7 @@
             const depsMigratedEl = document.getElementById('deps_migrated');
             const modalEl = document.getElementById('modalMigrarDependencias');
             const modal = new bootstrap.Modal(modalEl);
-            const targetSelect = document.getElementById('target_sim_id');
+            // const targetSelect = document.getElementById('target_sim_id');
             const migrarAlert = document.getElementById('migrarAlert');
             const depsResumen = document.getElementById('depsResumen');
 
@@ -328,31 +321,32 @@
                 return resp.json();
             }
 
-            async function cargarTargets() {
-                targetSelect.innerHTML = '<option value="">Cargando...</option>';
-                const data = await fetchJSON(`{{ route('simcards.eligibleTargets') }}?exclude=${simId}`);
-                if (!data.items || data.items.length === 0) {
-                    targetSelect.innerHTML = '<option value="">No hay SIMs elegibles</option>';
-                    return;
-                }
-                targetSelect.innerHTML = '<option value="">-- Selecciona SIM destino --</option>';
-                for (const it of data.items) {
-                    const opt = document.createElement('option');
-                    opt.value = it.id;
-                    opt.textContent = it.label;
-                    targetSelect.appendChild(opt);
-                }
-            }
+            // async function cargarTargets() {
+            //     targetSelect.innerHTML = '<option value="">Cargando...</option>';
+            //     const data = await fetchJSON(`{{ route('simcards.eligibleTargets') }}?exclude=${simId}`);
+            //     if (!data.items || data.items.length === 0) {
+            //         targetSelect.innerHTML = '<option value="">No hay SIMs elegibles</option>';
+            //         return;
+            //     }
+            //     targetSelect.innerHTML = '<option value="">-- Selecciona SIM destino --</option>';
+            //     for (const it of data.items) {
+            //         const opt = document.createElement('option');
+            //         opt.value = it.id;
+            //         opt.textContent = it.label;
+            //         targetSelect.appendChild(opt);
+            //     }
+            // }
 
             async function chequearDependenciasYMostrar(estadoNuevo) {
                 try {
                     const dep = await fetchJSON(`{{ route('simcards.dependencies', $simcard->ID_SIM) }}`);
                     if (!dep.has) return true; // no tiene dependencias => continuar normal
-
+                    debugger;
                     // Tiene dependencias => abrir modal de migración
-                    depsResumen.textContent = `Detalles: ${dep.detalles} · Documentos: ${dep.documentos}`;
+                    depsResumen.textContent =
+                        `Software: ${dep.detalles} · Servicios: ${dep.servicios} · Documentos: ${dep.documentos}`;
                     migrarAlert.classList.add('d-none');
-                    await cargarTargets();
+                    // await cargarTargets();
                     modal.show();
 
                     return false; // detener flujo normal hasta migrar
@@ -364,13 +358,6 @@
             }
 
             async function migrarDependencias() {
-                const targetId = targetSelect.value;
-                if (!targetId) {
-                    migrarAlert.textContent = 'Selecciona una SIM destino.';
-                    migrarAlert.classList.remove('d-none');
-                    return;
-                }
-
                 migrarAlert.classList.add('d-none');
 
                 try {
@@ -381,19 +368,18 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({
-                            target_sim_id: parseInt(targetId, 10)
-                        })
+                        body: JSON.stringify({}) // ya no enviamos target_sim_id
                     });
+
                     const data = await resp.json();
+
                     if (!resp.ok || !data.ok) {
-                        throw new Error(data.message || 'No se pudo migrar');
+                        throw new Error(data.message || 'No se pudieron liberar las dependencias');
                     }
 
-                    // Marcamos que ya migramos y cerramos modal
                     depsMigratedEl.value = '1';
                     modal.hide();
-                    alert('Dependencias migradas correctamente. Ahora puedes guardar el cambio de estado.');
+                    alert('Dependencias liberadas correctamente. Ahora puedes guardar el cambio de estado.');
 
                 } catch (e) {
                     migrarAlert.textContent = e.message;

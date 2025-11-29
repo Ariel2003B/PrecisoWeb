@@ -6,6 +6,9 @@
 @section('Titulo', 'Gestión de SIM Cards')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.1/dist/css/tom-select.css">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.1/dist/js/tom-select.complete.min.js"></script>
+
     <main class="main">
         <!-- Page Title -->
         <div class="page-title accent-background">
@@ -53,6 +56,9 @@
 
                 <div class="filtros-simcards-container mb-3">
                     <a href="{{ route('simcards.create') }}" class="btn btn-success mt-2">Agregar SIM Card</a>
+                    <button type="button" class="btn btn-warning mt-2" onclick="abrirModalReasignarContratos()">
+                        <i class="fas fa-random"></i> Reasignar contratos sin SIM
+                    </button>
                     @if (Auth::user()->permisos->contains('DESCRIPCION', 'WIALON DATA'))
                         {{-- <button class="btn btn-warning mt-2" id="actualizar-wialon" onclick="actualizarWialon()">
                             <i class="fas fa-sync-alt"></i> Actualizar Números en Wialon
@@ -176,8 +182,8 @@
                                                 {{-- Botonera para >= sm --}}
                                                 <div class="d-none d-sm-inline-flex align-items-center gap-1">
                                                     <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
-                                                        class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip"
-                                                        title="Editar">
+                                                        class="btn btn-outline-primary btn-action"
+                                                        data-bs-toggle="tooltip" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                         <span class="d-none d-md-inline">Editar</span>
                                                     </a>
@@ -434,6 +440,46 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalReasignarContratos" tabindex="-1" aria-labelledby="modalReasignarContratosLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title" id="modalReasignarContratosLabel">Reasignar contratos sin SIM</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="reasignarAlert" class="alert alert-danger d-none"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Paquete de contratos huérfanos</label>
+                        <select id="selectOrigenContratos" class="form-select">
+                            <option value="">Cargando...</option>
+                        </select>
+                        <div class="form-text">
+                            Selecciona la SIM original / cliente cuyos contratos quieres reasignar.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">SIM destino</label>
+                        <select id="selectDestinoSim" class="form-select">
+                            <option value="">Cargando...</option>
+                        </select>
+                        <div class="form-text">
+                            La SIM destino recibirá estos contratos y el usuario.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarReasignacion">
+                        Reasignar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         function openViewer(src, type) {
@@ -474,6 +520,192 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             }, 150);
         }
     </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const modalReasignarEl = document.getElementById('modalReasignarContratos');
+        const modalReasignar   = new bootstrap.Modal(modalReasignarEl);
+        const selectOrigen     = document.getElementById('selectOrigenContratos');
+        const selectDestino    = document.getElementById('selectDestinoSim');
+        const reasignarAlert   = document.getElementById('reasignarAlert');
+        const btnConfirmar     = document.getElementById('btnConfirmarReasignacion');
+
+        let tsOrigen  = null;
+        let tsDestino = null;
+
+        window.abrirModalReasignarContratos = function() {
+            cargarDatosReasignacion()
+                .then(() => {
+                    reasignarAlert.classList.add('d-none');
+                    modalReasignar.show();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('No se pudo cargar la información de contratos huérfanos.');
+                });
+        };
+
+        async function cargarDatosReasignacion() {
+            selectOrigen.innerHTML  = '<option value="">Cargando...</option>';
+            selectDestino.innerHTML = '<option value="">Cargando...</option>';
+
+            const resp = await fetch(`{{ route('simcards.orphansData') }}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+
+            let hasOrigins = false;
+            let hasTargets = false;
+
+            const helpOrigen  = selectOrigen.closest('.mb-3').querySelector('.form-text');
+            const helpDestino = selectDestino.closest('.mb-3').querySelector('.form-text');
+
+            // --- Orígenes ---
+            if (!data.origins || data.origins.length === 0) {
+                selectOrigen.innerHTML = '';
+                hasOrigins = false;
+                if (helpOrigen) {
+                    helpOrigen.textContent = 'No hay contratos huérfanos pendientes para reasignar.';
+                }
+            } else {
+                selectOrigen.innerHTML = '';
+                data.origins.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.id;
+                    opt.textContent = o.label;
+                    selectOrigen.appendChild(opt);
+                });
+                hasOrigins = true;
+                if (helpOrigen) {
+                    helpOrigen.textContent = 'Selecciona la SIM original / cliente cuyos contratos quieres reasignar.';
+                }
+            }
+
+            // --- Destinos ---
+            if (!data.targets || data.targets.length === 0) {
+                selectDestino.innerHTML = '';
+                hasTargets = false;
+                if (helpDestino) {
+                    helpDestino.textContent = 'No hay SIMs disponibles para recibir los contratos.';
+                }
+            } else {
+                selectDestino.innerHTML = '';
+                data.targets.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.label;
+                    selectDestino.appendChild(opt);
+                });
+                hasTargets = true;
+                if (helpDestino) {
+                    helpDestino.textContent = 'La SIM destino recibirá estos contratos y el usuario.';
+                }
+            }
+
+            initTomSelects(hasOrigins, hasTargets);
+        }
+
+        function initTomSelects(hasOrigins, hasTargets) {
+            // destruir instancias anteriores
+            if (tsOrigen)  { tsOrigen.destroy();  tsOrigen  = null; }
+            if (tsDestino) { tsDestino.destroy(); tsDestino = null; }
+
+            // asegurarnos de que el select nativo NO tenga nada seleccionado
+            selectOrigen.value  = '';
+            selectDestino.value = '';
+
+            tsOrigen = new TomSelect('#selectOrigenContratos', {
+                allowEmptyOption : true,
+                maxOptions       : 1000,
+                sortField        : { field: 'text', direction: 'asc' },
+                placeholder      : hasOrigins
+                    ? 'Buscar por cliente / SIM...'
+                    : 'No hay contratos huérfanos pendientes',
+                items            : []   // fuerza a no seleccionar nada al iniciar
+            });
+
+            tsDestino = new TomSelect('#selectDestinoSim', {
+                allowEmptyOption : true,
+                maxOptions       : 1000,
+                sortField        : { field: 'text', direction: 'asc' },
+                placeholder      : hasTargets
+                    ? 'Buscar SIM destino...'
+                    : 'No hay SIMs disponibles',
+                items            : []   // fuerza a no seleccionar nada al iniciar
+            });
+
+            // aseguramos que queden vacíos para que se vea el placeholder
+            if (hasOrigins) {
+                tsOrigen.clear(true);
+            } else {
+                tsOrigen.disable();
+            }
+
+            if (hasTargets) {
+                tsDestino.clear(true);
+            } else {
+                tsDestino.disable();
+            }
+
+            // si falta uno de los dos, no permitimos reasignar
+            btnConfirmar.disabled = !(hasOrigins && hasTargets);
+        }
+
+        btnConfirmar.addEventListener('click', async function() {
+            if (btnConfirmar.disabled) return;
+
+            const origenId  = tsOrigen  ? tsOrigen.getValue()  : selectOrigen.value;
+            const destinoId = tsDestino ? tsDestino.getValue() : selectDestino.value;
+
+            reasignarAlert.classList.add('d-none');
+
+            if (!origenId) {
+                reasignarAlert.textContent = 'Selecciona un paquete de contratos huérfanos.';
+                reasignarAlert.classList.remove('d-none');
+                return;
+            }
+            if (!destinoId) {
+                reasignarAlert.textContent = 'Selecciona una SIM destino.';
+                reasignarAlert.classList.remove('d-none');
+                return;
+            }
+
+            try {
+                const resp = await fetch(`{{ route('simcards.reassignOrphans') }}`, {
+                    method : 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type'    : 'application/json',
+                        'X-CSRF-TOKEN'    : '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        sim_origen_id  : parseInt(origenId, 10),
+                        sim_destino_id : parseInt(destinoId, 10),
+                    })
+                });
+
+                const data = await resp.json();
+
+                if (!resp.ok || !data.ok) {
+                    throw new Error(data.message || 'No se pudo reasignar.');
+                }
+
+                alert(data.message || 'Reasignación completada.');
+                modalReasignar.hide();
+                location.reload();
+            } catch (e) {
+                console.error(e);
+                reasignarAlert.textContent = e.message;
+                reasignarAlert.classList.remove('d-none');
+            }
+        });
+
+    });
+</script>
+
+
 
     <style>
         /* Miniaturas compactas y botones consistentes */
