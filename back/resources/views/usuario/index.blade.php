@@ -34,9 +34,10 @@
                             <th>ID</th>
                             <th>Apellidos</th>
                             <th>Nombres</th>
-                            <th>Correo</th>
+                            <th>Usuario (C.I. / RUC)</th>
+
                             <th>Telefono</th>
-                            <th>Usuario</th>
+                            <th>Correo</th>
                             <th>Empresa</th>
                             <th>Acciones</th>
                         </tr>
@@ -45,12 +46,12 @@
                         @foreach ($usuarios as $usuario)
                             <tr>
                                 <td>{{ $usuario->USU_ID }}</td>
-                                
+
                                 <td>{{ $usuario->APELLIDO }}</td>
                                 <td>{{ $usuario->NOMBRE }}</td>
-                                <td>{{ $usuario->CORREO }}</td>
-                                <td>{{ $usuario->TELEFONO }}</td>
                                 <td>{{ $usuario->CEDULA }}</td>
+                                <td>{{ $usuario->TELEFONO }}</td>
+                                <td>{{ $usuario->CORREO }}</td>
                                 <td>{{ $usuario->empresa->NOMBRE ?? 'Sin empresa' }}</td>
 
                                 <td>
