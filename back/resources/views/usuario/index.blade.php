@@ -32,8 +32,8 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
+                            <th>Apellidos</th>
+                            <th>Nombres</th>
                             <th>Correo</th>
                             <th>Telefono</th>
                             <th>Usuario</th>
@@ -45,8 +45,9 @@
                         @foreach ($usuarios as $usuario)
                             <tr>
                                 <td>{{ $usuario->USU_ID }}</td>
-                                <td>{{ $usuario->NOMBRE }}</td>
+                                
                                 <td>{{ $usuario->APELLIDO }}</td>
+                                <td>{{ $usuario->NOMBRE }}</td>
                                 <td>{{ $usuario->CORREO }}</td>
                                 <td>{{ $usuario->TELEFONO }}</td>
                                 <td>{{ $usuario->CEDULA }}</td>
