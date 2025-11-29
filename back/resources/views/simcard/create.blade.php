@@ -50,13 +50,13 @@
                 <input type="text" name="PLATAFORMA" id="PLATAFORMA" class="form-control" value="{{ old('PLATAFORMA') }}"
                     placeholder="Ingrese la plataforma">
             </div>
-            <div class="mb-3">
+            {{-- <div class="mb-3">
                 <label for="ASIGNACION" class="form-label">Asignación</label>
                 <input type="text" name="ASIGNACION" id="ASIGNACION" class="form-control" maxlength="25"
                     value="{{ old('ASIGNACION') }}"
                     placeholder="Ingrese la asignación Ej: ABC1234 (01/2345), JUAN PEREZ, etc.">
                 <button type="button" class="btn btn-info mt-2" id="fetchWialonData">Traer datos de Wialon</button>
-            </div>
+            </div> --}}
             <div class="mb-3">
                 <label for="IMEI" class="form-label">Imei</label>
                 <input type="text" name="IMEI" id="IMEI" class="form-control" value="{{ old('IMEI') }}"

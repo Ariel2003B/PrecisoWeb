@@ -65,10 +65,10 @@
                         </button>
                         <span id="cargando-texto" style="display:none; color: #005298;">Actualizando... Por favor,
                             espera.</span> --}}
-                        <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
+                        {{-- <button class="btn btn-info mt-2" id="actualizar-simcards-wialon"
                             onclick="actualizarSimCardsDesdeWialon()" style="color: white">
                             <i class="fas fa-sync-alt"></i> Sincronizar datos
-                        </button>
+                        </button> --}}
                         <span id="cargando-wialon" style="display:none; color: #005298;">Espera...</span>
                     @endif
 
