@@ -34,7 +34,7 @@
                             <th>ID</th>
                             <th>Apellidos</th>
                             <th>Nombres</th>
-                            <th>Usuario (C.I. / RUC)</th>
+                            <th>Usuario</th>
 
                             <th>Telefono</th>
                             <th>Correo</th>
