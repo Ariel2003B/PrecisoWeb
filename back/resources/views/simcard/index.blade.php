@@ -115,7 +115,7 @@
                                 <th scope="col">Numero / Login</th>
                                 <th scope="col">Equipo</th>
                                 <th scope="col">Asignación</th>
-                                <th scope="col">Pagos</th>
+                                <th scope="col" class="col-pagos">Pagos</th>
                                 <th scope="col">Estado</th>
                                 <th scope="col" class="text-nowrap" style="width: 1%; min-width: 210px;">Acciones</th>
                             </tr>
@@ -139,20 +139,19 @@
                                     <td>
                                         <span class="badge bg-info">{{ $simcard->ASIGNACION ?? 'Sin Asignar' }}</span>
                                     </td>
-                                    <td>
+                                    <td class="col-pagos">
                                         @php $p = $simcard->pagos_estado; @endphp
 
                                         <span
                                             class="badge
-                                                @if ($p['color'] === 'danger') bg-danger
-                                                @elseif($p['color'] === 'warning') bg-warning text-dark
-                                                @else bg-success @endif">
+            @if ($p['color'] === 'danger') bg-danger
+            @elseif($p['color'] === 'warning') bg-warning text-dark
+            @else bg-success @endif">
                                             {{ $p['estado'] === 'PROXIMO' ? 'PRÓXIMO A VENCER' : $p['estado'] }}
                                         </span>
 
-                                        {{-- Detalle de qué está vencido / próximo --}}
                                         @if ($p['estado'] !== 'AL_DIA' && $p['resumen'] !== '-')
-                                            <small class="text-muted d-block">
+                                            <small class="text-muted d-block mt-1">
                                                 {{ $p['resumen'] }}
                                                 @if ($p['estado_servicio'] === $p['estado'] && $p['fecha_servicio'])
                                                     ({{ $p['fecha_servicio'] }})
@@ -163,6 +162,7 @@
                                             </small>
                                         @endif
                                     </td>
+
 
                                     <td>
                                         @if ($simcard->ESTADO === 'ACTIVA')
@@ -633,8 +633,7 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
                         direction: 'asc'
                     },
                     placeholder: hasOrigins ?
-                        'Buscar por cliente / SIM...' :
-                        'No hay contratos huérfanos pendientes',
+                        'Buscar por cliente / SIM...' : 'No hay contratos huérfanos pendientes',
                     items: [] // fuerza a no seleccionar nada al iniciar
                 });
 
@@ -646,8 +645,7 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
                         direction: 'asc'
                     },
                     placeholder: hasTargets ?
-                        'Buscar SIM destino...' :
-                        'No hay SIMs disponibles',
+                        'Buscar SIM destino...' : 'No hay SIMs disponibles',
                     items: [] // fuerza a no seleccionar nada al iniciar
                 });
 
@@ -736,6 +734,31 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             padding: .2rem .5rem;
             font-size: .82rem;
             border-radius: .35rem;
+        }
+    </style>
+    <style>
+        /* Miniaturas compactas y botones consistentes */
+        .thumb-doc {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: .35rem;
+            border: 1px solid rgba(0, 0, 0, .075);
+        }
+
+        .btn-viewer {
+            padding: .2rem .5rem;
+            font-size: .82rem;
+            border-radius: .35rem;
+        }
+
+        /* Más espacio para la columna Pagos */
+        .col-pagos {
+            min-width: 230px;
+            /* ajusta a tu gusto: 220, 250, etc. */
+            white-space: normal;
+            /* que el texto pueda hacer salto de línea */
+            text-align: center;
         }
     </style>
 
