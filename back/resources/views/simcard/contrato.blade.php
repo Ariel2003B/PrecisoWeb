@@ -1014,5 +1014,72 @@
         }
     </style>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            function setupFilePreview(selector) {
+                document.querySelectorAll(selector).forEach(input => {
+
+                    input.addEventListener('change', function() {
+                        const file = this.files && this.files[0];
+
+                        // buscar / crear contenedor de preview
+                        let preview = this.parentElement.querySelector('.file-preview');
+                        if (!preview) {
+                            preview = document.createElement('div');
+                            preview.className = 'file-preview mt-2';
+                            this.parentElement.appendChild(preview);
+                        }
+
+                        // si borró el archivo
+                        if (!file) {
+                            preview.innerHTML = '';
+                            return;
+                        }
+
+                        const fileName = file.name || '';
+                        const ext = fileName.split('.').pop().toLowerCase();
+                        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+
+                        // limpiar contenido previo
+                        preview.innerHTML = '';
+
+                        if (isImage) {
+                            const img = document.createElement('img');
+                            img.className = 'img-fluid rounded shadow-sm';
+                            img.style.maxHeight = '180px';
+                            img.style.objectFit = 'contain';
+                            img.alt = 'Vista previa del comprobante';
+                            img.src = URL.createObjectURL(file); // blob local
+
+                            preview.appendChild(img);
+                        } else if (ext === 'pdf') {
+                            const info = document.createElement('div');
+                            info.className = 'small text-muted';
+                            info.innerHTML = `PDF seleccionado: <strong>${fileName}</strong>`;
+                            preview.appendChild(info);
+                        } else {
+                            const info = document.createElement('div');
+                            info.className = 'small text-muted';
+                            info.innerHTML = `Archivo seleccionado: <strong>${fileName}</strong>`;
+                            preview.appendChild(info);
+                        }
+                    });
+
+                });
+            }
+
+            // Vista previa para todas las cuotas
+            setupFilePreview('.cuota-file');
+
+            // Vista previa para el comprobante del servicio
+            setupFilePreview('#SERV_COMPROBANTE_FILE');
+        });
+    </script>
+    <style>
+        .file-preview img {
+            max-width: 100%;
+        }
+    </style>
 
 @endsection
