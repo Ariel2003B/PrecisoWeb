@@ -761,6 +761,82 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             text-align: center;
         }
     </style>
+    <!-- Modal genérico para ver comprobantes -->
+    <div class="modal fade" id="comprobanteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title">Comprobante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body p-2 text-center">
+                    {{-- Para imágenes --}}
+                    <img id="comprobanteImg" src="" class="img-fluid d-none"
+                        style="max-height: 70vh; object-fit: contain;" />
+
+                    {{-- Para PDF u otros --}}
+                    <iframe id="comprobanteFrame" src="" class="d-none"
+                        style="width: 100%; height: 70vh; border: 0;" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('comprobanteModal');
+            if (!modalEl) return;
+
+            const frame = document.getElementById('comprobanteFrame');
+            const img = document.getElementById('comprobanteImg');
+            const modal = new bootstrap.Modal(modalEl);
+
+            // DELEGACIÓN: funciona también para botones cargados vía AJAX en #modalSimInfoBody
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.btn-ver-comprobante');
+                if (!btn) return;
+
+                e.preventDefault();
+                const url = btn.getAttribute('data-url');
+                if (!url) return;
+
+                const isImage = url.match(/\.(jpe?g|png|gif|webp)(\?|$)/i);
+
+                if (isImage) {
+                    if (frame) {
+                        frame.classList.add('d-none');
+                        frame.src = '';
+                    }
+                    if (img) {
+                        img.src = url;
+                        img.classList.remove('d-none');
+                    }
+                } else {
+                    if (img) {
+                        img.classList.add('d-none');
+                        img.src = '';
+                    }
+                    if (frame) {
+                        frame.src = url;
+                        frame.classList.remove('d-none');
+                    }
+                }
+
+                modal.show();
+            });
+
+            // Limpiar al cerrar
+            modalEl.addEventListener('hidden.bs.modal', () => {
+                if (frame) {
+                    frame.src = '';
+                    frame.classList.add('d-none');
+                }
+                if (img) {
+                    img.src = '';
+                    img.classList.add('d-none');
+                }
+            });
+        });
+    </script>
 
 
 @endsection
