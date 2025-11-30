@@ -177,7 +177,7 @@
             form.addEventListener('submit', function(e) {
                 const estado = document.querySelector('input[name="ESTADO"]:checked').value;
                 if (estado === 'ACTIVA') {
-                    const camposRequeridos = ['PROPIETARIO', 'CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
+                    const camposRequeridos = ['CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
                         'ICC', 'EQUIPO', 'IMEI'
                     ];
                     const incompletos = camposRequeridos.some(campo => {
@@ -193,7 +193,7 @@
                     }
                 }
                 if (estado === 'LIBRE') {
-                    const camposRequeridos = ['PROPIETARIO', 'CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
+                    const camposRequeridos = ['CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
                         'ICC'
                     ];
                     const incompletos = camposRequeridos.some(campo => {
