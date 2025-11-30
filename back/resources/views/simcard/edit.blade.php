@@ -20,7 +20,9 @@
         <section class="section">
             <div class="container">
                 <!-- Page Title -->
-                <form action="{{ route('simcards.update', $simcard->ID_SIM) }}" id="editSimCardForm" method="POST">
+                <form action="{{ route('simcards.update', $simcard->ID_SIM) }}" id="editSimCardForm" method="POST"
+                    enctype="multipart/form-data">
+
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="deps_migrated" id="deps_migrated" value="0">
@@ -104,6 +106,34 @@
                         <input type="text" name="MODELO_EQUIPO" id="MODELO_EQUIPO" class="form-control"
                             value="{{ old('MODELO_EQUIPO', $simcard->MODELO_EQUIPO) }}"
                             placeholder="Ingrese el modelo del equipo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="FOTO_SIM_FILE" class="form-label">Foto del SIM / Equipo</label>
+
+                        @if ($simcard->FOTO_SIM)
+                            {{-- Botón para ver la foto actual --}}
+                            @php
+                                $isFile = \Illuminate\Support\Str::startsWith($simcard->FOTO_SIM, ['simcards/']);
+                            @endphp
+
+                            <div class="mb-2">
+                                @if ($isFile)
+                                    <a href="{{ asset('back/storage/app/public/' . $simcard->FOTO_SIM) }}"
+                                        target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        Ver foto actual
+                                    </a>
+                                @else
+                                    <a href="{{ $simcard->FOTO_SIM }}" target="_blank"
+                                        class="btn btn-sm btn-outline-secondary">
+                                        Ver foto actual
+                                    </a>
+                                @endif
+                            </div>
+                        @endif  
+
+                        <input type="file" name="FOTO_SIM_FILE" id="FOTO_SIM_FILE" class="form-control"
+                            accept=".jpg,.jpeg,.png,.gif,.webp">
+                        <small class="text-muted">Opcional. Si subes un archivo, reemplaza la foto anterior.</small>
                     </div>
 
                     <div class="mb-3">
@@ -215,7 +245,9 @@
             // Función para aplicar el estado inicial
             function aplicarEstadoInicial(estado) {
                 const camposParaBloquear = {
-                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO'],
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO',
+                        'MODELO_EQUIPO'
+                    ],
                     LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO']
                 };
 
@@ -228,7 +260,9 @@
             // Función para manejar cambios de estado
             function handleEstadoChange(estado) {
                 const camposParaLimpiar = {
-                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO'],
+                    ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO',
+                        'MODELO_EQUIPO'
+                    ],
                     LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO']
                 };
 

@@ -120,7 +120,7 @@
 
                             {{-- Detalle de Contrato (prefill si hay $detalle) --}}
                             <div class="card mb-4">
-                                <div class="card-header fw-bold">Hardware</div>
+                                <div class="card-header fw-bold">Equipos (GPS, Chips, Modems, Camaras, etc) </div>
                                 <div class="card-body">
                                     <div class="row g-3">
                                         <div class="col-md-4">
@@ -174,13 +174,15 @@
                                                         value="{{ $c->CUO_ID }}">
                                                     <div class="row g-3 align-items-end">
                                                         <div class="col-md-3">
-                                                            <label class="form-label">#{{ $i + 1 }} Fecha
-                                                                pago programada</label>
+                                                            <label class="form-label cuota-label">
+                                                                {{ $i + 1 }} Cuota
+                                                            </label>
                                                             <input type="date"
                                                                 name="cuotas[{{ $i }}][FECHA_PAGO]"
                                                                 class="form-control cuotas-fecha"
                                                                 value="{{ old("cuotas.$i.FECHA_PAGO", optional($c->FECHA_PAGO)->format('Y-m-d')) }}">
                                                         </div>
+
 
                                                         <div class="col-md-3">
                                                             <label class="form-label">Valor cuota</label>
@@ -200,7 +202,7 @@
                                                         </div>
 
                                                         <div class="col-md-4">
-                                                            <label class="form-label">Fecha de pago</label>
+                                                            <label class="form-label">Registro de pago (auto)</label>
                                                             <input type="date" readonly
                                                                 name="cuotas[{{ $i }}][FECHA_REAL_PAGO]"
                                                                 class="form-control cuota-fecha-real"
@@ -643,7 +645,7 @@
         </div>
 
         <div class="col-md-4">
-          <label class="form-label">Fecha real de pago</label>
+          <label class="form-label">Registro de pago (auto)</label>
           <input type="date" class="form-control cuota-fecha-real">
         </div>
 
@@ -666,7 +668,7 @@
         function renumberRows() {
             const rows = [...$list.querySelectorAll('.cuota-item')];
             rows.forEach((row, i) => {
-                row.querySelector('.cuota-label').textContent = `#${i+1} Fecha pago`;
+                row.querySelector('.cuota-label').textContent = `${i+1} Cuota`;
                 row.querySelector('input.cuotas-fecha').name = `cuotas[${i}][FECHA_PAGO]`;
                 row.querySelector('input.cuotas-valor').name = `cuotas[${i}][VALOR_CUOTA]`;
 

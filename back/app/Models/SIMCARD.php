@@ -67,7 +67,8 @@ class SIMCARD extends Model
 		'MODELO_EQUIPO',
 		'MARCA_EQUIPO',
 		'PLATAFORMA',
-		'PROVEEDOR'
+		'PROVEEDOR',
+		'FOTO_SIM',
 	];
 
 	public function v_e_h_i_c_u_l_o()

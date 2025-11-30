@@ -583,7 +583,7 @@ class SimCardController extends Controller
             'SERV_OBSERVACION' => ['nullable', 'string', 'max:1000'],
             'SERV_COMPROBANTE' => ['nullable', 'string', 'max:8000'],
             'SERV_COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            
+
         ];
         $data = $request->validate($baseRules);
 
@@ -1194,20 +1194,17 @@ class SimCardController extends Controller
             ],
             'ESTADO' => 'required|string',
             'GRUPO' => 'nullable|string|max:255',
-            'EQUIPO' => 'nullable|string|in:GPS,MODEM,LECTOR DE QR,COMPUTADOR ABORDO,MOVIL', // EQUIPO ahora puede ser nulo
+            'EQUIPO' => 'nullable|string|in:GPS,MODEM,LECTOR DE QR,COMPUTADOR ABORDO,MOVIL',
             'ASIGNACION' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) use ($request, $simcard) {
-                    // Validar solo si ASIGNACION y EQUIPO tienen valores
                     if (!empty($value) && !empty($request->EQUIPO)) {
-                        // Extraer los primeros 7 caracteres de ASIGNACION
                         $prefix = substr($value, 0, 7);
 
-                        // Validar que no exista la misma combinación de ASIGNACION y EQUIPO
                         $exists = SIMCARD::where('ASIGNACION', 'LIKE', $prefix . '%')
                             ->where('EQUIPO', $request->EQUIPO)
-                            ->where('ID_SIM', '<>', $simcard->ID_SIM) // Ignorar el registro actual
+                            ->where('ID_SIM', '<>', $simcard->ID_SIM)
                             ->exists();
 
                         if ($exists) {
@@ -1216,10 +1213,13 @@ class SimCardController extends Controller
                     }
                 },
             ],
+
+            // ⬇⬇ Validación del archivo de foto
+            'FOTO_FILE' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
-        // Actualizar los datos del registro
-        $simcard->update([
+        // Datos básicos a actualizar
+        $datosUpdate = [
             'CUENTA' => $request->CUENTA,
             'PROPIETARIO' => $request->PROPIETARIO,
             'NUMEROTELEFONO' => $request->NUMEROTELEFONO,
@@ -1229,15 +1229,33 @@ class SimCardController extends Controller
             'ESTADO' => $request->ESTADO,
             'ASIGNACION' => $request->ASIGNACION,
             'GRUPO' => $request->GRUPO,
-            'EQUIPO' => $request->EQUIPO, // EQUIPO puede ser nulo y se actualiza
+            'EQUIPO' => $request->EQUIPO,
             'IMEI' => $request->IMEI,
             'MODELO_EQUIPO' => $request->MODELO_EQUIPO,
             'MARCA_EQUIPO' => $request->MARCA_EQUIPO,
             'PLATAFORMA' => $request->PLATAFORMA,
-            'PROVEEDOR' => $request->PROVEEDOR
-        ]);
+            'PROVEEDOR' => $request->PROVEEDOR,
+        ];
 
-        return redirect()->route('simcards.index')->with('success', 'SIM Card actualizada exitosamente.');
+        // Si viene una foto nueva, guardarla en storage y actualizar columna FOTO
+        if ($request->hasFile('FOTO_SIM_FILE')) {
+            $basePath = "simcards/{$simcard->ID_SIM}/foto";
+            $stored = $request->file('FOTO_SIM_FILE')->store($basePath, 'public');
+
+            // Borrar archivo anterior si existía y es un path nuestro
+            if (!empty($simcard->FOTO) && Str::startsWith($simcard->FOTO, ['simcards/'])) {
+                Storage::disk('public')->delete($simcard->FOTO);
+            }
+
+            $datosUpdate['FOTO_SIM'] = $stored;
+        }
+
+        // Actualizar registro
+        $simcard->update($datosUpdate);
+
+        return redirect()
+            ->route('simcards.index')
+            ->with('success', 'SIM Card actualizada exitosamente.');
     }
 
 

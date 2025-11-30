@@ -137,7 +137,7 @@
                                     <td>{{ $simcard->EQUIPO }}</td>
 
                                     <td>
-                                        <span class="badge bg-info">{{ $simcard->ASIGNACION ?? 'Sin Asignar' }}</span>
+                                        <span class="badge bg-primary">{{ $simcard->ASIGNACION ?? 'Sin Asignar' }}</span>
                                     </td>
                                     <td class="col-pagos">
                                         @php $p = $simcard->pagos_estado; @endphp
@@ -179,12 +179,14 @@
                                             @if (!Auth::user()->p_e_r_f_i_l->p_e_r_m_i_s_o_s->contains('DESCRIPCION', 'LECTURA'))
                                                 {{-- Botonera para >= sm (APILADOS EN COLUMNA) --}}
                                                 <div class="d-none d-sm-flex flex-column align-items-stretch gap-1">
-                                                    <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
+                                                    <button type="button"
                                                         class="btn btn-outline-primary btn-action w-100"
-                                                        data-bs-toggle="tooltip" title="Editar">
-                                                        <i class="fas fa-edit"></i>
-                                                        <span class="d-none d-md-inline">Editar</span>
-                                                    </a>
+                                                        data-bs-toggle="tooltip" title="Información"
+                                                        onclick="verInfoSim({{ $simcard->ID_SIM }})">
+                                                        <i class="bi bi-info-circle"></i>
+                                                        <span class="d-none d-md-inline">Info</span>
+                                                    </button>
+
 
                                                     <a href="{{ route('simcards.contrato', $simcard->ID_SIM) }}"
                                                         class="btn btn-outline-primary btn-action w-100"
@@ -192,14 +194,13 @@
                                                         <i class="fas fa-file-contract"></i>
                                                         <span class="d-none d-md-inline">Contrato</span>
                                                     </a>
+                                                    <a href="{{ route('simcards.edit', $simcard->ID_SIM) }}"
+                                                        class="btn btn-outline-primary btn-action w-100"
+                                                        data-bs-toggle="tooltip" title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                        <span class="d-none d-md-inline">Editar</span>
+                                                    </a>
 
-                                                    <button type="button"
-                                                        class="btn btn-outline-secondary btn-action w-100"
-                                                        data-bs-toggle="tooltip" title="Información"
-                                                        onclick="verInfoSim({{ $simcard->ID_SIM }})">
-                                                        <i class="bi bi-info-circle"></i>
-                                                        <span class="d-none d-md-inline">Info</span>
-                                                    </button>
                                                 </div>
 
                                                 {{-- Dropdown compacto para < sm (igual que antes) --}}
