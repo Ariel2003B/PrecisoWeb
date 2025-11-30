@@ -155,10 +155,10 @@
                                             <small class="text-muted d-block">
                                                 {{ $p['resumen'] }}
                                                 @if ($p['estado_servicio'] === $p['estado'] && $p['fecha_servicio'])
-                                                    (Serv: {{ $p['fecha_servicio'] }})
+                                                    ({{ $p['fecha_servicio'] }})
                                                 @endif
                                                 @if ($p['estado_cuota'] === $p['estado'] && $p['fecha_cuota'])
-                                                    (Cuota: {{ $p['fecha_cuota'] }})
+                                                    (Cuota vencida: {{ $p['fecha_cuota'] }})
                                                 @endif
                                             </small>
                                         @endif

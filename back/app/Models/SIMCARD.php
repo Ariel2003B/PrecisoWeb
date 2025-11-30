@@ -345,7 +345,7 @@ class SIMCARD extends Model
                 $fuente         = 'Servicio';
                 $estadoServicio = 'VENCIDO';
                 $fechaServicio  = $fechaServ;
-                $resumen        = 'Servicio pendiente vencido';
+                $resumen        = 'Servicio no pagado';
             } elseif ($fechaServ >= $hoy && $fechaServ <= $proximo && $estado !== 'VENCIDO') {
                 $estado         = 'PROXIMO';
                 $color          = 'warning';
