@@ -239,7 +239,7 @@
                                                             </div>
                                                         @else
                                                             {{-- sin comprobante: mostrar input file normalmente --}}
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-9">
                                                                 <label class="form-label">Comprobante (archivo)</label>
                                                                 <input type="file"
                                                                     name="cuotas[{{ $i }}][COMPROBANTE_FILE]"
@@ -274,7 +274,7 @@
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label">Plazo contratado (meses) *</label>
+                                            <label class="form-label">Vigencia (meses) *</label>
                                             <input type="number" min="1" max="60" name="SERV_PLAZO"
                                                 id="SERV_PLAZO" class="form-control"
                                                 value="{{ old('SERV_PLAZO', optional($servicioReciente)->PLAZO_CONTRATADO ?? 1) }}">
@@ -650,7 +650,7 @@
           <input type="date" class="form-control cuota-fecha-real">
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-9">
           <label class="form-label">Comprobante (archivo)</label>
           <input type="file" class="form-control cuota-file" accept=".jpg,.jpeg,.png,.pdf">
         </div>
@@ -890,14 +890,31 @@
             font-size: .9rem;
         }
 
-        .compact-ui .form-control,
-        {
-        padding: .25rem .5rem;
-        font-size: .92rem;
-        line-height: 1.25;
-        height: calc(1.25rem + .5rem + 2px);
-        /* altura visual más baja */
+        /* NO tocar los file inputs, solo textos, números, fechas, etc. */
+        .compact-ui .form-control:not([type="file"]) {
+            padding: .25rem .5rem;
+            font-size: .92rem;
+            line-height: 1.25;
+            height: calc(1.25rem + .5rem + 2px);
+            /* altura visual más baja */
         }
+
+        /* Estilo específico para los file inputs (cuotas + servicio) */
+        .compact-ui input[type="file"].form-control,
+        .compact-ui .cuota-file,
+        .compact-ui #SERV_COMPROBANTE_FILE {
+            /* restaurar algo cercano al estilo Bootstrap normal */
+            padding: 0.375rem 0.75rem;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            height: auto;
+            width: 100%;
+            /* ocupa todo el ancho de la col-md-3 */
+            display: block;
+            /* que se comporte como un control completo */
+            box-sizing: border-box;
+        }
+
 
         /* Botones */
         .compact-ui .btn {
