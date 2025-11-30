@@ -142,9 +142,16 @@
                         <span class="sitename">PrecisoGPS</span>
                     </a>
                     <div class="footer-contact pt-3">
-                        <p>E16 N53-209 y de los Cholanes</p>
-                        <p>Quito, 170514</p>
-                        <p class="mt-3"><strong>Ventas y servicio al cliente:</strong> <span>+593 99 045 3275</span></p>
+                        <p>
+                            <a href="https://www.google.com/maps/place/0%C2%B007'15.8%22S+78%C2%B027'46.0%22W/@-0.1213568,-78.462865,21z/data=!4m4!3m3!8m2!3d-0.1210497!4d-78.4627845?entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D"
+                                target="_blank" style="color: inherit; text-decoration: none; cursor: pointer;">
+                                Av Carlos Fortines N65-124 y Antonio Fabara
+                            </a>
+                        </p>
+
+                        <p>Quito, 170306</p>
+                        <p class="mt-3"><strong>Ventas y servicio al cliente:</strong> <span>+593 98 149 1469</span>
+                        </p>
                         <p><strong>Correo:</strong> <span>ventas@precisogps.com</span></p>
                     </div>
                     <div class="social-links d-flex mt-4">

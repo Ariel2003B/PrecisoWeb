@@ -35,7 +35,6 @@
                             <th>Apellidos</th>
                             <th>Nombres</th>
                             <th>Usuario</th>
-
                             <th>Telefono</th>
                             <th>Correo</th>
                             <th>Empresa</th>
