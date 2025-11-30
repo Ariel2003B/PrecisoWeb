@@ -110,9 +110,9 @@ class SimCardController extends Controller
             });
         }
         // === Filtro por estado de pago (backend) ===
-// Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
-// === Filtro por estado de pago (backend) ===
-// Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
+        // Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
+        // === Filtro por estado de pago (backend) ===
+        // Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
         if ($request->filled('pago_estado')) {
             $estado = $request->input('pago_estado');
             $hoy = now()->toDateString();
@@ -572,6 +572,7 @@ class SimCardController extends Controller
             'cuotas.*.VALOR_CUOTA' => ['nullable', 'numeric', 'min:0'],
             'cuotas.*.COMPROBANTE' => ['nullable', 'string', 'max:8000'],
             'cuotas.*.COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'cuotas.*.OBSERVACION' => ['nullable', 'string', 'max:1000'],
 
             // Servicio
             'SERV_ID' => ['nullable', 'integer'], // <-- NUEVO (para actualizar)
@@ -582,6 +583,7 @@ class SimCardController extends Controller
             'SERV_OBSERVACION' => ['nullable', 'string', 'max:1000'],
             'SERV_COMPROBANTE' => ['nullable', 'string', 'max:8000'],
             'SERV_COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            
         ];
         $data = $request->validate($baseRules);
 
@@ -726,6 +728,7 @@ class SimCardController extends Controller
                     $pagado = filter_var($c['PAGADO'] ?? false, FILTER_VALIDATE_BOOLEAN);
                     $fechaReal = $c['FECHA_REAL_PAGO'] ?? null;
                     $teniaArchivoAntes = !empty($cuota?->COMPROBANTE);
+                    $obs = (isset($c['OBSERVACION']) && $c['OBSERVACION'] !== '') ? $c['OBSERVACION'] : null;
 
                     // Si marcan pagado y no hay archivo nuevo ni existente => error de validación
                     if ($pagado && !$tieneArchivo && !$teniaArchivoAntes) {
@@ -735,7 +738,8 @@ class SimCardController extends Controller
                     }
 
                     $cuoId = $c['CUO_ID'] ?? null;
-                    $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo;
+                    $filaVacia = is_null($fecha) && is_null($valor) && is_null($compTexto) && !$tieneArchivo && is_null($obs);
+                    ;
                     if ($filaVacia && empty($cuoId))
                         continue;
 
@@ -753,6 +757,7 @@ class SimCardController extends Controller
                     $cuota->VALOR_CUOTA = $valor;
                     if (!is_null($compTexto))
                         $cuota->COMPROBANTE = $compTexto;
+                    $cuota->OBSERVACION = $obs;
                     // Establecer FECHA_REAL_PAGO:
                     //  - Si viene en request, usarla
                     //  - Si está pagado y no vino, fijar hoy()

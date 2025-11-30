@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $FECHA_REAL_PAGO
  * @property string|null $VALOR_CUOTA
  * @property string|null $COMPROBANTE
+ * @property string|null $OBSERVACION
  */
 class CUOTAS extends Model
 {
@@ -35,6 +36,7 @@ class CUOTAS extends Model
         'FECHA_PAGO',
         'VALOR_CUOTA',
         'COMPROBANTE',
+        'OBSERVACION'
     ];
 
     public function detalle(): BelongsTo

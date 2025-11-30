@@ -131,10 +131,6 @@
 
                                         </div>
 
-
-
-
-
                                         <div class="col-md-4">
                                             <label class="form-label">Valor total *</label>
                                             <input type="number" step="0.01" min="0" name="VALOR_TOTAL"
@@ -240,21 +236,24 @@
                                                         @else
                                                             {{-- sin comprobante: mostrar input file normalmente --}}
                                                             <div class="col-md-9">
-                                                                <label class="form-label">Comprobante (archivo)</label>
+                                                                <label class="form-label">Comprobante de pago</label>
                                                                 <input type="file"
                                                                     name="cuotas[{{ $i }}][COMPROBANTE_FILE]"
                                                                     class="form-control cuota-file"
                                                                     accept=".jpg,.jpeg,.png,.pdf">
                                                             </div>
                                                         @endif
+                                                        <div class="col-12">
+                                                            <label class="form-label">Observación</label>
+                                                            <textarea name="cuotas[{{ $i }}][OBSERVACION]" class="form-control cuota-observacion" rows="2">{{ old("cuotas.$i.OBSERVACION", $c->OBSERVACION) }}</textarea>
+                                                        </div>
 
                                                     </div>
+
                                                 </div>
                                             @endforeach
                                         @endif
                                     </div>
-
-                                    <div class="form-text">Puedes subir imagen (jpg/png) o PDF como comprobante.</div>
                                 </div>
                             </div>
 
@@ -329,7 +328,7 @@
                                             </div>
                                         @else
                                             <div class="col-md-6">
-                                                <label class="form-label">Comprobante (archivo)</label>
+                                                <label class="form-label">Comprobante de pago</label>
                                                 <input type="file" name="SERV_COMPROBANTE_FILE"
                                                     id="SERV_COMPROBANTE_FILE" class="form-control"
                                                     accept=".jpg,.jpeg,.png,.pdf">
@@ -649,8 +648,16 @@
         </div>
 
         <div class="col-md-9">
-          <label class="form-label">Comprobante (archivo)</label>
+          <label class="form-label">Comprobante de pago</label>
           <input type="file" class="form-control cuota-file" accept=".jpg,.jpeg,.png,.pdf">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Observación</label>
+          <textarea
+            class="form-control cuota-observacion"
+            rows="2"
+          ></textarea>
         </div>
       </div>`;
             return wrapper;
@@ -674,6 +681,9 @@
 
                 const fechaReal = row.querySelector('input.cuota-fecha-real');
                 if (fechaReal) fechaReal.name = `cuotas[${i}][FECHA_REAL_PAGO]`;
+
+                const obs = row.querySelector('textarea.cuota-observacion');
+                if (obs) obs.name = `cuotas[${i}][OBSERVACION]`;
             });
         }
 
