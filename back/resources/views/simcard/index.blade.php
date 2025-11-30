@@ -73,8 +73,6 @@
                     @endif
 
                     <a class="btn btn-primary mt-2" href="{{ route('simcards.exportExcel') }}">Descargar reporte</a>
-
-
                     <form action="{{ route('simcards.index') }}" method="GET" class="filtros-simcards-form">
                         <input type="text" name="search" id="filtro" class="filtros-simcards-input"
                             placeholder="Busqueda avanzada..." value="{{ request('search') }}">

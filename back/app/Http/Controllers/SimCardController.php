@@ -111,6 +111,8 @@ class SimCardController extends Controller
         }
         // === Filtro por estado de pago (backend) ===
 // Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
+// === Filtro por estado de pago (backend) ===
+// Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
         if ($request->filled('pago_estado')) {
             $estado = $request->input('pago_estado');
             $hoy = now()->toDateString();
@@ -124,8 +126,10 @@ class SimCardController extends Controller
                 };
 
                 if ($estado === 'AL_DIA') {
-                    // AL_DIA = NO tener cuotas ni servicios pendientes
-                    // con fecha <= hoy+5 (nada vencido ni próximo)
+                    // AL_DIA = NO tener:
+                    //  - cuotas pendientes con FECHA_PAGO <= proximo
+                    //  - servicios pendientes con FECHA_SERVICIO <= proximo
+                    //  - NI un servicio reciente cuya FECHA_SIGUIENTE_PAGO <= proximo
                     $qq->whereDoesntHave('detalleVigente.cuotas', function ($q) use ($cuotasPendientes, $proximo) {
                         $cuotasPendientes($q);
                         $q->where('FECHA_PAGO', '<=', $proximo);
@@ -134,15 +138,21 @@ class SimCardController extends Controller
                             $cuotasPendientes($q);
                             $q->where('FECHA_PAGO', '<=', $proximo);
                         })
-                        ->whereDoesntHave('servicios', function ($q) use ($hoy, $proximo) {
+                        ->whereDoesntHave('servicios', function ($q) use ($proximo) {
                             $q->whereNull('COMPROBANTE')
                                 ->where('FECHA_SERVICIO', '<=', $proximo);
+                        })
+                        ->whereDoesntHave('servicioReciente', function ($q) use ($proximo) {
+                            // NUEVO: cortar también por fecha siguiente de pago
+                            $q->whereNotNull('FECHA_SIGUIENTE_PAGO')
+                                ->where('FECHA_SIGUIENTE_PAGO', '<=', $proximo);
                         });
 
                     return; // importante: no seguir con el resto del código
                 }
 
                 // ==== VENCIDO / PROXIMO ====
+
                 // 1) Cuotas
                 $cuotasFiltro = function ($q) use ($estado, $hoy, $proximo, $cuotasPendientes) {
                     $cuotasPendientes($q);
@@ -157,7 +167,7 @@ class SimCardController extends Controller
                 $qq->whereHas('detalleVigente.cuotas', $cuotasFiltro)
                     ->orWhereHas('detalleSimcards.cuotas', $cuotasFiltro);
 
-                // 2) Servicios PENDIENTES (COMPROBANTE NULL)
+                // 2) Servicios pendientes (COMPROBANTE NULL)
                 $qq->orWhereHas('servicios', function ($q) use ($estado, $hoy, $proximo) {
                     $q->whereNull('COMPROBANTE');
 
@@ -165,6 +175,20 @@ class SimCardController extends Controller
                         $q->whereBetween('FECHA_SERVICIO', [$hoy, $proximo]);
                     } elseif ($estado === 'VENCIDO') {
                         $q->where('FECHA_SERVICIO', '<', $hoy);
+                    }
+                });
+
+                // 3) NUEVO: servicio reciente con FECHA_SIGUIENTE_PAGO vencida o próxima,
+                //    aunque ese servicio ya esté pagado.
+                $qq->orWhereHas('servicioReciente', function ($q) use ($estado, $hoy, $proximo) {
+                    $q->whereNotNull('FECHA_SIGUIENTE_PAGO');
+
+                    if ($estado === 'PROXIMO') {
+                        // próximo corte de servicio
+                        $q->whereBetween('FECHA_SIGUIENTE_PAGO', [$hoy, $proximo]);
+                    } elseif ($estado === 'VENCIDO') {
+                        // ya se pasó la fecha y no renovó
+                        $q->where('FECHA_SIGUIENTE_PAGO', '<', $hoy);
                     }
                 });
             });
@@ -189,10 +213,6 @@ class SimCardController extends Controller
 
         return view('simcard.index', compact('simcards', 'cuentas', 'planes', 'tiposPlan'));
     }
-
-
-
-
     public function fetchWialonData(Request $request)
     {
         $asignacion = $request->input('asignacion');
@@ -364,7 +384,7 @@ class SimCardController extends Controller
             'ESTADO' => $request->ESTADO,
             'ASIGNACION' => $request->ASIGNACION,
             'GRUPO' => $request->GRUPO,
-            'EQUIPO' => $request->EQUIPO, 
+            'EQUIPO' => $request->EQUIPO,
             'IMEI' => $request->IMEI,
             'MODELO_EQUIPO' => $request->MODELO_EQUIPO,
             'MARCA_EQUIPO' => $request->MARCA_EQUIPO,
