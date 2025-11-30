@@ -763,7 +763,8 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
     </style>
     <!-- Modal genérico para ver comprobantes -->
     <div class="modal fade" id="comprobanteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-comprobante-dialog">
+
             <div class="modal-content">
                 <div class="modal-header py-2">
                     <h5 class="modal-title">Comprobante</h5>
@@ -781,6 +782,29 @@ PRECISOGPS S.A.S.;120013636;CLARO EMPRESA BAM 1.5;BP-9980;8959301001049890843;99
             </div>
         </div>
     </div>
+    <style>
+        /* Modal de comprobante más pequeño */
+        .modal-comprobante-dialog {
+            max-width: 850px;
+            /* prueba 700–900 según te guste */
+            margin: 1.75rem auto;
+        }
+
+        /* Opcional: un poco menos de padding interno */
+        #comprobanteModal .modal-body {
+            padding: .75rem;
+        }
+
+        /* Imagen centrada y limitada en alto */
+        #comprobanteImg {
+            max-height: 70vh;
+            width: auto;
+            margin: 0 auto;
+            display: block;
+            object-fit: contain;
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modalEl = document.getElementById('comprobanteModal');
