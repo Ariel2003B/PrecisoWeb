@@ -263,7 +263,7 @@
                                 <div class="card-header fw-bold">Servicio</div>
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             {{-- si existe un servicio reciente, enviar su ID para actualizarlo --}}
                                             <input type="hidden" name="SERV_ID"
                                                 value="{{ optional($servicioReciente)->SERV_ID }}">
@@ -272,28 +272,12 @@
                                             <input type="date" name="SERV_FECHA" id="SERV_FECHA" class="form-control"
                                                 value="{{ old('SERV_FECHA', optional(optional($servicioReciente)->FECHA_SERVICIO)->format('Y-m-d')) }}">
                                         </div>
-
-                                        <div class="col-md-4">
-                                            <label class="form-label">Vigencia (meses) *</label>
-                                            <input type="number" min="1" max="60" name="SERV_PLAZO"
-                                                id="SERV_PLAZO" class="form-control"
-                                                value="{{ old('SERV_PLAZO', optional($servicioReciente)->PLAZO_CONTRATADO ?? 1) }}">
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <label class="form-label">Siguiente pago (auto)</label>
-                                            <input type="date" name="SERV_SIGUIENTE_PAGO" id="SERV_SIGUIENTE_PAGO"
-                                                class="form-control" readonly
-                                                value="{{ old('SERV_SIGUIENTE_PAGO', optional(optional($servicioReciente)->FECHA_SIGUIENTE_PAGO)->format('Y-m-d')) }}">
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <label class="form-label">Valor del servicio *</label>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Valor *</label>
                                             <input type="number" step="0.01" min="0" name="SERV_VALOR"
                                                 id="SERV_VALOR" class="form-control"
                                                 value="{{ old('SERV_VALOR', optional($servicioReciente)->VALOR_PAGO) }}">
                                         </div>
-
                                         {{-- Switch Pagado --}}
                                         <div class="col-md-2">
                                             <label class="form-label d-block">Pagado</label>
@@ -302,6 +286,14 @@
                                                     name="SERV_PAGADO" @checked(old('SERV_PAGADO', !empty(optional($servicioReciente)->COMPROBANTE)))>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Vigencia (meses) *</label>
+                                            <input type="number" min="1" max="60" name="SERV_PLAZO"
+                                                id="SERV_PLAZO" class="form-control"
+                                                value="{{ old('SERV_PLAZO', optional($servicioReciente)->PLAZO_CONTRATADO ?? 1) }}">
+                                        </div>
+
+
 
                                         {{-- Comprobante --}}
                                         @php $servHasFile = !empty(optional($servicioReciente)->COMPROBANTE); @endphp
@@ -344,6 +336,12 @@
                                             </div>
                                         @endif
 
+                                        <div class="col-md-4">
+                                            <label class="form-label">Siguiente pago (auto)</label>
+                                            <input type="date" name="SERV_SIGUIENTE_PAGO" id="SERV_SIGUIENTE_PAGO"
+                                                class="form-control" readonly
+                                                value="{{ old('SERV_SIGUIENTE_PAGO', optional(optional($servicioReciente)->FECHA_SIGUIENTE_PAGO)->format('Y-m-d')) }}">
+                                        </div>
                                         <div class="col-12">
                                             <label class="form-label">Observación</label>
                                             <textarea name="SERV_OBSERVACION" class="form-control" rows="2">{{ old('SERV_OBSERVACION', optional($servicioReciente)->OBSERVACION) }}</textarea>
