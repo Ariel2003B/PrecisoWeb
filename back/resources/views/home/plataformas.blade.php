@@ -188,11 +188,11 @@
                         <p class="text-center mb-3 fw-bold">Selecciona una opción para SIMCARDS:</p>
                         <div>
                             <!-- Imagen con enlace -->
-                            <a href="http://www.miclaro.com.ec/ivrdigital" target="_blank">
+                            <a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud" target="_blank">
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
                                     alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
-                            <p><a href="http://www.miclaro.com.ec/ivrdigital" target="_blank"
+                            <p><a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud" target="_blank"
                                     class="text-primary">Reposicion de chips</a></p>
                             <!-- Otra Imagen con enlace -->
                             <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
