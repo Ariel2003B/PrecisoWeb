@@ -119,15 +119,87 @@ class ReporteProduccionController extends Controller
         return redirect()->route('reportes.index')->with('success', 'Reporte guardado con éxito.');
     }
 
+    // public function generarReporteGlobal(Request $request)
+    // {
+    //     $user = auth()->user();
+
+    //     $fecha = $request->input('fecha');
+    //     $rutaId = $request->input('ruta');
+
+    //     $query = HojaTrabajo::with(['unidad', 'producciones', 'ruta'])
+    //         ->whereDate('fecha', $fecha);
+    //     $query->whereHas('ruta', function ($q) use ($user) {
+    //         $q->where('EMP_ID', $user->EMP_ID);
+    //     });
+
+    //     if ($rutaId) {
+    //         $query->where('id_ruta', $rutaId);
+    //     }
+
+    //     $hojas = $query->get();
+
+    //     $produccionPorUnidad = [];
+    //     $totalGlobal = 0;
+    //     $totalVueltasGlobal = 0;
+
+    //     foreach ($hojas as $hoja) {
+    //         $unidadKey = $hoja->unidad->placa . ' (' . $hoja->unidad->numero_habilitacion . ')';
+
+    //         $totalUnidad = 0;
+    //         $totalVueltas = 0;
+    //         $ultimaVuelta = 0;
+
+    //         foreach ($hoja->producciones as $produccion) {
+    //             $totalUnidad += $produccion->valor_vuelta;
+    //             $totalVueltas++;
+    //             $totalVueltasGlobal++;
+
+    //             if ($produccion->nro_vuelta > $ultimaVuelta) {
+    //                 $ultimaVuelta = $produccion->nro_vuelta;
+    //             }
+    //         }
+
+    //         if (!isset($produccionPorUnidad[$unidadKey])) {
+    //             $produccionPorUnidad[$unidadKey] = [
+    //                 'total_produccion' => 0,
+    //                 'total_vueltas' => 0,
+    //                 'ultima_vuelta' => 0
+    //             ];
+    //         }
+
+    //         $produccionPorUnidad[$unidadKey]['total_produccion'] += $totalUnidad;
+    //         $produccionPorUnidad[$unidadKey]['total_vueltas'] += $totalVueltas;
+    //         $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = $ultimaVuelta;
+
+    //         $totalGlobal += $totalUnidad;
+    //     }
+    //     // Guardar la consulta en sesión para generar PDF o Excel posteriormente
+    //     session(['reporte_global_data' => $hojas]);
+
+    //     $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
+
+    //     return response()->json(['html' => $result]);
+    // }
     public function generarReporteGlobal(Request $request)
     {
         $user = auth()->user();
 
-        $fecha = $request->input('fecha');
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin = $request->input('fecha_fin');
         $rutaId = $request->input('ruta');
 
+        if (!$fechaInicio || !$fechaFin) {
+            return response()->json(['html' => '<div class="alert alert-warning">Selecciona el rango de fechas.</div>'], 422);
+        }
+
+        // Si vienen invertidas, las acomodamos (opcional pero útil)
+        if ($fechaInicio > $fechaFin) {
+            [$fechaInicio, $fechaFin] = [$fechaFin, $fechaInicio];
+        }
+
         $query = HojaTrabajo::with(['unidad', 'producciones', 'ruta'])
-            ->whereDate('fecha', $fecha);
+            ->whereBetween('fecha', [$fechaInicio, $fechaFin]);
+
         $query->whereHas('ruta', function ($q) use ($user) {
             $q->where('EMP_ID', $user->EMP_ID);
         });
@@ -143,19 +215,23 @@ class ReporteProduccionController extends Controller
         $totalVueltasGlobal = 0;
 
         foreach ($hojas as $hoja) {
-            $unidadKey = $hoja->unidad->placa . ' (' . $hoja->unidad->numero_habilitacion . ')';
+
+            // Por si hay hojas sin unidad (evita error)
+            $placa = $hoja->unidad->placa ?? '-';
+            $habil = $hoja->unidad->numero_habilitacion ?? '-';
+            $unidadKey = $placa . ' (' . $habil . ')';
 
             $totalUnidad = 0;
             $totalVueltas = 0;
             $ultimaVuelta = 0;
 
             foreach ($hoja->producciones as $produccion) {
-                $totalUnidad += $produccion->valor_vuelta;
+                $totalUnidad += (float) $produccion->valor_vuelta;
                 $totalVueltas++;
                 $totalVueltasGlobal++;
 
-                if ($produccion->nro_vuelta > $ultimaVuelta) {
-                    $ultimaVuelta = $produccion->nro_vuelta;
+                if ((int) $produccion->nro_vuelta > $ultimaVuelta) {
+                    $ultimaVuelta = (int) $produccion->nro_vuelta;
                 }
             }
 
@@ -169,12 +245,25 @@ class ReporteProduccionController extends Controller
 
             $produccionPorUnidad[$unidadKey]['total_produccion'] += $totalUnidad;
             $produccionPorUnidad[$unidadKey]['total_vueltas'] += $totalVueltas;
-            $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = $ultimaVuelta;
+
+            // Si quieres que muestre la última vuelta máxima del rango, usa max
+            $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = max(
+                $produccionPorUnidad[$unidadKey]['ultima_vuelta'],
+                $ultimaVuelta
+            );
 
             $totalGlobal += $totalUnidad;
         }
-        // Guardar la consulta en sesión para generar PDF o Excel posteriormente
-        session(['reporte_global_data' => $hojas]);
+
+        // Guardar en sesión (mejor guardar filtros, pero dejo tu lógica)
+        session([
+            'reporte_global_data' => $hojas,
+            'reporte_global_filters' => [
+                'fecha_inicio' => $fechaInicio,
+                'fecha_fin' => $fechaFin,
+                'ruta' => $rutaId
+            ]
+        ]);
 
         $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
 

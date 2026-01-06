@@ -78,31 +78,6 @@
 
                 </form>
                 <!-- Modal -->
-                {{-- <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="reporteGlobalForm">
-                                    <div class="mb-3">
-                                        <label for="fecha_reporte" class="form-label">Seleccionar Fecha</label>
-                                        <input type="date" name="fecha" id="fecha_reporte" class="form-control"
-                                            required>
-                                    </div>
-                                    <button type="button" class="btn btn-primary w-100"
-                                        onclick="generarReporte()">Visualizar Reporte</button>
-                                </form>
-                                <div id="reporteGlobalResultado" class="mt-4"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-                <!-- Modal -->
                 <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -114,11 +89,22 @@
                             </div>
                             <div class="modal-body">
                                 <form id="reporteGlobalForm">
-                                    <div class="mb-3">
+                                    {{-- <div class="mb-3">
                                         <label for="fecha_reporte" class="form-label">Seleccionar Fecha</label>
                                         <input type="date" name="fecha" id="fecha_reporte" class="form-control"
                                             required>
+                                    </div> --}}
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="fecha_inicio_reporte" class="form-label">Fecha Desde</label>
+                                            <input type="date" id="fecha_inicio_reporte" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="fecha_fin_reporte" class="form-label">Fecha Hasta</label>
+                                            <input type="date" id="fecha_fin_reporte" class="form-control" required>
+                                        </div>
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="ruta_reporte" class="form-label">Seleccionar Ruta</label>
                                         <select name="ruta" id="ruta_reporte" class="form-control">
@@ -237,10 +223,12 @@
 
     <script>
         function generarReporte() {
-            const fecha = document.getElementById('fecha_reporte').value;
+            const fechaInicio = document.getElementById('fecha_inicio_reporte').value;
+            const fechaFin = document.getElementById('fecha_fin_reporte').value;
             const rutaId = document.getElementById('ruta_reporte').value;
-            if (!fecha) {
-                alert('Por favor selecciona una fecha.');
+
+            if (!fechaInicio || !fechaFin) {
+                alert('Por favor selecciona el rango de fechas.');
                 return;
             }
 
@@ -251,13 +239,15 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
-                        fecha,
+                        fecha_inicio: fechaInicio,
+                        fecha_fin: fechaFin,
                         ruta: rutaId
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('reporteGlobalResultado').innerHTML = data.html;
+
 
                     // Inicializar DataTables después de cargar la tabla
                     $('#tablaProduccion').DataTable({
