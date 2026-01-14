@@ -47,13 +47,13 @@
     {{-- <a id="contador-visitas" href="#">Cargando visitantes...</a> --}}
 
     <!-- Modal -->
-    <div class="modal fade" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="tiktokModal" tabindex="-1" aria-labelledby="tiktokModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="tiktokModalLabel">PrecisoGPS</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
+                </div> --}}
                 {{-- <div class="modal-body text-center">
                     <video id="tiktokVideo" controls autoplay muted loop style="width: 100%; height: auto;"
                         controlsList="nodownload" oncontextmenu="return false;">
@@ -64,11 +64,11 @@
                 {{-- <div class="modal-body text-center">
                     <img src="{{ asset('img/precisoimg/blackFriday.jpg') }}" alt="PrecisoGPS" style="width: 100%; height: auto;"
                         class="img-fluid">
-                </div> --}}
+                </div>
 
             </div>
         </div>
-    </div>
+    </div> --}}
     <a href="https://wa.me/593991933924?text=Hola%2C%20me%20interesa%20asesoramiento%20sobre%20el%20rastreo%20vehicular.%20¿Podrías%20darme%20más%20información%3F"
         target="_blank" class="whatsapp-float">
         <span class="whatsapp-float-text">¡Comunícate ya!</span>
