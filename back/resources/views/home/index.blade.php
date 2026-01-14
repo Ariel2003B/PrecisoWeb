@@ -61,10 +61,10 @@
                         Tu navegador no soporta el video.
                     </video>
                 </div> --}}
-                <div class="modal-body text-center">
+                {{-- <div class="modal-body text-center">
                     <img src="{{ asset('img/precisoimg/blackFriday.jpg') }}" alt="PrecisoGPS" style="width: 100%; height: auto;"
                         class="img-fluid">
-                </div>
+                </div> --}}
 
             </div>
         </div>
