@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class DETALLE_SIMCARD_SERVICIO
@@ -41,5 +42,10 @@ class DETALLE_SIMCARD_SERVICIO extends Model
     public function simcard(): BelongsTo
     {
         return $this->belongsTo(SIMCARD::class, 'SIM_ID', 'ID_SIM');
+    }
+
+    public function cuotas(): HasMany
+    {
+        return $this->hasMany(CUOTAS_SERVICIO::class, 'SERV_ID', 'SERV_ID');
     }
 }

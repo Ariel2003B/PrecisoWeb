@@ -118,6 +118,184 @@
                                 </div>
                             </div>
 
+
+                            @php
+                                // ======== SERVICIO: determinar si se puede renovar (saldo 0 y todas cuotas con comprobante) ========
+                                $puedeRenovarServicio = false;
+                                $servTotalCuotas = 0;
+
+                                if (!empty($servicioReciente)) {
+                                    $servCuotas = $servicioReciente->cuotas ?? collect();
+                                    $servTotalCuotas = $servCuotas->count();
+
+                                    if ($servTotalCuotas > 0) {
+                                        $saldoCeroServ = (float) ($servicioReciente->SALDO ?? 0) <= 0;
+                                        $todasConComprobanteServ = $servCuotas->every(
+                                            fn($c) => !empty($c->COMPROBANTE),
+                                        );
+                                        $puedeRenovarServicio = $saldoCeroServ && $todasConComprobanteServ;
+                                    } else {
+                                        // Si todavía no han creado cuotas de servicio, NO permitir renovar (porque ahora todo va por cuotas)
+                                        $puedeRenovarServicio = false;
+                                    }
+                                }
+                            @endphp
+                            <div class="card mb-4" id="servicio-card">
+                                <div class="card-header fw-bold">Servicio (en cuotas)</div>
+
+                                <div class="card-body">
+                                    <div class="row g-3">
+
+                                        {{-- si existe un servicio reciente, enviar su ID para actualizarlo --}}
+                                        <input type="hidden" name="SERV_ID"
+                                            value="{{ optional($servicioReciente)->SERV_ID }}">
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Fecha de activación *</label>
+                                            <input type="date" name="SERV_FECHA" id="SERV_FECHA" class="form-control"
+                                                value="{{ old('SERV_FECHA', optional(optional($servicioReciente)->FECHA_SERVICIO)->format('Y-m-d')) }}">
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Valor total *</label>
+                                            <input type="number" step="0.01" min="0" name="SERV_VALOR"
+                                                id="SERV_VALOR" class="form-control"
+                                                value="{{ old('SERV_VALOR', optional($servicioReciente)->VALOR_TOTAL ?? optional($servicioReciente)->VALOR_PAGO) }}">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="form-label">N° cuotas *</label>
+                                            <input type="number" min="1" max="60" name="SERV_NUMERO_CUOTAS"
+                                                id="SERV_NUMERO_CUOTAS" class="form-control"
+                                                value="{{ old('SERV_NUMERO_CUOTAS', optional($servicioReciente)->NUMERO_CUOTAS ?? (max(1, $servTotalCuotas) ?? 1)) }}">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Vigencia (meses) *</label>
+                                            <input type="number" min="1" max="60" name="SERV_PLAZO"
+                                                id="SERV_PLAZO" class="form-control"
+                                                value="{{ old('SERV_PLAZO', optional($servicioReciente)->PLAZO_CONTRATADO ?? 1) }}">
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Siguiente pago (auto)</label>
+                                            <input type="date" name="SERV_SIGUIENTE_PAGO" id="SERV_SIGUIENTE_PAGO"
+                                                class="form-control" readonly
+                                                value="{{ old('SERV_SIGUIENTE_PAGO', optional(optional($servicioReciente)->FECHA_SIGUIENTE_PAGO)->format('Y-m-d')) }}">
+                                        </div>
+
+                                        <div class="col-md-4 d-flex align-items-end">
+                                            <button type="button" id="btn-distribuir-servicio"
+                                                class="btn btn-outline-primary w-100">
+                                                Distribuir valor y fechas en cuotas (Servicio)
+                                            </button>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Observación</label>
+                                            <textarea name="SERV_OBSERVACION" class="form-control" rows="2">{{ old('SERV_OBSERVACION', optional($servicioReciente)->OBSERVACION) }}</textarea>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- ================== CUOTAS SERVICIO ================== --}}
+                            <div class="card mb-4" id="serv-cuotas-card">
+                                <div class="card-header fw-bold">Cuotas de servicio</div>
+                                <div class="card-body">
+                                    <div id="serv-cuotas-list">
+                                        @if (!empty($servicioReciente) && ($servicioReciente->cuotas?->count() ?? 0))
+                                            @foreach ($servicioReciente->cuotas->sortBy('FECHA_PAGO')->values() as $i => $c)
+                                                <div class="border rounded p-3 mb-3 serv-cuota-item"
+                                                    data-has-file="{{ $c->COMPROBANTE ? 1 : 0 }}">
+                                                    <input type="hidden"
+                                                        name="serv_cuotas[{{ $i }}][CUOS_ID]"
+                                                        value="{{ $c->CUOS_ID }}">
+
+                                                    <div class="row g-3 align-items-end">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label serv-cuota-label">{{ $i + 1 }}
+                                                                Cuota</label>
+                                                            <input type="date"
+                                                                name="serv_cuotas[{{ $i }}][FECHA_PAGO]"
+                                                                class="form-control serv-cuotas-fecha"
+                                                                value="{{ old("serv_cuotas.$i.FECHA_PAGO", optional($c->FECHA_PAGO)->format('Y-m-d')) }}">
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <label class="form-label">Valor cuota</label>
+                                                            <input type="number" step="0.01" min="0"
+                                                                name="serv_cuotas[{{ $i }}][VALOR_CUOTA]"
+                                                                class="form-control serv-cuotas-valor"
+                                                                value="{{ old("serv_cuotas.$i.VALOR_CUOTA", $c->VALOR_CUOTA) }}">
+                                                        </div>
+
+                                                        <div class="col-md-2">
+                                                            <label class="form-label d-block">Pagado</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input serv-cuota-paid"
+                                                                    type="checkbox"
+                                                                    name="serv_cuotas[{{ $i }}][PAGADO]"
+                                                                    @checked(old("serv_cuotas.$i.PAGADO", $c->COMPROBANTE ? true : false))>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label class="form-label">Registro de pago (auto)</label>
+                                                            <input type="date" readonly
+                                                                name="serv_cuotas[{{ $i }}][FECHA_REAL_PAGO]"
+                                                                class="form-control serv-cuota-fecha-real"
+                                                                value="{{ old("serv_cuotas.$i.FECHA_REAL_PAGO", optional($c->FECHA_REAL_PAGO)->format('Y-m-d')) }}">
+                                                        </div>
+
+                                                        {{-- Archivo / Comprobante --}}
+                                                        @if ($c->COMPROBANTE)
+                                                            <div class="col-md-3">
+                                                                <label class="form-label d-block">Comprobante</label>
+                                                                @php $isFile = \Illuminate\Support\Str::startsWith($c->COMPROBANTE, ['simcards/']); @endphp
+                                                                @if ($isFile)
+                                                                    <button type="button"
+                                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
+                                                                        data-url="{{ asset('back/storage/app/public/' . $c->COMPROBANTE) }}">
+                                                                        Ver
+                                                                    </button>
+                                                                @else
+                                                                    <button type="button"
+                                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
+                                                                        data-url="{{ $c->COMPROBANTE }}">
+                                                                        Abrir
+                                                                    </button>
+                                                                @endif
+
+                                                                <input type="file"
+                                                                    name="serv_cuotas[{{ $i }}][COMPROBANTE_FILE]"
+                                                                    class="form-control serv-cuota-file d-none mt-2"
+                                                                    accept=".jpg,.jpeg,.png,.pdf">
+                                                            </div>
+                                                        @else
+                                                            <div class="col-md-9">
+                                                                <label class="form-label">Comprobante de pago</label>
+                                                                <input type="file"
+                                                                    name="serv_cuotas[{{ $i }}][COMPROBANTE_FILE]"
+                                                                    class="form-control serv-cuota-file"
+                                                                    accept=".jpg,.jpeg,.png,.pdf">
+                                                            </div>
+                                                        @endif
+
+                                                        <div class="col-12">
+                                                            <label class="form-label">Observación</label>
+                                                            <textarea name="serv_cuotas[{{ $i }}][OBSERVACION]" class="form-control serv-cuota-observacion"
+                                                                rows="2">{{ old("serv_cuotas.$i.OBSERVACION", $c->OBSERVACION) }}</textarea>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                             {{-- Detalle de Contrato (prefill si hay $detalle) --}}
                             <div class="card mb-4">
                                 <div class="card-header fw-bold">Equipos (GPS, Chips, Modems, Camaras, etc) </div>
@@ -258,100 +436,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="card mb-4" id="servicio-card"
-                                data-serv-has-file="{{ !empty(optional($servicioReciente)->COMPROBANTE) ? 1 : 0 }}">
-                                <div class="card-header fw-bold">Servicio</div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            {{-- si existe un servicio reciente, enviar su ID para actualizarlo --}}
-                                            <input type="hidden" name="SERV_ID"
-                                                value="{{ optional($servicioReciente)->SERV_ID }}">
-
-                                            <label class="form-label">Fecha de activación *</label>
-                                            <input type="date" name="SERV_FECHA" id="SERV_FECHA" class="form-control"
-                                                value="{{ old('SERV_FECHA', optional(optional($servicioReciente)->FECHA_SERVICIO)->format('Y-m-d')) }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Valor *</label>
-                                            <input type="number" step="0.01" min="0" name="SERV_VALOR"
-                                                id="SERV_VALOR" class="form-control"
-                                                value="{{ old('SERV_VALOR', optional($servicioReciente)->VALOR_PAGO) }}">
-                                        </div>
-                                        {{-- Switch Pagado --}}
-                                        <div class="col-md-2">
-                                            <label class="form-label d-block">Pagado</label>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="SERV_PAGADO"
-                                                    name="SERV_PAGADO" @checked(old('SERV_PAGADO', !empty(optional($servicioReciente)->COMPROBANTE)))>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">Vigencia (meses) *</label>
-                                            <input type="number" min="1" max="60" name="SERV_PLAZO"
-                                                id="SERV_PLAZO" class="form-control"
-                                                value="{{ old('SERV_PLAZO', optional($servicioReciente)->PLAZO_CONTRATADO ?? 1) }}">
-                                        </div>
-
-
-
-                                        {{-- Comprobante --}}
-                                        @php $servHasFile = !empty(optional($servicioReciente)->COMPROBANTE); @endphp
-
-                                        @if ($servHasFile)
-                                            <div class="col-md-6">
-                                                <label class="form-label d-block">Comprobante</label>
-                                                @php
-                                                    $isFile = \Illuminate\Support\Str::startsWith(
-                                                        optional($servicioReciente)->COMPROBANTE,
-                                                        ['simcards/'],
-                                                    );
-                                                @endphp
-                                                @if ($isFile)
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
-                                                        data-url="{{ asset('back/storage/app/public/' . $servicioReciente->COMPROBANTE) }}">
-                                                        Ver
-                                                    </button>
-                                                @else
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-secondary btn-ver-comprobante"
-                                                        data-url="{{ $servicioReciente->COMPROBANTE }}">
-                                                        Abrir
-                                                    </button>
-                                                @endif
-
-
-
-                                                <input type="file" name="SERV_COMPROBANTE_FILE"
-                                                    id="SERV_COMPROBANTE_FILE" class="form-control d-none mt-2"
-                                                    accept=".jpg,.jpeg,.png,.pdf">
-                                            </div>
-                                        @else
-                                            <div class="col-md-6">
-                                                <label class="form-label">Comprobante de pago</label>
-                                                <input type="file" name="SERV_COMPROBANTE_FILE"
-                                                    id="SERV_COMPROBANTE_FILE" class="form-control"
-                                                    accept=".jpg,.jpeg,.png,.pdf">
-                                            </div>
-                                        @endif
-
-                                        <div class="col-md-4">
-                                            <label class="form-label">Siguiente pago (auto)</label>
-                                            <input type="date" name="SERV_SIGUIENTE_PAGO" id="SERV_SIGUIENTE_PAGO"
-                                                class="form-control" readonly
-                                                value="{{ old('SERV_SIGUIENTE_PAGO', optional(optional($servicioReciente)->FECHA_SIGUIENTE_PAGO)->format('Y-m-d')) }}">
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Observación</label>
-                                            <textarea name="SERV_OBSERVACION" class="form-control" rows="2">{{ old('SERV_OBSERVACION', optional($servicioReciente)->OBSERVACION) }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
                             <input type="hidden" name="modo" id="MODO" value="CONTRATO">
                             <div class="d-flex justify-content-between gap-2 flex-wrap">
                                 <a href="{{ route('simcards.index') }}" class="btn btn-outline-secondary">
@@ -362,12 +446,13 @@
                                     <i class="bi bi-save me-1"></i> Guardar
                                 </button>
 
-                                {{-- SOLO mostrar Renovar si el servicio actual tiene comprobante --}}
-                                @if (!empty(optional($servicioReciente)->COMPROBANTE))
+                                {{-- SOLO mostrar Renovar si el servicio actual está 100% pagado (saldo 0 y todas cuotas con comprobante) --}}
+                                @if ($puedeRenovarServicio)
                                     <button type="submit" name="accion" value="renovar" class="btn btn-success">
                                         <i class="bi bi-arrow-repeat me-1"></i> Renovar servicio
                                     </button>
                                 @endif
+
 
                                 {{-- SOLO mostrar "Vender nuevo hardware" si el contrato actual está 100% pagado --}}
                                 @if ($puedeVenderHardware)
@@ -802,8 +887,131 @@
             });
         });
     </script>
-
     <script>
+        // ==========================
+        // CUOTAS SERVICIO (NUEVO)
+        // ==========================
+        const $servNc = document.getElementById('SERV_NUMERO_CUOTAS');
+        const $servVt = document.getElementById('SERV_VALOR');
+        const $servList = document.getElementById('serv-cuotas-list');
+        const $btnDistServ = document.getElementById('btn-distribuir-servicio');
+
+        function createServCuotaRow() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'border rounded p-3 mb-3 serv-cuota-item';
+            wrapper.setAttribute('data-has-file', '0');
+            wrapper.innerHTML = `
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label serv-cuota-label"></label>
+              <input type="date" class="form-control serv-cuotas-fecha">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Valor cuota</label>
+              <input type="number" step="0.01" min="0" class="form-control serv-cuotas-valor">
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label d-block">Pagado</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input serv-cuota-paid" type="checkbox">
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Registro de pago (auto)</label>
+              <input type="date" class="form-control serv-cuota-fecha-real">
+            </div>
+
+            <div class="col-md-9">
+              <label class="form-label">Comprobante de pago</label>
+              <input type="file" class="form-control serv-cuota-file" accept=".jpg,.jpeg,.png,.pdf">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Observación</label>
+              <textarea class="form-control serv-cuota-observacion" rows="2"></textarea>
+            </div>
+          </div>`;
+            return wrapper;
+        }
+
+        function renumberServRows() {
+            const rows = [...$servList.querySelectorAll('.serv-cuota-item')];
+            rows.forEach((row, i) => {
+                row.querySelector('.serv-cuota-label').textContent = `${i + 1} Cuota`;
+                row.querySelector('input.serv-cuotas-fecha').name = `serv_cuotas[${i}][FECHA_PAGO]`;
+                row.querySelector('input.serv-cuotas-valor').name = `serv_cuotas[${i}][VALOR_CUOTA]`;
+
+                const file = row.querySelector('input.serv-cuota-file');
+                if (file) file.name = `serv_cuotas[${i}][COMPROBANTE_FILE]`;
+
+                const hidden = row.querySelector('input[type="hidden"][name*="[CUOS_ID]"]');
+                if (hidden) hidden.name = `serv_cuotas[${i}][CUOS_ID]`;
+
+                const paid = row.querySelector('input.serv-cuota-paid');
+                if (paid) paid.name = `serv_cuotas[${i}][PAGADO]`;
+
+                const fechaReal = row.querySelector('input.serv-cuota-fecha-real');
+                if (fechaReal) fechaReal.name = `serv_cuotas[${i}][FECHA_REAL_PAGO]`;
+
+                const obs = row.querySelector('textarea.serv-cuota-observacion');
+                if (obs) obs.name = `serv_cuotas[${i}][OBSERVACION]`;
+            });
+        }
+
+        function syncServCuotasCount() {
+            const desired = Math.max(1, parseInt($servNc?.value || '1', 10));
+            let current = $servList.querySelectorAll('.serv-cuota-item').length;
+
+            while (current < desired) {
+                $servList.appendChild(createServCuotaRow());
+                current++;
+            }
+            while (current > desired) {
+                $servList.querySelector('.serv-cuota-item:last-of-type')?.remove();
+                current--;
+            }
+            renumberServRows();
+        }
+
+        function distribuirServicio() {
+            const rows = [...$servList.querySelectorAll('.serv-cuota-item')];
+            const n = rows.length;
+            const total = parseFloat($servVt?.value || '0');
+
+            const fechas = rows.map(r => r.querySelector('.serv-cuotas-fecha'));
+            const montos = rows.map(r => r.querySelector('.serv-cuotas-valor'));
+
+            const baseMonto = Math.floor((total / n) * 100) / 100;
+            let resto = +(total - baseMonto * n).toFixed(2);
+
+            // base fecha: SERV_FECHA
+            const fBase = document.getElementById('SERV_FECHA')?.value || (fechas[0]?.value ?? '');
+
+            for (let i = 0; i < n; i++) {
+                let v = baseMonto;
+                if (resto > 0) {
+                    v += 0.01;
+                    resto = +(resto - 0.01).toFixed(2);
+                }
+                if (fBase) fechas[i].value = addMonthsToISO(fBase, i);
+                montos[i].value = v.toFixed(2);
+            }
+        }
+
+        // eventos
+        $servNc?.addEventListener('input', syncServCuotasCount);
+        $btnDistServ?.addEventListener('click', distribuirServicio);
+
+        // inicial
+        if ($servList && $servList.querySelectorAll('.serv-cuota-item').length === 0) {
+            syncServCuotasCount();
+        }
+    </script>
+
+    {{-- <script>
         // === Servicio: toggle de file y validación de pagado ===
         const $servCard = document.getElementById('servicio-card');
         const $servPagado = document.getElementById('SERV_PAGADO');
@@ -832,7 +1040,7 @@
 
             if (!ok) e.preventDefault();
         });
-    </script>
+    </script> --}}
 
 
     <style>
@@ -1100,7 +1308,7 @@
             setupFilePreview('.cuota-file');
 
             // Vista previa para el comprobante del servicio
-            setupFilePreview('#SERV_COMPROBANTE_FILE');
+            setupFilePreview('.serv-cuota-file');
         });
     </script>
     <style>

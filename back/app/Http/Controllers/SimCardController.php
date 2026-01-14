@@ -80,6 +80,7 @@ class SimCardController extends Controller
             'v_e_h_i_c_u_l_o',
             'servicioReciente',
             'detalleVigente.cuotas',     // para cuotas del detalle vigente
+            'servicioReciente.cuotas'
             // Fallback si no usas detalleVigente:
             // 'detalleSimcards.cuotas',
         ]);
@@ -111,8 +112,6 @@ class SimCardController extends Controller
         }
         // === Filtro por estado de pago (backend) ===
         // Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
-        // === Filtro por estado de pago (backend) ===
-        // Estados: 'AL_DIA' | 'PROXIMO' | 'VENCIDO'
         if ($request->filled('pago_estado')) {
             $estado = $request->input('pago_estado');
             $hoy = now()->toDateString();
@@ -138,10 +137,16 @@ class SimCardController extends Controller
                             $cuotasPendientes($q);
                             $q->where('FECHA_PAGO', '<=', $proximo);
                         })
-                        ->whereDoesntHave('servicios', function ($q) use ($proximo) {
+                        // ->whereDoesntHave('servicios', function ($q) use ($proximo) {
+                        //     $q->whereNull('COMPROBANTE')
+                        //         ->where('FECHA_SERVICIO', '<=', $proximo);
+                        // })
+                        // NO tener cuotas de servicio pendientes con FECHA_PAGO <= proximo
+                        ->whereDoesntHave('servicioReciente.cuotas', function ($q) use ($proximo) {
                             $q->whereNull('COMPROBANTE')
-                                ->where('FECHA_SERVICIO', '<=', $proximo);
+                                ->where('FECHA_PAGO', '<=', $proximo);
                         })
+
                         ->whereDoesntHave('servicioReciente', function ($q) use ($proximo) {
                             // NUEVO: cortar también por fecha siguiente de pago
                             $q->whereNotNull('FECHA_SIGUIENTE_PAGO')
@@ -168,15 +173,25 @@ class SimCardController extends Controller
                     ->orWhereHas('detalleSimcards.cuotas', $cuotasFiltro);
 
                 // 2) Servicios pendientes (COMPROBANTE NULL)
-                $qq->orWhereHas('servicios', function ($q) use ($estado, $hoy, $proximo) {
+                $qq->orWhereHas('servicioReciente.cuotas', function ($q) use ($estado, $hoy, $proximo) {
                     $q->whereNull('COMPROBANTE');
 
                     if ($estado === 'PROXIMO') {
-                        $q->whereBetween('FECHA_SERVICIO', [$hoy, $proximo]);
+                        $q->whereBetween('FECHA_PAGO', [$hoy, $proximo]);
                     } elseif ($estado === 'VENCIDO') {
-                        $q->where('FECHA_SERVICIO', '<', $hoy);
+                        $q->where('FECHA_PAGO', '<', $hoy);
                     }
                 });
+
+                // $qq->orWhereHas('servicios', function ($q) use ($estado, $hoy, $proximo) {
+                //     $q->whereNull('COMPROBANTE');
+
+                //     if ($estado === 'PROXIMO') {
+                //         $q->whereBetween('FECHA_SERVICIO', [$hoy, $proximo]);
+                //     } elseif ($estado === 'VENCIDO') {
+                //         $q->where('FECHA_SERVICIO', '<', $hoy);
+                //     }
+                // });
 
                 // 3) NUEVO: servicio reciente con FECHA_SIGUIENTE_PAGO vencida o próxima,
                 //    aunque ese servicio ya esté pagado.
@@ -575,14 +590,24 @@ class SimCardController extends Controller
             'cuotas.*.OBSERVACION' => ['nullable', 'string', 'max:1000'],
 
             // Servicio
-            'SERV_ID' => ['nullable', 'integer'], // <-- NUEVO (para actualizar)
+            // Servicio (CABECERA)
+            'SERV_ID' => ['nullable', 'integer'],
             'SERV_FECHA' => ['nullable', 'date'],
             'SERV_PLAZO' => ['nullable', 'integer', 'min:1', 'max:60'],
             'SERV_SIGUIENTE_PAGO' => ['nullable', 'date'],
             'SERV_VALOR' => ['nullable', 'numeric', 'min:0'],
+            'SERV_NUMERO_CUOTAS' => ['nullable', 'integer', 'min:1', 'max:60'],
             'SERV_OBSERVACION' => ['nullable', 'string', 'max:1000'],
-            'SERV_COMPROBANTE' => ['nullable', 'string', 'max:8000'],
-            'SERV_COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+
+            // Servicio (CUOTAS)
+            'serv_cuotas' => ['nullable', 'array'],
+            'serv_cuotas.*.CUOS_ID' => ['nullable', 'integer', 'exists:CUOTAS_SERVICIO,CUOS_ID'],
+            'serv_cuotas.*.FECHA_PAGO' => ['nullable', 'date'],
+            'serv_cuotas.*.VALOR_CUOTA' => ['nullable', 'numeric', 'min:0'],
+            'serv_cuotas.*.COMPROBANTE' => ['nullable', 'string', 'max:8000'],
+            'serv_cuotas.*.COMPROBANTE_FILE' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'serv_cuotas.*.OBSERVACION' => ['nullable', 'string', 'max:1000'],
+            'serv_cuotas.*.FECHA_REAL_PAGO' => ['nullable', 'date'],
 
         ];
         $data = $request->validate($baseRules);
@@ -597,11 +622,12 @@ class SimCardController extends Controller
         $hasServicio = filled($data['SERV_FECHA'] ?? null)
             || filled($data['SERV_VALOR'] ?? null)
             || filled($data['SERV_PLAZO'] ?? null)
-            || $request->hasFile('SERV_COMPROBANTE_FILE')
-            || filled($data['SERV_COMPROBANTE'] ?? null)
-            || filled($data['SERV_OBSERVACION'] ?? null)
-            || !empty($data['SERV_ID']);
-        $servPagado = $request->boolean('SERV_PAGADO'); // usarlo dentro de la transacción
+            || filled($data['SERV_NUMERO_CUOTAS'] ?? null)
+            || !empty($data['SERV_ID'])
+            || !empty($data['serv_cuotas']);
+
+        // Ya NO existe SERV_PAGADO
+
 
 
         // 3) Reglas requeridas según flags
@@ -617,8 +643,10 @@ class SimCardController extends Controller
                 'SERV_FECHA' => ['required', 'date'],
                 'SERV_PLAZO' => ['required', 'integer', 'min:1', 'max:60'],
                 'SERV_VALOR' => ['required', 'numeric', 'min:0'],
+                'SERV_NUMERO_CUOTAS' => ['required', 'integer', 'min:1', 'max:60'],
             ]);
         }
+
 
         // 4) Actualiza propietario siempre
         if ($simcard->USU_ID !== (int) $data['USU_ID']) {
@@ -626,9 +654,8 @@ class SimCardController extends Controller
             $simcard->save();
         }
 
-        \DB::transaction(function () use ($simcard, $data, $request, $hasServicio, $hasContrato, $accion, $servPagado) {
-
-            // 5) SERVICIO: update-or-create
+        \DB::transaction(function () use ($simcard, $data, $request, $hasServicio, $hasContrato, $accion) {
+            // 5) SERVICIO: update-or-create + cuotas
             if ($hasServicio) {
                 $fecha = \Carbon\Carbon::parse($data['SERV_FECHA']);
                 $plazo = (int) $data['SERV_PLAZO'];
@@ -644,59 +671,143 @@ class SimCardController extends Controller
                 if (!$serv) {
                     $serv = new \App\Models\DETALLE_SIMCARD_SERVICIO();
                     $serv->SIM_ID = $simcard->ID_SIM;
+                    $serv->VALOR_ABONADO = 0;
+                    $serv->SALDO = 0;
                 }
 
                 $serv->FECHA_SERVICIO = $fecha->toDateString();
                 $serv->FECHA_SIGUIENTE_PAGO = $siguiente->toDateString();
                 $serv->PLAZO_CONTRATADO = $plazo;
-                $serv->VALOR_PAGO = $data['SERV_VALOR'];
-                $serv->OBSERVACION = $data['SERV_OBSERVACION'] ?? null;
 
-                // Si vino un comprobante por texto
-                if (!empty($data['SERV_COMPROBANTE'])) {
-                    $serv->COMPROBANTE = $data['SERV_COMPROBANTE'];
-                }
+                // Total del servicio (en tu tabla puede llamarse VALOR_TOTAL; si es VALOR_PAGO, cámbialo)
+                $serv->VALOR_TOTAL = $data['SERV_VALOR']; // <-- recomendado (igual que hardware)
+                $serv->NUMERO_CUOTAS = $data['SERV_NUMERO_CUOTAS'];
+                $serv->OBSERVACION = $data['SERV_OBSERVACION'] ?? null;
+                $serv->VALOR_PAGO = $data['SERV_VALOR']; // <-- CLAVE: evita el error NOT NULL
+
 
                 $serv->save(); // asegura SERV_ID
 
-                // Archivo de comprobante
-                if ($request->hasFile('SERV_COMPROBANTE_FILE')) {
-                    $stored = $request->file('SERV_COMPROBANTE_FILE')
-                        ->store("simcards/{$simcard->ID_SIM}/servicios/{$serv->SERV_ID}", 'public');
-                    $serv->COMPROBANTE = $stored;
-                    $serv->save();
-                }
+                // ===== Guardar cuotas de servicio =====
+                $basePathServ = "simcards/{$simcard->ID_SIM}/servicios/{$serv->SERV_ID}/cuotas";
+                $cuotasServReq = $data['serv_cuotas'] ?? [];
+                $idsServRecibidos = [];
 
-                // Si se marcó como pagado, exigir comprobante
-                if ($servPagado && empty($serv->COMPROBANTE)) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'SERV_COMPROBANTE_FILE' => 'Marcaste el servicio como pagado, debes subir un comprobante.',
-                    ]);
-                }
+                foreach ($cuotasServReq as $idx => $c) {
+                    $fechaPago = $c['FECHA_PAGO'] ?? null;
+                    $valor = (isset($c['VALOR_CUOTA']) && $c['VALOR_CUOTA'] !== '') ? $c['VALOR_CUOTA'] : null;
+                    $compTexto = (isset($c['COMPROBANTE']) && $c['COMPROBANTE'] !== '') ? $c['COMPROBANTE'] : null;
+                    $tieneArchivo = $request->hasFile("serv_cuotas.$idx.COMPROBANTE_FILE");
+                    $pagado = filter_var($c['PAGADO'] ?? false, FILTER_VALIDATE_BOOLEAN);
+                    $fechaReal = $c['FECHA_REAL_PAGO'] ?? null;
+                    $obs = (isset($c['OBSERVACION']) && $c['OBSERVACION'] !== '') ? $c['OBSERVACION'] : null;
 
-                // === SOLO SI SE PRESIONÓ "RENOVAR SERVICIO" ===
-                if ($accion === 'renovar') {
+                    $cuosId = $c['CUOS_ID'] ?? null;
 
-                    // además, obligamos que esté pagado
-                    if (!$servPagado) {
+                    // fila vacía (si es nueva y no tiene nada)
+                    $filaVacia = is_null($fechaPago) && is_null($valor) && is_null($compTexto) && !$tieneArchivo && is_null($obs);
+                    if ($filaVacia && empty($cuosId))
+                        continue;
+
+                    // buscar o crear cuota
+                    $cuotaServ = null;
+                    if (!empty($cuosId)) {
+                        $cuotaServ = \App\Models\CUOTAS_SERVICIO::where('CUOS_ID', $cuosId)
+                            ->where('SERV_ID', $serv->SERV_ID)
+                            ->first();
+                    }
+                    if (!$cuotaServ) {
+                        $cuotaServ = new \App\Models\CUOTAS_SERVICIO();
+                        $cuotaServ->SERV_ID = $serv->SERV_ID;
+                    }
+
+                    $teniaArchivoAntes = !empty($cuotaServ->COMPROBANTE);
+
+                    // Si marcan pagado y no hay archivo nuevo ni existente => error
+                    if ($pagado && !$tieneArchivo && !$teniaArchivoAntes) {
                         throw \Illuminate\Validation\ValidationException::withMessages([
-                            'SERV_PAGADO' => 'Para renovar el servicio primero márcalo como pagado.',
+                            "serv_cuotas.$idx.COMPROBANTE_FILE" => 'Comprobante obligatorio cuando la cuota de servicio está marcada como pagada.',
                         ]);
                     }
 
-                    // Crear el siguiente período de servicio
-                    $nuevo = new \App\Models\DETALLE_SIMCARD_SERVICIO();
-                    $nuevo->SIM_ID = $simcard->ID_SIM;
-                    $nuevo->FECHA_SERVICIO = $siguiente->toDateString(); // empieza cuando termina el actual
-                    $nuevo->FECHA_SIGUIENTE_PAGO = $siguiente->copy()->addMonths($plazo)->toDateString();
-                    $nuevo->PLAZO_CONTRATADO = $plazo;
-                    $nuevo->VALOR_PAGO = $serv->VALOR_PAGO;
-                    $nuevo->OBSERVACION = null; // o $serv->OBSERVACION si quieres copiarla
-                    $nuevo->COMPROBANTE = null; // nuevo periodo todavía no pagado
-                    $nuevo->save();
+                    $cuotaServ->FECHA_PAGO = $fechaPago;
+                    $cuotaServ->VALOR_CUOTA = $valor;
+                    if (!is_null($compTexto))
+                        $cuotaServ->COMPROBANTE = $compTexto;
+                    $cuotaServ->OBSERVACION = $obs;
+
+                    // FECHA_REAL_PAGO
+                    if (!empty($fechaReal)) {
+                        $cuotaServ->FECHA_REAL_PAGO = \Carbon\Carbon::parse($fechaReal)->toDateString();
+                    } elseif ($pagado || $tieneArchivo || !empty($cuotaServ->COMPROBANTE)) {
+                        $cuotaServ->FECHA_REAL_PAGO = now()->toDateString();
+                    } else {
+                        $cuotaServ->FECHA_REAL_PAGO = null;
+                    }
+
+                    $cuotaServ->save();
+
+                    // guardar archivo
+                    if ($tieneArchivo) {
+                        $stored = $request->file("serv_cuotas.$idx.COMPROBANTE_FILE")->store($basePathServ, 'public');
+
+                        if (!empty($cuotaServ->COMPROBANTE) && \Illuminate\Support\Str::startsWith($cuotaServ->COMPROBANTE, ['simcards/'])) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($cuotaServ->COMPROBANTE);
+                        }
+
+                        $cuotaServ->COMPROBANTE = $stored;
+                        $cuotaServ->save();
+                    }
+
+                    $idsServRecibidos[] = $cuotaServ->CUOS_ID;
                 }
 
+                // borrar cuotas que ya no vinieron
+                \App\Models\CUOTAS_SERVICIO::where('SERV_ID', $serv->SERV_ID)
+                    ->when(count($idsServRecibidos) > 0, fn($q) => $q->whereNotIn('CUOS_ID', $idsServRecibidos))
+                    ->delete();
+
+                // recalcular abonado/saldo de servicio
+                $abonadoServ = (float) \App\Models\CUOTAS_SERVICIO::where('SERV_ID', $serv->SERV_ID)->sum('VALOR_CUOTA');
+                $totalServ = (float) $serv->VALOR_TOTAL;
+                $saldoServ = round(max($totalServ - $abonadoServ, 0), 2);
+
+                $serv->VALOR_ABONADO = round($abonadoServ, 2);
+                $serv->SALDO = $saldoServ;
+                $serv->save();
+
+                // ===== Renovar servicio (si accion=renovar) =====
+                if ($accion === 'renovar') {
+                    // Debe estar 100% pagado: saldo=0 y todas con comprobante
+                    $tienePendientes = \App\Models\CUOTAS_SERVICIO::where('SERV_ID', $serv->SERV_ID)
+                        ->whereNull('COMPROBANTE')
+                        ->exists();
+
+                    if ($tienePendientes || (float) $serv->SALDO > 0) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'SERV_VALOR' => 'Para renovar el servicio, todas las cuotas deben estar pagadas con comprobante y el saldo en 0.',
+                        ]);
+                    }
+
+                    // Crear nuevo periodo de servicio
+                    $nuevo = new \App\Models\DETALLE_SIMCARD_SERVICIO();
+                    $nuevo->SIM_ID = $simcard->ID_SIM;
+                    $nuevo->FECHA_SERVICIO = $siguiente->toDateString();
+                    $nuevo->FECHA_SIGUIENTE_PAGO = $siguiente->copy()->addMonths($plazo)->toDateString();
+                    $nuevo->PLAZO_CONTRATADO = $plazo;
+                    $nuevo->VALOR_TOTAL = $serv->VALOR_TOTAL;
+                    $nuevo->VALOR_PAGO = $serv->VALOR_TOTAL; // o $serv->VALOR_PAGO
+
+                    $nuevo->NUMERO_CUOTAS = $serv->NUMERO_CUOTAS;
+                    $nuevo->VALOR_ABONADO = 0;
+                    $nuevo->SALDO = $nuevo->VALOR_TOTAL;
+                    $nuevo->OBSERVACION = null;
+                    $nuevo->save();
+
+                    // (opcional) aquí puedes autogenerar sus cuotas si quieres
+                }
             }
+
             // 6) CONTRATO
             if ($hasContrato) {
                 if (!empty($data['DET_ID'])) {
