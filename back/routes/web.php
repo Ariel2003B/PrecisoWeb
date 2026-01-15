@@ -87,7 +87,8 @@ Route::post('/empresa/{empresa}/stops/save', [EmpresaController::class, 'stopsSa
 Route::middleware(['auth'])->group(function () {
     Route::get('/nimbus/reporte-dia-all', [NimbusController::class, 'reporteDiaAll'])->name('reportes.dia.nimbus');
     Route::resource('empresa', EmpresaController::class);
-
+    Route::post('/nimbus/export-minutos-caidos', [NimbusController::class, 'exportMinutosCaidosRango'])
+        ->name('nimbus.export.minutos');
     Route::get('/reportes', [ReporteProduccionController::class, 'index'])->name('reportes.index');
     Route::get('/reportes/registrar/{id}', [ReporteProduccionController::class, 'create'])->name('reportes.create');
     Route::post('/reportes/guardar', [ReporteProduccionController::class, 'store'])->name('reportes.store');
@@ -143,8 +144,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV
         Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
         Route::post('/sanciones/delete', [SancionesController::class, 'truncateTable'])->name('sanciones.truncate');
-        Route::post('/nimbus/export-minutos-caidos', [NimbusController::class, 'exportMinutosCaidosRango'])
-            ->name('nimbus.export.minutos');
+
 
     });
     Route::middleware(['auth', 'role:GESTION DE PLANES'])->group(function () {
