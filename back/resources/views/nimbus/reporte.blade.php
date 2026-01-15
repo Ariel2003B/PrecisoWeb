@@ -110,6 +110,14 @@
 
                                     </button>
                                 @endforeach
+
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modalExportExcel">
+                                        Exportar Excel (rango)
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
 
@@ -328,6 +336,45 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalExportExcel" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ route('nimbus.export.minutos') }}" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Exportar Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label">Desde</label>
+                            <input type="date" id="fechaDesde" name="fecha_desde" class="form-control" required
+                                value="{{ $fecha }}">
+
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Hasta</label>
+                            <input type="date" id="fechaHasta" name="fecha_hasta" class="form-control" required
+                                value="{{ $fecha }}">
+
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Unidad (opcional)</label>
+                            <input type="number" name="id_unidad" class="form-control" placeholder="Ej: 401271060">
+                            <div class="form-text">Déjalo vacío para todas las unidades.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success">Descargar Excel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
     <script src="{{ asset('js/reporte-dia-all.js') }}" defer></script>
@@ -341,41 +388,7 @@
             // Firmas mínimas (modo sin certificados propios)
             qz.security.setCertificatePromise(function(resolve, reject) {
                 resolve(`-----BEGIN CERTIFICATE-----
-MIIGfzCCBGegAwIBAgIRAKMjXP589Pf1XIuKZdMbGyswDQYJKoZIhvcNAQEMBQAw
-SzELMAkGA1UEBhMCQVQxEDAOBgNVBAoTB1plcm9TU0wxKjAoBgNVBAMTIVplcm9T
-U0wgUlNBIERvbWFpbiBTZWN1cmUgU2l0ZSBDQTAeFw0yNTA3MDIwMDAwMDBaFw0y
-NTA5MzAyMzU5NTlaMBkxFzAVBgNVBAMTDnByZWNpc29ncHMuY29tMIIBIjANBgkq
-hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo6fJ3oPFBjRE25KpS+oOlofUBuE6xiSw
-S2UX7bBDIx2teJYwjnb3vC77nM925qDn12ReQg7qTrn//9A0ogYUgmJpjBHBN75c
-WkOxGvl60F5IMfQZEsbzNrMykYmoUP6m1gNNYZgRqGq0SQTwFCRLNEGeizRAuhIR
-JRdeTnQ/F/CbX3R4NTDX01g3KpsA01+lSTHAoS/bvBW+6qE8liCPkzoMocAwHTze
-bRyG47aIWjFBfBki4iIMpO9ccTSbczEfJuXRcEGf4WUVU0gER/I3rho8ZxApaSV9
-xbkzhvBv7n7WlYsLAHq3EereOzEsKS39GUhzfdtGFElOplnoFLdeNQIDAQABo4IC
-jjCCAoowHwYDVR0jBBgwFoAUyNl4aKLZGWjVPXLeXwo+3LWGhqYwHQYDVR0OBBYE
-FGKsmv3MqNwaUJD6qF+p9k61Sv/HMA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8E
-AjAAMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBJBgNVHSAEQjBAMDQG
-CysGAQQBsjEBAgJOMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20v
-Q1BTMAgGBmeBDAECATCBiAYIKwYBBQUHAQEEfDB6MEsGCCsGAQUFBzAChj9odHRw
-Oi8vemVyb3NzbC5jcnQuc2VjdGlnby5jb20vWmVyb1NTTFJTQURvbWFpblNlY3Vy
-ZVNpdGVDQS5jcnQwKwYIKwYBBQUHMAGGH2h0dHA6Ly96ZXJvc3NsLm9jc3Auc2Vj
-dGlnby5jb20wggEEBgorBgEEAdZ5AgQCBIH1BIHyAPAAdgDd3Mo0ldfhFgXnlTL6
-x5/4PRxQ39sAOhQSdgosrLvIKgAAAZfJQJeqAAAEAwBHMEUCIQDAgC2T6Yxl/A9Q
-tWNWiDBCPKPpcMNYEO5jMCGs8D33iQIgebAaRjkGlaaAdErKsRmileB9+JP6krLK
-ONDawiqec2kAdgAN4fIwK9MNwUBiEgnqVS78R3R8sdfpMO8OQh60fk6qNAAAAZfJ
-QJdpAAAEAwBHMEUCIHaaxnSXfCatdHMBi3Xtl6po+Ic1HWlp3tUqlGHxq5a0AiEA
-k8dq/ft72Sx1ibtwUMGvd4gv/NCKeA1c9i9Nmiw3qRIwLQYDVR0RBCYwJIIOcHJl
-Y2lzb2dwcy5jb22CEnd3dy5wcmVjaXNvZ3BzLmNvbTANBgkqhkiG9w0BAQwFAAOC
-AgEAJ6ITQ9vgygApembokSKAToi9mnWT6aPNqiCEM5gfmTRiZPNNKHW+cp3IbMRl
-GPdGnjc7LOmFGM6/opdpsOQr6CbzoRVc0cm3kbhxJkS1YHnETS/tZqzyMF6L/VHr
-oSbhPSW31WNVX/hFpzU3btZGqO9F7VwQdMs+aGRUpZ5M7ZlsNfVuoCMWFFulaYa1
-OnTUSI3wukMN2fzALQonv0diinPtzObDoYYHGvgYzGlGYAnlkp6eWxCmkoBmrzHp
-RODZEdcWxJHRaulqICPqfzaR23MoxtT8kzNuQ7qsd9jJx3RDiOK8HMoym8N+sH8Z
-QI0ukjY0qnI5xv+01gFoTjeo15KEJGMh7pbgZKde7k410MacC3F/wosprRuFcrqw
-3IYD82jZ17MLmkTKZVWyEMmJhsymWwQPODMXkIK9AwohfIkgCAb1EJJQAdQ+ZW1s
-jTVS2zNv2UP6de3Hch0ZFmf3AYRIGnHlqZtq7TN7JEV1Qw71hWdjJn1EdDCPeKdG
-PvTcuBlN4LnaL1S87ZfCoWncT3pJ4bJTLHuxFKia/GIpXBaf259srb/XOA/vWLSu
-ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
-4xaTDc8Ceceu2kJwLGbXYlQB+6q+XmdxRbR/vGca6IOUFjM=
+MIIGfzCCBGegbR/vGca6IOUFjM=
 -----END CERTIFICATE-----`);
             });
             qz.security.setSignaturePromise(function(toSign) {
@@ -1921,6 +1934,84 @@ ghPHEq6ToiZ9qNMu/OAGXI9cLT2hdUq4R7nHSvUma9HXpo3WZp0L0BV9AOw1e/my
                 scrollTableToBottom(table);
             }, 0);
         });
+    </script>
+    <script>
+        (function() {
+            const desde = document.getElementById('fechaDesde');
+            const hasta = document.getElementById('fechaHasta');
+            const modal = document.getElementById('modalExportExcel');
+            if (!desde || !hasta || !modal) return;
+
+            // yyyy-mm-dd de "hoy" en Ecuador (evita desfase por zona horaria del navegador)
+            function todayEcYmd() {
+                const now = new Date();
+                const ec = new Date(now.toLocaleString('en-US', {
+                    timeZone: 'America/Guayaquil'
+                }));
+                const y = ec.getFullYear();
+                const m = String(ec.getMonth() + 1).padStart(2, '0');
+                const d = String(ec.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            function clampAndSync() {
+                const max = todayEcYmd();
+
+                // 1) No futuras
+                desde.max = max;
+                hasta.max = max;
+
+                // 2) Restringe calendarios entre sí
+                //    - "desde" no puede ser mayor que "hasta"
+                //    - "hasta" no puede ser menor que "desde"
+                if (hasta.value) desde.max = (desde.max < hasta.value) ? desde.max : hasta.value;
+                if (desde.value) hasta.min = desde.value;
+
+                // 3) Autocorrección si se pasan
+                if (desde.value && hasta.value && desde.value > hasta.value) {
+                    // si movieron "desde", empuja "hasta"
+                    hasta.value = desde.value;
+                }
+
+                // si alguien puso hasta > hoy, corrige
+                if (hasta.value && hasta.value > max) hasta.value = max;
+                if (desde.value && desde.value > max) desde.value = max;
+
+                // vuelve a aplicar límites con valores corregidos
+                if (hasta.value) desde.max = (max < hasta.value) ? max : hasta.value;
+                if (desde.value) hasta.min = desde.value;
+            }
+
+            // Cuando abre el modal, setea límites
+            modal.addEventListener('shown.bs.modal', clampAndSync);
+
+            // Cuando cambian fechas
+            desde.addEventListener('change', () => {
+                const max = todayEcYmd();
+
+                // no futuras
+                if (desde.value && desde.value > max) desde.value = max;
+
+                // si desde > hasta => ajusta hasta
+                if (hasta.value && desde.value && desde.value > hasta.value) {
+                    hasta.value = desde.value;
+                }
+                clampAndSync();
+            });
+
+            hasta.addEventListener('change', () => {
+                const max = todayEcYmd();
+
+                // no futuras
+                if (hasta.value && hasta.value > max) hasta.value = max;
+
+                // si hasta < desde => ajusta desde
+                if (desde.value && hasta.value && hasta.value < desde.value) {
+                    desde.value = hasta.value;
+                }
+                clampAndSync();
+            });
+        })();
     </script>
 
 @endsection

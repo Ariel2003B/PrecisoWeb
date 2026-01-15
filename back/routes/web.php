@@ -143,6 +143,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/sanciones/cargarCSV', [SancionesController::class, 'cargarCSV'])->name('sanciones.cargarCSV'); // Cargar y procesar CSV
         Route::post('/sanciones/generarReporte', [SancionesController::class, 'generarReporte'])->name('sanciones.generarReporte'); // Generar reporte PDF
         Route::post('/sanciones/delete', [SancionesController::class, 'truncateTable'])->name('sanciones.truncate');
+        Route::post('/nimbus/export-minutos-caidos', [NimbusController::class, 'exportMinutosCaidosRango'])
+            ->name('nimbus.export.minutos');
+
     });
     Route::middleware(['auth', 'role:GESTION DE PLANES'])->group(function () {
         Route::resource('plan', PlanController::class);
