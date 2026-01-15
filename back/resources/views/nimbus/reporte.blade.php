@@ -360,11 +360,11 @@
 
                         </div>
 
-                        <div class="col-12">
+                        {{-- <div class="col-12">
                             <label class="form-label">Unidad (opcional)</label>
                             <input type="number" name="id_unidad" class="form-control" placeholder="Ej: 401271060">
                             <div class="form-text">Déjalo vacío para todas las unidades.</div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
