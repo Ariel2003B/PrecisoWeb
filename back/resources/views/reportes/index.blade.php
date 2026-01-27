@@ -166,12 +166,16 @@
                                     <td>{{ $hoja->tipo_dia ?? '-' }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Acciones">
-                                            <a href="{{ route('reportes.create', $hoja->id_hoja) }}"
-                                                class="btn btn-primary btn-sm">Fiscalizador</a>
-                                            <a href="{{ route('hoja.ver', $hoja->id_hoja) }}"
-                                                class="btn btn-success btn-sm">Visualizar</a>
-                                            <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
-                                                class="btn btn-danger btn-sm" target="_blank">PDF</a>
+                                            @if (Auth::user()->permisos->contains('DESCRIPCION', 'FISCALIZADOR CONTEO Y RECAUDO'))
+                                                <a href="{{ route('reportes.create', $hoja->id_hoja) }}"
+                                                    class="btn btn-primary btn-sm">Fiscalizador</a>
+                                            @endif
+                                            @if (!Auth::user()->permisos->contains('DESCRIPCION', 'FISCALIZADOR CONTEO Y RECAUDO'))
+                                                <a href="{{ route('hoja.ver', $hoja->id_hoja) }}"
+                                                    class="btn btn-success btn-sm">Visualizar</a>
+                                                <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
+                                                    class="btn btn-danger btn-sm" target="_blank">PDF</a>
+                                            @endif
                                         </div>
                                     </td>
 
