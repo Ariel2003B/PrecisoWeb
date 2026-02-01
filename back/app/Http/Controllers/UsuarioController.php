@@ -32,7 +32,7 @@ class UsuarioController extends Controller
             'CORREO' => 'required|email|unique:USUARIO,CORREO',
             'CLAVE' => 'required|min:6',
             'GENERO' => 'required|string',
-            'CEDULA' => 'required|string|max:13',
+            'CEDULA' => 'required|string|unique:USUARIO,CEDULA|max:13',
             'permisos' => 'array',
             'TELEFONO' => 'required|string'
         ]);
