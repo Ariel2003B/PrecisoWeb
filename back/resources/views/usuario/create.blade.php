@@ -20,16 +20,42 @@
 
         <section class="section">
             <div class="container">
+                {{-- Errores de validación --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <strong>No se pudo guardar el usuario:</strong>
+                        <ul class="mb-0 mt-2">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- Mensaje de éxito --}}
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                {{-- Mensaje de error general --}}
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <form action="{{ route('usuario.store') }}" method="POST">
                     @csrf
 
-                    
+
                     <div class="mb-3">
                         <label for="APELLIDO" class="form-label">Apellidos</label>
                         <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
-                        placeholder="Apellido del usuario">
+                            placeholder="Apellido del usuario">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="NOMBRE" class="form-label">Nombres</label>
                         <input type="text" name="NOMBRE" id="NOMBRE" class="form-control"

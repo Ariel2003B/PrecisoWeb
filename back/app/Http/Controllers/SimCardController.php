@@ -1345,7 +1345,7 @@ class SimCardController extends Controller
             'MODELO_EQUIPO' => $request->MODELO_EQUIPO,
             'MARCA_EQUIPO' => $request->MARCA_EQUIPO,
             'PLATAFORMA' => $request->PLATAFORMA,
-            'PROVEEDOR' => $request->PROVEEDOR,
+            'PROVEEDOR' => $request->PROVEEDOR 
         ];
 
         // Si viene una foto nueva, guardarla en storage y actualizar columna FOTO

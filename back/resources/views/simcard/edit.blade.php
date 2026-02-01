@@ -76,6 +76,11 @@
                             value="{{ old('ASIGNACION', $simcard->ASIGNACION) }}" placeholder="Ingrese la Asignacion">
                     </div>
                     <div class="mb-3">
+                        <label for="GRUPO" class="form-label">Grupo</label>
+                        <input type="text" name="GRUPO" id="GRUPO" class="form-control"
+                            value="{{ old('GRUPO', $simcard->GRUPO) }}" placeholder="Ingrese el grupo">
+                    </div>
+                    <div class="mb-3">
                         <label for="IMEI" class="form-label">Imei</label>
                         <input type="text" name="IMEI" id="IMEI" class="form-control"
                             value="{{ old('IMEI', $simcard->IMEI) }}" placeholder="Ingrese el IMEI del equipo">
@@ -208,7 +213,7 @@
                 const estado = document.querySelector('input[name="ESTADO"]:checked').value;
                 if (estado === 'ACTIVA') {
                     const camposRequeridos = ['CUENTA', 'NUMEROTELEFONO', 'TIPOPLAN', 'PLAN',
-                        'ICC', 'EQUIPO', 'IMEI'
+                        'ICC', 'EQUIPO', 'IMEI', 'GRUPO'
                     ];
                     const incompletos = camposRequeridos.some(campo => {
                         const input = document.getElementById(campo);
@@ -246,9 +251,9 @@
             function aplicarEstadoInicial(estado) {
                 const camposParaBloquear = {
                     ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO',
-                        'MODELO_EQUIPO'
+                        'MODELO_EQUIPO', 'GRUPO'
                     ],
-                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO']
+                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO','GRUPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {
@@ -261,9 +266,9 @@
             function handleEstadoChange(estado) {
                 const camposParaLimpiar = {
                     ELIMINADA: ['ICC', 'ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO',
-                        'MODELO_EQUIPO'
+                        'MODELO_EQUIPO','GRUPO'
                     ],
-                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO']
+                    LIBRE: ['ASIGNACION', 'PLATAFORMA', 'IMEI', 'EQUIPO', 'MARCA_EQUIPO', 'MODELO_EQUIPO','GRUPO']
                 };
 
                 if (estado === 'ELIMINADA' || estado === 'LIBRE') {

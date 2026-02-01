@@ -388,8 +388,7 @@
             // Firmas mínimas (modo sin certificados propios)
             qz.security.setCertificatePromise(function(resolve, reject) {
                 resolve(`-----BEGIN CERTIFICATE-----
-MIIGfzCCBGegbR/vGca6IOUFjM=
------END CERTIFICATE-----`);
+                        -----END CERTIFICATE-----`);
             });
             qz.security.setSignaturePromise(function(toSign) {
                 return function(resolve, reject) {
@@ -426,96 +425,6 @@ MIIGfzCCBGegbR/vGca6IOUFjM=
                 const list = await qz.printers.find(PRINTER_NAME);
                 return list || PRINTER_NAME;
             }
-
-            // function buildEscPosTicket({
-            //     empresa,
-            //     fecha,
-            //     ruta,
-            //     placa,
-            //     total,
-            //     caidas,
-            //     rows
-            // }) {
-            //     const ESC = '\x1B',
-            //         GS = '\x1D',
-            //         SI = '\x0F',
-            //         DC2 = '\x12';
-
-            //     const init = ESC + '@';
-            //     const align = (n) => ESC + 'a' + String.fromCharCode(n); // 0=L,1=C,2=R
-            //     const boldOn = ESC + 'E' + '\x01',
-            //         boldOff = ESC + 'E' + '\x00';
-            //     const fontB = ESC + 'M' + '\x01'; // angosto
-            //     const normal = ESC + '!' + '\x00';
-            //     const hr = (w = 33) => '-'.repeat(w) + '\n';
-            //     const feed = (n) => ESC + 'd' + String.fromCharCode(n & 0xFF);
-            //     const cut = GS + 'V' + '\x42' + '\x00';
-
-            //     const NAME_W = 15;
-
-            //     function lineItem(idx, name, dif, cargo) {
-            //         const nm = fitNameOneLine(name, NAME_W);
-            //         const dff = fmtDiff(dif).padStart(3, ' ');
-            //         const cStr = money(cargo).replace('$', '').padStart(8, ' ');
-            //         return `${String(idx).padStart(2,' ')} ${nm} ${dff} ${cStr}\n`;
-            //     }
-
-            //     // ===== NUEVO: sumar y detectar +70 =====
-            //     let sumPos = 0,
-            //         sumNeg = 0,
-            //         hasPlus70 = false;
-            //     (rows || []).forEach(r => {
-            //         const m = String(r?.dif ?? '').match(/[+\-]?\d+/);
-            //         if (!m) return;
-            //         const v = parseInt(m[0], 10);
-            //         if (isNaN(v)) return;
-            //         if (v > 0) {
-            //             sumPos += v;
-            //         } else if (v < 0) {
-            //             sumNeg += -v;
-            //         }
-            //         if (v >= 70) hasPlus70 = true; // ← aquí marcamos la alerta
-            //     });
-            //     // =======================================
-
-            //     let out = init + fontB + normal;
-            //     out += align(1) + boldOn + (empresa || 'EMPRESA') + '\n' + boldOff;
-            //     out += 'SANCION DE MINUTOS CAIDOS\n';
-            //     out += align(0);
-            //     out += `Fecha: ${fecha || '--'}\n`;
-            //     out += `Ruta : ${ruta  || '--'}\n`;
-            //     out += `Placa: ${placa || '--'}\n`;
-            //     out += hr();
-
-            //     // Cuerpo
-            //     out += SI;
-            //     out += ` # ${'Geocerca'.padEnd(NAME_W,' ')} ${'Dif'.padStart(3,' ')} ${'Cargo'.padStart(8,' ')}\n`;
-            //     out += hr();
-            //     (rows || []).forEach(r => {
-            //         out += lineItem(r.idx, r.n || '', r.dif, r.cargo);
-            //     });
-            //     out += DC2;
-            //     out += hr();
-
-            //     // ===== NUEVO: mostrar Adelantos/Atrasos antes del TOTAL =====
-            //     out += align(2) + `Adelantos: ${sumPos}\n`;
-            //     out += align(2) + `Atrasos : ${sumNeg}\n`;
-            //     // ============================================================
-
-            //     out += align(2) + `Geocercas con caida: ${caidas || 0}\n`;
-            //     out += boldOn + align(2) + `TOTAL: $${money(total)}\n` + boldOff;
-            //     // ===== NUEVO: mensaje de alerta si hubo +70 =====
-            //     if (hasPlus70) {
-            //         out += '\n' + align(1) + boldOn + 'ALERTA\n' + boldOff;
-            //         out += align(1) + 'Puede que la unidad haya\n';
-            //         out += align(1) + 'cerrado la vuelta antes de\n';
-            //         out += align(1) + 'iniciarla.\n';
-            //     }
-            //     // ================================================
-            //     out += feed(1) + cut;
-            //     return out;
-            // }
-
 
             function buildEscPosTicket({
                 empresa,
@@ -696,41 +605,6 @@ MIIGfzCCBGegbR/vGca6IOUFjM=
                 return out.slice(0, width).padEnd(width, ' ');
             }
 
-
-            // Lee los datos del modal (los dejamos listos en tu JS)
-            // function getModalData() {
-            //     const modal = document.getElementById('modalSancion');
-            //     const empresa = modal.dataset.empresa || '';
-            //     const fecha = modal.dataset.fecha || '';
-            //     const ruta = modal.dataset.ruta || '';
-            //     const placa = modal.dataset.placa || '';
-            //     const total = modal.dataset.total || '0.00';
-            //     const caidas = parseInt(modal.dataset.caidas || '0', 10) || 0;
-
-            //     // Reconstruimos las filas en formato compacto
-            //     const rows = [];
-            //     document.querySelectorAll('#detSancionBody tr').forEach((tr, i) => {
-            //         const tds = tr.querySelectorAll('td');
-            //         if (tds.length < 5) return;
-            //         rows.push({
-            //             idx: i + 1,
-            //             n: (tds[1]?.textContent || '').trim(),
-            //             dif: (tds[2]?.textContent || '').trim(),
-            //             tarifa: parseFloat((tds[3]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
-            //             cargo: parseFloat((tds[4]?.textContent || '').replace(/[^\d.]/g, '')) || 0,
-            //         });
-            //     });
-
-            //     return {
-            //         empresa,
-            //         fecha,
-            //         ruta,
-            //         placa,
-            //         total,
-            //         caidas,
-            //         rows
-            //     };
-            // }
             function getModalData() {
                 const modal = document.getElementById('modalSancion');
                 const empresa = modal.dataset.empresa || '';
@@ -1726,7 +1600,7 @@ MIIGfzCCBGegbR/vGca6IOUFjM=
             setInterval(tick, 1000); // actualiza cada segundo
         })();
     </script>
-    <script>
+    {{-- <script>
         (function() {
             const POLL_MS = 20000; // 20s
 
@@ -1934,7 +1808,234 @@ MIIGfzCCBGegbR/vGca6IOUFjM=
                 scrollTableToBottom(table);
             }, 0);
         });
+    </script> --}}
+    <script>
+        const DEBUG_POLL = true;
+
+        function logPoll(...args) {
+            if (!DEBUG_POLL) return;
+            const ts = new Date().toLocaleTimeString('es-EC', {
+                hour12: false,
+                timeZone: 'America/Guayaquil'
+            });
+            console.log(`[POLL ${ts}]`, ...args);
+        }
+
+        (function() {
+            const POLL_MS = 20000; // 20s
+
+            function difClass(v) {
+                if (v === null || v === '' || typeof v === 'undefined') return 'text-muted';
+                const n = parseInt(v, 10);
+                if (isNaN(n)) return 'text-secondary';
+                if (n < 0) return 'text-danger';
+                if (n > 0) return 'text-success';
+                return 'text-secondary';
+            }
+
+            function getTableByRouteId(routeId) {
+                return document.getElementById('tabla-' + routeId) || null;
+            }
+
+            function parseDataAttrJSON(el, attr) {
+                const raw = el.getAttribute(attr) || '{}';
+                try {
+                    return JSON.parse(raw);
+                } catch {
+                    return {};
+                }
+            }
+
+            function parseHora(h) {
+                const m = /^(\d{1,2}):(\d{2})$/.exec((h || '').trim());
+                if (!m) return 9999;
+                return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+            }
+
+            function reorderRowsByHora(table) {
+                if (!table) return;
+                const body = table.tBodies?.[0];
+                if (!body) return;
+
+                const rows = Array.from(body.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    const horaA = (a.querySelector('.col-plan')?.textContent || '').trim();
+                    const horaB = (b.querySelector('.col-plan')?.textContent || '').trim();
+                    return parseHora(horaA) - parseHora(horaB);
+                });
+                rows.forEach(r => body.appendChild(r));
+            }
+
+            function scrollTableToBottom(table) {
+                if (!table) return;
+                const scroller = table.closest('.table-scroller');
+                if (scroller) scroller.scrollTop = scroller.scrollHeight;
+            }
+
+            function updateRow(tr, stops, tarifas, vuelta) {
+                const plan = vuelta.horaProgramada || [];
+                const eje = vuelta.horaEjecutada || [];
+                const dif = vuelta.diferencia || [];
+
+                const tds = tr.querySelectorAll('td');
+
+                // RUTINA: índice 2
+                const rutinaTd = tds[2];
+                const first = plan?.[0] ?? '--:--';
+                const last = plan?.[plan.length - 1] ?? '--:--';
+                rutinaTd.textContent = `${first} - ${last}`;
+
+                let adelantos = 0,
+                    atrasos = 0,
+                    totalCargo = 0;
+
+                for (let j = 0; j < stops.length; j++) {
+                    const base = 3 + j * 3;
+
+                    tds[base + 0].textContent = plan[j] ?? '--:--';
+                    tds[base + 1].textContent = eje[j] ?? '--:--';
+
+                    const d = (dif[j] ?? null);
+                    const tdDif = tds[base + 2];
+                    tdDif.className = 'text-center col-dif ' + difClass(d);
+
+                    const n = (d === null || d === '') ? null : parseInt(d, 10);
+                    tdDif.textContent = (n === null || isNaN(n)) ? '—' : (n > 0 ? ('+' + n) : String(n));
+
+                    if (n !== null && !isNaN(n)) {
+                        if (n > 0) adelantos += n;
+                        else if (n < 0) {
+                            atrasos += (-n);
+                            const stopId = (stops[j]?.id) ?? 0;
+                            const tarifa = Number(tarifas[String(stopId)] || 0);
+                            totalCargo += (-n) * tarifa;
+                        }
+                    }
+                }
+
+                const tdAdel = tr.querySelector('.col-adelantos');
+                const tdAtra = tr.querySelector('.col-atrasos');
+                if (tdAdel) tdAdel.textContent = `+${adelantos}`;
+                if (tdAtra) tdAtra.textContent = `${atrasos}`;
+
+                const aSancion = tr.querySelector('.col-sancion a.sancion-amount');
+                if (aSancion) {
+                    const total = (totalCargo || 0).toFixed(2);
+                    aSancion.dataset.total = total;
+                    aSancion.textContent = '$' + total;
+                }
+            }
+
+            function applyUpdate(payload) {
+                if (!payload || !Array.isArray(payload.rutas)) return;
+
+                for (const ruta of payload.rutas) {
+                    const routeId = ruta.idRoute;
+                    const table = getTableByRouteId(routeId);
+                    if (!table) continue;
+
+                    const stops = parseDataAttrJSON(table, 'data-stops');
+                    const tarifas = parseDataAttrJSON(table, 'data-tarifas');
+
+                    const body = table.tBodies?.[0];
+                    if (!body) continue;
+
+                    const rowByUnidad = {};
+                    body.querySelectorAll('tr[data-idunidad]').forEach(tr => {
+                        const id = String(tr.getAttribute('data-idunidad') || '');
+                        if (id) rowByUnidad[id] = tr;
+                    });
+
+                    const vueltas = Array.isArray(ruta.data) ? ruta.data : [];
+                    for (const v of vueltas) {
+                        const key = String(v.idUnidad || '');
+                        const tr = rowByUnidad[key];
+                        if (!tr) continue;
+                        updateRow(tr, stops, tarifas, v);
+                    }
+
+                    reorderRowsByHora(table);
+                    scrollTableToBottom(table);
+                }
+            }
+
+            let pollSeq = 0;
+
+            async function pollOnce() {
+                const id = ++pollSeq;
+                const t0 = performance.now();
+
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('poll', '1');
+                    url.searchParams.set('_ts', Date.now()); // evita caché
+
+                    logPoll(`#${id} -> request`, url.toString());
+
+                    const res = await fetch(url.toString(), {
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        cache: 'no-store'
+                    });
+
+                    const ms = Math.round(performance.now() - t0);
+                    logPoll(`#${id} <- response`, {
+                        status: res.status,
+                        ok: res.ok,
+                        ms
+                    });
+
+                    if (!res.ok) {
+                        const text = await res.text().catch(() => '');
+                        logPoll(`#${id} body (no ok)`, text.slice(0, 300));
+                        return;
+                    }
+
+                    const ct = res.headers.get('content-type') || '';
+                    if (!ct.includes('application/json')) {
+                        const text = await res.text().catch(() => '');
+                        logPoll(`#${id} WARNING: no es JSON (content-type=${ct})`, text.slice(0, 300));
+                        return;
+                    }
+
+                    const data = await res.json();
+
+                    logPoll(`#${id} json`, {
+                        fecha: data?.fecha,
+                        rutas: Array.isArray(data?.rutas) ? data.rutas.length : 'no-array'
+                    });
+
+                    applyUpdate(data);
+                    logPoll(`#${id} applyUpdate OK`);
+
+                } catch (e) {
+                    logPoll(`#${id} ERROR`, e?.message || e);
+                    console.debug(e);
+                }
+            }
+
+            // Arranque
+            pollOnce();
+            setInterval(pollOnce, POLL_MS);
+
+            // Scroll inicial (tabla activa)
+            const firstActiveTable = document.querySelector('.route-table:not(.d-none) table');
+            scrollTableToBottom(firstActiveTable);
+
+            // Scroll al cambiar de ruta
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.route-btn');
+                if (!btn) return;
+                setTimeout(() => {
+                    const pane = document.querySelector(btn.dataset.target);
+                    const table = pane?.querySelector('table');
+                    scrollTableToBottom(table);
+                }, 0);
+            });
+        })();
     </script>
+
     <script>
         (function() {
             const desde = document.getElementById('fechaDesde');
