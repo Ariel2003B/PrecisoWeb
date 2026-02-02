@@ -288,8 +288,7 @@
                                 <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">SANCIONES MINUTOS CAIDOS</h4>
-                            <a class="btn btn-success" href="{{ route('reportes.dia.nimbus') }}"
-                                target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('reportes.dia.nimbus') }}" target="_blank">Visitar
                                 página</a>
                         </div>
                     @endif
@@ -335,6 +334,17 @@
                             </span>
                             <h4 class="my-3">APLICATIVO MOVIL</h4>
                             <a class="btn btn-success" href="{{ route('aplicacion.index') }}" target="_blank">Visitar
+                                página</a>
+                        </div>
+                    @endif
+                    @if (Auth::user()->permisos->contains('DESCRIPCION', 'VENTAS'))
+                        <div class="col-md-4">
+                            <span class="fa-stack fa-4x">
+                                <i class="fas fa-solid fa-square fa-stack-2x text-primary"></i>
+                                <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <h4 class="my-3">VENTAS</h4>
+                            <a class="btn btn-success" href="{{ route('ventas.index') }}" target="_blank">Visitar
                                 página</a>
                         </div>
                     @endif
