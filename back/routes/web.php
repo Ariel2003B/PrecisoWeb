@@ -26,6 +26,7 @@ use App\Http\Controllers\SimCardController;
 use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VehiculoController;
+use App\Http\Controllers\VentaController;
 use App\Http\Controllers\VisitasController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +86,20 @@ Route::get('/empresa/{empresa}/stops', [EmpresaController::class, 'stopsForm'])-
 Route::post('/empresa/{empresa}/stops/save', [EmpresaController::class, 'stopsSave'])->name('empresa.stops.save');
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
+    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+
+    /// AJAX para SIMCARDS y contratos
+    Route::get('/ventas/simcards/disponibles', [VentaController::class, 'simcardsDisponibles'])
+        ->name('ventas.simcards.disponibles');
+
+    Route::get('/ventas/simcards/{sim}/contratos', [VentaController::class, 'simcardContratos'])
+        ->name('ventas.simcards.contratos');
+
+
+
+
     Route::get('/nimbus/reporte-dia-all', [NimbusController::class, 'reporteDiaAll'])->name('reportes.dia.nimbus');
     Route::resource('empresa', EmpresaController::class);
     Route::post('/nimbus/export-minutos-caidos', [NimbusController::class, 'exportMinutosCaidosRango'])

@@ -28,6 +28,8 @@ class DETALLE_SIMCARD_SERVICIO extends Model
         'FECHA_SERVICIO' => 'date',
         'FECHA_SIGUIENTE_PAGO' => 'date',
         'VALOR_PAGO' => 'decimal:2',
+        'FACTURADO' => 'bool',
+
     ];
 
     protected $fillable = [
@@ -37,6 +39,8 @@ class DETALLE_SIMCARD_SERVICIO extends Model
         'VALOR_PAGO',
         'COMPROBANTE',
         'OBSERVACION',
+        'FACTURADO',
+
     ];
 
     public function simcard(): BelongsTo

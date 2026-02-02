@@ -30,11 +30,11 @@ class UsuarioController extends Controller
             'NOMBRE' => 'required|string|max:255',
             'APELLIDO' => 'nullable|string|max:255',
             'CORREO' => 'required|email|unique:USUARIO,CORREO',
-            'CLAVE' => 'required|min:6',
+            'CLAVE' => 'required|min:8',
             'GENERO' => 'required|string',
             'CEDULA' => 'required|string|unique:USUARIO,CEDULA|max:13',
             'permisos' => 'array',
-            'TELEFONO' => 'required|string'
+            'TELEFONO' => 'required|string|unique:USUARIO,TELEFONO'
         ]);
         $datos = [
             'NOMBRE' => $request->NOMBRE,

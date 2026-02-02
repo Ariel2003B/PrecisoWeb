@@ -195,6 +195,38 @@
                 selectPerfil.removeAttribute('name');
             }
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const camposMayuscula = [
+                'NOMBRE',
+                'APELLIDO',
+                'CEDULA',
+                'TELEFONO',
+                'TOKEN'
+            ];
+
+            camposMayuscula.forEach(id => {
+                const input = document.getElementById(id);
+
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    const pos = this.selectionStart;
+                    this.value = this.value.toUpperCase();
+                    this.setSelectionRange(pos, pos);
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const texto = (e.clipboardData || window.clipboardData)
+                        .getData('text')
+                        .toUpperCase();
+
+                    document.execCommand('insertText', false, texto);
+                });
+            });
+        });
     </script>
 
 @endsection

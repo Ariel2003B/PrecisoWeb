@@ -37,6 +37,8 @@ class DETALLE_SIMCARD extends Model
         'VALOR_TOTAL' => 'decimal:2',
         'VALOR_ABONADO' => 'decimal:2',
         'SALDO' => 'decimal:2',
+        'FACTURADO' => 'bool',
+
     ];
 
     protected $fillable = [
@@ -48,6 +50,8 @@ class DETALLE_SIMCARD extends Model
         'VALOR_ABONADO',
         'SALDO',
         'NUMERO_CUOTAS',
+        'FACTURADO',
+
     ];
 
     public function simcard(): BelongsTo

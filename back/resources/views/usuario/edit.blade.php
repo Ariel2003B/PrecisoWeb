@@ -24,11 +24,11 @@
                     @csrf
                     @method('PUT')
 
-                    
+
                     <div class="mb-3">
                         <label for="APELLIDO" class="form-label">Apellidos</label>
                         <input type="text" name="APELLIDO" id="APELLIDO" class="form-control"
-                        value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
+                            value="{{ old('APELLIDO', $usuario->APELLIDO) }}">
                     </div>
                     <div class="mb-3">
                         <label for="NOMBRE" class="form-label">Nombres</label>
@@ -149,15 +149,6 @@
                         </div>
 
                     </div>
-                    {{-- <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="toggleRecaudo"
-                            {{ old('PER_ID', $usuario->PER_ID) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="toggleRecaudo">
-                            ¿Este usuario es para el aplicativo de recaudo?
-                        </label>
-                    </div> --}}
-
-
                     <input type="hidden" name="es_recaudo" id="es_recaudo"
                         value="{{ old('PER_ID', $usuario->PER_ID) ? 1 : 0 }}">
 
@@ -195,6 +186,41 @@
             </div>
         </section>
     </main>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const camposMayuscula = [
+                'NOMBRE',
+                'APELLIDO',
+                'CEDULA',
+                'TELEFONO',
+                'TOKEN'
+            ];
+
+            camposMayuscula.forEach(id => {
+                const input = document.getElementById(id);
+
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    const pos = this.selectionStart;
+                    this.value = this.value.toUpperCase();
+                    this.setSelectionRange(pos, pos);
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const texto = (e.clipboardData || window.clipboardData)
+                        .getData('text')
+                        .toUpperCase();
+
+                    document.execCommand('insertText', false, texto);
+                });
+            });
+        });
+    </script>
 @endsection
 
 @section('jsCode', 'js/scriptNavBar.js')
