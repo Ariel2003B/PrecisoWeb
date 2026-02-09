@@ -175,6 +175,8 @@
                                                     class="btn btn-success btn-sm">Visualizar</a>
                                                 <a href="{{ url('/api/hojas-trabajo/' . ($hoja->id_hoja ?? 0) . '/generar-pdfWeb') }}"
                                                     class="btn btn-danger btn-sm" target="_blank">PDF</a>
+                                                <a href="{{ route('reportes.create', $hoja->id_hoja) }}"
+                                                    class="btn btn-primary btn-sm">Fiscalizador</a>
                                             @endif
                                         </div>
                                     </td>
