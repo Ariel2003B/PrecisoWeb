@@ -408,6 +408,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'vehicles') {
                         <div><strong>Chofer:</strong> ${escapeHtml(v.driverCode || '')}</div>
                         <div><strong>Ruta:</strong> ${escapeHtml(v.routeId || '')}</div>
                         <div><strong>Trip:</strong> ${escapeHtml(v.tripId || '')}</div>
+                        <div><strong>Stop:</strong> ${escapeHtml(v.stopId || '')}</div>
+                        <div><strong>Codigo Servicio:</strong> ${escapeHtml(v.serviceCode || '')}</div>
                         <div><strong>Velocidad:</strong> ${Number(v.speed || 0).toFixed(1)} km/h</div>
                         <div><strong>Rumbo:</strong> ${Number(v.bearing || 0).toFixed(1)}°</div>
                         <div><strong>Última acción:</strong> ${escapeHtml(v.lastActionDate || '')}</div>
