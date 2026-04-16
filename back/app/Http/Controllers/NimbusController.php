@@ -59,24 +59,35 @@ class NimbusController extends Controller
         ];
 
         // Llamada al back
-        try {
-            $resp = Http::timeout(90)->post($backendUrl, $payload);
-        } catch (\Throwable $e) {
-            // Puedes loguearlo si quieres: \Log::error($e);
-            return view('nimbus.reporte', [
-                'fecha' => $fecha,
-                'empresa' => $empresa,
-                'rutas' => [],
-                'error' => 'No se pudo contactar el backend: ' . $e->getMessage(),
-            ]);
-        }
+        // try {
+        //     $resp = Http::timeout(90)->post($backendUrl, $payload);
+        // } catch (\Throwable $e) {
+        //     // Puedes loguearlo si quieres: \Log::error($e);
+        //     return view('nimbus.reporte', [
+        //         'fecha' => $fecha,
+        //         'empresa' => $empresa,
+        //         'rutas' => [],
+        //         'error' => 'No se pudo contactar el backend: ' . $e->getMessage(),
+        //     ]);
+        // }
 
-        if ($resp->failed()) {
+        // if ($resp->failed()) {
+        //     return view('nimbus.reporte', [
+        //         'fecha' => $fecha,
+        //         'empresa' => $empresa,
+        //         'rutas' => [],
+        //         'error' => 'Backend respondió con error (' . $resp->status() . ').',
+        //     ]);
+        // }
+
+        $resp = $this->postConReintento($backendUrl, $payload, 3, 1500);
+
+        if (!$resp instanceof \Illuminate\Http\Client\Response || $resp->failed()) {
             return view('nimbus.reporte', [
                 'fecha' => $fecha,
                 'empresa' => $empresa,
                 'rutas' => [],
-                'error' => 'Backend respondió con error (' . $resp->status() . ').',
+                'error' => 'No se pudo obtener respuesta válida del backend luego de varios intentos.',
             ]);
         }
         $unidades = \App\Models\Unidad::query()
@@ -259,10 +270,15 @@ class NimbusController extends Controller
             'idUnidad' => $idUnidad, // 0 = todas
         ];
 
-        try {
-            $resp = Http::timeout(180)->post($backendUrl, $payload);
-        } catch (\Throwable $e) {
-            abort(500, 'No se pudo contactar el backend: ' . $e->getMessage());
+        // try {
+        //     $resp = Http::timeout(180)->post($backendUrl, $payload);
+        // } catch (\Throwable $e) {
+        //     abort(500, 'No se pudo contactar el backend: ' . $e->getMessage());
+        // }
+        $resp = $this->postConReintento($backendUrl, $payload, 3, 1500);
+
+        if (!$resp instanceof \Illuminate\Http\Client\Response || $resp->failed()) {
+            abort(500, 'No se pudo obtener respuesta válida del backend luego de varios intentos.');
         }
 
         if ($resp->failed()) {
@@ -584,6 +600,37 @@ class NimbusController extends Controller
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
 
     }
+
+
+    private function postConReintento(string $url, array $payload, int $intentos = 3, int $esperaMs = 1500)
+{
+    $ultimoError = null;
+    $ultimaRespuesta = null;
+
+    for ($i = 1; $i <= $intentos; $i++) {
+        try {
+            $resp = Http::timeout(90)->post($url, $payload);
+
+            // Si respondió bien, salimos
+            if ($resp->successful()) {
+                return $resp;
+            }
+
+            $ultimaRespuesta = $resp;
+            $ultimoError = 'Backend respondió con error (' . $resp->status() . ').';
+
+        } catch (\Throwable $e) {
+            $ultimoError = $e->getMessage();
+        }
+
+        // Espera antes del siguiente intento
+        if ($i < $intentos) {
+            usleep($esperaMs * 1000);
+        }
+    }
+
+    return $ultimaRespuesta ?: $ultimoError;
+}
 
 
 }
