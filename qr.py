@@ -63,8 +63,13 @@ placas_input = [
     #URBANQUITO
     # "PAB3685",
     # "PUC0235",
-    "PAC5868",
+    # "PAC5868",
     # "PLACA",
+    #CATAR
+    "PAU0603",
+    "PAB5523",
+    "PUH0973",
+    "PAA9699",
 
 ]
 
@@ -207,7 +212,7 @@ for unidad in unidades:
 
     draw.rectangle([(rect_x0, rect_y0), (rect_x1, rect_y1)], fill="black")
 
-    text1 = f"URBANQUITO - {unidad['placa_texto']}"
+    text1 = f"CATAR - {unidad['placa_texto']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2
@@ -225,6 +230,6 @@ for unidad in unidades:
     pdf.set_font("Arial", "B", 16)
     pdf.image(image_path, x=40, y=30, w=100)
 
-pdf_name = "qrs_con_placas_urbanquito.pdf"
+pdf_name = "qrs_con_placas_catar.pdf"
 pdf.output(pdf_name)
 print(f"PDF generado exitosamente ✅ -> {pdf_name}")
