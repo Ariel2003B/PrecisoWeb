@@ -47,7 +47,7 @@ class NimbusController extends Controller
         // Permite sobreescribir la URL por query (si quieres), con default a tu back local
         $backendUrl = $request->input(
             'url',
-            'http://159.203.177.210:8443/api/minutoscaidos/reporte-merge'
+            'http://159.203.177.210:443/api/minutoscaidos/reporte-merge'
             // 'http://localhost:5000/api/minutoscaidos/reporte-merge'
         );
 
@@ -258,7 +258,7 @@ class NimbusController extends Controller
         // === 3) Llamar a tu backend .NET (full days) ===
         $backendUrl = $request->input(
             'url',
-            'http://159.203.177.210:8443/api/minutoscaidos/report-full-days'
+            'http://159.203.177.210:443/api/minutoscaidos/report-full-days'
         );
 
         // Ajusta nombres EXACTOS según tu .NET
