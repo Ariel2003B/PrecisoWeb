@@ -66,10 +66,64 @@ placas_input = [
     # "PAC5868",
     # "PLACA",
     #CATAR
-    "PAU0603",
-    "PAB5523",
-    "PUH0973",
-    "PAA9699",
+    # "PAU0603",
+    # "PAB5523",
+    # "PUH0973",
+    # "PAA9699",
+    #SIRENA
+    "PAB6662",
+    "PAB6540",
+    "PAB6766",
+    "PAB6644",
+    "PAB6765",
+    "PAB6661",
+    "PAE2093"
+    #PICHINCHA
+    # "PAB1708",
+    # "PAC8931",
+    # "PAC4855",
+    # "PAE3731",
+    # "PAE3657",
+    # "PAB9877",
+    # "PAC7868",
+    # "PAB9025",
+    # "PAE3298",
+    # "PAE3275",
+    # "PAB1626",
+    # "PUD0284",
+    # "PUK0241",
+    # "PAE3278",
+    # "PAB9474",
+    # "PAC8958",
+    # "PAE3254",
+    # "PAE3624",
+    # "PAB9095",
+    # "PAC3128",
+    # "PAC5227",
+    # "PAC8978",
+    # "PAC7130",
+    # "PAA4562",
+    # "PAE3259",
+    # "PAB6453",
+    # "PAB6627",
+    # "PAC9734",
+    # "PAB4255",
+    # "PAC8730",
+    # "PAE3017",
+    # "PAE3622",
+    # "PAA9614",
+    # "PAE3646",
+    # "PAB4978",
+    # "PAB6544",
+    # "PAC5214",
+    # "PAC6023",
+    # "PAA9031",
+    # "PAC6016",
+    # "PAC2773",
+    # "PAB9002",
+    # "PAC8813",
+
+
 
 ]
 
@@ -212,7 +266,7 @@ for unidad in unidades:
 
     draw.rectangle([(rect_x0, rect_y0), (rect_x1, rect_y1)], fill="black")
 
-    text1 = f"CATAR - {unidad['placa_texto']}"
+    text1 = f"SIRENA - {unidad['placa_texto']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2
@@ -230,6 +284,6 @@ for unidad in unidades:
     pdf.set_font("Arial", "B", 16)
     pdf.image(image_path, x=40, y=30, w=100)
 
-pdf_name = "qrs_con_placas_catar.pdf"
+pdf_name = "qrs_con_placas_sirena.pdf"
 pdf.output(pdf_name)
 print(f"PDF generado exitosamente ✅ -> {pdf_name}")
