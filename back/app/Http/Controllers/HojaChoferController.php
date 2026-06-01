@@ -15,11 +15,26 @@ class HojaChoferController extends Controller
     public function buscarPorUnidad($id_unidad)
     {
         $fecha = Carbon::now('America/Guayaquil')->format('Y-m-d');
+        // $hoja = HojaTrabajo::with(['ruta', 'conductor', 'gastos', 'producciones'])
+        //     ->where('id_unidad', $id_unidad)
+        //     ->where('fecha', $fecha)
+        //     ->first();
+        // 🔗 Obtener unidad con su empresa desde el inicio
+        $unidad = Unidad::with('usuario.empresa')->findOrFail($id_unidad);
+        $empresa = optional(optional($unidad->usuario)->empresa);
+        $empresaId = $empresa->EMP_ID;
+
+        // 🚫 Verificar que la empresa esté activa
+        if (optional($unidad->usuario->empresa)->ESTADO === 'I') {
+            return response()->json([
+                'message' => 'La empresa se encuentra inactiva. No se puede acceder a la hoja de trabajo.'
+            ], 403);
+        }
+
         $hoja = HojaTrabajo::with(['ruta', 'conductor', 'gastos', 'producciones'])
             ->where('id_unidad', $id_unidad)
             ->where('fecha', $fecha)
             ->first();
-
         if (!$hoja) {
             // Obtener el último número de hoja no nulo y sumarle 1
             // $ultimoNumeroHoja = HojaTrabajo::whereNotNull('numero_hoja')
