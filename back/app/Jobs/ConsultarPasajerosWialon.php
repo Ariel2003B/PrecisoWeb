@@ -46,8 +46,12 @@ class ConsultarPasajerosWialon implements ShouldQueue
 
         foreach ($hoja->producciones as $prod) {
             try {
-                $inicio = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$prod->hora_subida}", $tz)->timestamp;
-                $fin    = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$prod->hora_bajada}", $tz)->timestamp;
+                // Toma solo HH:MM sin importar si la BD guarda HH:MM:SS
+                $horaSubida = substr($prod->hora_subida, 0, 5);
+                $horaBajada = substr($prod->hora_bajada, 0, 5);
+
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaSubida}", $tz)->timestamp;
+                $fin    = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaBajada}", $tz)->timestamp;
 
                 // Si la bajada cae al día siguiente (ruta de madrugada)
                 if ($fin <= $inicio) {
