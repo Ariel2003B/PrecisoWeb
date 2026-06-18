@@ -45,7 +45,8 @@ class EMPRESA extends Model
         'IMAGEN',
         'TOKEN',
         'DEPOT',
-        'VALOR_SANCION_GEOCERCA'
+        'VALOR_SANCION_GEOCERCA',
+        'VALOR_PASAJERO',
     ];
 
     // Relación con USUARIO

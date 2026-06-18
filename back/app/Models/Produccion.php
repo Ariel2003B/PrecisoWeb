@@ -26,7 +26,10 @@ class Produccion extends Model
         'nro_vuelta',
         'hora_subida',
         'hora_bajada',
-        'valor_vuelta' // nuevo campo
+        'valor_vuelta',
+        'pasajeros_subida',
+        'pasajeros_bajada',
+        'valor_pasajeros',
     ];
     
     public function hoja_trabajo()

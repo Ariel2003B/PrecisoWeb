@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ConsultarPasajerosWialon;
 use App\Models\HojaTrabajo;
 use App\Models\Gasto;
 use App\Models\Produccion;
@@ -89,6 +90,8 @@ class HojaTrabajoController extends Controller
             ]);
         }
 
+        ConsultarPasajerosWialon::dispatch($hoja->id_hoja);
+
         return response()->json(['message' => 'Hoja de trabajo creada', 'id' => $hoja->id_hoja]);
     }
 
@@ -172,9 +175,12 @@ class HojaTrabajoController extends Controller
         try {
             $data = $request->validate($rules);
 
-            return DB::transaction(function () use ($data, $id) {
+            $hojaId = null;
+
+            $response = DB::transaction(function () use ($data, $id, &$hojaId) {
 
                 $hoja = HojaTrabajo::with(['gastos', 'producciones'])->lockForUpdate()->findOrFail($id);
+                $hojaId = $hoja->id_hoja;
 
                 // --- Actualizar cabecera
                 $hoja->update([
@@ -253,9 +259,13 @@ class HojaTrabajoController extends Controller
                     }
                 }
 
-                Log::info('Hoja de trabajo actualizada llega hasta aqui OK', ['hoja_id' => $hoja->id]);
+                Log::info('Hoja de trabajo actualizada llega hasta aqui OK', ['hoja_id' => $hoja->id_hoja]);
                 return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
             });
+
+            ConsultarPasajerosWialon::dispatch($hojaId);
+
+            return $response;
 
         } catch (ValidationException $e) {
             Log::warning('Validación fallida en update HojaTrabajo', [

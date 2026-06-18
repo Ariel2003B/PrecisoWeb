@@ -24,6 +24,13 @@ class Kernel extends ConsoleKernel
             $controller = new \App\Http\Controllers\SimCardController();
             $controller->updateSimCardFromWialon();
         })->dailyAt('08:10');
+
+        // Procesa los jobs de la cola automáticamente cada minuto.
+        // --stop-when-empty hace que el proceso termine cuando no hay más
+        // trabajos pendientes, así el cron del servidor lo levanta y lo baja solo.
+        $schedule->command('queue:work --stop-when-empty --tries=3')
+            ->everyMinute()
+            ->withoutOverlapping();
     }
 
 
