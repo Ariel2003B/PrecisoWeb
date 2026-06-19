@@ -71,14 +71,11 @@ class HojaChoferController extends Controller
         $tieneTickets = false;
 
         if ($empresaId) {
-            $emp = \App\Models\EMPRESA::find($empresaId);
-            $tieneTickets = (bool) ($emp->tiene_tickets ?? false);
-            if ($tieneTickets) {
-                $ticketTipos = TicketTipo::where('EMP_ID', $empresaId)
-                    ->where('activo', 1)
-                    ->orderBy('nombre')
-                    ->get(['id', 'nombre', 'valor']);
-            }
+            $ticketTipos = TicketTipo::where('EMP_ID', $empresaId)
+                ->where('activo', 1)
+                ->orderBy('nombre')
+                ->get(['id', 'nombre', 'valor']);
+            $tieneTickets = $ticketTipos->isNotEmpty();
         }
 
         $response = $hoja->toArray();
