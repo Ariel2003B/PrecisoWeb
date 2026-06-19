@@ -186,18 +186,6 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('reporteGlobalModal').addEventListener('shown.bs.modal', function () {
-            var m = this;
-            var d = m.querySelector('.modal-dialog');
-            var c = m.querySelector('.modal-content');
-            var b = m.querySelector('.modal-body');
-            m.style.cssText = 'padding:0 !important;';
-            d.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;margin:0;padding:0;transform:none;';
-            c.style.cssText = 'width:100%;height:100%;max-height:100%;border:none;border-radius:0;';
-            b.style.cssText = 'overflow-y:auto;flex:1;';
-        });
-    </script>
 
     <style>
         .btn-group .btn {
@@ -225,6 +213,36 @@
             white-space: nowrap;
         }
 
+        div#reporteGlobalModal.modal .modal-dialog {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+        }
+
+        div#reporteGlobalModal.modal .modal-content {
+            height: 100% !important;
+            border: none !important;
+            border-radius: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        div#reporteGlobalModal.modal .modal-body {
+            flex: 1 1 auto !important;
+            overflow-y: auto !important;
+        }
+
+        div#reporteGlobalModal.modal {
+            padding: 0 !important;
+        }
     </style>
 
 
