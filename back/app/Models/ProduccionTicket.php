@@ -28,7 +28,7 @@ class ProduccionTicket extends Model
 
     public function getCantidadAttribute(): int
     {
-        return max(0, $this->numero_fin - $this->numero_inicio);
+        return max(0, $this->numero_fin - $this->numero_inicio + 1);
     }
 
     public function getSubtotalAttribute(): float

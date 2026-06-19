@@ -261,7 +261,7 @@ class ReporteProduccionController extends Controller
                 foreach ($produccion->tickets as $pt) {
                     $tipoId = $pt->id_ticket_tipo;
                     if (isset($produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId])) {
-                        $cantidad = max(0, $pt->numero_fin - $pt->numero_inicio);
+                        $cantidad = max(0, $pt->numero_fin - $pt->numero_inicio + 1);
                         $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['cantidad'] += $cantidad;
                         $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['valor'] += $cantidad * ($pt->ticketTipo->valor ?? 0);
                     }

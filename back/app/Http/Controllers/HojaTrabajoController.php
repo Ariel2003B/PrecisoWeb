@@ -6,6 +6,7 @@ use App\Jobs\ConsultarPasajerosWialon;
 use App\Models\HojaTrabajo;
 use App\Models\Gasto;
 use App\Models\Produccion;
+use App\Models\ProduccionTicket;
 use App\Models\ProduccionUsuario;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
@@ -164,6 +165,11 @@ class HojaTrabajoController extends Controller
             'produccion.*.hora_subida' => 'required|date_format:H:i',
             'produccion.*.hora_bajada' => 'required|date_format:H:i|after:produccion.*.hora_subida',
             'produccion.*.valor_vuelta' => 'required|numeric|min:0',
+
+            'produccion.*.tickets' => 'nullable|array',
+            'produccion.*.tickets.*.id_ticket_tipo' => 'required|exists:ticket_tipos,id',
+            'produccion.*.tickets.*.numero_inicio' => 'required|integer|min:0',
+            'produccion.*.tickets.*.numero_fin' => 'required|integer|min:0|gte:produccion.*.tickets.*.numero_inicio',
         ];
 
         Log::info('HojaTrabajo.update llamado', [
@@ -239,7 +245,7 @@ class HojaTrabajoController extends Controller
                 // --- Producción
                 foreach (($data['produccion'] ?? []) as $idx => $prod) {
                     try {
-                        $hoja->producciones()->updateOrCreate(
+                        $produccion = $hoja->producciones()->updateOrCreate(
                             ['nro_vuelta' => $prod['nro_vuelta']],
                             [
                                 'hora_subida' => $prod['hora_subida'],
@@ -247,9 +253,25 @@ class HojaTrabajoController extends Controller
                                 'valor_vuelta' => $prod['valor_vuelta'],
                             ]
                         );
+
+                        // --- Tickets por vuelta
+                        if (!empty($prod['tickets'])) {
+                            foreach ($prod['tickets'] as $ticket) {
+                                ProduccionTicket::updateOrCreate(
+                                    [
+                                        'id_produccion'  => $produccion->id_produccion,
+                                        'id_ticket_tipo' => $ticket['id_ticket_tipo'],
+                                    ],
+                                    [
+                                        'numero_inicio' => $ticket['numero_inicio'],
+                                        'numero_fin'    => $ticket['numero_fin'],
+                                    ]
+                                );
+                            }
+                        }
                     } catch (\Throwable $e) {
                         Log::error('Error guardando producción', [
-                            'hoja_id' => $hoja->id,
+                            'hoja_id' => $hoja->id_hoja,
                             'index' => $idx,
                             'nro' => $prod['nro_vuelta'] ?? null,
                             'mensaje' => $e->getMessage(),

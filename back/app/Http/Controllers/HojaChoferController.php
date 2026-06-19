@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HojaTrabajo;
 use App\Models\Produccion;
+use App\Models\TicketTipo;
 use App\Models\Unidad;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -66,7 +67,25 @@ class HojaChoferController extends Controller
             ]);
         }
 
-        return response()->json($hoja);
+        $ticketTipos = [];
+        $tieneTickets = false;
+
+        if ($empresaId) {
+            $emp = \App\Models\EMPRESA::find($empresaId);
+            $tieneTickets = (bool) ($emp->tiene_tickets ?? false);
+            if ($tieneTickets) {
+                $ticketTipos = TicketTipo::where('EMP_ID', $empresaId)
+                    ->where('activo', 1)
+                    ->orderBy('nombre')
+                    ->get(['id', 'nombre', 'valor']);
+            }
+        }
+
+        $response = $hoja->toArray();
+        $response['tiene_tickets'] = $tieneTickets;
+        $response['ticket_tipos'] = $ticketTipos;
+
+        return response()->json($response);
     }
 
     // 2. Actualizar producción (el chofer solo puede actualizar vueltas)
