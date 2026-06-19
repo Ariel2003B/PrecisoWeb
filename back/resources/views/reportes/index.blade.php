@@ -147,13 +147,13 @@
     <!-- Modal Recaudo fullscreen -->
     <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" style="position:fixed;top:0;left:0;width:100%;height:100%;margin:0;max-width:100%;">
-            <div class="modal-content" style="height:100%;border:none;border-radius:0;">
+        <div class="modal-dialog">
+            <div class="modal-content">
                 <div class="modal-header py-2">
                     <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-3" style="overflow-y:auto;">
+                <div class="modal-body p-3">
                     <form id="reporteGlobalForm">
                         <div class="row mb-2 g-2 align-items-end">
                             <div class="col-md-3">
@@ -185,6 +185,19 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('reporteGlobalModal').addEventListener('shown.bs.modal', function () {
+            var m = this;
+            var d = m.querySelector('.modal-dialog');
+            var c = m.querySelector('.modal-content');
+            var b = m.querySelector('.modal-body');
+            m.style.cssText = 'padding:0 !important;';
+            d.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;margin:0;padding:0;transform:none;';
+            c.style.cssText = 'width:100%;height:100%;max-height:100%;border:none;border-radius:0;';
+            b.style.cssText = 'overflow-y:auto;flex:1;';
+        });
+    </script>
 
     <style>
         .btn-group .btn {
