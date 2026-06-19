@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\HojaTrabajo;
 use App\Models\ProduccionUsuario;
 use App\Models\Ruta;
+use App\Models\TicketTipo;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -197,7 +198,7 @@ class ReporteProduccionController extends Controller
             [$fechaInicio, $fechaFin] = [$fechaFin, $fechaInicio];
         }
 
-        $query = HojaTrabajo::with(['unidad', 'producciones', 'ruta'])
+        $query = HojaTrabajo::with(['unidad', 'producciones.tickets.ticketTipo', 'ruta'])
             ->whereBetween('fecha', [$fechaInicio, $fechaFin]);
 
         $query->whereHas('ruta', function ($q) use ($user) {
@@ -210,13 +211,18 @@ class ReporteProduccionController extends Controller
 
         $hojas = $query->get();
 
+        // Tipos de ticket activos de la empresa
+        $ticketTipos = TicketTipo::where('EMP_ID', $user->EMP_ID)
+            ->where('activo', 1)
+            ->orderBy('nombre')
+            ->get();
+
         $produccionPorUnidad = [];
         $totalGlobal = 0;
         $totalVueltasGlobal = 0;
 
         foreach ($hojas as $hoja) {
 
-            // Por si hay hojas sin unidad (evita error)
             $placa = $hoja->unidad->placa ?? '-';
             $habil = $hoja->unidad->numero_habilitacion ?? '-';
             $unidadKey = $placa . ' (' . $habil . ')';
@@ -224,29 +230,48 @@ class ReporteProduccionController extends Controller
             $totalUnidad = 0;
             $totalVueltas = 0;
             $ultimaVuelta = 0;
-
-            foreach ($hoja->producciones as $produccion) {
-                $totalUnidad += (float) $produccion->valor_vuelta;
-                $totalVueltas++;
-                $totalVueltasGlobal++;
-
-                if ((int) $produccion->nro_vuelta > $ultimaVuelta) {
-                    $ultimaVuelta = (int) $produccion->nro_vuelta;
-                }
-            }
+            $pasajerosWialon = 0;
 
             if (!isset($produccionPorUnidad[$unidadKey])) {
                 $produccionPorUnidad[$unidadKey] = [
                     'total_produccion' => 0,
                     'total_vueltas' => 0,
-                    'ultima_vuelta' => 0
+                    'ultima_vuelta' => 0,
+                    'pasajeros_wialon' => 0,
+                    'tickets_por_tipo' => [],
                 ];
+                foreach ($ticketTipos as $tt) {
+                    $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tt->id] = [
+                        'cantidad' => 0,
+                        'valor' => 0,
+                    ];
+                }
+            }
+
+            foreach ($hoja->producciones as $produccion) {
+                $totalUnidad += (float) $produccion->valor_vuelta;
+                $totalVueltas++;
+                $totalVueltasGlobal++;
+                $pasajerosWialon += (int) ($produccion->pasajeros_subida ?? 0);
+
+                if ((int) $produccion->nro_vuelta > $ultimaVuelta) {
+                    $ultimaVuelta = (int) $produccion->nro_vuelta;
+                }
+
+                foreach ($produccion->tickets as $pt) {
+                    $tipoId = $pt->id_ticket_tipo;
+                    if (isset($produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId])) {
+                        $cantidad = max(0, $pt->numero_fin - $pt->numero_inicio);
+                        $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['cantidad'] += $cantidad;
+                        $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['valor'] += $cantidad * ($pt->ticketTipo->valor ?? 0);
+                    }
+                }
             }
 
             $produccionPorUnidad[$unidadKey]['total_produccion'] += $totalUnidad;
             $produccionPorUnidad[$unidadKey]['total_vueltas'] += $totalVueltas;
+            $produccionPorUnidad[$unidadKey]['pasajeros_wialon'] += $pasajerosWialon;
 
-            // Si quieres que muestre la última vuelta máxima del rango, usa max
             $produccionPorUnidad[$unidadKey]['ultima_vuelta'] = max(
                 $produccionPorUnidad[$unidadKey]['ultima_vuelta'],
                 $ultimaVuelta
@@ -255,7 +280,7 @@ class ReporteProduccionController extends Controller
             $totalGlobal += $totalUnidad;
         }
 
-        // Guardar en sesión (mejor guardar filtros, pero dejo tu lógica)
+        // Guardar en sesión
         session([
             'reporte_global_data' => $hojas,
             'reporte_global_filters' => [
@@ -265,7 +290,12 @@ class ReporteProduccionController extends Controller
             ]
         ]);
 
-        $result = view('partials.reporte_global', compact('produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal'))->render();
+        $result = view('partials.reporte_global', compact(
+            'produccionPorUnidad',
+            'totalGlobal',
+            'totalVueltasGlobal',
+            'ticketTipos'
+        ))->render();
 
         return response()->json(['html' => $result]);
     }

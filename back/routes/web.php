@@ -21,6 +21,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\QrUnidadesController;
 use App\Http\Controllers\ReporteProduccionController;
 use App\Http\Controllers\RutaController;
+use App\Http\Controllers\TicketTipoController;
 use App\Http\Controllers\SancionesController;
 use App\Http\Controllers\SimCardController;
 use App\Http\Controllers\UnidadController;
@@ -84,6 +85,11 @@ Route::get('/log-test', function () {
 });
 Route::get('/empresa/{empresa}/stops', [EmpresaController::class, 'stopsForm'])->name('empresa.stops.form');
 Route::post('/empresa/{empresa}/stops/save', [EmpresaController::class, 'stopsSave'])->name('empresa.stops.save');
+
+Route::get('/empresa/{empId}/tickets', [TicketTipoController::class, 'index'])->name('ticket-tipos.index');
+Route::post('/ticket-tipos', [TicketTipoController::class, 'store'])->name('ticket-tipos.store');
+Route::put('/ticket-tipos/{id}', [TicketTipoController::class, 'update'])->name('ticket-tipos.update');
+Route::patch('/ticket-tipos/{id}/toggle', [TicketTipoController::class, 'toggleActivo'])->name('ticket-tipos.toggle');
 //rutas segun perfiles 
 Route::middleware(['auth'])->group(function () {
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');

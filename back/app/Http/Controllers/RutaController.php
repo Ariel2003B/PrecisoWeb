@@ -34,7 +34,7 @@ class RutaController extends Controller
         }
 
         // 5. Obtener rutas de la empresa
-        $rutas = Ruta::where('EMP_ID', $user->EMP_ID)->get(['id_ruta', 'descripcion']); 
+        $rutas = Ruta::where('EMP_ID', $user->EMP_ID)->get(['id_ruta', 'descripcion', 'valor_pasajero']);
 
         // 6. Devolver las rutas
         return response()->json($rutas);
@@ -56,11 +56,12 @@ class RutaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'descripcion' => 'required|string|max:255',
-            'EMP_ID' => 'nullable|exists:EMPRESA,EMP_ID'
+            'descripcion'    => 'required|string|max:255',
+            'EMP_ID'         => 'nullable|exists:EMPRESA,EMP_ID',
+            'valor_pasajero' => 'nullable|numeric|min:0',
         ]);
 
-        Ruta::create($request->all());
+        Ruta::create($request->only(['descripcion', 'EMP_ID', 'valor_pasajero']));
 
         return redirect()->route('rutasapp.index')->with('success', 'Ruta creada exitosamente.');
     }
@@ -75,12 +76,13 @@ class RutaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'descripcion' => 'required|string|max:255',
-            'EMP_ID' => 'nullable|exists:EMPRESA,EMP_ID'
+            'descripcion'    => 'required|string|max:255',
+            'EMP_ID'         => 'nullable|exists:EMPRESA,EMP_ID',
+            'valor_pasajero' => 'nullable|numeric|min:0',
         ]);
 
         $ruta = Ruta::findOrFail($id);
-        $ruta->update($request->all());
+        $ruta->update($request->only(['descripcion', 'EMP_ID', 'valor_pasajero']));
 
         return redirect()->route('rutasapp.index')->with('success', 'Ruta actualizada exitosamente.');
     }

@@ -47,6 +47,7 @@ class EMPRESA extends Model
         'DEPOT',
         'VALOR_SANCION_GEOCERCA',
         'VALOR_PASAJERO',
+        'tiene_tickets',
     ];
 
     // Relación con USUARIO
@@ -64,6 +65,11 @@ class EMPRESA extends Model
     public function geoStops()
     {
         return $this->hasMany(GeoStop::class, 'EMP_ID');
+    }
+
+    public function ticketTipos()
+    {
+        return $this->hasMany(TicketTipo::class, 'EMP_ID');
     }
 
 }

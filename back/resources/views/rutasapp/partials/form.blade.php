@@ -16,4 +16,13 @@
             @endforeach
         </select>
     </div>
+
+    <div class="col-md-12">
+        <label class="form-label">Valor por pasajero ($)</label>
+        <input type="number" name="valor_pasajero" step="0.0001" min="0"
+               value="{{ old('valor_pasajero', $ruta->valor_pasajero ?? '0.00') }}"
+               class="form-control"
+               placeholder="Ej: 0.35">
+        <small class="text-muted">Monto que se cobra por cada pasajero que sube en esta ruta.</small>
+    </div>
 </div>

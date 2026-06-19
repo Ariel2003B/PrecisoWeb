@@ -60,6 +60,10 @@
                                         href="{{ route('empresa.stops.form', $empresa->EMP_ID) }}">
                                         Configurar geocercas
                                     </a>
+                                    <a class="btn btn-sm btn-outline-success"
+                                        href="{{ route('ticket-tipos.index', $empresa->EMP_ID) }}">
+                                        Tickets
+                                    </a>
 
                                     <form action="{{ route('empresa.destroy', $empresa->EMP_ID) }}" method="POST"
                                         class="d-inline">

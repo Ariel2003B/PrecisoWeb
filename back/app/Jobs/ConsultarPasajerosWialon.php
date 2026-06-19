@@ -25,7 +25,7 @@ class ConsultarPasajerosWialon implements ShouldQueue
 
     public function handle(WialonService $wialon): void
     {
-        $hoja = HojaTrabajo::with(['unidad', 'ruta.empresa', 'producciones'])->find($this->hojaId);
+        $hoja = HojaTrabajo::with(['unidad', 'ruta', 'producciones'])->find($this->hojaId);
 
         if (!$hoja) {
             Log::warning('ConsultarPasajerosWialon: hoja no encontrada', ['hoja_id' => $this->hojaId]);
@@ -38,7 +38,7 @@ class ConsultarPasajerosWialon implements ShouldQueue
             return;
         }
 
-        $valorPasajero = (float)($hoja->ruta->empresa->VALOR_PASAJERO ?? 0);
+        $valorPasajero = (float)($hoja->ruta->valor_pasajero ?? 0);
         $fecha         = $hoja->fecha; // Y-m-d
         $tz            = new \DateTimeZone('America/Guayaquil');
 

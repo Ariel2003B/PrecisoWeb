@@ -66,6 +66,14 @@
             class="form-control">
     </div>
 
+    <div class="col-md-6">
+        <label class="form-label">ID Wialon</label>
+        <input type="number" name="idWialon"
+            value="{{ old('idWialon', $unidad->idWialon ?? '') }}"
+            class="form-control"
+            placeholder="ID de la unidad en Wialon">
+    </div>
+
     <div class="col-md-12">
         <label class="form-label">Propietario</label>
         <select name="usu_id" id="usu_id" class="form-select">

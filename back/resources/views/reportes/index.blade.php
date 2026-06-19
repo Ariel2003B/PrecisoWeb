@@ -77,58 +77,6 @@
                     </div>
 
                 </form>
-                <!-- Modal -->
-                <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="reporteGlobalForm">
-                                    {{-- <div class="mb-3">
-                                        <label for="fecha_reporte" class="form-label">Seleccionar Fecha</label>
-                                        <input type="date" name="fecha" id="fecha_reporte" class="form-control"
-                                            required>
-                                    </div> --}}
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="fecha_inicio_reporte" class="form-label">Fecha Desde</label>
-                                            <input type="date" id="fecha_inicio_reporte" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="fecha_fin_reporte" class="form-label">Fecha Hasta</label>
-                                            <input type="date" id="fecha_fin_reporte" class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="ruta_reporte" class="form-label">Seleccionar Ruta</label>
-                                        <select name="ruta" id="ruta_reporte" class="form-control">
-                                            <option value="">Todas las rutas</option>
-                                            @foreach ($rutas as $ruta)
-                                                <option value="{{ $ruta->id_ruta }}">{{ $ruta->descripcion }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <button type="button" class="btn btn-primary" onclick="generarReporte()">Visualizar
-                                            Reporte</button>
-                                        <button type="button" class="btn btn-success" onclick="generarExcel()">Generar
-                                            Excel</button>
-                                        <button type="button" class="btn btn-danger" onclick="generarPDF()">Generar
-                                            PDF</button>
-                                    </div>
-                                </form>
-                                <div id="reporteGlobalResultado" class="mt-4"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
 
                 <table class="table table-bordered text-center align-middle">
                     <thead class="table-dark">
@@ -195,6 +143,49 @@
             </div>
         </section>
     </main>
+
+    <!-- Modal Recaudo (fuera del container para fullscreen) -->
+    <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <form id="reporteGlobalForm">
+                        <div class="row mb-2 g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label for="fecha_inicio_reporte" class="form-label mb-0 small">Fecha Desde</label>
+                                <input type="date" id="fecha_inicio_reporte" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fecha_fin_reporte" class="form-label mb-0 small">Fecha Hasta</label>
+                                <input type="date" id="fecha_fin_reporte" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="ruta_reporte" class="form-label mb-0 small">Ruta</label>
+                                <select name="ruta" id="ruta_reporte" class="form-control form-control-sm">
+                                    <option value="">Todas las rutas</option>
+                                    @foreach ($rutas as $ruta)
+                                        <option value="{{ $ruta->id_ruta }}">{{ $ruta->descripcion }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex gap-1">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="generarReporte()">Visualizar</button>
+                                <button type="button" class="btn btn-success btn-sm" onclick="generarExcel()">Excel</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="generarPDF()">PDF</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="reporteGlobalResultado" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
         .btn-group .btn {
             margin-right: 5px;
@@ -207,7 +198,6 @@
         .table-bordered th,
         .table-bordered td {
             padding: 6px;
-            /* Reducido desde 12px o más a 6px */
         }
 
         .table th,
@@ -216,11 +206,28 @@
             padding-right: 5px;
         }
 
-        /* Reducir el ancho de la columna de Acciones */
         .table th:last-child,
         .table td:last-child {
             width: 1%;
             white-space: nowrap;
+        }
+
+        /* Forzar modal fullscreen */
+        #reporteGlobalModal .modal-dialog {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+        }
+
+        #reporteGlobalModal .modal-content {
+            height: 100vh !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+
+        #reporteGlobalModal .modal-body {
+            overflow-y: auto;
         }
     </style>
 

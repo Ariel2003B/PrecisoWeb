@@ -36,4 +36,9 @@ class Produccion extends Model
     {
         return $this->belongsTo(HojaTrabajo::class, 'id_hoja');
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(ProduccionTicket::class, 'id_produccion');
+    }
 }

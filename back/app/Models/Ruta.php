@@ -20,7 +20,8 @@ class Ruta extends Model
 
     protected $fillable = [
         'descripcion',
-        'EMP_ID'
+        'EMP_ID',
+        'valor_pasajero',
     ];
 
     public function hojas_trabajo()
