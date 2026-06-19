@@ -213,25 +213,25 @@
         }
 
         /* Forzar modal fullscreen */
-        #reporteGlobalModal .modal-dialog {
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100% !important;
-            margin: 0 !important;
+        #reporteGlobalModal {
             padding: 0 !important;
         }
 
+        #reporteGlobalModal .modal-dialog {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            margin: 0 !important;
+        }
+
         #reporteGlobalModal .modal-content {
-            min-height: 100vh !important;
             height: 100% !important;
             border: none !important;
             border-radius: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
         }
 
         #reporteGlobalModal .modal-body {
-            flex: 1 !important;
             overflow-y: auto;
         }
     </style>
