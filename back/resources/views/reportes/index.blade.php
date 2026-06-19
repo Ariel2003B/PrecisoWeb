@@ -216,17 +216,22 @@
         #reporteGlobalModal .modal-dialog {
             width: 100vw !important;
             max-width: 100vw !important;
-            height: 100vh !important;
+            height: 100% !important;
             margin: 0 !important;
+            padding: 0 !important;
         }
 
         #reporteGlobalModal .modal-content {
-            height: 100vh !important;
+            min-height: 100vh !important;
+            height: 100% !important;
             border: none !important;
             border-radius: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
 
         #reporteGlobalModal .modal-body {
+            flex: 1 !important;
             overflow-y: auto;
         }
     </style>
