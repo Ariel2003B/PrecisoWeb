@@ -141,8 +141,7 @@
                                 <i class="fa-brands fa-google-drive fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">GOOGLE DRIVE</h4>
-                            <a class="btn btn-success" target="_blank"
-                                href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&followup=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&ifkv=AeZLP9-5DeLhxmOumIzRqjg75tnu7ARb-PJ4kJqAKXsKbT118fIevNTIhcCodd5k_VTr3SGo09e4gw&osid=1&passive=1209600&service=wise&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S958401757%3A1735063661397253&ddm=1">Visitar
+                            <a class="btn btn-success"                                href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&followup=https%3A%2F%2Fdrive.google.com%2Fdrive%2F%3Fdmr%3D1%26ec%3Dwgc-drive-hero-goto&ifkv=AeZLP9-5DeLhxmOumIzRqjg75tnu7ARb-PJ4kJqAKXsKbT118fIevNTIhcCodd5k_VTr3SGo09e4gw&osid=1&passive=1209600&service=wise&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S958401757%3A1735063661397253&ddm=1">Visitar
                                 página</a>
                         </div>
                     @endif
@@ -192,15 +191,13 @@
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
                                     alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
-                            <p><a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud" target="_blank"
-                                    class="text-primary">Reposicion de chips</a></p>
+                            <p><a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud"                                    class="text-primary">Reposicion de chips</a></p>
                             <!-- Otra Imagen con enlace -->
                             <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
                                     alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
-                            <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank"
-                                    class="text-primary">Factuacion CLARO</a></p>
+                            <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero"                                    class="text-primary">Factuacion CLARO</a></p>
                             @if (Auth::user()->permisos->contains('DESCRIPCION', 'SIMCARDS'))
                                 <a href="{{ route('simcards.index') }}" target="_blank">
                                     <img src="{{ asset('img/precisoimg/logoPreciso.jpg') }}" alt="Imagen Claro 2"
@@ -230,8 +227,7 @@
                                 <i class="fas fa-cloud fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">DIGITAL OCEAN</h4>
-                            <a class="btn btn-success" target="_blank"
-                                href="https://cloud.digitalocean.com/login">Visitar
+                            <a class="btn btn-success"                                href="https://cloud.digitalocean.com/login">Visitar
                                 pagina</a>
                         </div>
                     @endif
@@ -242,8 +238,7 @@
                                 <i class="fas fa-computer fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">GODADDY</h4>
-                            <a class="btn btn-success" target="_blank"
-                                href="https://sso.godaddy.com/?realm=idp&app=cart&path=%2Fcheckoutapi%2Fv1%2Fredirects%2Flogin">Visitar
+                            <a class="btn btn-success"                                href="https://sso.godaddy.com/?realm=idp&app=cart&path=%2Fcheckoutapi%2Fv1%2Fredirects%2Flogin">Visitar
                                 pagina</a>
                         </div>
                     @endif
@@ -531,70 +526,58 @@
                                 <!-- Lista -->
                                 <ul id="listaOperadoras" class="list-group text-start">
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EmWsJmG8EEFPquLbG0TbYrIBf-wlhylDidrO4fv8Nudafg?email=cia.metropoli%40gmail.com&e=0APeRY">
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EmWsJmG8EEFPquLbG0TbYrIBf-wlhylDidrO4fv8Nudafg?email=cia.metropoli%40gmail.com&e=0APeRY">
                                             Transmetropoli S.A.
                                         </a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/ElJtYx5sbLJJoKxyUcNBRrcBeQA5P3yXvSvBrjDSSRAKPg">
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/ElJtYx5sbLJJoKxyUcNBRrcBeQA5P3yXvSvBrjDSSRAKPg">
                                             Trans Sirena Express S.A.
                                         </a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/El7k5IVxJg9DqLpk4AUkaXkBFBQymvVjYsGhWWI4ofiivA?email=transperifericosb%40gmail.com&e=vBb7M4">
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/El7k5IVxJg9DqLpk4AUkaXkBFBQymvVjYsGhWWI4ofiivA?email=transperifericosb%40gmail.com&e=vBb7M4">
                                             Transperiféricos S.A.
                                         </a>
                                     </li>
                                     <li class="list-group-item">
 
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EidP6bxW9BJKihOYsxVWWNIBftqzJDn0LYeFxCEo4VMFLg?email=intra31express%40gmail.com&e=ek2IIz">Intraexpress
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EidP6bxW9BJKihOYsxVWWNIBftqzJDn0LYeFxCEo4VMFLg?email=intra31express%40gmail.com&e=ek2IIz">Intraexpress
                                             S.A.</a>
                                     </li>
                                     <li class="list-group-item">
 
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EllmmQmeM9xBv5R18R044xMBbZV1-WFnYWanpJ0pZyNtvg?email=operadora_quitumbe%40hotmail.com&e=00qvv5">Quitumbe
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EllmmQmeM9xBv5R18R044xMBbZV1-WFnYWanpJ0pZyNtvg?email=operadora_quitumbe%40hotmail.com&e=00qvv5">Quitumbe
                                             S.A.</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Ety5AbNLp7xIn0nKQ3G9NOwB0YVG3BXemX3nr6cZeoOsjg?email=tstransporsel%40hotmail.com&e=4jO9Bc">Transporsel
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Ety5AbNLp7xIn0nKQ3G9NOwB0YVG3BXemX3nr6cZeoOsjg?email=tstransporsel%40hotmail.com&e=4jO9Bc">Transporsel
                                             S.A.</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EoQ17-OVtQxFvA8VYFoHWGIB-2jQwQojjh_YIS2XxCPD8A?email=kinaraexpress%40hotmail.com&e=gtKHm5">Kinara
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EoQ17-OVtQxFvA8VYFoHWGIB-2jQwQojjh_YIS2XxCPD8A?email=kinaraexpress%40hotmail.com&e=gtKHm5">Kinara
                                             Express S.A.</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EiIwcao6BPlEjsYR0FEBWEABiKZmd0A0A-A9zspBvVt3aw?email=ciaruvitransa2017%40hotmail.com&e=B03UfB">Rutvitransa
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EiIwcao6BPlEjsYR0FEBWEABiKZmd0A0A-A9zspBvVt3aw?email=ciaruvitransa2017%40hotmail.com&e=B03UfB">Rutvitransa
                                             S.A</a>
                                     </li>
 
 
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/ErOGhhjM_LBEsdAMGaH0MkQBg0eR0K-CLyi6GxFnsptbLw?email=transfloresta2%40gmail.com&e=r8JfWG">Transfloresta
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/ErOGhhjM_LBEsdAMGaH0MkQBg0eR0K-CLyi6GxFnsptbLw?email=transfloresta2%40gmail.com&e=r8JfWG">Transfloresta
                                             S.A.</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Eix4q5kNVZ1Nn_zy4onKZFYBoc-Hnj1X535SyS5yBjtR0Q?email=urbanquito2017%40gmail.com&e=n9YNNw">UrbanQuito
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Eix4q5kNVZ1Nn_zy4onKZFYBoc-Hnj1X535SyS5yBjtR0Q?email=urbanquito2017%40gmail.com&e=n9YNNw">UrbanQuito
                                             S.A.</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Eimynka85wBPqjjUbFp6m14BSdHPe9v72DI1PHeoGo4YIw?email=stalin.yepez%40hotmail.com&e=jpXkzU">Nacional
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/Eimynka85wBPqjjUbFp6m14BSdHPe9v72DI1PHeoGo4YIw?email=stalin.yepez%40hotmail.com&e=jpXkzU">Nacional
                                             S.A.</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a target="_blank"
-                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EotoF48EFdtNmyieE73Hqp4BFnQjj5AdEZdOJp44-FIECg?email=semgyllfor%40yahoo.com&e=2HeipY">Semgyllfor
+                                        <a                                            href="https://mdmqdireccioninformatica-my.sharepoint.com/:f:/g/personal/dmgm_movilidad_quito_gob_ec/EotoF48EFdtNmyieE73Hqp4BFnQjj5AdEZdOJp44-FIECg?email=semgyllfor%40yahoo.com&e=2HeipY">Semgyllfor
                                             S.A.</a>
                                     </li>
                                 </ul>
