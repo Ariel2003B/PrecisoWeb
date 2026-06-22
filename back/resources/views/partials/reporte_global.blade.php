@@ -9,7 +9,7 @@
                 <th>Tickets</th>
                 <th>$ Tickets</th>
             @endif
-            <th>Pasajeros Wialon</th>
+            <th>Contador de Pasajeros</th>
             @if ($ticketTipos->count() > 0)
                 <th>Diferencia</th>
             @endif
