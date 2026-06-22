@@ -18,9 +18,9 @@
         <section class="section">
             <!-- Añadir botón para abrir el modal -->
             <div class="container mb-4">
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reporteGlobalModal">
+                <a href="{{ route('recaudo.index') }}" class="btn btn-success">
                     Recaudo de la Flota
-                </button>
+                </a>
             </div>
 
             <div class="container mb-4 border rounded p-3 bg-light">
@@ -144,167 +144,17 @@
         </section>
     </main>
 
-    <!-- Modal Recaudo fullscreen -->
-    <div class="modal fade" id="reporteGlobalModal" tabindex="-1" aria-labelledby="reporteGlobalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header py-2">
-                    <h5 class="modal-title" id="reporteGlobalLabel">Recaudo de la Flota</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-3">
-                    <form id="reporteGlobalForm">
-                        <div class="row mb-2 g-2 align-items-end">
-                            <div class="col-md-3">
-                                <label for="fecha_inicio_reporte" class="form-label mb-0 small">Fecha Desde</label>
-                                <input type="date" id="fecha_inicio_reporte" class="form-control form-control-sm" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="fecha_fin_reporte" class="form-label mb-0 small">Fecha Hasta</label>
-                                <input type="date" id="fecha_fin_reporte" class="form-control form-control-sm" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="ruta_reporte" class="form-label mb-0 small">Ruta</label>
-                                <select name="ruta" id="ruta_reporte" class="form-control form-control-sm">
-                                    <option value="">Todas las rutas</option>
-                                    @foreach ($rutas as $ruta)
-                                        <option value="{{ $ruta->id_ruta }}">{{ $ruta->descripcion }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3 d-flex gap-1">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="generarReporte()">Visualizar</button>
-                                <button type="button" class="btn btn-success btn-sm" onclick="generarExcel()">Excel</button>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="generarPDF()">PDF</button>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="reporteGlobalResultado" class="mt-2"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <style>
-        .btn-group .btn {
-            margin-right: 5px;
-        }
-
-        .btn-group .btn:last-child {
-            margin-right: 0;
-        }
-
-        .table-bordered th,
-        .table-bordered td {
-            padding: 6px;
-        }
-
-        .table th,
-        .table td {
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-
-        .table th:last-child,
-        .table td:last-child {
-            width: 1%;
-            white-space: nowrap;
-        }
-
-        div#reporteGlobalModal.modal .modal-dialog {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            transform: none !important;
-        }
-
-        div#reporteGlobalModal.modal .modal-content {
-            height: 100% !important;
-            border: none !important;
-            border-radius: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-        }
-
-        div#reporteGlobalModal.modal .modal-body {
-            flex: 1 1 auto !important;
-            overflow-y: auto !important;
-        }
-
-        div#reporteGlobalModal.modal {
-            padding: 0 !important;
-        }
+        .btn-group .btn { margin-right: 5px; }
+        .btn-group .btn:last-child { margin-right: 0; }
+        .table-bordered th, .table-bordered td { padding: 6px; }
+        .table th, .table td { padding-left: 5px; padding-right: 5px; }
+        .table th:last-child, .table td:last-child { width: 1%; white-space: nowrap; }
     </style>
 
 
 
 
-    <script>
-        function generarReporte() {
-            const fechaInicio = document.getElementById('fecha_inicio_reporte').value;
-            const fechaFin = document.getElementById('fecha_fin_reporte').value;
-            const rutaId = document.getElementById('ruta_reporte').value;
-
-            if (!fechaInicio || !fechaFin) {
-                alert('Por favor selecciona el rango de fechas.');
-                return;
-            }
-
-            fetch("{{ route('reporte.global') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        fecha_inicio: fechaInicio,
-                        fecha_fin: fechaFin,
-                        ruta: rutaId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('reporteGlobalResultado').innerHTML = data.html;
-
-
-                    // Inicializar DataTables después de cargar la tabla
-                    $('#tablaProduccion').DataTable({
-                        "order": [
-                            [2, "desc"]
-                        ], // Ordenar inicialmente por Producción ($) de mayor a menor
-                        "paging": false, // Desactiva la paginación
-                        "searching": false, // Desactiva el campo de búsqueda
-                        "info": false, // Desactiva la información de registros
-                        "lengthChange": false, // Desactiva la opción de cambiar el número de registros mostrados
-                        "ordering": true, // Mantiene la opción de ordenar por columnas
-                        "language": {
-                            "paginate": {
-                                "next": "Siguiente",
-                                "previous": "Anterior"
-                            }
-                        }
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function generarExcel() {
-            window.location.href = "{{ route('reporte.global.excel') }}";
-        }
-
-        function generarPDF() {
-            window.location.href = "{{ route('reporte.global.pdf') }}";
-        }
-    </script>
 
     <script>
         $(document).ready(function() {

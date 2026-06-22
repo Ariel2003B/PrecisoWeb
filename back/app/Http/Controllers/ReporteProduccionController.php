@@ -302,6 +302,89 @@ class ReporteProduccionController extends Controller
 
 
 
+    public function recaudoIndex(Request $request)
+    {
+        $user = auth()->user();
+        $rutas = Ruta::where('EMP_ID', $user->EMP_ID)->get();
+
+        if (!$request->filled('fecha_inicio') || !$request->filled('fecha_fin')) {
+            return view('reportes.recaudo', compact('rutas'));
+        }
+
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin    = $request->input('fecha_fin');
+        $rutaId      = $request->input('ruta');
+
+        if ($fechaInicio > $fechaFin) {
+            [$fechaInicio, $fechaFin] = [$fechaFin, $fechaInicio];
+        }
+
+        $query = HojaTrabajo::with(['unidad', 'producciones.tickets.ticketTipo', 'ruta'])
+            ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->whereHas('ruta', fn($q) => $q->where('EMP_ID', $user->EMP_ID));
+
+        if ($rutaId) {
+            $query->where('id_ruta', $rutaId);
+        }
+
+        $hojas = $query->get();
+
+        $ticketTipos = TicketTipo::where('EMP_ID', $user->EMP_ID)
+            ->where('activo', 1)
+            ->orderBy('nombre')
+            ->get();
+
+        $produccionPorUnidad = [];
+        $totalGlobal = 0;
+        $totalVueltasGlobal = 0;
+
+        foreach ($hojas as $hoja) {
+            $placa = $hoja->unidad->placa ?? '-';
+            $habil = $hoja->unidad->numero_habilitacion ?? '-';
+            $unidadKey = $placa . ' (' . $habil . ')';
+
+            if (!isset($produccionPorUnidad[$unidadKey])) {
+                $produccionPorUnidad[$unidadKey] = [
+                    'total_produccion' => 0,
+                    'total_vueltas' => 0,
+                    'pasajeros_wialon' => 0,
+                    'tickets_por_tipo' => [],
+                ];
+                foreach ($ticketTipos as $tt) {
+                    $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tt->id] = ['cantidad' => 0, 'valor' => 0];
+                }
+            }
+
+            foreach ($hoja->producciones as $produccion) {
+                $produccionPorUnidad[$unidadKey]['total_produccion'] += (float) $produccion->valor_vuelta;
+                $produccionPorUnidad[$unidadKey]['total_vueltas']++;
+                $totalVueltasGlobal++;
+                $produccionPorUnidad[$unidadKey]['pasajeros_wialon'] += (int) ($produccion->pasajeros_subida ?? 0);
+
+                foreach ($produccion->tickets as $pt) {
+                    $tipoId = $pt->id_ticket_tipo;
+                    if (isset($produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId])) {
+                        $cantidad = max(0, $pt->numero_fin - $pt->numero_inicio + 1);
+                        $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['cantidad'] += $cantidad;
+                        $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['valor'] += $cantidad * ($pt->ticketTipo->valor ?? 0);
+                    }
+                }
+            }
+
+            $totalGlobal += $produccionPorUnidad[$unidadKey]['total_produccion'];
+        }
+
+        // Guardar en sesión para export Excel/PDF
+        session([
+            'reporte_global_data' => $hojas,
+            'reporte_global_filters' => compact('fechaInicio', 'fechaFin', 'rutaId'),
+        ]);
+
+        return view('reportes.recaudo', compact(
+            'rutas', 'produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal', 'ticketTipos'
+        ));
+    }
+
     public function generarExcel()
     {
         $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
