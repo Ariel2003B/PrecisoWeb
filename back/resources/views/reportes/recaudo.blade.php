@@ -127,9 +127,21 @@
                                             <td>
                                                 <strong>{{ $c }}</strong>
                                                 @if ($c > 0)
-                                                    <a href="#" class="text-primary ms-1" style="font-size: 0.65rem;"
-                                                       data-bs-toggle="collapse" data-bs-target="#det{{ $rowIdx }}">
-                                                        detalle
+                                                    @php
+                                                        $detalleHtml = '<table class=&quot;table table-sm table-bordered mb-0 text-center&quot; style=&quot;font-size:0.75rem&quot;><thead><tr><th>Tipo</th><th>Valor</th><th>Cant.</th><th>Subtotal</th></tr></thead><tbody>';
+                                                        foreach ($ticketTipos as $tt) {
+                                                            $inf = $datos['tickets_por_tipo'][$tt->id] ?? ['cantidad' => 0, 'valor' => 0];
+                                                            if ($inf['cantidad'] > 0) {
+                                                                $detalleHtml .= '<tr><td>' . $tt->nombre . '</td><td>$' . number_format($tt->valor, 2) . '</td><td>' . $inf['cantidad'] . '</td><td>$' . number_format($inf['valor'], 2) . '</td></tr>';
+                                                            }
+                                                        }
+                                                        $detalleHtml .= '</tbody></table>';
+                                                    @endphp
+                                                    <a href="#" class="btn-detalle text-primary ms-1" style="font-size: 0.65rem;"
+                                                       data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="focus"
+                                                       data-bs-placement="left" title="Detalle Tickets"
+                                                       data-bs-content="{{ $detalleHtml }}">
+                                                        ver
                                                     </a>
                                                 @endif
                                             </td>
@@ -151,35 +163,6 @@
                                             </td>
                                         @endif
                                     </tr>
-                                    @if ($hayTickets && $c > 0)
-                                        <tr class="collapse" id="det{{ $rowIdx }}">
-                                            <td colspan="9" class="p-0">
-                                                <table class="table table-sm mb-0 table-light" style="font-size: 0.75rem;">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Tipo</th>
-                                                            <th>Valor Unit.</th>
-                                                            <th>Cantidad</th>
-                                                            <th>Subtotal</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($ticketTipos as $tt)
-                                                            @php $info = $datos['tickets_por_tipo'][$tt->id] ?? ['cantidad' => 0, 'valor' => 0]; @endphp
-                                                            @if ($info['cantidad'] > 0)
-                                                                <tr>
-                                                                    <td>{{ $tt->nombre }}</td>
-                                                                    <td>${{ number_format($tt->valor, 2) }}</td>
-                                                                    <td>{{ $info['cantidad'] }}</td>
-                                                                    <td>${{ number_format($info['valor'], 2) }}</td>
-                                                                </tr>
-                                                            @endif
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    @endif
                                 @endforeach
                             </tbody>
                             <tfoot>
@@ -239,6 +222,12 @@
                 table.column($(this).parent().index())
                     .search(this.value)
                     .draw();
+            });
+
+            // Inicializar popovers de Bootstrap
+            var popoverList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverList.map(function (el) {
+                return new bootstrap.Popover(el, { sanitize: false });
             });
         });
     </script>
