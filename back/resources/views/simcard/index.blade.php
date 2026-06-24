@@ -157,7 +157,7 @@
                                                     {{ $p['fecha_servicio'] }}
                                                 @endif
                                                 @if ($p['estado_cuota'] === $p['estado'] && $p['fecha_cuota'])
-                                                    Cuota vencida: {{ $p['fecha_cuota'] }}
+                                                    Equipo vencido: {{ $p['fecha_cuota'] }}
                                                 @endif
                                             </small>
                                         @endif

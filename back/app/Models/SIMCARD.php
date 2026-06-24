@@ -199,7 +199,7 @@ class SIMCARD extends Model
 				$fuente = 'Cuota';
 				$estadoCuota = 'VENCIDO';
 				$fechaCuota = $fecha;
-				$resumen = 'Cuota pendiente vencida';
+				$resumen = 'Equipo vencido';
 			} elseif ($fecha >= $hoy && $fecha <= $proximo && $estado !== 'VENCIDO') {
 				// Solo si aún no marcamos VENCIDO por otra cosa
 				$estado = 'PROXIMO';
@@ -207,7 +207,7 @@ class SIMCARD extends Model
 				$fuente = 'Cuota';
 				$estadoCuota = 'PROXIMO';
 				$fechaCuota = $fecha;
-				$resumen = 'Cuota próxima a vencer';
+				$resumen = 'Equipo próximo a vencer';
 			}
 		}
 
@@ -233,14 +233,14 @@ class SIMCARD extends Model
 				$fuente = 'Servicio';
 				$estadoServicio = 'VENCIDO';
 				$fechaServicio = $fechaServ;
-				$resumen = 'Cuota de servicio vencida';
+				$resumen = 'Servicio vencido';
 			} elseif ($fechaServ >= $hoy && $fechaServ <= $proximo && $estado !== 'VENCIDO') {
 				$estado = 'PROXIMO';
 				$color = 'warning';
 				$fuente = 'Servicio';
 				$estadoServicio = 'PROXIMO';
 				$fechaServicio = $fechaServ;
-				$resumen = 'Cuota de servicio próxima a vencer';
+				$resumen = 'Servicio próximo a vencer';
 			}
 		}
 
@@ -257,7 +257,7 @@ class SIMCARD extends Model
 				$fuente = 'Renovación';
 				$estadoServicio = 'VENCIDO';
 				$fechaServicio = $fechaSig;
-				$resumen = 'Servicio no renovado';
+				$resumen = 'Servicio vencido';
 			}
 			// Si está por llegar y aún no hay nada VENCIDO
 			elseif ($fechaSig >= $hoy && $fechaSig <= $proximo && $estado !== 'VENCIDO') {
@@ -266,7 +266,7 @@ class SIMCARD extends Model
 				$fuente = 'Renovación';
 				$estadoServicio = 'PROXIMO';
 				$fechaServicio = $fechaSig;
-				$resumen = 'Servicio próximo a renovar';
+				$resumen = 'Servicio próximo a vencer';
 			}
 		}
 
