@@ -11,7 +11,7 @@ class TicketTipoController extends Controller
     public function index($empId)
     {
         $empresa = EMPRESA::findOrFail($empId);
-        $tickets = TicketTipo::where('EMP_ID', $empId)->orderBy('nombre')->get();
+        $tickets = TicketTipo::where('EMP_ID', $empId)->orderBy('valor', 'asc')->get();
 
         return view('ticket_tipos.index', compact('empresa', 'tickets'));
     }

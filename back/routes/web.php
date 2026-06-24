@@ -86,12 +86,13 @@ Route::get('/log-test', function () {
 Route::get('/empresa/{empresa}/stops', [EmpresaController::class, 'stopsForm'])->name('empresa.stops.form');
 Route::post('/empresa/{empresa}/stops/save', [EmpresaController::class, 'stopsSave'])->name('empresa.stops.save');
 
-Route::get('/empresa/{empId}/tickets', [TicketTipoController::class, 'index'])->name('ticket-tipos.index');
-Route::post('/ticket-tipos', [TicketTipoController::class, 'store'])->name('ticket-tipos.store');
-Route::put('/ticket-tipos/{id}', [TicketTipoController::class, 'update'])->name('ticket-tipos.update');
-Route::patch('/ticket-tipos/{id}/toggle', [TicketTipoController::class, 'toggleActivo'])->name('ticket-tipos.toggle');
-//rutas segun perfiles 
+//rutas segun perfiles
 Route::middleware(['auth'])->group(function () {
+    Route::get('/empresa/{empId}/tickets', [TicketTipoController::class, 'index'])->name('ticket-tipos.index');
+    Route::post('/ticket-tipos', [TicketTipoController::class, 'store'])->name('ticket-tipos.store');
+    Route::put('/ticket-tipos/{id}', [TicketTipoController::class, 'update'])->name('ticket-tipos.update');
+    Route::patch('/ticket-tipos/{id}/toggle', [TicketTipoController::class, 'toggleActivo'])->name('ticket-tipos.toggle');
+
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
     Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
