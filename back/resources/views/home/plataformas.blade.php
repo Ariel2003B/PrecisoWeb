@@ -33,7 +33,7 @@
                                 <i class="fas fa-bus fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">PRECISOBUS</h4>
-                            <a class="btn btn-success" href="https://precisobus.precisogps.com:8443" target="_blank">Visitar
+                            <a class="btn btn-success" href="https://precisobus.precisogps.com:8443" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -44,7 +44,7 @@
                                 <i class="fas fa-satellite-dish fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">RASTREA TU VEHICULO</h4>
-                            <a class="btn btn-success" href="http://www.precisogps.online/" target="_blank">Visitar
+                            <a class="btn btn-success" href="http://www.precisogps.online/" >Visitar
                                 página</a>
                         </div>
                     @endif --}}
@@ -55,7 +55,7 @@
                                 <i class="fas fa-clock fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">MINUTOS CAIDOS</h4>
-                            <a class="btn btn-success" href="http://157.245.141.38:4020/login" target="_blank">Visitar
+                            <a class="btn btn-success" href="http://157.245.141.38:4020/login" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -66,7 +66,7 @@
                                 <i class="fas fa-wrench fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">MANTENIMIENTO VEHICULAR</h4>
-                            <a class="btn btn-success" href="https://fleetrun.wialon.com/login" target="_blank">Visitar
+                            <a class="btn btn-success" href="https://fleetrun.wialon.com/login" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -77,7 +77,7 @@
                                 <i class="fas fa-cash-register fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">CAJA COMÚN</h4>
-                            <a class="btn btn-success" href="http://157.230.189.65:5030/login" target="_blank">Visitar
+                            <a class="btn btn-success" href="http://157.230.189.65:5030/login" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -88,7 +88,7 @@
                                 <i class="fa-solid fa-person fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">CONTEO Y RECAUDO</h4>
-                            <a class="btn btn-success" href="{{ route('reportes.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('reportes.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -109,7 +109,7 @@
                                 <i class="fas fa-file-invoice fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">SISTEMA CONTABLE</h4>
-                            <a class="btn btn-success" target="_blank" href="https://fws.com.ec">Visitar
+                            <a class="btn btn-success"  href="https://fws.com.ec">Visitar
                                 pagina</a>
                         </div>
                     @endif
@@ -120,7 +120,7 @@
                                 <i class="fa-solid fa-circle-dot fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">REPLICAR GEOCERCAS</h4>
-                            <a class="btn btn-success" href="{{ route('geocercas.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('geocercas.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -154,7 +154,7 @@
                             </span>
                             <h4 class="my-3">KARY LA PRECISA<h4>
                                     <a class="btn btn-success" href="https://apigatewaycenter.com/login"
-                                        target="_blank">Visitar
+                                        >Visitar
                                         página</a>
                         </div>
                     @endif
@@ -165,7 +165,7 @@
                                 <i class="fa-solid fa-car-side fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">E-DRIVERS</h4>
-                            <a class="btn btn-success" href="http://159.223.161.160:3020/forms" target="_blank">Visitar
+                            <a class="btn btn-success" href="http://159.223.161.160:3020/forms" >Visitar
                                 página</a>
                         </div>
                     @endif --}}
@@ -187,23 +187,23 @@
                         <p class="text-center mb-3 fw-bold">Selecciona una opción para SIMCARDS:</p>
                         <div>
                             <!-- Imagen con enlace -->
-                            <a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud" target="_blank">
+                            <a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud" >
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
                                     alt="Imagen Claro 1" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
                             <p><a href="https://www.miclaro.com.ec/ivrdigital/codigo-solicitud"                                    class="text-primary">Reposicion de chips</a></p>
                             <!-- Otra Imagen con enlace -->
-                            <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" target="_blank">
+                            <a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero" >
                                 <img src="https://1000marcas.net/wp-content/uploads/2021/02/Claro-Logo-2004.png"
                                     alt="Imagen Claro 2" class="img-fluid mb-2" style="max-width: 90px;">
                             </a>
                             <p><a href="https://miclaro.com.ec/pagatufactura/web/index.php/llena/numero"                                    class="text-primary">Factuacion CLARO</a></p>
                             @if (Auth::user()->permisos->contains('DESCRIPCION', 'SIMCARDS'))
-                                <a href="{{ route('simcards.index') }}" target="_blank">
+                                <a href="{{ route('simcards.index') }}" >
                                     <img src="{{ asset('img/precisoimg/logoPreciso.jpg') }}" alt="Imagen Claro 2"
                                         class="img-fluid mb-2" style="max-width: 90px;">
                                 </a>
-                                <p><a href="{{ route('simcards.index') }}" target="_blank" class="text-primary">Gestionar
+                                <p><a href="{{ route('simcards.index') }}"  class="text-primary">Gestionar
                                         Simcards</a></p>
                             @endif
                         </div>
@@ -283,7 +283,7 @@
                                 <i class="fa-solid fa-money-bill fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">SANCIONES MINUTOS CAIDOS</h4>
-                            <a class="btn btn-success" href="{{ route('reportes.dia.nimbus') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('reportes.dia.nimbus') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -294,7 +294,7 @@
                                 <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">GESTION DE PLANES</h4>
-                            <a class="btn btn-success" href="{{ route('plan.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('plan.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -305,7 +305,7 @@
                                 <i class="fa-solid fa-blog fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">GESTION DE BLOGS</h4>
-                            <a class="btn btn-success" href="{{ route('blog.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('blog.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -316,7 +316,7 @@
                                 <i class="fa-solid fa-money-bill-wave fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">GESTION DE EQUIPOS Y ACCESORIOS</h4>
-                            <a class="btn btn-success" href="{{ route('equipos.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('equipos.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -328,7 +328,7 @@
                                 <i class="fa-solid fa-mobile fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">APLICATIVO MOVIL</h4>
-                            <a class="btn btn-success" href="{{ route('aplicacion.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('aplicacion.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -339,7 +339,7 @@
                                 <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
                             </span>
                             <h4 class="my-3">VENTAS</h4>
-                            <a class="btn btn-success" href="{{ route('ventas.index') }}" target="_blank">Visitar
+                            <a class="btn btn-success" href="{{ route('ventas.index') }}" >Visitar
                                 página</a>
                         </div>
                     @endif
@@ -353,18 +353,18 @@
                         <p class="text-center mb-3 fw-bold">Selecciona una opción para WIALON:</p>
                         <div>
                             <!-- Imagen con enlace -->
-                            <a href="https://cms.wialon.us" target="_blank">
+                            <a href="https://cms.wialon.us" >
                                 <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
                                     alt="Imagen WIALON 1" class="img-fluid mb-2" style="max-width: 80px;">
                             </a>
-                            <p><a href="https://cms.wialon.us" target="_blank" class="text-primary">CMS WIALON</a>
+                            <p><a href="https://cms.wialon.us"  class="text-primary">CMS WIALON</a>
                             </p>
                             <!-- Otra Imagen con enlace -->
-                            <a href="https://my.wialon.com/es/login" target="_blank">
+                            <a href="https://my.wialon.com/es/login" >
                                 <img src="https://help.wialon.com/download/attachments/7460006/wialonhostingen?version=3&modificationDate=1628841371129&api=v2"
                                     alt="Imagen WIALON 2" class="img-fluid mb-2" style="max-width: 80px;">
                             </a>
-                            <p><a href="https://my.wialon.com/es/login" target="_blank" class="text-primary">Pagos
+                            <p><a href="https://my.wialon.com/es/login"  class="text-primary">Pagos
                                     WIALON</a></p>
                         </div>
                     </div>
