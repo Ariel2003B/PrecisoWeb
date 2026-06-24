@@ -78,21 +78,6 @@
                                         <th>Tarifa Promedio</th>
                                     @endif
                                 </tr>
-                                <tr class="filtros">
-                                    <th><input type="text" placeholder="Filtrar..."></th>
-                                    <th><input type="text" placeholder="Filtrar..."></th>
-                                    <th><input type="text" placeholder="Filtrar..."></th>
-                                    @if ($hayTickets)
-                                        <th><input type="text" placeholder="Filtrar..."></th>
-                                        <th><input type="text" placeholder="Filtrar..."></th>
-                                    @endif
-                                    <th><input type="text" placeholder="Filtrar..."></th>
-                                    @if ($hayTickets)
-                                        <th><input type="text" placeholder="Filtrar..."></th>
-                                        <th><input type="text" placeholder="Filtrar..."></th>
-                                        <th><input type="text" placeholder="Filtrar..."></th>
-                                    @endif
-                                </tr>
                             </thead>
                             <tbody>
                                 @foreach ($produccionPorUnidad as $unidad => $datos)
@@ -199,32 +184,27 @@
     </main>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 
     @if (isset($produccionPorUnidad))
     <script>
         $(document).ready(function () {
-            var table = $('#tablaRecaudo').DataTable({
+            $('#tablaRecaudo').DataTable({
                 order: [[2, 'desc']],
                 paging: false,
                 info: false,
+                searching: true,
                 lengthChange: false,
-                orderCellsTop: true,
+                fixedHeader: true,
                 language: {
                     search: "Buscar:",
                     zeroRecords: "Sin resultados"
                 }
             });
 
-            // Filtros por columna
-            $('#tablaRecaudo thead .filtros input').on('keyup change', function () {
-                table.column($(this).parent().index())
-                    .search(this.value)
-                    .draw();
-            });
-
-            // Inicializar popovers de Bootstrap
             var popoverList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
             popoverList.map(function (el) {
                 return new bootstrap.Popover(el, { sanitize: false });
@@ -232,11 +212,6 @@
         });
     </script>
     <style>
-        #tablaRecaudo thead .filtros input {
-            width: 100%;
-            font-size: 0.7rem;
-            padding: 2px 4px;
-        }
         .dataTables_filter { margin-bottom: 8px; }
     </style>
     @endif
