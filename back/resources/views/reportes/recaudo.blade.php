@@ -61,21 +61,36 @@
                         $rowIdx = 0;
                     @endphp
                     <div class="table-responsive">
-                        <table class="table table-bordered table-sm text-center align-middle" style="font-size: 0.8rem;">
+                        <table id="tablaRecaudo" class="table table-bordered table-sm text-center align-middle" style="font-size: 0.8rem;">
                             <thead class="table-dark">
                                 <tr>
-                                    <th rowspan="2" class="align-middle">Vueltas</th>
-                                    <th rowspan="2" class="align-middle">Unidad</th>
-                                    <th rowspan="2" class="align-middle">Prod. Conductor</th>
+                                    <th>Vueltas</th>
+                                    <th>Unidad</th>
+                                    <th>Prod. Conductor</th>
                                     @if ($hayTickets)
-                                        <th rowspan="2" class="align-middle">Prod. Tickets</th>
-                                        <th rowspan="2" class="align-middle">Tickets Físicos</th>
+                                        <th>Prod. Tickets</th>
+                                        <th>Tickets Físicos</th>
                                     @endif
-                                    <th rowspan="2" class="align-middle">Cont. Pasajeros</th>
+                                    <th>Cont. Pasajeros</th>
                                     @if ($hayTickets)
-                                        <th rowspan="2" class="align-middle">Dif. Pasajeros</th>
-                                        <th rowspan="2" class="align-middle">Dif. Dinero</th>
-                                        <th rowspan="2" class="align-middle">Tarifa Promedio</th>
+                                        <th>Dif. Pasajeros</th>
+                                        <th>Dif. Dinero</th>
+                                        <th>Tarifa Promedio</th>
+                                    @endif
+                                </tr>
+                                <tr class="filtros">
+                                    <th><input type="text" placeholder="Filtrar..."></th>
+                                    <th><input type="text" placeholder="Filtrar..."></th>
+                                    <th><input type="text" placeholder="Filtrar..."></th>
+                                    @if ($hayTickets)
+                                        <th><input type="text" placeholder="Filtrar..."></th>
+                                        <th><input type="text" placeholder="Filtrar..."></th>
+                                    @endif
+                                    <th><input type="text" placeholder="Filtrar..."></th>
+                                    @if ($hayTickets)
+                                        <th><input type="text" placeholder="Filtrar..."></th>
+                                        <th><input type="text" placeholder="Filtrar..."></th>
+                                        <th><input type="text" placeholder="Filtrar..."></th>
                                     @endif
                                 </tr>
                             </thead>
@@ -199,4 +214,41 @@
             </div>
         </section>
     </main>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+
+    @if (isset($produccionPorUnidad))
+    <script>
+        $(document).ready(function () {
+            var table = $('#tablaRecaudo').DataTable({
+                order: [[2, 'desc']],
+                paging: false,
+                info: false,
+                lengthChange: false,
+                orderCellsTop: true,
+                language: {
+                    search: "Buscar:",
+                    zeroRecords: "Sin resultados"
+                }
+            });
+
+            // Filtros por columna
+            $('#tablaRecaudo thead .filtros input').on('keyup change', function () {
+                table.column($(this).parent().index())
+                    .search(this.value)
+                    .draw();
+            });
+        });
+    </script>
+    <style>
+        #tablaRecaudo thead .filtros input {
+            width: 100%;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+        }
+        .dataTables_filter { margin-bottom: 8px; }
+    </style>
+    @endif
 @endsection
