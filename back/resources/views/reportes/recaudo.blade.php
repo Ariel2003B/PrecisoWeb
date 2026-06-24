@@ -193,8 +193,17 @@
 
     @if (isset($produccionPorUnidad))
     <script>
+        function initPopovers() {
+            document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
+                var existing = bootstrap.Popover.getInstance(el);
+                if (!existing) {
+                    new bootstrap.Popover(el, { sanitize: false });
+                }
+            });
+        }
+
         $(document).ready(function () {
-            $('#tablaRecaudo').DataTable({
+            var table = $('#tablaRecaudo').DataTable({
                 order: [[2, 'desc']],
                 paging: false,
                 info: false,
@@ -206,10 +215,8 @@
                 }
             });
 
-            var popoverList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-            popoverList.map(function (el) {
-                return new bootstrap.Popover(el, { sanitize: false });
-            });
+            initPopovers();
+            table.on('draw', function () { initPopovers(); });
         });
     </script>
     <style>
