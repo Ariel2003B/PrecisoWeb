@@ -54,13 +54,15 @@
                         $totalB = 0; // Producción Tickets ($)
                         $totalC = 0; // Tickets Físicos (cantidad)
                         $totalD = 0; // Contador Pasajeros
+                        $sumaTarifas = 0; // Suma de tarifas individuales
+                        $countUnidades = 0; // Número de unidades
                         $totalesPorTipo = [];
                         foreach ($ticketTipos as $tt) {
                             $totalesPorTipo[$tt->id] = ['cantidad' => 0, 'valor' => 0];
                         }
                         $rowIdx = 0;
                     @endphp
-                    <div class="table-responsive">
+                    <div style="max-height: calc(100vh - 200px); overflow-y: auto;">
                         <table id="tablaRecaudo" class="table table-bordered table-sm text-center align-middle" style="font-size: 0.8rem;">
                             <thead class="table-dark">
                                 <tr>
@@ -100,6 +102,8 @@
 
                                         $totalA += $a;
                                         $totalB += $b;
+                                        $sumaTarifas += $tarifa;
+                                        $countUnidades++;
                                         $totalC += $c;
                                         $totalD += $d;
                                     @endphp
@@ -154,7 +158,7 @@
                                 @php
                                     $tDifPas = $totalD - $totalC;
                                     $tDifDin = $totalB - $totalA;
-                                    $tTarifa = $totalD > 0 ? $totalA / $totalD : 0;
+                                    $tTarifa = $countUnidades > 0 ? $sumaTarifas / $countUnidades : 0;
                                 @endphp
                                 <tr class="table-success fw-bold">
                                     <td>Total</td>
@@ -184,10 +188,8 @@
     </main>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 
     @if (isset($produccionPorUnidad))
     <script>
@@ -198,7 +200,6 @@
                 info: false,
                 searching: true,
                 lengthChange: false,
-                fixedHeader: true,
                 language: {
                     search: "Buscar:",
                     zeroRecords: "Sin resultados"
@@ -213,6 +214,7 @@
     </script>
     <style>
         .dataTables_filter { margin-bottom: 8px; }
+        #tablaRecaudo thead { position: sticky; top: 0; z-index: 10; }
     </style>
     @endif
 @endsection
