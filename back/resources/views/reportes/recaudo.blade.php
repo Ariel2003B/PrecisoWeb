@@ -116,20 +116,8 @@
                                             <td>
                                                 <strong>{{ $c }}</strong>
                                                 @if ($c > 0)
-                                                    @php
-                                                        $detalleHtml = '<table class=&quot;table table-sm table-bordered mb-0 text-center&quot; style=&quot;font-size:0.75rem&quot;><thead><tr><th>Tipo</th><th>Valor</th><th>Cant.</th><th>Subtotal</th></tr></thead><tbody>';
-                                                        foreach ($ticketTipos as $tt) {
-                                                            $inf = $datos['tickets_por_tipo'][$tt->id] ?? ['cantidad' => 0, 'valor' => 0];
-                                                            if ($inf['cantidad'] > 0) {
-                                                                $detalleHtml .= '<tr><td>' . $tt->nombre . '</td><td>$' . number_format($tt->valor, 2) . '</td><td>' . $inf['cantidad'] . '</td><td>$' . number_format($inf['valor'], 2) . '</td></tr>';
-                                                            }
-                                                        }
-                                                        $detalleHtml .= '</tbody></table>';
-                                                    @endphp
-                                                    <a href="#" class="btn-detalle text-primary ms-1" style="font-size: 0.65rem;"
-                                                       data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="focus"
-                                                       data-bs-placement="left" title="Detalle Tickets"
-                                                       data-bs-content="{{ $detalleHtml }}">
+                                                    <a href="#" class="text-primary ms-1" style="font-size: 0.65rem;"
+                                                       data-bs-toggle="modal" data-bs-target="#modalDet{{ $rowIdx }}">
                                                         ver
                                                     </a>
                                                 @endif
@@ -182,6 +170,65 @@
                             </tfoot>
                         </table>
                     </div>
+
+                    {{-- Modales de detalle tickets --}}
+                    @if ($hayTickets)
+                        @php $mIdx = 0; @endphp
+                        @foreach ($produccionPorUnidad as $unidad => $datos)
+                            @php
+                                $mIdx++;
+                                $tc = 0;
+                                foreach ($datos['tickets_por_tipo'] ?? [] as $inf) { $tc += $inf['cantidad']; }
+                            @endphp
+                            @if ($tc > 0)
+                                <div class="modal fade" id="modalDet{{ $mIdx }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header py-2">
+                                                <h6 class="modal-title fw-bold">{{ $unidad }}</h6>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-0">
+                                                <table class="table table-sm table-bordered text-center mb-0" style="font-size: 0.8rem;">
+                                                    <thead class="table-dark">
+                                                        <tr>
+                                                            <th>Tipo</th>
+                                                            <th>Valor Unit.</th>
+                                                            <th>Cantidad</th>
+                                                            <th>Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @php $sumCant = 0; $sumVal = 0; @endphp
+                                                        @foreach ($ticketTipos as $tt)
+                                                            @php $inf = $datos['tickets_por_tipo'][$tt->id] ?? ['cantidad' => 0, 'valor' => 0]; @endphp
+                                                            @if ($inf['cantidad'] > 0)
+                                                                @php $sumCant += $inf['cantidad']; $sumVal += $inf['valor']; @endphp
+                                                                <tr>
+                                                                    <td class="text-start">{{ $tt->nombre }}</td>
+                                                                    <td>${{ number_format($tt->valor, 2) }}</td>
+                                                                    <td>{{ $inf['cantidad'] }}</td>
+                                                                    <td>${{ number_format($inf['valor'], 2) }}</td>
+                                                                </tr>
+                                                            @endif
+                                                        @endforeach
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr class="table-success fw-bold">
+                                                            <td class="text-start">Total</td>
+                                                            <td></td>
+                                                            <td>{{ $sumCant }}</td>
+                                                            <td>${{ number_format($sumVal, 2) }}</td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @endif
                 @endif
             </div>
         </section>
@@ -193,17 +240,8 @@
 
     @if (isset($produccionPorUnidad))
     <script>
-        function initPopovers() {
-            document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
-                var existing = bootstrap.Popover.getInstance(el);
-                if (!existing) {
-                    new bootstrap.Popover(el, { sanitize: false });
-                }
-            });
-        }
-
         $(document).ready(function () {
-            var table = $('#tablaRecaudo').DataTable({
+            $('#tablaRecaudo').DataTable({
                 order: [[2, 'desc']],
                 paging: false,
                 info: false,
@@ -214,9 +252,6 @@
                     zeroRecords: "Sin resultados"
                 }
             });
-
-            initPopovers();
-            table.on('draw', function () { initPopovers(); });
         });
     </script>
     <style>
