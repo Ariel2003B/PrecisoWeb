@@ -49,6 +49,8 @@
                             <th>Hora Inicio</th>
                             <th>Hora Fin</th>
                             <th>Valor</th>
+                            <th>Cont. Pasajeros</th>
+                            <th>Valor Pasajeros</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,13 +60,35 @@
                                 <td>{{ $prod->hora_subida ?? 'Sin hora' }}</td>
                                 <td>{{ $prod->hora_bajada ?? 'Sin hora' }}</td>
                                 <td>{{ $prod->valor_vuelta ? number_format($prod->valor_vuelta, 2) : '0.00' }}</td>
+                                <td>
+                                    @if (!is_null($prod->pasajeros_subida))
+                                        {{ $prod->pasajeros_subida }}
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if (!is_null($prod->valor_pasajeros))
+                                        ${{ number_format($prod->valor_pasajeros, 2) }}
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4">No hay registros de producción.</td>
+                                <td colspan="6">No hay registros de producción.</td>
                             </tr>
                         @endforelse
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Totales</strong></td>
+                            <td><strong>${{ number_format($totalProduccion ?? 0, 2) }}</strong></td>
+                            <td><strong>{{ $hoja->producciones->sum('pasajeros_subida') }}</strong></td>
+                            <td><strong>${{ number_format($hoja->producciones->sum('valor_pasajeros'), 2) }}</strong></td>
+                        </tr>
+                    </tfoot>
                 </table>
                 <p><strong>Total Producción: ${{ number_format($totalProduccion ?? 0, 2) }}</strong></p>
 

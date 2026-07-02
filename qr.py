@@ -70,14 +70,30 @@ placas_input = [
     # "PAB5523",
     # "PUH0973",
     # "PAA9699",
+    "PAB7421",
+    "PAU0603",
+    "PAB5523",
+    "PUH0973",
+    "PAA9699",
+    "PAA4668",
+    "PAA9411",
+    "PAB3909",
+    "PAC3075",
+    "PAC5256",
+    "PAC6780",
+    "PAC9983",
+    "PAQ0542",
+    "PUH0452",
+    "PZQ0829",
+
     #SIRENA
-    "PAB6662",
-    "PAB6540",
-    "PAB6766",
-    "PAB6644",
-    "PAB6765",
-    "PAB6661",
-    "PAE2093"
+    # "PAB6662",
+    # "PAB6540",
+    # "PAB6766",
+    # "PAB6644",
+    # "PAB6765",
+    # "PAB6661",
+    # "PAE2093"
     #PICHINCHA
     # "PAB1708",
     # "PAC8931",
@@ -266,7 +282,7 @@ for unidad in unidades:
 
     draw.rectangle([(rect_x0, rect_y0), (rect_x1, rect_y1)], fill="black")
 
-    text1 = f"SIRENA - {unidad['placa_texto']}"
+    text1 = f"CATAR - {unidad['placa_texto']}"
     bbox1 = draw.textbbox((0, 0), text1, font=font)
     text_width1 = bbox1[2] - bbox1[0]
     text_x1 = (qr_width - text_width1) // 2
@@ -284,6 +300,6 @@ for unidad in unidades:
     pdf.set_font("Arial", "B", 16)
     pdf.image(image_path, x=40, y=30, w=100)
 
-pdf_name = "qrs_con_placas_sirena.pdf"
+pdf_name = "qrs_con_placas_catar.pdf"
 pdf.output(pdf_name)
 print(f"PDF generado exitosamente ✅ -> {pdf_name}")
