@@ -61,13 +61,13 @@
                                 <td>{{ $prod->hora_bajada ?? 'Sin hora' }}</td>
                                 <td>{{ $prod->valor_vuelta ? number_format($prod->valor_vuelta, 2) : '0.00' }}</td>
                                 <td>
-                                    @if (!is_null($prod->pasajeros_subida))
-                                        {{ $prod->pasajeros_subida }}
-                                    @else
-                                        <span class="text-muted">—</span>
-                                    @endif
+                                    <span class="pasajeros-val" data-prod-id="{{ $prod->id_produccion }}"
+                                          style="cursor:pointer; border-bottom:1px dashed transparent;"
+                                          title="Clic para editar">
+                                        {{ $prod->pasajeros_subida ?? '—' }}
+                                    </span>
                                 </td>
-                                <td>
+                                <td class="valor-pasajeros-{{ $prod->id_produccion }}">
                                     @if (!is_null($prod->valor_pasajeros))
                                         ${{ number_format($prod->valor_pasajeros, 2) }}
                                     @else
@@ -163,4 +163,77 @@
             </div>
         </section>
     </main>
+
+@push('scripts')
+<script>
+document.querySelectorAll('.pasajeros-val').forEach(function(span) {
+    span.addEventListener('mouseenter', function() {
+        this.style.borderBottomColor = '#aaa';
+    });
+    span.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('editing')) {
+            this.style.borderBottomColor = 'transparent';
+        }
+    });
+
+    span.addEventListener('click', function() {
+        if (this.classList.contains('editing')) return;
+        this.classList.add('editing');
+
+        var prodId   = this.dataset.prodId;
+        var current  = this.textContent.trim();
+        var original = current === '—' ? '' : current;
+
+        var input = document.createElement('input');
+        input.type  = 'number';
+        input.min   = '0';
+        input.value = original;
+        input.style.cssText = 'width:70px;padding:1px 4px;font-size:inherit;border:1px solid #666;border-radius:3px;';
+
+        this.textContent = '';
+        this.appendChild(input);
+        input.focus();
+        input.select();
+
+        var guardar = function(spanEl) {
+            var val = parseInt(input.value, 10);
+            if (isNaN(val) || val < 0) {
+                spanEl.textContent = original || '—';
+                spanEl.classList.remove('editing');
+                return;
+            }
+
+            fetch('/produccion/' + prodId + '/pasajeros', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ pasajeros_subida: val })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                spanEl.textContent = data.pasajeros_subida;
+                spanEl.classList.remove('editing');
+                var valorCell = document.querySelector('.valor-pasajeros-' + prodId);
+                if (valorCell) valorCell.textContent = '$' + data.valor_pasajeros;
+            })
+            .catch(function() {
+                spanEl.textContent = original || '—';
+                spanEl.classList.remove('editing');
+            });
+        };
+
+        var self = this;
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter')  guardar(self);
+            if (e.key === 'Escape') { self.textContent = original || '—'; self.classList.remove('editing'); }
+        });
+        input.addEventListener('blur', function() {
+            if (self.classList.contains('editing')) guardar(self);
+        });
+    });
+});
+</script>
+@endpush
 @endsection

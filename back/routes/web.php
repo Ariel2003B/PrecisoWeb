@@ -193,6 +193,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/simcards/exportExcel', [SimCardController::class, 'generarReporteExcel'])->name('simcards.exportExcel');
     Route::get('/hoja-trabajo/{id}', [HojaTrabajoController::class, 'verHojaTrabajo'])->name('hoja.ver');
+    Route::patch('/produccion/{id}/pasajeros', [HojaTrabajoController::class, 'actualizarPasajeros'])->name('produccion.pasajeros.update');
     //Route::get('/reporte-global', [ReporteProduccionController::class, 'verReporteGlobal'])->name('reporte.global');
     Route::get('/recaudo', [ReporteProduccionController::class, 'recaudoIndex'])->name('recaudo.index');
     Route::get('/recaudo/excel', [ReporteProduccionController::class, 'generarExcel'])->name('recaudo.excel');

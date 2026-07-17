@@ -307,6 +307,9 @@ class HojaTrabajoController extends Controller
             return response()->json(['message' => 'Error interno del servidor'], 500);
         }
     }
+
+
+    
     private function compressToJpeg(string $raw, int $maxW = 1600, int $quality = 72): string
     {
         // intento PNG/JPEG; si falla, devuelve el raw para no romper flujo
@@ -685,6 +688,24 @@ class HojaTrabajoController extends Controller
         }
     }
 
+
+    public function actualizarPasajeros(Request $request, $produccionId)
+    {
+        $request->validate(['pasajeros_subida' => 'required|integer|min:0']);
+
+        $prod = Produccion::with('hoja_trabajo.ruta')->findOrFail($produccionId);
+        $valorPasajero = (float) optional($prod->hoja_trabajo->ruta)->valor_pasajero;
+
+        $prod->update([
+            'pasajeros_subida' => $request->pasajeros_subida,
+            'valor_pasajeros'  => round($request->pasajeros_subida * $valorPasajero, 2),
+        ]);
+
+        return response()->json([
+            'pasajeros_subida' => $prod->pasajeros_subida,
+            'valor_pasajeros'  => number_format($prod->valor_pasajeros, 2),
+        ]);
+    }
 
     public function verHojaTrabajoApi($id)
     {
