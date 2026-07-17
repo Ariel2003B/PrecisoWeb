@@ -164,24 +164,75 @@
         </section>
     </main>
 
+<!-- Modal clave edición pasajeros -->
+<div id="modalClavePasajeros" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:8px;padding:24px 28px;width:260px;box-shadow:0 4px 20px rgba(0,0,0,0.25);">
+        <p style="margin:0 0 12px;font-weight:600;font-size:14px;color:#333;">Ingresa la clave para editar</p>
+        <input id="inputClavePasajeros" type="password" maxlength="10"
+               style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:15px;letter-spacing:4px;text-align:center;"
+               placeholder="••••">
+        <p id="claveError" style="color:#dc3545;font-size:12px;margin:6px 0 0;display:none;">Clave incorrecta</p>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+            <button id="btnClaveOk" style="flex:1;padding:6px;background:#0d6efd;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;">Confirmar</button>
+            <button id="btnClaveCancelar" style="flex:1;padding:6px;background:#6c757d;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
-document.querySelectorAll('.pasajeros-val').forEach(function(span) {
-    span.addEventListener('mouseenter', function() {
-        this.style.borderBottomColor = '#aaa';
-    });
-    span.addEventListener('mouseleave', function() {
-        if (!this.classList.contains('editing')) {
-            this.style.borderBottomColor = 'transparent';
+(function() {
+    var CLAVE = '6810';
+    var sesionAutorizada = false;
+    var pendingSpan = null;
+
+    var modal        = document.getElementById('modalClavePasajeros');
+    var inputClave   = document.getElementById('inputClavePasajeros');
+    var claveError   = document.getElementById('claveError');
+    var btnOk        = document.getElementById('btnClaveOk');
+    var btnCancelar  = document.getElementById('btnClaveCancelar');
+
+    function abrirModal(span) {
+        pendingSpan = span;
+        inputClave.value = '';
+        claveError.style.display = 'none';
+        modal.style.display = 'flex';
+        setTimeout(function() { inputClave.focus(); }, 50);
+    }
+
+    function cerrarModal() {
+        modal.style.display = 'none';
+        pendingSpan = null;
+    }
+
+    function verificarClave() {
+        if (inputClave.value === CLAVE) {
+            sesionAutorizada = true;
+            cerrarModal();
+            activarEdicion(pendingSpan);
+        } else {
+            claveError.style.display = 'block';
+            inputClave.value = '';
+            inputClave.focus();
         }
+    }
+
+    btnOk.addEventListener('click', verificarClave);
+    btnCancelar.addEventListener('click', cerrarModal);
+    inputClave.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') verificarClave();
+        if (e.key === 'Escape') cerrarModal();
+    });
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) cerrarModal();
     });
 
-    span.addEventListener('click', function() {
-        if (this.classList.contains('editing')) return;
-        this.classList.add('editing');
+    function activarEdicion(span) {
+        if (span.classList.contains('editing')) return;
+        span.classList.add('editing');
 
-        var prodId   = this.dataset.prodId;
-        var current  = this.textContent.trim();
+        var prodId   = span.dataset.prodId;
+        var current  = span.textContent.trim();
         var original = current === '—' ? '' : current;
 
         var input = document.createElement('input');
@@ -190,8 +241,8 @@ document.querySelectorAll('.pasajeros-val').forEach(function(span) {
         input.value = original;
         input.style.cssText = 'width:70px;padding:1px 4px;font-size:inherit;border:1px solid #666;border-radius:3px;';
 
-        this.textContent = '';
-        this.appendChild(input);
+        span.textContent = '';
+        span.appendChild(input);
         input.focus();
         input.select();
 
@@ -202,7 +253,6 @@ document.querySelectorAll('.pasajeros-val').forEach(function(span) {
                 spanEl.classList.remove('editing');
                 return;
             }
-
             fetch('/produccion/' + prodId + '/pasajeros', {
                 method: 'PATCH',
                 headers: {
@@ -224,16 +274,38 @@ document.querySelectorAll('.pasajeros-val').forEach(function(span) {
             });
         };
 
-        var self = this;
         input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter')  guardar(self);
-            if (e.key === 'Escape') { self.textContent = original || '—'; self.classList.remove('editing'); }
+            if (e.key === 'Enter')  guardar(span);
+            if (e.key === 'Escape') { span.textContent = original || '—'; span.classList.remove('editing'); }
         });
         input.addEventListener('blur', function() {
-            if (self.classList.contains('editing')) guardar(self);
+            if (span.classList.contains('editing')) guardar(span);
+        });
+    }
+
+    document.querySelectorAll('.pasajeros-val').forEach(function(span) {
+        span.style.cursor = 'pointer';
+        span.title = 'Clic para editar';
+
+        span.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('editing'))
+                this.style.borderBottom = '1px dashed #aaa';
+        });
+        span.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('editing'))
+                this.style.borderBottom = '1px dashed transparent';
+        });
+
+        span.addEventListener('click', function() {
+            if (this.classList.contains('editing')) return;
+            if (sesionAutorizada) {
+                activarEdicion(this);
+            } else {
+                abrirModal(this);
+            }
         });
     });
-});
+})();
 </script>
 @endpush
 @endsection
