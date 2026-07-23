@@ -66,69 +66,8 @@ class UnidadController extends Controller
         ]);
     }
 
-    public function resumenVueltas($id)
-    {
-        $unidad = Unidad::find($id);
-        if (!$unidad) {
-            return response()->json(['message' => 'Unidad no encontrada'], 404);
-        }
-
-        $placa = $unidad->placa;
-
-        // Traer vueltas programadas del día desde el servicio externo
-        try {
-            $extResp = Http::timeout(10)->post('http://precisobus.precisogps.com:3000/app/mis-vueltas', [
-                'placa' => $placa,
-            ]);
-            $vueltasProgramadas = $extResp->successful() ? $extResp->json() : [];
-        } catch (\Throwable $e) {
-            $vueltasProgramadas = [];
-        }
-
-        // Traer producciones ya guardadas en la hoja del día
-        $fecha = Carbon::now('America/Guayaquil')->format('Y-m-d');
-        $hoja  = HojaTrabajo::with('producciones')
-            ->where('id_unidad', $id)
-            ->where('fecha', $fecha)
-            ->first();
-
-        $vueltasEnviadas = [];
-        if ($hoja) {
-            $vueltasEnviadas = $hoja->producciones->pluck('nro_vuelta')->toArray();
-        }
-
-        // Hora actual en Ecuador para comparar
-        $ahora = Carbon::now('America/Guayaquil');
-
-        $vueltas = [];
-        foreach ($vueltasProgramadas as $index => $v) {
-            $nroVuelta  = $index + 1;
-            $horaFinStr = $v['horaFin'] ?? null;
-
-            if (in_array($nroVuelta, $vueltasEnviadas)) {
-                $estado = 'enviada';
-            } elseif ($horaFinStr && $ahora->gt(Carbon::createFromFormat('H:i', $horaFinStr, 'America/Guayaquil'))) {
-                $estado = 'pendiente';
-            } else {
-                $estado = 'futura';
-            }
-
-            $vueltas[] = [
-                'nro_vuelta'  => $nroVuelta,
-                'ruta'        => $v['ruta']        ?? null,
-                'hora_inicio' => $v['horaInicio']  ?? null,
-                'hora_fin'    => $horaFinStr,
-                'estado'      => $estado,
-            ];
-        }
-
-        return response()->json([
-            'id_unidad' => (int) $id,
-            'placa'     => $placa,
-            'id_hoja'   => $hoja?->id_hoja,
-            'vueltas'   => $vueltas,
-        ]);
-    }
+    // Nota: la lógica de resumen de vueltas se movió al cliente Flutter
+    // porque el servidor no tiene acceso al puerto externo del servicio de vueltas.
 
     public function update(Request $request, $id)
     {

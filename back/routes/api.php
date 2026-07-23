@@ -26,8 +26,6 @@ use Illuminate\Support\Facades\Route;
 // Obtener placa por id_unidad (usado al escanear QR)
 Route::get('/unidad/{id}/placa', [UnidadController::class, 'placaPorId']);
 
-// Resumen de vueltas programadas vs enviadas del día
-Route::get('/unidad/{id}/resumen-vueltas', [UnidadController::class, 'resumenVueltas']);
 
 // Buscar (y crear si no existe) la hoja del día para la unidad
 Route::get('/hoja-chofer/{id_unidad}', [HojaChoferController::class, 'buscarPorUnidad']);
