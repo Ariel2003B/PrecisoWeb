@@ -7,6 +7,7 @@ use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\HojaChoferController;
 use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UnidadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+// Obtener placa por id_unidad (usado al escanear QR)
+Route::get('/unidad/{id}/placa', [UnidadController::class, 'placaPorId']);
 
 // Buscar (y crear si no existe) la hoja del día para la unidad
 Route::get('/hoja-chofer/{id_unidad}', [HojaChoferController::class, 'buscarPorUnidad']);

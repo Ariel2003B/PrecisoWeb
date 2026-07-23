@@ -49,6 +49,20 @@ class UnidadController extends Controller
         return view('unidades.edit', compact('unidad', 'usuarios'));
     }
 
+    public function placaPorId($id)
+    {
+        $unidad = Unidad::find($id);
+
+        if (!$unidad) {
+            return response()->json(['message' => 'Unidad no encontrada'], 404);
+        }
+
+        return response()->json([
+            'id_unidad' => $unidad->id_unidad,
+            'placa'     => $unidad->placa,
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $request->validate([

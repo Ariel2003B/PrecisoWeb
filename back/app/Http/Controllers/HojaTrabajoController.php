@@ -95,7 +95,7 @@ class HojaTrabajoController extends Controller
 
         return response()->json(['message' => 'Hoja de trabajo creada', 'id' => $hoja->id_hoja]);
     }
-
+    
     public function index(Request $request)
     {
         $authHeader = $request->header('Authorization');
