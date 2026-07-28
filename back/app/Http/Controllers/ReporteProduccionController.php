@@ -280,13 +280,12 @@ class ReporteProduccionController extends Controller
             $totalGlobal += $totalUnidad;
         }
 
-        // Guardar en sesión
+        // Guardar solo filtros (no los datos) para evitar sesión pesada
         session([
-            'reporte_global_data' => $hojas,
             'reporte_global_filters' => [
-                'fecha_inicio' => $fechaInicio,
-                'fecha_fin' => $fechaFin,
-                'ruta' => $rutaId
+                'fechaInicio' => $fechaInicio,
+                'fechaFin'    => $fechaFin,
+                'rutaId'      => $rutaId,
             ]
         ]);
 
@@ -319,7 +318,22 @@ class ReporteProduccionController extends Controller
             [$fechaInicio, $fechaFin] = [$fechaFin, $fechaInicio];
         }
 
-        $query = HojaTrabajo::with(['unidad', 'producciones.tickets.ticketTipo', 'ruta'])
+        // Guardar solo los filtros (no los datos) para Export
+        session(['reporte_global_filters' => compact('fechaInicio', 'fechaFin', 'rutaId')]);
+
+        $ticketTipos = TicketTipo::where('EMP_ID', $user->EMP_ID)
+            ->where('activo', 1)
+            ->orderBy('nombre')
+            ->get();
+
+        // Indexar valores de ticket por id para evitar N+1
+        $ticketValores = $ticketTipos->pluck('valor', 'id');
+
+        $query = HojaTrabajo::with([
+                'unidad:id_unidad,placa,numero_habilitacion',
+                'producciones:id_produccion,id_hoja,nro_vuelta,valor_vuelta,pasajeros_subida',
+                'producciones.tickets:id,id_produccion,id_ticket_tipo,numero_inicio,numero_fin',
+            ])
             ->whereBetween('fecha', [$fechaInicio, $fechaFin])
             ->whereHas('ruta', fn($q) => $q->where('EMP_ID', $user->EMP_ID));
 
@@ -329,31 +343,29 @@ class ReporteProduccionController extends Controller
 
         $hojas = $query->get();
 
-        $ticketTipos = TicketTipo::where('EMP_ID', $user->EMP_ID)
-            ->where('activo', 1)
-            ->orderBy('nombre')
-            ->get();
-
         $produccionPorUnidad = [];
-        $totalGlobal = 0;
-        $totalVueltasGlobal = 0;
+        $totalGlobal         = 0;
+        $totalVueltasGlobal  = 0;
 
         foreach ($hojas as $hoja) {
-            $placa = $hoja->unidad->placa ?? '-';
-            $habil = $hoja->unidad->numero_habilitacion ?? '-';
+            $placa     = $hoja->unidad->placa ?? '-';
+            $habil     = $hoja->unidad->numero_habilitacion ?? '-';
             $unidadKey = $placa . ' (' . $habil . ')';
 
             if (!isset($produccionPorUnidad[$unidadKey])) {
                 $produccionPorUnidad[$unidadKey] = [
                     'total_produccion' => 0,
-                    'total_vueltas' => 0,
+                    'total_vueltas'    => 0,
                     'pasajeros_wialon' => 0,
                     'tickets_por_tipo' => [],
+                    'hojas_ids'        => [],
                 ];
                 foreach ($ticketTipos as $tt) {
                     $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tt->id] = ['cantidad' => 0, 'valor' => 0];
                 }
             }
+
+            $produccionPorUnidad[$unidadKey]['hojas_ids'][] = $hoja->id_hoja;
 
             foreach ($hoja->producciones as $produccion) {
                 $produccionPorUnidad[$unidadKey]['total_produccion'] += (float) $produccion->valor_vuelta;
@@ -366,19 +378,13 @@ class ReporteProduccionController extends Controller
                     if (isset($produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId])) {
                         $cantidad = max(0, $pt->numero_fin - $pt->numero_inicio + 1);
                         $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['cantidad'] += $cantidad;
-                        $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['valor'] += $cantidad * ($pt->ticketTipo->valor ?? 0);
+                        $produccionPorUnidad[$unidadKey]['tickets_por_tipo'][$tipoId]['valor']    += $cantidad * ($ticketValores[$tipoId] ?? 0);
                     }
                 }
             }
 
             $totalGlobal += $produccionPorUnidad[$unidadKey]['total_produccion'];
         }
-
-        // Guardar en sesión para export Excel/PDF
-        session([
-            'reporte_global_data' => $hojas,
-            'reporte_global_filters' => compact('fechaInicio', 'fechaFin', 'rutaId'),
-        ]);
 
         return view('reportes.recaudo', compact(
             'rutas', 'produccionPorUnidad', 'totalGlobal', 'totalVueltasGlobal', 'ticketTipos'
@@ -387,11 +393,30 @@ class ReporteProduccionController extends Controller
 
     public function generarExcel()
     {
-        $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
+        $filters = Session::get('reporte_global_filters');
 
-        if (!$hojas) {
+        if (!$filters) {
             return redirect()->back()->with('error', 'No hay datos para exportar.');
         }
+
+        $user        = auth()->user();
+        $fechaInicio = $filters['fechaInicio'];
+        $fechaFin    = $filters['fechaFin'];
+        $rutaId      = $filters['rutaId'] ?? null;
+
+        $query = HojaTrabajo::with([
+                'unidad:id_unidad,placa,numero_habilitacion',
+                'producciones:id_produccion,id_hoja,valor_vuelta',
+                'ruta:id_ruta,descripcion',
+            ])
+            ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->whereHas('ruta', fn($q) => $q->where('EMP_ID', $user->EMP_ID));
+
+        if ($rutaId) {
+            $query->where('id_ruta', $rutaId);
+        }
+
+        $hojas = $query->get();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -474,35 +499,45 @@ class ReporteProduccionController extends Controller
 
     public function generarPDF()
     {
-        $hojas = Session::get('reporte_global_data'); // Obtenemos los datos filtrados desde la sesión
+        $filters = Session::get('reporte_global_filters');
 
-        if (!$hojas) {
+        if (!$filters) {
             return redirect()->back()->with('error', 'No hay datos para exportar.');
         }
 
+        $user        = auth()->user();
+        $fechaInicio = $filters['fechaInicio'];
+        $fechaFin    = $filters['fechaFin'];
+        $rutaId      = $filters['rutaId'] ?? null;
+
+        $query = HojaTrabajo::with([
+                'unidad:id_unidad,placa,numero_habilitacion',
+                'producciones:id_produccion,id_hoja,valor_vuelta',
+                'ruta:id_ruta,descripcion',
+            ])
+            ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->whereHas('ruta', fn($q) => $q->where('EMP_ID', $user->EMP_ID));
+
+        if ($rutaId) {
+            $query->where('id_ruta', $rutaId);
+        }
+
+        $hojas       = $query->get();
         $totalGlobal = 0;
-        $datos = [];
+        $datos       = [];
 
         foreach ($hojas as $hoja) {
-            $produccionTotal = 0;
-            $vueltas = 0;
-
-            if ($hoja->producciones) {
-                foreach ($hoja->producciones as $produccion) {
-                    $produccionTotal += $produccion->valor_vuelta;
-                    $vueltas++;
-                }
-            }
-
-            $unidad = ($hoja->unidad->placa ?? '-') . ' (' . ($hoja->unidad->numero_habilitacion ?? '-') . ')';
+            $produccionTotal = $hoja->producciones->sum('valor_vuelta');
+            $vueltas         = $hoja->producciones->count();
+            $unidad          = ($hoja->unidad->placa ?? '-') . ' (' . ($hoja->unidad->numero_habilitacion ?? '-') . ')';
 
             $datos[] = [
-                'fecha' => $hoja->fecha,
-                'unidad' => $unidad,
-                'ruta' => $hoja->ruta->descripcion ?? '-',
-                'tipo_dia' => $hoja->tipo_dia ?? '-',
-                'vueltas' => $vueltas,
-                'produccion' => $produccionTotal
+                'fecha'     => $hoja->fecha,
+                'unidad'    => $unidad,
+                'ruta'      => $hoja->ruta->descripcion ?? '-',
+                'tipo_dia'  => $hoja->tipo_dia ?? '-',
+                'vueltas'   => $vueltas,
+                'produccion' => $produccionTotal,
             ];
 
             $totalGlobal += $produccionTotal;

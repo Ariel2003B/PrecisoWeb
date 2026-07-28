@@ -44,47 +44,61 @@ class ConsultarPasajerosWialon implements ShouldQueue
 
         $sid = $wialon->login();
 
-        foreach ($hoja->producciones as $prod) {
-            try {
-                // Toma solo HH:MM sin importar si la BD guarda HH:MM:SS
-                $horaSubida = substr($prod->hora_subida, 0, 5);
-                $horaBajada = substr($prod->hora_bajada, 0, 5);
-
-                $inicio = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaSubida}", $tz)->timestamp;
-                $fin    = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaBajada}", $tz)->timestamp;
-
-                // Si la bajada cae al día siguiente (ruta de madrugada)
-                if ($fin <= $inicio) {
-                    $fin = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$prod->hora_bajada}", $tz)
-                        ->addDay()
-                        ->timestamp;
+        try {
+            foreach ($hoja->producciones as $prod) {
+                // Saltar vueltas sin horas registradas
+                if (empty($prod->hora_subida) || empty($prod->hora_bajada)) {
+                    Log::info('ConsultarPasajerosWialon: vuelta sin horas, se omite', [
+                        'hoja_id'    => $this->hojaId,
+                        'nro_vuelta' => $prod->nro_vuelta,
+                    ]);
+                    continue;
                 }
 
-                $resultado = $wialon->contarPasajeros($sid, (int)$idWialon, $inicio, $fin);
+                try {
+                    // Normalizar a HH:MM sin importar si la BD guarda HH:MM:SS
+                    $horaSubida = substr($prod->hora_subida, 0, 5);
+                    $horaBajada = substr($prod->hora_bajada, 0, 5);
 
-                $prod->update([
-                    'pasajeros_subida' => $resultado['upp'],
-                    'pasajeros_bajada' => $resultado['downp'],
-                    'valor_pasajeros'  => round($resultado['upp'] * $valorPasajero, 2),
-                ]);
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaSubida}", $tz)->timestamp;
+                    $fin    = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaBajada}", $tz)->timestamp;
 
-                Log::info('Pasajeros vuelta actualizados', [
-                    'hoja_id'    => $this->hojaId,
-                    'prod_id'    => $prod->id_produccion,
-                    'nro_vuelta' => $prod->nro_vuelta,
-                    'upp'        => $resultado['upp'],
-                    'downp'      => $resultado['downp'],
-                    'valor'      => round($resultado['upp'] * $valorPasajero, 2),
-                ]);
-            } catch (\Throwable $e) {
-                Log::error('ConsultarPasajerosWialon: error en vuelta', [
-                    'hoja_id'    => $this->hojaId,
-                    'prod_id'    => $prod->id_produccion ?? null,
-                    'nro_vuelta' => $prod->nro_vuelta ?? null,
-                    'mensaje'    => $e->getMessage(),
-                ]);
-                // No relanzamos: si una vuelta falla, seguimos con las demás
+                    // Si la bajada cae al día siguiente (ruta de madrugada)
+                    if ($fin <= $inicio) {
+                        $fin = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaBajada}", $tz)
+                            ->addDay()
+                            ->timestamp;
+                    }
+
+                    $resultado = $wialon->contarPasajeros($sid, (int)$idWialon, $inicio, $fin);
+
+                    $prod->update([
+                        'pasajeros_subida' => $resultado['upp'],
+                        'pasajeros_bajada' => $resultado['downp'],
+                        'valor_pasajeros'  => round($resultado['upp'] * $valorPasajero, 2),
+                    ]);
+
+                    Log::info('Pasajeros vuelta actualizados', [
+                        'hoja_id'    => $this->hojaId,
+                        'prod_id'    => $prod->id_produccion,
+                        'nro_vuelta' => $prod->nro_vuelta,
+                        'upp'        => $resultado['upp'],
+                        'downp'      => $resultado['downp'],
+                        'valor'      => round($resultado['upp'] * $valorPasajero, 2),
+                    ]);
+                } catch (\Throwable $e) {
+                    Log::error('ConsultarPasajerosWialon: error en vuelta', [
+                        'hoja_id'    => $this->hojaId,
+                        'prod_id'    => $prod->id_produccion ?? null,
+                        'nro_vuelta' => $prod->nro_vuelta ?? null,
+                        'mensaje'    => $e->getMessage(),
+                    ]);
+                    // Continúa con las demás vueltas si una falla
+                }
             }
+        } finally {
+            // Cerrar sesión Wialon siempre, incluso si hay errores
+            $wialon->logout($sid);
         }
     }
 

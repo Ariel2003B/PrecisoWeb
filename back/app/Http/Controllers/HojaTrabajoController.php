@@ -91,7 +91,8 @@ class HojaTrabajoController extends Controller
             ]);
         }
 
-        ConsultarPasajerosWialon::dispatch($hoja->id_hoja);
+        $delay = $this->calcularDelayWialon($hoja->fecha, $request->produccion ?? []);
+        ConsultarPasajerosWialon::dispatch($hoja->id_hoja)->delay($delay);
 
         return response()->json(['message' => 'Hoja de trabajo creada', 'id' => $hoja->id_hoja]);
     }
@@ -285,7 +286,8 @@ class HojaTrabajoController extends Controller
                 return response()->json(['message' => 'Hoja de trabajo actualizada correctamente']);
             });
 
-            ConsultarPasajerosWialon::dispatch($hojaId);
+            $delay = $this->calcularDelayWialon($data['fecha'], $data['produccion'] ?? []);
+            ConsultarPasajerosWialon::dispatch($hojaId)->delay($delay);
 
             return $response;
 
@@ -688,6 +690,45 @@ class HojaTrabajoController extends Controller
         }
     }
 
+
+    private function calcularDelayWialon(string $fecha, array $produccion): int
+    {
+        $tz = new \DateTimeZone('America/Guayaquil');
+
+        $maxBajada = null;
+
+        foreach ($produccion as $vuelta) {
+            if (empty($vuelta['hora_bajada'])) continue;
+
+            $horaBajada = substr($vuelta['hora_bajada'], 0, 5);
+
+            try {
+                $dt = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaBajada}", $tz);
+
+                // Si la bajada cruza medianoche
+                if (!empty($vuelta['hora_subida'])) {
+                    $horaSubida = substr($vuelta['hora_subida'], 0, 5);
+                    $dtSubida = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaSubida}", $tz);
+                    if ($dt->lessThanOrEqualTo($dtSubida)) {
+                        $dt->addDay();
+                    }
+                }
+
+                if (is_null($maxBajada) || $dt->greaterThan($maxBajada)) {
+                    $maxBajada = $dt;
+                }
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        if (is_null($maxBajada) || $maxBajada->isPast()) {
+            return 0; // ya pasó la hora, procesar de inmediato
+        }
+
+        // Añadir 5 minutos de margen para que Wialon tenga los datos
+        return (int) now('America/Guayaquil')->diffInSeconds($maxBajada) + 300;
+    }
 
     public function actualizarPasajeros(Request $request, $produccionId)
     {

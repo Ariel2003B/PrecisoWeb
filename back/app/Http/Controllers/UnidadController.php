@@ -61,8 +61,9 @@ class UnidadController extends Controller
         }
 
         return response()->json([
-            'id_unidad' => $unidad->id_unidad,
-            'placa'     => $unidad->placa,
+            'id_unidad'   => $unidad->id_unidad,
+            'placa'       => $unidad->placa,
+            'hora_actual' => Carbon::now('America/Guayaquil')->format('H:i'),
         ]);
     }
 

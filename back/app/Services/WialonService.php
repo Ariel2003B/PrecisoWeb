@@ -105,4 +105,13 @@ class WialonService
 
         return ['upp' => $upp, 'downp' => $downp];
     }
+
+    public function logout(string $sid): void
+    {
+        try {
+            $this->call('core/logout', [], $sid);
+        } catch (\Throwable $e) {
+            Log::warning('Wialon logout falló', ['mensaje' => $e->getMessage()]);
+        }
+    }
 }
