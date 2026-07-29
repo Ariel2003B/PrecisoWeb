@@ -8,6 +8,7 @@ use App\Http\Controllers\HojaChoferController;
 use App\Http\Controllers\HojaTrabajoController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UnidadController;
+use App\Http\Controllers\UnidadPropiaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/hojas-trabajo', [HojaTrabajoController::class, 'store']);
 
     Route::get('/user', [LoginController::class, 'user']);
+
+    // App Flota de PrecisoBus (Fase 9) — único endpoint nuevo, no modifica nada existente.
+    Route::get('/unidades/mias', [UnidadPropiaController::class, 'mias']);
 
 });
 
