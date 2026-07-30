@@ -62,12 +62,22 @@ class ProduccionResumenController extends Controller
 
         $gastosPorTipo = [];
         $totalGastos = 0.0;
+        $vueltas = [];
 
         foreach ($hojas as $hoja) {
             foreach ($hoja->producciones as $produccion) {
                 $totalVueltas++;
                 $produccionConductor += (float) $produccion->valor_vuelta;
                 $contPasajeros += (int) ($produccion->pasajeros_subida ?? 0);
+
+                $vueltas[] = [
+                    'nroVuelta' => (int) $produccion->nro_vuelta,
+                    'horaSubida' => $produccion->hora_subida,
+                    'horaBajada' => $produccion->hora_bajada,
+                    'valorVuelta' => round((float) $produccion->valor_vuelta, 2),
+                    'pasajerosSubida' => (int) ($produccion->pasajeros_subida ?? 0),
+                    'pasajerosBajada' => (int) ($produccion->pasajeros_bajada ?? 0),
+                ];
 
                 foreach ($produccion->tickets as $pt) {
                     $tipoId = $pt->id_ticket_tipo;
@@ -88,6 +98,8 @@ class ProduccionResumenController extends Controller
             }
         }
 
+        usort($vueltas, fn($a, $b) => $a['nroVuelta'] <=> $b['nroVuelta']);
+
         $difPasajeros = $contPasajeros - $ticketsFisicos;
         $difDinero    = $produccionTickets - $produccionConductor;
         $tarifaPromedio = $contPasajeros > 0 ? $produccionConductor / $contPasajeros : 0;
@@ -104,6 +116,7 @@ class ProduccionResumenController extends Controller
             'difPasajeros' => $difPasajeros,
             'difDinero' => round($difDinero, 2),
             'tarifaPromedio' => round($tarifaPromedio, 2),
+            'vueltas' => $vueltas,
             'ticketsPorTipo' => array_values(array_map(fn($t) => [
                 'tipoId' => $t['tipoId'],
                 'nombre' => $t['nombre'],
