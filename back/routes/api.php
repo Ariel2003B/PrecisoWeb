@@ -69,3 +69,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/account/deletion-request', [AccountController::class, 'deletionRequest']);
+Route::get('/debug/auth-header', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'authorization_header' => $request->header('Authorization'),
+        'bearer_token' => $request->bearerToken(),
+        'server_http_authorization' => $_SERVER['HTTP_AUTHORIZATION'] ?? null,
+        'server_redirect_http_authorization' => $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null,
+        'apache_headers' => function_exists('apache_request_headers') ? apache_request_headers() : null,
+    ]);
+});
