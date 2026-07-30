@@ -19,7 +19,7 @@ class UnidadPropiaController extends Controller
     {
         $user = $request->user();
 
-        $esAdmin = optional($user->p_e_r_f_i_l)->DESCRIPCION === 'Administrador';
+        $esAdmin = in_array(optional($user->p_e_r_f_i_l)->DESCRIPCION, ['admin', 'Administrador'], true);
 
         $unidades = $esAdmin
             ? Unidad::whereHas('usuario', function ($q) use ($user) {
