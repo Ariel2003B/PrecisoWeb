@@ -115,7 +115,10 @@ class HojaTrabajoController extends Controller
         $user = $accessToken->tokenable; // Usuario autenticado
 
         // Consultar el perfil si lo tienes relacionado (puedes ajustar esto según tu modelo)
-        $esAdmin = optional($user->p_e_r_f_i_l)->DESCRIPCION === 'admin';
+        // 'admin' es el valor histórico de este chequeo; 'Administrador' es el perfil real
+        // que usa el resto del sistema (vistas de usuario, App Flota). Se admiten ambos para
+        // no romper nada que ya dependa de 'admin', y a la vez reconocer a los Administrador reales.
+        $esAdmin = in_array(optional($user->p_e_r_f_i_l)->DESCRIPCION, ['admin', 'Administrador'], true);
 
         $query = HojaTrabajo::with(['unidad', 'ruta', 'conductor', 'gastos', 'producciones']);
 
